@@ -4709,3 +4709,13 @@ Formato:
   como en Chrome.
 - Batería: 108/108.
 
+
+### 2026-10-24 — Publicada la v0.7.2-alfa
+- Con la 52 (el idioma de Locale para las webs), la 45g (8) (los errores en el catálogo), la 46 (5) (la pestaña
+  descartada vuelve a su sitio), la 48d (1) (los números a texto con Ryu) y la 42a (la cabecera de Wikipedia).
+  Batería 108/108; Wikipedia con MUI 3.8 (sys32rtg38ancha). PR #10; paquete en un worktree limpio de main; release
+  con tachyon.lha, Tachyon.gz y los nueve catálogos (11 ficheros); las descargas responden (200).
+- tools/paquete.sh no hacía build/video-lib/libvideo.a en un worktree limpio (sí las de QuickJS e imágenes): ahora sí.
+- Un usuario en MorphOS: funciona, pero avisa de un acceso a los chips custom. Es la única lectura que queda en el
+  ejecutable: $DFF006 (la posición del haz) en la semilla de AmiSSL del runtime de Dash (compiler/codegen.py).
+  Pedido a la sesión "dash" (por el usuario, a mano) que la quite.

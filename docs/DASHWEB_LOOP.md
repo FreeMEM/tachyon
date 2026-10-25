@@ -4851,3 +4851,8 @@ Formato:
   con su código y el informe llegó (borrado después, como los de prueba desde el PC).
 
 - Batería: 110/110 (2926 s).
+
+### 2026-10-25 — Publicada la v0.7.4-alfa
+- Con la 54 (enviar un informe de depuración). Batería 110/110; el envío, probado desde la máquina RTG ancha con
+  MUI 3.8. PR #13; paquete en un worktree limpio de main; release con tachyon.lha, Tachyon.gz y los nueve catálogos
+  (11 ficheros); las descargas responden (200). El receptor ya estaba en marcha en el servidor de las webs.

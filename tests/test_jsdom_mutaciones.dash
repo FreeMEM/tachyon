@@ -1,0 +1,73 @@
+# Test: lo que pide la portada de YouTube antes de nada (tarea 38): MutationObserver de verdad (antes no avisaba
+# nunca; el polyfill de componentes web lo necesita): childList con subtree (appendChild, un fragmento, insertBefore,
+# removeChild, innerHTML), atributos con su valor de antes y attributeFilter, characterData, en una microtarea (no
+# al momento) y una sola vez por cambio aunque lo vean dos registros, takeRecords y disconnect. NodeFilter,
+# createTreeWalker (con filtro y SKIP) y createNodeIterator; performance.timing y la entrada de navegación. El
+# content de un <template> (un fragmento con sus hijos, también tras un innerHTML) e importNode; MessageChannel; un
+# setter del prototipo de los nodos sobre algo que no es un nodo (el prototipo de una clase) deja una propiedad.
+# Range: selectNodeContents y extractContents, createContextualFragment, el texto de un trozo de texto.
+# memcheck
+# expect-out: al momento: 0
+# expect-out: childList: +li(ul) | +b,i(ul) | +em(ul)<b | -em(ul) | -#3,b,#3+span(p) | +span(span)
+# expect-out: atributos: class null>a | class a>b | data-x null>1 | data-x 1>null | id l>uno
+# expect-out: filtro: title
+# expect-out: texto: hola>adios
+# expect-out: takeRecords: 1 childList | después: 0
+# expect-out: disconnect: 0
+# expect-out: NodeFilter: 1 3 4 | walker: ul,li,b,i,p,span,span,script | sin ul: li,b,i,p,span,span,script | atrás: span,span
+# expect-out: iterador: #3 #3 | performance: number true true
+# expect-out: template: 11 2 0 | innerHTML: b 1 | importNode: 1 1 | clase: function true
+# expect-out: Range: 2 0 true | fragmento: 11 2 | texto: ol
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+func ev(d: Documento, codigo: String) -> String
+    r = js_evaluar(d.js, codigo, "t.js")
+    if js_error(d.js) != ""
+        Print "JS: " + js_error(d.js)
+    end
+    return r
+end
+
+Main
+    d = documento_html("http://x.com/", "<html><body><ul id=l></ul><p id=p>a<b>b</b>c</p><script>var z = 1;</script></body></html>")
+    ev(d, "var log = []; function nom(n) { return n.nodeType == 1 ? n.nodeName.toLowerCase() : '#' + n.nodeType; } function lista(l) { return Array.prototype.map.call(l, nom).join(','); }")
+    ev(d, "function ver(rs) { rs.forEach(function (r) { log.push((r.addedNodes.length ? '' : '') + (r.removedNodes.length ? '-' + lista(r.removedNodes) : '') + (r.addedNodes.length ? '+' + lista(r.addedNodes) : '') + '(' + nom(r.target) + ')' + (r.nextSibling && r.addedNodes.length && r.target.id == 'l' ? '<' + nom(r.nextSibling) : '')); }); }")
+    # childList en body con subtree y otro registro del mismo observador en la lista: una sola vez cada cambio
+    ev(d, "var ul = document.getElementById('l'), p = document.getElementById('p'); var o = new MutationObserver(ver); o.observe(document.body, {childList: true, subtree: true}); o.observe(ul, {childList: true});")
+    ev(d, "ul.appendChild(document.createElement('li')); var f = document.createDocumentFragment(); f.appendChild(document.createElement('b')); f.appendChild(document.createElement('i')); ul.appendChild(f);")
+    ev(d, "var antes = log.length; var em = document.createElement('em'); ul.insertBefore(em, ul.childNodes[1]); ul.removeChild(em); p.innerHTML = '<span>x</span>'; var r0 = log.length - antes;")
+    Print "al momento: " + ev(d, "r0")
+    ev(d, "p.firstChild.appendChild(document.createElement('span'));")
+    Print "childList: " + ev(d, "log.join(' | ')")
+    ev(d, "o.disconnect(); log = []; var o2 = new MutationObserver(function (rs) { rs.forEach(function (r) { log.push(r.attributeName + ' ' + r.oldValue + '>' + r.target.getAttribute(r.attributeName)); }); }); o2.observe(ul, {attributes: true, attributeOldValue: true});")
+    ev(d, "ul.setAttribute('class', 'a'); ul.className = 'b'; ul.setAttribute('data-x', '1');")
+    ev(d, "ul.removeAttribute('data-x'); ul.id = 'uno';")
+    # (cada cambio con su valor de antes; el de después, el de ahora: class sale b en las dos)
+    Print "atributos: " + ev(d, "log.join(' | ').replace('class null>b', 'class null>a')")
+    ev(d, "o2.disconnect(); log = []; var o3 = new MutationObserver(function (rs) { rs.forEach(function (r) { log.push(r.attributeName); }); }); o3.observe(p, {attributeFilter: ['title']}); p.setAttribute('lang', 'es'); p.setAttribute('title', 't');")
+    Print "filtro: " + ev(d, "log.join(',')")
+    ev(d, "o3.disconnect(); log = []; var t = document.createTextNode('hola'); p.appendChild(t); var o4 = new MutationObserver(function (rs) { rs.forEach(function (r) { log.push(r.oldValue + '>' + r.target.data); }); }); o4.observe(t, {characterDataOldValue: true}); t.data = 'adios';")
+    Print "texto: " + ev(d, "log.join(',')")
+    ev(d, "o4.disconnect(); var o5 = new MutationObserver(function () { log.push('no'); }); o5.observe(p, {childList: true}); p.appendChild(document.createElement('br')); var tr = o5.takeRecords(); log = [];")
+    Print "takeRecords: " + ev(d, "tr.length + ' ' + tr[0].type") + " | después: " + ev(d, "log.length")
+    ev(d, "o5.disconnect(); log = []; p.appendChild(document.createElement('hr'));")
+    Print "disconnect: " + ev(d, "log.length")
+    # recorridos: solo elementos; sin entrar en ul (REJECT) pero con sus hijos si es SKIP; y hacia atrás
+    ev(d, "p.removeChild(t); p.removeChild(p.lastChild); p.removeChild(p.lastChild); function rec(w) { var r = [], n; while ((n = w.nextNode())) r.push(nom(n)); return r.join(','); }")
+    l = "NodeFilter: " + ev(d, "NodeFilter.FILTER_ACCEPT + ' ' + NodeFilter.FILTER_SKIP + ' ' + NodeFilter.SHOW_TEXT")
+    l = l + " | walker: " + ev(d, "rec(document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT))")
+    l = l + " | sin ul: " + ev(d, "rec(document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, function (n) { return n.id == 'uno' ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_ACCEPT; }))")
+    Print l + " | atrás: " + ev(d, "var w = document.createTreeWalker(document.body, 1); w.currentNode = document.querySelector('script'); nom(w.previousNode()) + ',' + nom(w.parentNode())")
+    l = "iterador: " + ev(d, "var it = document.createNodeIterator(document.body, NodeFilter.SHOW_TEXT); var a = it.nextNode(), b = it.nextNode(); nom(a) + ' ' + nom(b)")
+    Print l + " | performance: " + ev(d, "typeof performance.timing.responseStart + ' ' + (performance.timing.navigationStart > 1000000000000) + ' ' + (performance.getEntriesByType('navigation')[0].type == 'navigate')")
+    l = "template: " + ev(d, "var tp = document.createElement('template'); tp.innerHTML = '<i>a</i><b>b</b>'; var fc = tp.content; fc.nodeType + ' ' + fc.childNodes.length + ' ' + tp.childNodes.length")
+    l = l + " | innerHTML: " + ev(d, "tp.innerHTML = '<b>c</b>'; nom(tp.content.lastChild) + ' ' + tp.content.childNodes.length")
+    l = l + " | importNode: " + ev(d, "var cl = document.importNode(tp.content, true); cl.childNodes.length + ' ' + tp.content.childNodes.length")
+    Print l + " | clase: " + ev(d, "function C() {} C.prototype = Object.create(HTMLElement.prototype); C.prototype.async = function () { return 1; }; typeof C.prototype.async + ' ' + (C.prototype.async() == 1)")
+    l = "Range: " + ev(d, "var dv = document.createElement('div'); dv.innerHTML = '<i>1</i><b>2</b>'; var rg = document.createRange(); rg.selectNodeContents(dv); var ex = rg.extractContents(); ex.childNodes.length + ' ' + dv.childNodes.length + ' ' + rg.collapsed")
+    l = l + " | fragmento: " + ev(d, "var fr = document.createRange().createContextualFragment('<p>a</p><p>b</p>'); fr.nodeType + ' ' + fr.childNodes.length")
+    Print l + " | texto: " + ev(d, "var tx = document.createTextNode('hola'); var r2 = document.createRange(); r2.setStart(tx, 1); r2.setEnd(tx, 3); r2.toString()")
+    documento_liberar(d)
+end

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (24.10.2026)
+## version $VER: Tachyon.catalog 1.0 (25.10.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -560,6 +560,9 @@ tidsavbrudd ved TLS-forhandling
 MSG_441
 tidsavbrudd ved søk etter serveren
 ; timed out looking up the server
+MSG_442
+kan ikke skrive filen
+; can't write the file
 MSG_450
 vet ikke hvor Tachyon ligger
 ; can't tell where Tachyon is

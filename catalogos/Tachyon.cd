@@ -372,6 +372,8 @@ MSG_440 (440//)
 timed out negotiating TLS
 MSG_441 (441//)
 timed out looking up the server
+MSG_442 (442//)
+can't write the file
 MSG_450 (450//)
 can't tell where Tachyon is
 MSG_451 (451//)

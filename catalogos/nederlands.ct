@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (24.10.2026)
+## version $VER: Tachyon.catalog 1.0 (25.10.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -560,6 +560,9 @@ time-out bij TLS-onderhandeling
 MSG_441
 time-out bij het zoeken van de server
 ; timed out looking up the server
+MSG_442
+kan het bestand niet schrijven
+; can't write the file
 MSG_450
 onbekend waar Tachyon staat
 ; can't tell where Tachyon is

@@ -62,11 +62,11 @@ func recursos_pedir(r: Recursos, direccion: String, es_css: Bool, nivel: Int)
     if t == nil
         r.traidos[direccion] = ""
     else
-        # los scripts, con lo que no cabe en Latin-1 como \uXXXX (utf8_a_js)
+        # los scripts, con lo que no es ASCII como \uXXXX (utf8_a_js_ascii)
         if es_css
             _recursos_llego(r, direccion, utf8_a_latin1(t), es_css, nivel)
         else
-            _recursos_llego(r, direccion, utf8_a_js(t), es_css, nivel)
+            _recursos_llego(r, direccion, utf8_a_js_ascii(t), es_css, nivel)
         end
     end
 end

@@ -218,6 +218,19 @@ end
                         }
                         if (n > 0) {
                             ObtainSemaphore(&_rt_sem);
+                            /* (el programa pudo soltar el búfer mientras se leía: _rt_recibir; si no cabe, crece aquí
+                               y no se pierde nada salvo sin memoria) */
+                            if (s->ent_cap - s->ent_len < n) {
+                                LONG cap = s->ent_cap ? s->ent_cap * 2 : 16384;
+                                UBYTE *nb;
+                                if (cap < s->ent_len + n) cap = s->ent_len + n;
+                                nb = (UBYTE *)AllocVec(cap, MEMF_PUBLIC);
+                                if (nb) {
+                                    if (s->ent) { memcpy(nb, s->ent, s->ent_len); FreeVec(s->ent); }
+                                    s->ent = nb;
+                                    s->ent_cap = cap;
+                                }
+                            }
                             if (s->ent_cap - s->ent_len >= n) {
                                 memcpy(s->ent + s->ent_len, tmp, n);
                                 s->ent_len += n;
@@ -390,6 +403,9 @@ end
         memcpy((APTR)destino, s->ent, n);
         memmove(s->ent, s->ent + n, s->ent_len - n);
         s->ent_len -= n;
+        /* vacío tras algo grande (el script de 10,8 MB de YouTube lo dejaba en 16 MB en una conexión que sigue
+           abierta): se suelta; la tarea pide otro pequeño cuando llegue más (tarea 38a) */
+        if (s->ent_len == 0 && s->ent_cap > 1048576) { FreeVec(s->ent); s->ent = NULL; s->ent_cap = 0; }
     } else if (s->estado == _RT_CERRADA || s->estado == _RT_ERROR) n = -1;
     ReleaseSemaphore(&_rt_sem);
     return n;
@@ -622,6 +638,14 @@ end
 func _red_sacar(c: Conexion, n: Int) -> String
     t = str_from_buffer(c.buf, c.ini, n)
     c.ini = c.ini + n
+    # (vacío tras algo grande: otra vez pequeño, que la conexión puede seguir abierta mucho rato)
+    if c.ini == c.fin and c.cap > 1048576
+        buffer_free(c.buf)
+        c.buf = buffer_alloc(RED_TROZO * 4)
+        c.cap = RED_TROZO * 4
+        c.ini = 0
+        c.fin = 0
+    end
     return t
 end
 
@@ -657,22 +681,19 @@ end
 
 # n bytes como texto (menos si la conexión se cierra antes); n < 0: hasta el cierre
 func red_leer(c: Conexion, n: Int) -> String
-    r = ""
-    falta = n
-    while falta != 0
-        if c.fin == c.ini and not _red_traer(c)
+    # todo en el búfer y un solo texto al final: juntando trozos (r + trozo) Dash reserva el doble y, pasados unos
+    # 8 MB, no podía (un texto llega a 16 MB): el texto volvía a empezar vacío y quedaba la cola (el script de 10,8 MB
+    # de YouTube daba "unexpected end of comment"; tarea 38a)
+    while n < 0 or c.fin - c.ini < n
+        if not _red_traer(c)
             break
         end
-        toma = c.fin - c.ini
-        if falta > 0 and toma > falta
-            toma = falta
-        end
-        r = r + _red_sacar(c, toma)
-        if falta > 0
-            falta = falta - toma
-        end
     end
-    return r
+    toma = c.fin - c.ini
+    if n >= 0 and toma > n
+        toma = n
+    end
+    return _red_sacar(c, toma)
 end
 
 # Todo lo que llegue hasta que la conexión se cierre
@@ -692,7 +713,7 @@ func red_copiar(c: Conexion, f: Int, n: Int) -> Int
             toma = n - hechos
         end
         if file_write(f, c.buf + c.ini, toma) != toma
-            c.error = "can't send"
+            c.error = "can't write"
             break
         end
         c.ini = c.ini + toma

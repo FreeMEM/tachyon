@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (24.10.2026)
+## version $VER: Tachyon.catalog 1.0 (25.10.2026)
 ## language dansk
 ## codeset 0
 ;
@@ -560,6 +560,9 @@ tidsgrænsen nået ved TLS-forhandling
 MSG_441
 tidsgrænsen nået ved søgning efter serveren
 ; timed out looking up the server
+MSG_442
+kan ikke skrive filen
+; can't write the file
 MSG_450
 ved ikke, hvor Tachyon ligger
 ; can't tell where Tachyon is

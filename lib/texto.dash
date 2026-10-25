@@ -161,8 +161,21 @@ end
 # QuickJS lo lee como el carácter de verdad. Con utf8_a_latin1, "тест" llegaba como "????" y unas comillas “ ”
 # dentro de una cadena salían como " y rompían el script.
 func utf8_a_js(s: String) -> String
+    _utf8_escapar_desde = 256
     return _utf8_decodificar(s, true)
 end
+
+# Lo mismo con todo lo que no es ASCII como \uXXXX, también lo de Latin-1, para un script de fuera (tarea 38): queda
+# en ASCII y js_evaluar no tiene que copiarlo a UTF-8 (el de YouTube son 10,8 MB menos mientras QuickJS lo analiza).
+# Los de dentro de la página no: una plantilla en un <script type="text/template"> se lee como texto.
+func utf8_a_js_ascii(s: String) -> String
+    _utf8_escapar_desde = 128
+    r = _utf8_decodificar(s, true)
+    _utf8_escapar_desde = 256
+    return r
+end
+
+var _utf8_escapar_desde: Int = 256
 
 func _hex4(v: Int) -> String
     d = "0123456789ABCDEF"
@@ -213,7 +226,7 @@ func _utf8_decodificar(s: String, js: Bool) -> String
                 k = k + 1
             end
             if largo > 0 and k == largo
-                if js and cp >= 256
+                if js and cp >= _utf8_escapar_desde
                     r = r + _js_escape(cp)
                 else
                     r = r + latin1_de(cp)
@@ -261,13 +274,13 @@ func texto_decodificar(s: String, juego: String) -> String
 end
 
 # El texto de un script con su juego de caracteres (UTF-8 si no dice otro): como texto_decodificar, pero lo que no
-# cabe en Latin-1 queda como escape \uXXXX (utf8_a_js)
+# es ASCII queda como escape \uXXXX (utf8_a_js_ascii: así el script va a QuickJS sin copiarlo)
 func texto_decodificar_js(s: String, juego: String) -> String
     j = str_lower(str_trim(juego))
     if j == "iso-8859-1" or j == "latin1" or j == "iso8859-1" or j == "us-ascii" or j == "ascii" or j == "windows-1252" or j == "cp1252"
         return texto_decodificar(s, juego)
     end
-    return utf8_a_js(s)
+    return utf8_a_js_ascii(s)
 end
 
 # Código de una entidad con nombre ("amp" -> 38), o -1 si no se conoce

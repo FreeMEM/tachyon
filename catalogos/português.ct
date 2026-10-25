@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (24.10.2026)
+## version $VER: Tachyon.catalog 1.0 (25.10.2026)
 ## language português
 ## codeset 0
 ;
@@ -560,6 +560,9 @@ tempo esgotado ao negociar o TLS
 MSG_441
 tempo esgotado à procura do servidor
 ; timed out looking up the server
+MSG_442
+não é possível escrever o ficheiro
+; can't write the file
 MSG_450
 não se sabe onde está o Tachyon
 ; can't tell where Tachyon is

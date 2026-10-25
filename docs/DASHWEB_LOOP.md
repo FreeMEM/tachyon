@@ -512,7 +512,7 @@ tarea, con el estilo de Dash.
       salida: Traspaso:Tachyon/Tachyon https://tachyon.freemem.space/ >Traspaso:salida.txt. Hasta entenderlo, sin
       versión nueva (sería un paso atrás en su sistema).
       Hecho (2026-10-24; ver la bitácora): la FPU empezaba en precisión simple.
-- [ ] 38. **youtube.com (usuario, 2026-10-20; 2026-10-24: "sería un puntazo", la siguiente).** Que la portada y la
+- [~] 38. **youtube.com (usuario, 2026-10-20; 2026-10-24: "sería un puntazo", la siguiente).** Que la portada y la
       página de un vídeo de https://www.youtube.com funcionen bien (hoy los vídeos de YouTube incrustados ya se ven,
       tarea 30). Empezar como la 37a: cómo sale, errores, memoria, y partirla en subtareas.
       (2026-10-24) A "Tachyon/0.7 (AmigaOS)" YouTube le da la aplicación de escritorio para navegadores viejos (276 KB
@@ -523,6 +523,8 @@ tarea, con el estilo de Dash.
       b. MutationObserver de verdad (childList, attributes, characterData, subtree; takeRecords; en una microtarea):
          sirve a muchas webs, no solo a YouTube.
       c. Lo que pida después (customElements nativo si el polyfill no basta, ShadyDOM, ytd-app...).
+      a y b hechas (2026-10-25; ver la bitácora). Para la c: style de un envoltorio de ShadyDOM, "not a function"
+      en playerApi y attached (el reproductor), la memoria (46 MB de JavaScript al final) y una captura pintada.
 - [ ] 53. **Las webs de chat (usuario, 2026-10-24: "si se viesen las webs de gemini, chatgpt, claude, etc y se pudiese
       conversar con ellas... ya sería la releche").** gemini.google.com, chatgpt.com, claude.ai: que se vean y se pueda
       escribir y leer la respuesta. Lo difícil: piden entrar con una cuenta (formularios, cookies, redirecciones de
@@ -4719,3 +4721,89 @@ Formato:
 - Un usuario en MorphOS: funciona, pero avisa de un acceso a los chips custom. Es la única lectura que queda en el
   ejecutable: $DFF006 (la posición del haz) en la semilla de AmiSSL del runtime de Dash (compiler/codegen.py).
   Pedido a la sesión "dash" (por el usuario, a mano) que la quite.
+
+### 2026-10-25 — Tarea 38a, 38b: YouTube, lo primero (scripts de 10 MB, MutationObserver, NodeFilter)
+- La portada en la máquina RTG ancha: en blanco a los 190 s. Tres errores: performance.timing.responseStart (no
+  había timing), NodeFilter (el polyfill de componentes web recorre el árbol con TreeWalker) y el script principal
+  (desktop_polymer, 10,8 MB sin comprimir: YouTube no lo da en gzip) con "SyntaxError: unexpected end of comment".
+- Ese error tenía tres causas, una tras otra:
+  1. red_leer juntaba el cuerpo trozo a trozo (r = r + trozo) y la conversión de UTF-8 de lib/texto.dash también:
+     Dash reservaba el doble al crecer y, pasados 8 MB (un texto llega a 16 MB), no podía y perdía lo añadido sin
+     avisar: QuickJS recibía el principio del script hasta su única ö (~5 KB). Arreglado en Dash por la sesión "dash"
+     (06127d8 en la rama dashweb: si el doble no cabe, lo justo) y red_leer junta todo en el búfer y hace un texto.
+  2. Sin memoria al analizarlo: QuickJS necesita ~60 MB para un script así y el tope del JavaScript era 48 MB fijo.
+     Ahora dos tercios de la memoria libre al crear el motor (entre 48 y 256 MB). Y aun así faltaba: el búfer de la
+     tarea de red y el de la conexión (16 MB cada uno, en una conexión que sigue abierta) se quedaban reservados.
+     Ahora se sueltan al vaciarse si pasan de 1 MB, y la tarea, si no le cabe lo recibido, crece en vez de tirarlo
+     (antes, sin memoria, se perdían datos sin avisar). Antes de evaluarlo: de 78 a 96 MB libres.
+  3. Cortado a los 120 s (analizarlo son ~47 s en la RTG emulada y luego monta la aplicación): un script de más de
+     1 MB tiene 20 s más por MB (el de YouTube, ~320 s).
+- Nuevo en el preludio: performance.timing y la entrada de navegación; NodeFilter, createTreeWalker y
+  createNodeIterator; MutationObserver de verdad (antes no avisaba nunca): se envuelven los métodos de C que cambian
+  el árbol (appendChild, insertBefore, removeChild, replaceChild, setAttribute, removeAttribute, innerHTML,
+  textContent, data, nodeValue, id, className); se entrega en una microtarea, una vez por cambio y observador.
+- Después, uno tras otro (cada carga de la portada son ~10 min en la RTG emulada; lo que se pudo, en una página
+  local con el polyfill de YouTube):
+  - MessageChannel y MessagePort (cada puerto entrega al otro en un temporizador a 0).
+  - Todos los elementos comparten aquí un prototipo con lo de cada etiqueta (async de <script>, host de <a>, src,
+    value...): Polymer hace S.prototype.async = function... y ShadyDOM this.host = ... en su ShadowRoot. Ahora un
+    setter (o una de solo leer) del prototipo de los nodos, sobre algo que no es un nodo de verdad
+    (__dashweb_es_nodo, nativo), deja una propiedad normal; y host y las demás partes de la dirección, en un nodo que
+    no es <a> ni <area>, se guardan en él.
+  - <template>: su content es un fragmento con sus hijos (también tras un innerHTML, que lo sustituye; y al
+    clonarlo); document.importNode y adoptNode.
+  - La pila: 1 MB en el navegador (src/dashweb.dash; antes 256 KB, 192 para QuickJS): Polymer pinta sus plantillas en
+    recursión y se desbordaba. QuickJS usa la pila que tenga la tarea, menos 64 KB. Y una sola capa de envoltorio
+    por propiedad.
+  - Range básico (límites, borrar, sacar y clonar en un mismo contenedor, insertNode, createContextualFragment).
+  - El documento con su prototipo (Document.prototype): createElement y los demás eran propiedades suyas y tapaban
+    el parche del polyfill (que da los elementos propios ya mejorados: iron-overlay-backdrop sin prepare()).
+    createHTMLDocument hereda de él (jQuery se rompía).
+- La batería salió 37/109: casi todo TIMEOUT en los lotes sin servidor. No era un cuelgue: el preludio pasó de 90 a
+  111 KB y crear un documento con JavaScript es, en el 68020 de las pruebas, sobre todo analizarlo (5 documentos:
+  167 s antes, 207 después); los lotes se pasaban de su tiempo. Ahora el preludio se compila una vez y su bytecode se
+  guarda (js_evaluar_guardado: JS_WriteObject y JS_ReadObject), en memoria y en T:tachyon_preludio.bc (con el largo
+  y una suma del texto: si cambia, otra vez); los demás motores y los programas que vengan lo leen. 5 documentos:
+  77 s el primer programa (compila), 42 s los siguientes (cuatro veces más rápido que antes). El texto del preludio
+  (2272 líneas juntadas) también se hace una vez. Va bien a todas las páginas y a cada vez que se abre Tachyon.
+  Probado y descartado: compilar el bytecode en el PC (tools/preludio.py) y meterlo en el ejecutable: el 68k lo leía
+  mal y QuickJS abortaba (también en 32 bits; y con JS_READ_OBJ_ROM_DATA, en un big-endian QuickJS da la vuelta a
+  los bytes en el mismo bytecode). Queda de aquello third_party/quickjs/amiga/assert.h: un assert de QuickJS dice
+  cuál falló (antes, solo "abort").
+  De paso, el envoltorio de los setters del prototipo, sin recorrerlo entero al arrancar: los de def() y los de C
+  (_JSDOM_ESTE_PONER) lo hacen ellos.
+- Cómo queda (2026-10-25, máquina RTG ancha, 10 min): la portada llega a "entera" a los 620 s, sin errores del
+  polyfill. Quedan: style de un envoltorio de ShadyDOM (ShadyDOM.wrap da un objeto sin style; alguna detección de
+  YouTube toma otro camino aquí), "not a function" en playerApi y attached (el reproductor), y sobre todo la memoria:
+  46 MB de JavaScript y 8 MB libres al final; luego "out of memory". Aún sin captura de la portada pintada.
+- De paso (45g 8): red_copiar decía "can't send" al no poder escribir el fichero; ahora "can't write" (tr 442).
+- Dash: también la semilla de AmiSSL sin leer $DFF006 (cda58c1; el aviso de MorphOS).
+- En la página de verdad aún faltaba memoria (79 MB libres y el mayor bloque de 62 al evaluarlo). Más ahorros: un
+  script de más de 1 MB se analiza sin guardar su código fuente para toString() (QuickJS copia el texto de cada
+  función, también el de las de dentro: en el PC, de 80 a 64 MB para analizarlo; y sin memoria QuickJS da errores
+  de sintaxis falsos, como el "unexpected end of comment"); un script todo ASCII va a QuickJS sin copiarlo a UTF-8,
+  y los de fuera llegan en ASCII (utf8_a_js_ascii: también lo de Latin-1 como \uXXXX; los de dentro de la página
+  no, que una plantilla en un <script> se lee como texto).
+- El polyfill de componentes: faltaban CDATASection y ProcessingInstruction (y DocumentType, Attr), y copia
+  addEventListener de EventTarget.prototype para buscarlo luego en window y en cada nodo: ahora la cadena de
+  prototipos es la de un navegador (window -> Window.prototype -> EventTarget.prototype; los nodos ->
+  EventTarget.prototype).
+- La batería siguió 37/109 tres veces más, igual. La causa de verdad, con capturas y un programa que mide la
+  memoria entre prueba y prueba: en la A1200 de pruebas (8 MB), el código de una prueba con documento es un solo
+  trozo de 3,9 MB, y tras unas pocas pruebas el mayor bloque libre ya era menor: "not enough memory", el guion de
+  arranque se para ahí y todo el lote sale TIMEOUT. Partían la memoria:
+  0. Lo principal, en Dash: cada programa dejaba abiertas mathieeedoubbas, mathieeedoubtrans, mathieeesingtrans...
+     (las abre libnix para fmod, acos...), que ya no se podían descargar y quedaban en medio. La limpieza de Dash
+     ponía IntuitionBase a NULL, y __exitlibraries de libnix para en el primer 0 de su lista. Arreglado por la sesión
+     "dash" (1a7144e en la rama dashweb). Ya pasaba antes de esta tarea (test_acid2 dejaba 25 KB así).
+  1. build/qjs-lib/libqjs.a estaba compilada de un estado viejo (de los experimentos con el bytecode; run.py no la
+     rehízo porque las fuentes no eran más nuevas): cada programa con JavaScript dejaba 46 KB sin soltar en medio de
+     la memoria (con la de la versión anterior, o rehecha con tools/build_qjs.sh lib, nada). Rehecha.
+  2. T:tachyon_preludio.bc: el fichero de RAM: también se queda en medio. Ahora se guarda solo si el mayor bloque
+     libre pasa de 32 MB; leerlo, siempre. En la A1200 de pruebas no se guarda (dentro de cada programa el bytecode
+     sigue en memoria).
+  Por el camino, la pila de 1 MB pasó de lib/js.dash a solo el navegador. test_recursos: js_simple.js llega con la í
+  como í (38 bytes).
+- Batería: 109/109 (2905 s, Dash 1a7144e).
+- Visto: test_jsdom_mutaciones (nueva); las de js, jsdom, dom, documento, react, idioma y navegar_js.
+

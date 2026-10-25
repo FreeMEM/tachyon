@@ -731,7 +731,7 @@ func _jsdom_traer(direccion: String) -> String
     if t == nil
         return ""
     end
-    return utf8_a_js(t)
+    return utf8_a_js_ascii(t)
 end
 
 # === La parte en C: los objetos JS de los nodos ===
@@ -851,6 +851,10 @@ static JSValue _jsdom_lista(JSContext *ctx, DashArrayLong *l) {
 
 #define _JSDOM_ESTE _Dash_Nodo *n = _jsdom_nodo(ctx, this_val); \
     if (!n) return JS_ThrowTypeError(ctx, "not a node")
+/* en un setter: sobre algo que no es un nodo de verdad (el prototipo de una clase que hereda de HTMLElement, como
+   hace Polymer en YouTube), una propiedad normal suya, como si el setter no estuviera (tarea 38) */
+#define _JSDOM_ESTE_PONER(nombre) _Dash_Nodo *n = _jsdom_nodo(ctx, this_val); \
+    if (!n) { JS_DefinePropertyValueStr(ctx, this_val, nombre, JS_DupValue(ctx, v), JS_PROP_C_W_E); return JS_UNDEFINED; }
 
 static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
@@ -879,7 +883,7 @@ static JSValue _jsdom_textContent(JSContext *ctx, JSValueConst this_val) {
 
 static JSValue _jsdom_set_textContent(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     char *t;
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER("textContent");
     t = _js_texto(ctx, v);
     jsdom_poner_texto(n, (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
@@ -894,7 +898,7 @@ static JSValue _jsdom_innerHTML(JSContext *ctx, JSValueConst this_val) {
 
 static JSValue _jsdom_set_innerHTML(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     char *t;
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER("innerHTML");
     t = _js_texto(ctx, v);
     jsdom_poner_html(n, (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
@@ -912,7 +916,7 @@ static JSValue _jsdom_atr(JSContext *ctx, JSValueConst this_val, int magic) {
 
 static JSValue _jsdom_set_atr(JSContext *ctx, JSValueConst this_val, JSValueConst v, int magic) {
     char *t;
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER((magic == 0 ? "id" : "className"));
     t = _js_texto(ctx, v);
     jsdom_poner_atributo(n, (STRPTR)_jsdom_atr_nombres[magic], (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
@@ -928,7 +932,7 @@ static JSValue _jsdom_value(JSContext *ctx, JSValueConst this_val) {
 
 static JSValue _jsdom_set_value(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     char *t;
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER("value");
     t = _js_texto(ctx, v);
     jsdom_poner_valor(n, (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
@@ -942,7 +946,7 @@ static JSValue _jsdom_checked(JSContext *ctx, JSValueConst this_val) {
 }
 
 static JSValue _jsdom_set_checked(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER("checked");
     if (JS_ToBool(ctx, v)) jsdom_poner_atributo(n, (STRPTR)"checked", (STRPTR)"");
     else jsdom_quitar_atributo(n, (STRPTR)"checked");
     _jsdom_tocado(ctx, n);
@@ -1162,7 +1166,7 @@ static JSValue _jsdom_nodeValue(JSContext *ctx, JSValueConst this_val) {
 }
 
 static JSValue _jsdom_set_nodeValue(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
-    _JSDOM_ESTE;
+    _JSDOM_ESTE_PONER("nodeValue");
     if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO) return JS_UNDEFINED;
     return _jsdom_set_textContent(ctx, this_val, v);
 }
@@ -1404,6 +1408,11 @@ static JSValue _jsdom_galleta(JSContext *ctx, JSValueConst this_val, int argc, J
 }
 
 /* __dashweb_navegar(url, sustituir): location.assign/replace/href = (jsdom_navegar) */
+/* __dashweb_es_nodo(o): ¿un nodo de verdad (o solo algo que hereda de su prototipo, como el de una clase)? */
+static JSValue _jsdom_es_nodo(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    return JS_NewBool(ctx, argc > 0 && JS_GetOpaque(argv[0], _jsdom_clase) != NULL);
+}
+
 static JSValue _jsdom_navegar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char *u = _jsdom_arg(ctx, argc, argv, 0);
     if (u) jsdom_navegar(_jsdom_de(ctx)->doc, (STRPTR)u, argc > 1 && JS_ToBool(ctx, argv[1]));
@@ -1702,6 +1711,7 @@ end
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_navegar", JS_NewCFunction(m->ctx, _jsdom_navegar, "__dashweb_navegar", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_es_nodo", JS_NewCFunction(m->ctx, _jsdom_es_nodo, "__dashweb_es_nodo", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_nuevo", JS_NewCFunction(m->ctx, _jsdom_documento_nuevo, "__dashweb_documento_nuevo", 1));
@@ -1797,6 +1807,8 @@ end
 """
 end
 
+var _jsdom_preludio: String = ""
+
 # navigator.language de las páginas ("es-ES"): lo pone el programa con el idioma de Locale
 var jsdom_idioma: String = "en-US"
 
@@ -1804,7 +1816,11 @@ var jsdom_idioma: String = "en-US"
 func jsdom_preparar(js: Int, doc: Nodo)
     jsdom_motor_dom(js, doc)
     js_evaluar(js, "var __dashweb_idioma = '" + jsdom_idioma + "';", "dashweb")
-    js_evaluar(js, jsdom_preludio_js(), "dashweb")
+    # (el texto, hecho una vez: son 2272 líneas juntadas)
+    if _jsdom_preludio == ""
+        _jsdom_preludio = jsdom_preludio_js()
+    end
+    js_evaluar_guardado(js, _jsdom_preludio, "dashweb")
     if js_error(js) != ""
         Print "JS: " + js_error(js)
     end

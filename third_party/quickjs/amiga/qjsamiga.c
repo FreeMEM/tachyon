@@ -13,6 +13,13 @@
 #include <proto/timer.h>
 #include "quickjs.h"
 
+/* un assert de QuickJS que falla (amiga/assert.h): cuál, y abort */
+void _js_aserto(const char *e, const char *fichero, int linea)
+{
+    printf("assert de QuickJS: %s (%s, línea %d)\n", e, fichero, linea);
+    abort();
+}
+
 #ifndef QJS_STACK
 #define QJS_STACK (256 * 1024)
 #endif

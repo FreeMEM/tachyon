@@ -28,6 +28,9 @@ import "../lib/idioma.dash"
 # del sistema). Los números: 1-99 los de navegador.dashui, 100-299
 # los de este fichero, 300-499 los de las páginas tachyon: de lib/. Se hacen con tools/catalogo.py (ver catalogos/LEEME)
 @catalog "Tachyon.catalog" 1
+# 1 MB de pila: el JavaScript de las webs grandes la necesita (Polymer, en YouTube, se desbordaba con 192 KB; lib/js.dash
+# da a QuickJS la que haya; tarea 38)
+@stack 1048576
 
 
 # Los números de evento del .dashui (los mismos en todas las ventanas: la activa dice de cuál viene)

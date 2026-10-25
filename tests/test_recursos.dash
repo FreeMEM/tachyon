@@ -1,11 +1,12 @@
 # Test: lib/recursos.dash. Las hojas CSS (y sus @import, que se descubren al llegar) y los <script src>
 # de una página se traen a la vez y sin esperar; después el estilo y los scripts usan esos textos sin
-# volver a pedirlos. Un recurso que no existe queda como "".
+# volver a pedirlos. Un recurso que no existe queda como "". Un script llega en ASCII: la í de js_simple.js, como
+# \u00ed (38 bytes; tarea 38).
 # emu-server: http.py 40857
 # memcheck
 # expect-out: faltan al empezar: 3
 # expect-out: traídos: 4
-# expect-out: estilo.css: 37 bytes, imp.css: 20 bytes, js_simple.js: 33 bytes, no.css: []
+# expect-out: estilo.css: 37 bytes, imp.css: 20 bytes, js_simple.js: 38 bytes, no.css: []
 # expect-out: p: teal em: olive
 # expect-out: script traído
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0

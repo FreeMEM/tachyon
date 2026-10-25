@@ -15,6 +15,7 @@ rm -rf "$B"
 mkdir -p "$B/Tachyon/Licencias"
 [ -f "$R/build/qjs-lib/libqjs.a" ] || DASH=$DASH "$R/tools/build_qjs.sh" lib
 [ -f "$R/build/img-lib/libimg.a" ] || "$R/tools/build_img.sh"
+[ -f "$R/build/video-lib/libvideo.a" ] || DASH=$DASH "$R/tools/build_video.sh"
 cd "$DASH"
 # con --fpu, como libqjs, libimg y libvideo (-m68881): mezclar las dos formas rompe los números con decimales que
 # cruzan entre ellas (sin él, las fuentes web no salían: la escala de stb_truetype llegaba en fp0; tarea 40a)

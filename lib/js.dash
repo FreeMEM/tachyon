@@ -32,9 +32,25 @@ void abort(void) {
     _js_decir("dashweb: abort (QuickJS u otra librería de C)\n");
     exit(127);
 }
+/* un assert de QuickJS que falla (third_party/quickjs/amiga/assert.h): cuál, y abort */
+void _js_aserto(const char *e, const char *fichero, int linea) {
+    char b[300];
+    sprintf(b, "dashweb: assert de QuickJS: %.180s (%.60s, línea %d)\n", e, fichero, linea);
+    _js_decir(b);
+    abort();
+}
 
-/* The most memory one page's JavaScript may take */
+/* The most memory one page's JavaScript may take: two thirds of the free memory when its engine is made, but
+   never less than JS_MEMORIA nor more than JS_MEMORIA_MAX (QuickJS needs ~60 MB just to parse YouTube's 10.8 MB
+   script: with 48 it ran out of memory and said "unexpected end of comment"; tarea 38a) */
 #define JS_MEMORIA (48L * 1024 * 1024)
+#define JS_MEMORIA_MAX (256L * 1024 * 1024)
+static size_t _js_memoria_tope(void) {
+    ULONG libre = AvailMem(MEMF_ANY), tope = libre / 3 * 2;
+    if (tope < (ULONG)JS_MEMORIA) tope = JS_MEMORIA;
+    if (tope > (ULONG)JS_MEMORIA_MAX) tope = JS_MEMORIA_MAX;
+    return (size_t)tope;
+}
 typedef struct _JsMotorS {
     JSRuntime *rt;
     JSContext *ctx;
@@ -62,7 +78,10 @@ static ULONG _js_ms(void) {
 }
 /* (each way into the JavaScript calls it: from then on the limit counts) */
 static int _js_avisado = 0;
-static void _js_empieza(void) { _js_desde = _js_ms(); _js_avisado = 0; }
+/* more time for a big script: 20 s per MB past the first (YouTube's 10.8 MB takes ~47 s just to parse in the emulated
+   RTG machine, and then builds its whole app: it was cut at 120 s; tarea 38a) */
+static LONG _js_extra = 0;
+static void _js_empieza(void) { _js_desde = _js_ms(); _js_avisado = 0; _js_extra = 0; }
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
@@ -71,7 +90,7 @@ static int _js_interrumpir(JSRuntime *rt, void *o) {
     if (_js_tope <= 0)
         return 0;
     t = _js_ms() - _js_desde;
-    if (t <= (ULONG)_js_tope * 1000UL)
+    if (t <= (ULONG)(_js_tope + _js_extra) * 1000UL)
         return 0;
     _js_cortado = 1;
     if (!_js_avisado) {
@@ -79,7 +98,7 @@ static int _js_interrumpir(JSRuntime *rt, void *o) {
         JS_SetInterruptCatchable(rt, 1);
         return 1;
     }
-    if (t > (ULONG)_js_tope * 1000UL + 5000UL) {
+    if (t > (ULONG)(_js_tope + _js_extra) * 1000UL + 5000UL) {
         JS_SetInterruptCatchable(rt, 0);
         return 1;
     }
@@ -441,10 +460,18 @@ end
     m->rt = JS_NewRuntime();
 #endif
     if (m->rt) {
-        JS_SetMaxStackSize(m->rt, 192 * 1024);     /* of the 256 KB of @stack */
+        /* the stack the program really has, less 64 KB for the C below QuickJS: 192 KB with the 256 KB of @stack here
+           (the tests, on an A1200 with 8 MB, cannot ask for more: libnix's swapstack waits on a requester when it
+           cannot get it), ~960 KB in the browser, whose @stack is 1 MB (Polymer stamping its templates in YouTube
+           overflowed 192 KB; tarea 38) */
+        {
+            struct Task *yo = FindTask(NULL);
+            ULONG pila = (ULONG)yo->tc_SPUpper - (ULONG)yo->tc_SPLower;
+            JS_SetMaxStackSize(m->rt, pila > 128 * 1024 ? pila - 64 * 1024 : 64 * 1024);
+        }
         /* a page whose JavaScript wants more gets "out of memory" in its script, instead of leaving the whole
            Amiga without memory (Next.js on commodoremalacca.club took the 128 MB of the RTG machine) */
-        JS_SetMemoryLimit(m->rt, JS_MEMORIA);
+        JS_SetMemoryLimit(m->rt, _js_memoria_tope());
         JS_SetHostPromiseRejectionTracker(m->rt, _js_rechazo, NULL);
         JS_SetInterruptHandler(m->rt, _js_interrumpir, NULL);
 #ifdef JS_PERFIL
@@ -475,16 +502,132 @@ end
 """
     _JsMotor *m = (_JsMotor *)js;
     char *fuente, *texto;
+    int copia, grande, quitar = 0;
     JSValue v;
     STRPTR r;
     if (!m) return (STRPTR)"";
     free(m->error);
     m->error = NULL;
-    fuente = _js_utf8(codigo ? (const char *)codigo : "");
+    /* todo ASCII (un script minificado casi siempre): ya es UTF-8, sin copia (el de YouTube son 10,8 MB menos mientras
+       QuickJS lo analiza, que es cuando más memoria pide; tarea 38a) */
+    {
+        const unsigned char *p = (const unsigned char *)(codigo ? (const char *)codigo : "");
+        while (*p && *p < 0x80) p++;
+        copia = *p != 0;
+        fuente = copia ? _js_utf8(codigo ? (const char *)codigo : "") : (char *)(codigo ? (const char *)codigo : "");
+    }
     if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
     _js_empieza();
+    /* un script de más de 1 MB: 20 s más por MB y sin guardar su código fuente para toString() (QuickJS copia el
+       texto de cada función, también el de las de dentro: con el de YouTube, de 10,8 MB, eran ~15 MB más al
+       analizarlo; sin memoria, QuickJS da errores de sintaxis que no son, como "unexpected end of comment") */
+    grande = strlen(fuente) > 1048576;
+    if (grande) {
+        _js_extra = (LONG)(strlen(fuente) / 1048576) * 20;
+        quitar = JS_GetStripInfo(m->rt);
+        JS_SetStripInfo(m->rt, quitar | JS_STRIP_SOURCE);
+    }
     v = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL);
-    free(fuente);
+    if (grande)
+        JS_SetStripInfo(m->rt, quitar);
+    if (copia) free(fuente);
+    _js_trabajos(m->rt);
+    if (JS_IsException(v)) {
+        m->error = _js_excepcion(m->ctx);
+        if (!m->error) m->error = strdup("error");
+        return (STRPTR)"";
+    }
+    texto = _js_texto(m->ctx, v);
+    JS_FreeValue(m->ctx, v);
+    r = _dash_str_dup((STRPTR)(texto ? texto : ""), TRUE);
+    free(texto);
+    return r;
+"""
+end
+
+# Lo mismo para un código que se ejecuta igual en cada motor (el preludio de lib/jsdom_preludio.js, 110 KB): se compila
+# una vez y su bytecode se guarda, en memoria y (si sobra memoria) en T:tachyon_preludio.bc; los demás motores, y los
+# programas que vengan después, lo leen sin analizarlo otra vez (en el 68020 de las pruebas, analizar el preludio era
+# casi todo lo que tardaba en crearse un documento con JavaScript; tarea 38). Si el código cambia, se compila otra vez. (Un
+# bytecode hecho en el PC no lo lee bien el 68k: QuickJS abortaba.)
+@native(borrow) func js_evaluar_guardado(js: Int, codigo: String, nombre: String) -> String
+"""
+    static uint8_t *bc = NULL;
+    static size_t bc_largo = 0, bc_fuente = 0;
+    static ULONG bc_suma = 0;
+    _JsMotor *m = (_JsMotor *)js;
+    const char *t = codigo ? (const char *)codigo : "";
+    size_t n = strlen(t), i;
+    ULONG suma = 5381;
+    JSValue f, v;
+    char *texto;
+    STRPTR r;
+    if (!m) return (STRPTR)"";
+    free(m->error);
+    m->error = NULL;
+    for (i = 0; i < n; i++) suma = suma * 33 + (unsigned char)t[i];
+    /* el de otra vez, de T: (cabecera: "TPBC", largo del texto, su suma y largo del bytecode) */
+    if (!bc || bc_fuente != n || bc_suma != suma) {
+        BPTR f2 = Open((STRPTR)"T:tachyon_preludio.bc", MODE_OLDFILE);
+        if (f2) {
+            ULONG cab[4];
+            if (Read(f2, cab, sizeof(cab)) == sizeof(cab) && cab[0] == 0x54504243UL && cab[1] == n && cab[2] == suma && cab[3] > 0 && cab[3] < 4000000UL) {
+                uint8_t *nb = (uint8_t *)malloc(cab[3]);
+                if (nb && Read(f2, nb, cab[3]) == (LONG)cab[3]) { free(bc); bc = nb; bc_largo = cab[3]; bc_fuente = n; bc_suma = suma; }
+                else free(nb);
+            }
+            Close(f2);
+        }
+    }
+    if (!bc || bc_fuente != n || bc_suma != suma) {
+        char *fuente = _js_utf8(t);
+        uint8_t *b;
+        size_t largo;
+        if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+        _js_empieza();
+        f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+        free(fuente);
+        if (JS_IsException(f)) {
+            m->error = _js_excepcion(m->ctx);
+            if (!m->error) m->error = strdup("error");
+            return (STRPTR)"";
+        }
+        b = JS_WriteObject(m->ctx, &largo, f, JS_WRITE_OBJ_BYTECODE);
+        JS_FreeValue(m->ctx, f);
+        if (b) {
+            free(bc);
+            bc = (uint8_t *)malloc(largo);
+            if (bc) {
+                BPTR f2;
+                memcpy(bc, b, largo); bc_largo = largo; bc_fuente = n; bc_suma = suma;
+                /* para los programas que vengan (a un nombre aparte y luego al de verdad: dos Tachyon a la vez); solo
+                   con memoria de sobra: el fichero de RAM: se queda en medio de la memoria libre y la parte, y en una
+                   máquina de 8 MB el siguiente programa grande ya no cabía ("not enough memory") */
+                f2 = AvailMem(MEMF_ANY | MEMF_LARGEST) > 32UL * 1024 * 1024
+                     ? Open((STRPTR)"T:tachyon_preludio.bc.nuevo", MODE_NEWFILE) : 0;
+                if (f2) {
+                    ULONG cab[4];
+                    LONG bien;
+                    cab[0] = 0x54504243UL; cab[1] = n; cab[2] = suma; cab[3] = largo;
+                    bien = Write(f2, cab, sizeof(cab)) == sizeof(cab) && Write(f2, bc, largo) == (LONG)largo;
+                    Close(f2);
+                    DeleteFile((STRPTR)"T:tachyon_preludio.bc");
+                    if (!bien || !Rename((STRPTR)"T:tachyon_preludio.bc.nuevo", (STRPTR)"T:tachyon_preludio.bc"))
+                        DeleteFile((STRPTR)"T:tachyon_preludio.bc.nuevo");
+                }
+            }
+            js_free(m->ctx, b);
+        }
+        if (!bc) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+    }
+    _js_empieza();
+    f = JS_ReadObject(m->ctx, bc, bc_largo, JS_READ_OBJ_BYTECODE);
+    if (JS_IsException(f)) {
+        m->error = _js_excepcion(m->ctx);
+        if (!m->error) m->error = strdup("error");
+        return (STRPTR)"";
+    }
+    v = JS_EvalFunction(m->ctx, f);
     _js_trabajos(m->rt);
     if (JS_IsException(v)) {
         m->error = _js_excepcion(m->ctx);
@@ -533,7 +676,7 @@ end
 """
 end
 
-# Otro tope de memoria para el JavaScript de este motor (por omisión JS_MEMORIA, 48 MB): pasado, sus scripts
+# Otro tope de memoria para el JavaScript de este motor (por omisión dos tercios de la memoria libre, de 48 a 256 MB): pasado, sus scripts
 # reciben "out of memory"
 @native func js_limite(js: Int, bytes: Int)
 """

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (24.10.2026)
+## version $VER: Tachyon.catalog 1.0 (25.10.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -560,6 +560,9 @@ tidsgränsen nåddes vid TLS-förhandling
 MSG_441
 tidsgränsen nåddes vid sökning efter servern
 ; timed out looking up the server
+MSG_442
+kan inte skriva filen
+; can't write the file
 MSG_450
 vet inte var Tachyon ligger
 ; can't tell where Tachyon is

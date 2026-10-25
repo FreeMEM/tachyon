@@ -140,6 +140,9 @@ Nuova scheda
 MSG_46
 Chiudi scheda
 ; Close tab
+MSG_47
+Invia rapporto di debug...
+; Send debug report...
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ impossibile mettere da parte il Tachyon attuale
 MSG_461
 impossibile mettere al suo posto il nuovo
 ; can't put the new one in place
+MSG_471
+Rapporto di debug
+; Debug report
+MSG_472
+Se Tachyon fa qualcosa di sbagliato, questo rapporto aiuta a capire perché. Non viene inviato nulla finché non premi il pulsante. Contiene le versioni di Tachyon e del sistema, la memoria e le ultime cose annotate da Tachyon: le pagine aperte (senza quello che segue il ? nel loro indirizzo) e i messaggi del loro JavaScript. Niente cookie, password o testo scritto nei moduli.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Invia il rapporto
+; Send the report
+MSG_474
+Riceverai un codice: scrivilo nella segnalazione che apri su %1, e racconta cosa stavi facendo e cosa è successo.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Questo è tutto ciò che verrà inviato:
+; This is everything that will be sent:

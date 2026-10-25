@@ -7,8 +7,9 @@
 #   end
 #   js_liberar(js)
 #
-# console.log (y error, warn, info) escribe en la salida del programa. Los textos de Dash son
-# Latin-1 y los de QuickJS UTF-8: se convierten al entrar y al salir ("?" lo que no cabe).
+# console.log (y error, warn, info) escribe en la salida del programa y en el registro de depuración
+# (registro_anotar, registro_texto). Los textos de Dash son Latin-1 y los de QuickJS UTF-8: se convierten al
+# entrar y al salir ("?" lo que no cabe).
 # QuickJS pide mucha pila: el programa que importa este módulo arranca con 256 KB.
 
 @link "../build/qjs-lib/libqjs.a"
@@ -21,7 +22,22 @@
 
 /* QuickJS stops with assert() and abort() when something is broken inside: say so in the output (libnix only
    writes "Program aborted", and its assert goes to stderr, which nobody sees) before leaving with 127 */
-static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); }
+/* El registro de depuración (tarea 54): las últimas líneas de lo que el programa dice de las páginas (console.log,
+   los errores de JavaScript, lo que anota registro_anotar), en una cola circular de 32 KB; registro_texto lo da para
+   el informe que el usuario manda desde Tachyon (lib/informe.dash) */
+#define _REG_TAM 32768
+static char _reg[_REG_TAM];
+static int _reg_fin = 0, _reg_lleno = 0;
+static void _registro(const char *t) {
+    for (; t && *t; t++) {
+        unsigned char c = (unsigned char)*t;
+        _reg[_reg_fin++] = (c < 32 && c != 10 && c != 9) ? ' ' : (char)c;
+        if (_reg_fin == _REG_TAM) { _reg_fin = 0; _reg_lleno = 1; }
+    }
+}
+static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); }
+/* a la salida y al registro */
+static void _js_poner(const char *t) { PutStr((CONST_STRPTR)t); _registro(t); }
 __stdargs void __assert_func(const char *f, int l, const char *fn, const char *e) {
     char b[200];
     sprintf(b, "dashweb: assert de QuickJS en %.60s:%d (%.40s): %.60s\n", f ? f : "?", l, fn ? fn : "?", e ? e : "?");
@@ -314,20 +330,20 @@ static JSValue _js_console_log(JSContext *ctx, JSValueConst this_val, int argc, 
     int i;
     for (i = 0; i < argc; i++) {
         char *s = _js_texto(ctx, argv[i]);
-        if (i) PutStr((CONST_STRPTR)" ");
-        PutStr((CONST_STRPTR)(s ? s : "?"));
+        if (i) _js_poner(" ");
+        _js_poner(s ? s : "?");
         free(s);
         /* an error, with where it happened (React and Next.js report theirs with console.error) */
         if (JS_IsError(ctx, argv[i])) {
             JSValue pila = JS_GetPropertyStr(ctx, argv[i], "stack");
             char *l = JS_IsUndefined(pila) ? NULL : _js_texto(ctx, pila), *p;
             for (p = l; p && *p; p++) if (*p == '\n') *p = ' ';
-            if (l && *l) { PutStr((CONST_STRPTR)" |"); PutStr((CONST_STRPTR)l); }
+            if (l && *l) { _js_poner(" |"); _js_poner(l); }
             free(l);
             JS_FreeValue(ctx, pila);
         }
     }
-    PutStr((CONST_STRPTR)"\n");
+    _js_poner("\n");
     return JS_UNDEFINED;
 }
 
@@ -650,6 +666,40 @@ end
 end
 
 # ¿Se cortó algún script por pasar de js_tope segundos desde la última vez que se preguntó? (tarea 40c)
+# Al registro de depuración (lo de arriba, _registro): una línea, sin escribirla en la salida
+@native(borrow) func registro_anotar(texto: String)
+"""
+    _registro((const char *)texto);
+    _registro("\n");
+"""
+end
+
+# A la salida y al registro
+func registro_decir(texto: String)
+    Print texto
+    registro_anotar(texto)
+end
+
+# Lo que hay en el registro, de lo más antiguo a lo último (sin la primera línea, a medias, si ya dio la vuelta)
+@native(borrow) func registro_texto() -> String
+"""
+    static char *salida = NULL;
+    int n = _reg_lleno ? _REG_TAM : _reg_fin, i = 0;
+    free(salida);
+    salida = (char *)malloc(n + 1);
+    if (!salida) return (STRPTR)"";
+    if (_reg_lleno) {
+        memcpy(salida, _reg + _reg_fin, _REG_TAM - _reg_fin);
+        memcpy(salida + (_REG_TAM - _reg_fin), _reg, _reg_fin);
+        while (i < n && salida[i] != '\n') i++;
+        if (i < n) i++;
+    } else
+        memcpy(salida, _reg, n);
+    salida[n] = 0;
+    return (STRPTR)(salida + i);
+"""
+end
+
 @native func js_cortado() -> Bool
 """
     int r = _js_cortado;

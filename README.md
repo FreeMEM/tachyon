@@ -12,7 +12,9 @@ performance to grow.
 
 **Download:** test release
 [v0.7.3-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.3-alfa) (`tachyon.lha`). It is an alpha:
-it may freeze on some pages.
+it may freeze on some pages. If something goes wrong, *Project → Send debug report...* sends what Tachyon
+noted down (you see it all first) and gives you a code to put in the
+[issue](https://github.com/FreeMEM/tachyon/issues).
 
 ## Status
 

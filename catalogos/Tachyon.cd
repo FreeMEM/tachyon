@@ -92,6 +92,8 @@ MSG_45 (45//)
 New tab
 MSG_46 (46//)
 Close tab
+MSG_47 (47//)
+Send debug report...
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -398,3 +400,13 @@ MSG_460 (460//)
 can't move the current Tachyon aside
 MSG_461 (461//)
 can't put the new one in place
+MSG_471 (471//)
+Debug report
+MSG_472 (472//)
+If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473 (473//)
+Send the report
+MSG_474 (474//)
+You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475 (475//)
+This is everything that will be sent:

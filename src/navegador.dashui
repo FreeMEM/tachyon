@@ -52,6 +52,11 @@
               "tr": 5
             },
             {
+              "label": "Send debug report...",
+              "event": 30,
+              "tr": 47
+            },
+            {
               "separator": true
             },
             {

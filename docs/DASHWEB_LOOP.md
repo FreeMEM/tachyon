@@ -512,13 +512,15 @@ tarea, con el estilo de Dash.
       salida: Traspaso:Tachyon/Tachyon https://tachyon.freemem.space/ >Traspaso:salida.txt. Hasta entenderlo, sin
       versión nueva (sería un paso atrás en su sistema).
       Hecho (2026-10-24; ver la bitácora): la FPU empezaba en precisión simple.
-- [ ] 54. **Enviar un informe de depuración (usuario, 2026-10-25: "para mañana", la primera).** Que un usuario,
+- [x] 54. **Enviar un informe de depuración (usuario, 2026-10-25: "para mañana", la primera; luego "haz ya la tarea 54
+      y crea una release con eso").** Que un usuario,
       cuando algo le falla, pueda mandar desde Tachyon los registros de depuración a un servidor nuestro, para abrir
       una incidencia con ellos. Pensar antes de hacer: qué se guarda (errores de JavaScript, de red, la dirección,
       memoria, versión, sistema, MUI, CPU), cuánto (un registro circular en memoria o en T:), cómo lo pide el usuario
       (un menú "Enviar informe..." que enseña lo que se va a mandar y pide permiso; nada sin que lo pida), a dónde
       (un servidor propio con HTTPS; ¿o crear la issue en GitHub?), qué devuelve (un código para citarlo en la
       issue) y la privacidad (sin cookies ni contraseñas ni lo escrito en formularios; direcciones, solo si quiere).
+      Hecho (2026-10-25; ver la bitácora).
 - [~] 38. **youtube.com (usuario, 2026-10-20; 2026-10-24: "sería un puntazo", la siguiente).** Que la portada y la
       página de un vídeo de https://www.youtube.com funcionen bien (hoy los vídeos de YouTube incrustados ya se ven,
       tarea 30). Empezar como la 37a: cómo sale, errores, memoria, y partirla en subtareas.
@@ -4823,3 +4825,29 @@ Formato:
 - El ejecutable publicado lleva el arreglo de Dash 1a7144e, que de momento solo está en la rama dashweb local (la
   sesión "dash" lo lleva a main con su PR #57).
 - El loop se para aquí (lo pidió el usuario). Lo siguiente: 38c (YouTube pintada) y después la 53.
+
+### 2026-10-25 — Tarea 54: enviar un informe de depuración
+- Menú Proyecto, "Send debug report..." (tr 47): abre tachyon:informe, una página propia (como tachyon:cookies) que
+  dice qué es, lleva el botón "Send the report" y enseña entero lo que se va a mandar. Nada sale sin el botón.
+- El informe (lib/informe.dash): la versión de Tachyon; exec, Workbench (version.library), CPU y FPU, MUI, la
+  tarjeta gráfica (Picasso96 o CyberGraphX), bsdsocket.library, AmiSSL; la memoria (chip, fast, mayor bloque); el
+  idioma; la última página; y el registro.
+- El registro (lib/js.dash): una cola circular de 32 KB en C con lo que el programa dice de las páginas: console.log
+  y los errores de JavaScript (todo pasa por _js_poner), los avisos de jsdom (registro_decir) y lo que anota el
+  navegador con registro_anotar: cada página que se abre, la que acaba (tiempo y memoria), los errores de carga y el
+  script cortado. Las direcciones van sin lo que sigue a "?" ni a "#", y sin usuario y contraseña
+  (informe_sin_parametros). Ni cookies ni lo escrito en formularios.
+- El botón va a tachyon:informe?enviar=1, que manda por POST (abrir_post) el campo informe a
+  https://tachyon.freemem.space/informe; la respuesta es una página con el código (seis letras y cifras sin 0/O ni
+  1/I) y el enlace a las issues, en castellano o en inglés según Accept-Language.
+- El receptor, en el servidor de las webs (CT 108, FreeMEM/webs-freemem 87ae063):
+  herramientas/servidor/tachyon_informes.py, solo biblioteca de Python, servicio tachyon-informes con DynamicUser;
+  guarda /var/lib/tachyon-informes/<día>/<código>.txt sin la IP. nginx (desplegar.py, INFORMES) le pasa /informe
+  con 512 KB como mucho y 6 por minuto por IP; el receptor, 500 al día y 500 MB de disco libres. Leer uno:
+  ssh webs cat /var/lib/tachyon-informes/*/<código>.txt.
+- Textos 47 y 471-475 en los nueve catálogos.
+- Visto: test_informe (nueva: direcciones, registro con console.log y anotaciones, la vuelta de la cola, el informe y
+  la página); en la máquina RTG ancha con MUI 3.8, tachyon:informe y tachyon:informe?enviar=1: el servidor contestó
+  con su código y el informe llegó (borrado después, como los de prueba desde el PC).
+
+- Batería: 110/110 (2926 s).

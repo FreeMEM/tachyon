@@ -12,7 +12,9 @@ lenguaje, sus librerías y su rendimiento.
 
 **Descarga:** versión de prueba
 [v0.7.3-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.3-alfa) (`tachyon.lha`). Es una alfa:
-puede pararse en algunas páginas.
+puede pararse en algunas páginas. Si algo va mal, *Proyecto → Enviar informe de depuración...* manda lo que
+Tachyon ha apuntado (lo ves entero antes) y te da un código para ponerlo en la
+[incidencia](https://github.com/FreeMEM/tachyon/issues).
 
 ## Estado
 

@@ -140,6 +140,9 @@ Ny flik
 MSG_46
 Stäng flik
 ; Close tab
+MSG_47
+Skicka felsökningsrapport...
+; Send debug report...
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ kan inte flytta undan nuvarande Tachyon
 MSG_461
 kan inte sätta den nya på plats
 ; can't put the new one in place
+MSG_471
+Felsökningsrapport
+; Debug report
+MSG_472
+Om Tachyon gör något fel hjälper den här rapporten att ta reda på varför. Inget skickas förrän du trycker på knappen. Den innehåller versionerna av Tachyon och systemet, minnet och det Tachyon senast har antecknat: de sidor du öppnat (utan det som kommer efter ? i adressen) och vad deras JavaScript sa. Inga kakor, lösenord eller något som skrivits i formulär.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Skicka rapporten
+; Send the report
+MSG_474
+Du får en kod: ange den i ärendet du öppnar på %1, och berätta vad du gjorde och vad som hände.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Det här är allt som skickas:
+; This is everything that will be sent:

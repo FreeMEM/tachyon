@@ -690,7 +690,7 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
             var ninguno: Nodo = nil
             jsdom_script_actual = ninguno
             if js_error(js) != ""
-                Print "JS: " + str_replace(js_error(js), "\n    ", " | ")
+                registro_decir("JS: " + str_replace(js_error(js), "\n    ", " | "))
             end
             hechos = hechos + 1
         end
@@ -700,7 +700,7 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
     # con QuickJS y dashweb compilados con -DJS_PERFIL, el perfil del JavaScript de la página (si no, nada)
     js_perfil_volcar(js, 40)
     if js_error(js) != ""
-        Print "JS: " + str_replace(js_error(js), "\n    ", " | ")
+        registro_decir("JS: " + str_replace(js_error(js), "\n    ", " | "))
     end
     return hechos
 end
@@ -1437,9 +1437,9 @@ static JSValue _jsdom_llamar(JSContext *ctx, const char *name, int argc, JSValue
     if (JS_IsException(r)) {
         char *e = _js_excepcion(ctx), *p;
         for (p = e; p && *p; p++) if (*p == '\n') *p = ' ';
-        PutStr((CONST_STRPTR)"JS: ");
-        PutStr((CONST_STRPTR)(e ? e : "error"));
-        PutStr((CONST_STRPTR)"\n");
+        _js_poner("JS: ");
+        _js_poner(e ? e : "error");
+        _js_poner("\n");
         free(e);
         return JS_UNDEFINED;
     }
@@ -1822,7 +1822,7 @@ func jsdom_preparar(js: Int, doc: Nodo)
     end
     js_evaluar_guardado(js, _jsdom_preludio, "dashweb")
     if js_error(js) != ""
-        Print "JS: " + js_error(js)
+        registro_decir("JS: " + js_error(js))
     end
 end
 

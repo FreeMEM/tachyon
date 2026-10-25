@@ -19,6 +19,7 @@ import "../lib/actualizar.dash"
 import "../lib/buscadores.dash"
 import "../lib/descargas.dash"
 import "../lib/idioma.dash"
+import "../lib/informe.dash"
 
 # desde el icono del Workbench, lo que escribe (console.log de las páginas, «entera en») no abre una consola
 @workbench_output "NIL:"
@@ -59,6 +60,7 @@ const ID_ESTRELLA = 26
 const ID_CANDADO = 27
 const ID_BUSCADORES = 28
 const ID_DESCARGAS = 29
+const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuración (tarea 54)
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
@@ -146,6 +148,9 @@ end
 var dw_poca_memoria: Int = 4096
 
 var dw_ventanas: [Ventana] = []
+# El informe de depuración (tarea 54): el que enseña tachyon:informe (se manda ese) y la última página que se abrió
+var dw_informe: String = ""
+var dw_ultima_pagina: String = ""
 # DIBUJOS=y0-y1 (argumento): los dibujos de la página entre esas alturas, por la salida al acabar (-1: no)
 var dw_dibujos_y0: Int = -1
 var dw_dibujos_y1: Int = -1
@@ -745,6 +750,10 @@ func abrir(w: Ventana, direccion: String)
         direccion = resultados
         mui_set_text(w.v.url, direccion)
     end
+    if not str_starts(direccion, "tachyon:")
+        registro_anotar("open " + informe_sin_parametros(direccion))
+        dw_ultima_pagina = direccion
+    end
     if str_starts(direccion, "http://") or str_starts(direccion, "https://")
         dw_estado(w, hueco(tr(104, "Connecting to %1..."), direccion))
         mui_set_value(w.v.progreso, 5)
@@ -803,6 +812,17 @@ func abrir(w: Ventana, direccion: String)
             cookies_guardar(FICHERO_COOKIES)
         end
         d = documento_html("tachyon:cookies", cookies_html())
+    elif str_starts(direccion, "tachyon:informe")
+        # tachyon:informe?enviar=1: el botón de la página; manda lo que la página enseñaba
+        if str_starts(direccion, "tachyon:informe?enviar")
+            if dw_informe == ""
+                dw_informe = informe_texto(DASHWEB_VERSION, http_idiomas, dw_ultima_pagina)
+            end
+            abrir_post(w, INFORME_DIRECCION, "informe=" + url_codificar(dw_informe))
+            return
+        end
+        dw_informe = informe_texto(DASHWEB_VERSION, http_idiomas, dw_ultima_pagina)
+        d = documento_html("tachyon:informe", informe_html(dw_informe))
     else
         d = documento_abrir(direccion)
     end
@@ -1042,6 +1062,7 @@ func mostrar(w: Ventana, d: Documento, direccion: String)
     ajustar_barra(w)
     if w.actual.error != ""
         dw_estado(w, hueco(tr(115, "Error: %1"), w.actual.error))
+        registro_anotar("error " + informe_sin_parametros(w.actual.direccion) + ": " + w.actual.error)
     else
         dw_estado(w, hueco2(tr(116, "Ready: %1 bytes in %2 ms"), "" + w.actual.bytes, "" + w.actual.ms))
     end
@@ -1329,6 +1350,7 @@ func tic(w: Ventana)
     if js_cortado()
         dw_estado(w, tr(117, "A script on the page took too long: stopped"))
         Print "tachyon: un script de la página pasaba de 120 s y se cortó"
+        registro_anotar("a script took more than 120 s: stopped")
     end
     if w.actual != nil and documento_imagenes(w.actual) and documento_imagenes_visibles(w.actual, w.desde, estilo_vh)
         ajustar_barra(w)
@@ -1366,6 +1388,7 @@ func tic(w: Ventana)
             cajas_volcar(w.actual.doc, 0)
         end
         Print "tachyon: " + w.actual.direccion + " entera en " + (time_ms() - w.empezada) + " ms; memoria libre " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB, " + imagenes_kb(w.actual.im) + ")"
+        registro_anotar("complete " + informe_sin_parametros(w.actual.direccion) + " in " + (time_ms() - w.empezada) + " ms; free memory " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB)")
     end
     if w.aviso_scroll
         avisar_desplazamiento(w)
@@ -2209,6 +2232,9 @@ Main
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")
+            end
+            if ev == ID_INFORME
+                navegar(w, "tachyon:informe")
             end
             if ev == ID_BUSCADORES
                 navegar(w, "tachyon:buscadores")

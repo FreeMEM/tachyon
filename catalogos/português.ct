@@ -140,6 +140,9 @@ Novo separador
 MSG_46
 Fechar separador
 ; Close tab
+MSG_47
+Enviar relatório de depuração...
+; Send debug report...
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ não é possível pôr de lado o Tachyon atual
 MSG_461
 não é possível pôr o novo no lugar
 ; can't put the new one in place
+MSG_471
+Relatório de depuração
+; Debug report
+MSG_472
+Se o Tachyon fizer algo errado, este relatório ajuda a perceber porquê. Nada é enviado até carregar no botão. Leva as versões do Tachyon e do sistema, a memória e o que o Tachyon anotou por último: as páginas abertas (sem o que vem depois do ? no endereço) e as mensagens do seu JavaScript. Sem cookies, palavras-passe nem o que foi escrito em formulários.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Enviar o relatório
+; Send the report
+MSG_474
+Vai receber um código: indique-o no pedido que abrir em %1, e diga o que estava a fazer e o que aconteceu.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Isto é tudo o que será enviado:
+; This is everything that will be sent:

@@ -11,7 +11,7 @@ It is also Dash's testbed: a large, demanding program that forces the language, 
 performance to grow.
 
 **Download:** test release
-[v0.7.2-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.2-alfa) (`tachyon.lha`). It is an alpha:
+[v0.7.3-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.3-alfa) (`tachyon.lha`). It is an alpha:
 it may freeze on some pages.
 
 ## Status

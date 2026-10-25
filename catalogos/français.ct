@@ -140,6 +140,9 @@ Nouvel onglet
 MSG_46
 Fermer l'onglet
 ; Close tab
+MSG_47
+Envoyer un rapport de débogage...
+; Send debug report...
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ impossible de mettre de côté le Tachyon actuel
 MSG_461
 impossible de mettre le nouveau en place
 ; can't put the new one in place
+MSG_471
+Rapport de débogage
+; Debug report
+MSG_472
+Si Tachyon fait quelque chose de travers, ce rapport aide à comprendre pourquoi. Rien n'est envoyé avant que vous appuyiez sur le bouton. Il contient les versions de Tachyon et du système, la mémoire et les dernières choses notées par Tachyon : les pages ouvertes (sans ce qui suit le ? de leur adresse) et les messages de leur JavaScript. Ni cookies, ni mots de passe, ni ce qui a été saisi dans les formulaires.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Envoyer le rapport
+; Send the report
+MSG_474
+Vous recevrez un code : indiquez-le dans le ticket que vous ouvrirez sur %1, et dites ce que vous faisiez et ce qui s'est passé.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Voici tout ce qui sera envoyé :
+; This is everything that will be sent:

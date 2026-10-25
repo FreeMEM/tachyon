@@ -140,6 +140,9 @@ Nieuw tabblad
 MSG_46
 Tabblad sluiten
 ; Close tab
+MSG_47
+Foutrapport versturen...
+; Send debug report...
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ kan de huidige Tachyon niet opzijzetten
 MSG_461
 kan de nieuwe niet op zijn plaats zetten
 ; can't put the new one in place
+MSG_471
+Foutrapport
+; Debug report
+MSG_472
+Als Tachyon iets verkeerd doet, helpt dit rapport om uit te zoeken waarom. Er wordt niets verstuurd voordat je op de knop drukt. Het bevat de versies van Tachyon en van het systeem, het geheugen en wat Tachyon het laatst heeft genoteerd: de geopende pagina's (zonder wat na het ? in het adres komt) en de meldingen van hun JavaScript. Geen cookies, wachtwoorden of wat in formulieren is ingevuld.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Rapport versturen
+; Send the report
+MSG_474
+Je krijgt een code: zet die in de issue die je opent op %1, en vertel wat je deed en wat er gebeurde.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Dit is alles wat verstuurd wordt:
+; This is everything that will be sent:

@@ -140,6 +140,9 @@ Neuer Tab
 MSG_46
 Tab schließen
 ; Close tab
+MSG_47
+Fehlerbericht senden...
+; Send debug report...
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ das aktuelle Tachyon lässt sich nicht beiseitelegen
 MSG_461
 das neue lässt sich nicht einsetzen
 ; can't put the new one in place
+MSG_471
+Fehlerbericht
+; Debug report
+MSG_472
+Wenn Tachyon etwas falsch macht, hilft dieser Bericht, den Grund zu finden. Es wird nichts gesendet, bevor du auf den Knopf drückst. Er enthält die Versionen von Tachyon und des Systems, den Speicher und das, was Tachyon zuletzt notiert hat: die geöffneten Seiten (ohne den Teil nach dem ? in der Adresse) und die Meldungen ihres JavaScripts. Keine Cookies, keine Passwörter und nichts, was in Formulare eingegeben wurde.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Bericht senden
+; Send the report
+MSG_474
+Du bekommst einen Code: Gib ihn in dem Issue an, das du unter %1 öffnest, und beschreibe, was du gemacht hast und was passiert ist.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Das ist alles, was gesendet wird:
+; This is everything that will be sent:

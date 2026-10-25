@@ -140,6 +140,9 @@ Nueva pestaña
 MSG_46
 Cerrar pestaña
 ; Close tab
+MSG_47
+Enviar informe de depuración...
+; Send debug report...
 MSG_100
 Esta página no se guarda en marcadores
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ no se puede apartar el Tachyon de ahora
 MSG_461
 no se puede poner el nuevo
 ; can't put the new one in place
+MSG_471
+Informe de depuración
+; Debug report
+MSG_472
+Si Tachyon hace algo mal, este informe ayuda a saber por qué. No se manda nada hasta que pulses el botón. Lleva las versiones de Tachyon y del sistema, la memoria y lo último que Tachyon ha apuntado: las páginas que abriste (sin lo que va tras el ? de su dirección) y lo que dijo su JavaScript. Ni cookies, ni contraseñas, ni lo escrito en formularios.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Enviar el informe
+; Send the report
+MSG_474
+Te saldrá un código: ponlo en la incidencia que abras en %1, y di qué hacías y qué pasó.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Esto es todo lo que se enviará:
+; This is everything that will be sent:

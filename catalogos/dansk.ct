@@ -140,6 +140,9 @@ Ny fane
 MSG_46
 Luk fane
 ; Close tab
+MSG_47
+Send fejlrapport...
+; Send debug report...
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -599,3 +602,18 @@ kan ikke flytte den nuværende Tachyon til side
 MSG_461
 kan ikke sætte den nye på plads
 ; can't put the new one in place
+MSG_471
+Fejlrapport
+; Debug report
+MSG_472
+Hvis Tachyon gør noget forkert, hjælper denne rapport med at finde ud af hvorfor. Intet sendes, før du trykker på knappen. Den indeholder versionerne af Tachyon og systemet, hukommelsen og det, Tachyon sidst har noteret: de sider, du har åbnet (uden det, der kommer efter ? i adressen), og hvad deres JavaScript sagde. Ingen cookies, adgangskoder eller noget, der er skrevet i formularer.
+; If Tachyon does something wrong, this report helps to find out why. Nothing is sent until you press the button. It carries the versions of Tachyon and of the system, the memory, and the last things Tachyon noted down: the pages you opened (without what comes after ? in their address) and what their JavaScript said. No cookies, passwords or anything typed in forms.
+MSG_473
+Send rapporten
+; Send the report
+MSG_474
+Du får en kode: skriv den i den sag, du opretter på %1, og fortæl, hvad du lavede, og hvad der skete.
+; You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
+MSG_475
+Dette er alt, hvad der bliver sendt:
+; This is everything that will be sent:

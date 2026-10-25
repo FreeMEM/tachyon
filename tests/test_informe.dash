@@ -1,0 +1,36 @@
+# Test: lib/informe.dash y el registro de lib/js.dash (tarea 54). Las direcciones sin lo que puede llevar datos (tras
+# "?" y "#", y usuario y contraseña); el registro guarda console.log, los errores y registro_anotar, sin escribir en
+# la salida lo anotado; al pasar de 32 KB da la vuelta y se queda con lo último, desde una línea entera; el informe
+# lleva las versiones, la memoria, la última página y el registro; la página lo enseña escapado y con el botón.
+# expect-out: https://ejemplo.com/a/b?... | https://ejemplo.com/a | http://ejemplo.com:8080/ | file:///Work/a.html
+# expect-out: hola desde la página 7
+# expect-out: registro: true true true false
+# expect-out: vuelta: true true true
+# expect-out: informe: true true true true true
+# expect-out: página: true true true
+
+import "../lib/informe.dash"
+
+Main
+    a = informe_sin_parametros("https://ejemplo.com/a/b?token=secreto&x=1#arriba")
+    b = informe_sin_parametros("https://ejemplo.com/a#x?y")
+    c = informe_sin_parametros("http://yo:clave@ejemplo.com:8080/")
+    d = informe_sin_parametros("file:///Work/a.html")
+    Print a + " | " + b + " | " + c + " | " + d
+    js = js_nuevo()
+    js_evaluar(js, "console.log('hola desde la página', 7)", "p.js")
+    registro_anotar("open https://ejemplo.com/")
+    r = registro_texto()
+    Print "registro: " + (str_find(r, "hola desde la página 7\n") >= 0) + " " + (str_find(r, "open https://ejemplo.com/\n") >= 0) + " " + (str_find(r, "hola") < str_find(r, "open")) + " " + (str_find(r, "secreto") >= 0)
+    # más de 32 KB: queda lo último, empezando en una línea entera
+    for i in (1..800)
+        registro_anotar("línea de relleno número " + i + " para que el registro dé la vuelta")
+    end
+    r = registro_texto()
+    Print "vuelta: " + (r.length <= 32768 and r.length > 30000) + " " + (str_find(r, "número 800 para") >= 0) + " " + str_starts(r, "línea de relleno")
+    t = informe_texto("9.9-prueba", "es-ES", "https://ejemplo.com/x?q=1")
+    Print "informe: " + str_starts(t, "Tachyon 9.9-prueba\nSystem: exec ") + " " + (str_find(t, "\nMemory: chip ") >= 0) + " " + (str_find(t, "\nLanguage: es-ES\n") >= 0) + " " + (str_find(t, "\nLast page: https://ejemplo.com/x?...\n") >= 0) + " " + (str_find(t, "\n--- log ---\n") >= 0)
+    h = informe_html("a <b> & c")
+    Print "página: " + (str_find(h, "a &lt;b&gt; &amp; c") >= 0) + " " + (str_find(h, "action=\"tachyon:informe\"") >= 0) + " " + (str_find(h, "name=enviar") >= 0)
+    js_liberar(js)
+end

@@ -1,120 +1,122 @@
 # Tachyon
 
-(Antes **dashweb**: el nombre cambió el 2026-10-21 porque ya había un navegador "Dash Web".)
+*English | [Castellano](README.es.md)*
 
-Navegador web para **Commodore Amiga**, escrito en [Dash](https://github.com/FreeMEM/dash) con
-interfaz **MUI** (3.8 o 5): XHTML, CSS, JavaScript moderno y HTTPS.
+(Formerly **dashweb**: the name changed on 2026-10-21 because there was already a browser called "Dash Web".)
 
-Es también el banco de pruebas de Dash: un programa grande y exigente que obliga a hacer crecer el
-lenguaje, sus librerías y su rendimiento.
+Web browser for the **Commodore Amiga**, written in [Dash](https://github.com/FreeMEM/dash) with an
+**MUI** (3.8 or 5) interface: XHTML, CSS, modern JavaScript and HTTPS.
 
-**Descarga:** versión de prueba
-[v0.7.2-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.2-alfa) (`tachyon.lha`). Es una alfa:
-puede pararse en algunas páginas.
+It is also Dash's testbed: a large, demanding program that forces the language, its libraries and its
+performance to grow.
 
-## Estado
+**Download:** test release
+[v0.7.2-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.2-alfa) (`tachyon.lha`). It is an alpha:
+it may freeze on some pages.
 
-Fase A (sin MUI): `src/visor.dash` abre una página (fichero o URL http/https), la maqueta, la pinta en una
-ventana normal y ejecuta su JavaScript. Fase B (MUI 5): `src/dashweb.dash`, el navegador: barra de dirección,
-atrás/adelante, recargar, parar, historial desplegable, marcadores, página de inicio, hasta 4 ventanas, atajos de
-menú, descargas a disco, cookies (guardadas entre sesiones, se ven y se borran en `dashweb:cookies`), direcciones
-`file:///Volumen/ruta`; las páginas llegan sin congelar la ventana (consulta DNS, conexión y negociación TLS incluidas, con un
-indicador de actividad; imágenes, hojas y scripts a la vez); enlaces, anclas, formularios (GET y POST). Plan y bitácora en
-[docs/DASHWEB_LOOP.md](docs/DASHWEB_LOOP.md), módulos en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).
+## Status
 
-- Red: TCP (`bsdsocket.library`), HTTP/1.1 (longitud, `chunked`, redirecciones, conexiones que se reutilizan,
-  respuestas comprimidas con gzip) y HTTPS con AmiSSL 5, que reanuda la sesión TLS de cada servidor (ahorra
-  poco: 9,0 s a 7,9 s en freemem.space, D55). Las descargas se escriben al fichero según llegan.
-- Los scripts de rastreo y publicidad conocidos no se descargan (`URL_RASTREO_BLOQUEAR` en `lib/url.dash`):
-  la página va más rápida.
-- HTML5 con el analizador de NetSurf (Hubbub, `lib/html5.dash`), árbol DOM, entidades, UTF-8 a Latin-1,
-  atributos de presentación.
-- Fuentes vectoriales del Amiga (CGTriumvirate, CGTimes, LetterGothic) para los tamaños que no hay en mapa de
-  bits. diskfont y bullet de 3.2 escriben fuera de su memoria al abrirlas a 1 píxel o menos, y eso rompía
-  QuickJS: Dash nunca pide menos de 2 (D57).
-- Al cambiar el DOM desde JavaScript solo se recalcula el estilo de lo afectado.
-- CSS 2.1 y CSS3 por módulos, comparado con Chrome en 13 webs reales (`tools/comparar_chrome.py`): cascada con
-  `@layer`, `@media` y `@supports`; Selectors 4 (`:is`, `:where`, `:has`, `:not` con listas); Flexbox, Grid y
-  tablas automáticas; `calc()`, `min()`, `max()`, `clamp()` y vw/vh/rem/ch; posicionado (relative, absolute,
-  fixed), `z-index` y `overflow`; `border-radius`, `box-shadow`, `opacity`; Transforms; Color 4 y 5 (`oklch`,
-  `color-mix`...); Text 3 (`nowrap`, puntos suspensivos, `text-shadow`, `text-indent`, `line-height`); `@font-face`
-  (TTF, OTF, WOFF y WOFF2 hechas fuentes del Amiga con stb_truetype, con `font-stretch`); animaciones de CSS
-  (`@keyframes` de transform, opacity y color) y `:hover`. Solo se repinta lo que cambia.
-- Imágenes: JPEG, PNG, GIF, BMP, WebP y SVG con decodificadores propios en otro proceso (la ventana no se para),
-  con transparencia; ILBM y lo demás por datatypes. SVG dentro de la página (iconos y sprites con `<use>`).
-- Vídeo: `<video>` y los vídeos de YouTube (MintVID), que empiezan a verse mientras bajan, a pantalla completa.
-- JavaScript con QuickJS (ES2023+, con FPU) y `Math.*` de fdlibm: DOM (`getElementById`, `querySelector(All)`,
-  `innerHTML`, crear y mover nodos, scripts que se añaden...), eventos (también del ratón), `setTimeout`/
-  `setInterval`, `fetch` y `XMLHttpRequest`, `TextEncoder`/`TextDecoder`, `crypto` (SHA-256, `randomUUID`),
-  geometría (`getBoundingClientRect`, SVG). `document.cookie` funciona. Un script que pasa de 30 s se corta.
+Phase A (no MUI): `src/visor.dash` opens a page (a file or an http/https URL), lays it out, draws it in a plain
+window and runs its JavaScript. Phase B (MUI 5): `src/dashweb.dash`, the browser: address bar, back/forward, reload,
+stop, history drop-down, bookmarks, home page, up to 4 windows, menu shortcuts, downloads to disk, cookies (kept
+between sessions, viewed and deleted at `dashweb:cookies`), `file:///Volumen/ruta` addresses; pages load without
+freezing the window (DNS lookup, connection and TLS handshake included, with an activity indicator; images,
+stylesheets and scripts in parallel); links, anchors, forms (GET and POST). Plan and log in
+[docs/DASHWEB_LOOP.md](docs/DASHWEB_LOOP.md), modules in [docs/ARQUITECTURA.en.md](docs/ARQUITECTURA.en.md).
 
-Lo que dashweb ha necesitado y no tenía Dash se ha añadido a Dash (rama `dashweb`, tareas D1-D68): textos
-rápidos, listas y diccionarios con tipo, red, TLS, fuentes, imágenes, C de fuera (`@link`, `@c`), etc.
+- Network: TCP (`bsdsocket.library`), HTTP/1.1 (content length, `chunked`, redirects, reused connections,
+  gzip-compressed responses) and HTTPS with AmiSSL 5, which resumes each server's TLS session (it saves
+  little: 9.0 s to 7.9 s on freemem.space, D55). Downloads are written to the file as they arrive.
+- Known tracking and advertising scripts are not downloaded (`URL_RASTREO_BLOQUEAR` in `lib/url.dash`):
+  the page loads faster.
+- HTML5 with NetSurf's parser (Hubbub, `lib/html5.dash`), DOM tree, entities, UTF-8 to Latin-1,
+  presentational attributes.
+- Amiga outline fonts (CGTriumvirate, CGTimes, LetterGothic) for the sizes not available as bitmaps. The 3.2
+  diskfont and bullet write outside their memory when a font is opened at 1 pixel or less, and that broke
+  QuickJS: Dash never asks for less than 2 (D57).
+- When JavaScript changes the DOM, only the style of what is affected is recomputed.
+- CSS 2.1 and CSS3 by modules, compared against Chrome on 13 real websites (`tools/comparar_chrome.py`): cascade with
+  `@layer`, `@media` and `@supports`; Selectors 4 (`:is`, `:where`, `:has`, `:not` with lists); Flexbox, Grid and
+  automatic table layout; `calc()`, `min()`, `max()`, `clamp()` and vw/vh/rem/ch; positioning (relative, absolute,
+  fixed), `z-index` and `overflow`; `border-radius`, `box-shadow`, `opacity`; Transforms; Color 4 and 5 (`oklch`,
+  `color-mix`...); Text 3 (`nowrap`, ellipsis, `text-shadow`, `text-indent`, `line-height`); `@font-face`
+  (TTF, OTF, WOFF and WOFF2 turned into Amiga fonts with stb_truetype, with `font-stretch`); CSS animations
+  (`@keyframes` for transform, opacity and color) and `:hover`. Only what changes is redrawn.
+- Images: JPEG, PNG, GIF, BMP, WebP and SVG with its own decoders in a separate process (the window doesn't stall),
+  with transparency; ILBM and the rest via datatypes. Inline SVG in the page (icons and sprites with `<use>`).
+- Video: `<video>` and YouTube videos (MintVID), which start playing while they download, full screen.
+- JavaScript with QuickJS (ES2023+, with FPU) and `Math.*` from fdlibm: DOM (`getElementById`, `querySelector(All)`,
+  `innerHTML`, creating and moving nodes, added scripts...), events (mouse events too), `setTimeout`/
+  `setInterval`, `fetch` and `XMLHttpRequest`, `TextEncoder`/`TextDecoder`, `crypto` (SHA-256, `randomUUID`),
+  geometry (`getBoundingClientRect`, SVG). `document.cookie` works. A script that runs for more than 30 s is cut off.
 
-### Medidas (FS-UAE, 2026-10-16)
+Whatever dashweb has needed and Dash lacked has been added to Dash (`dashweb` branch, tasks D1-D68): fast
+strings, typed lists and dictionaries, networking, TLS, fonts, images, external C (`@link`, `@c`), etc.
 
-`objetivo` = 68040 + JIT a toda velocidad (lo más parecido a un PiStorm); `A1200` = 68020 a 14 MHz. En ms,
-con las fuentes del Workbench (helvetica, times, courier).
+### Measurements (FS-UAE, 2026-10-16)
 
-| Página | Máquina | carga | html | js | estilo | imágenes | maqueta | pintar |
+`objetivo` = 68040 + JIT at full speed (the closest thing to a PiStorm); `A1200` = 68020 at 14 MHz. In ms,
+with the Workbench fonts (helvetica, times, courier).
+
+| Page | Machine | load | html | js | style | images | layout | paint |
 |---|---|---|---|---|---|---|---|---|
-| prueba.html (8,8 KB) | objetivo | 7 | 17 | 0 | 76 | 0 | 242 | 22 |
+| prueba.html (8.8 KB) | objetivo | 7 | 17 | 0 | 76 | 0 | 242 | 22 |
 | prueba.html | A1200 | 459 | 1091 | 15 | 5545 | 15 | 5829 | 92 |
 | imagenes.html | objetivo | 2 | 2 | 0 | 15 | 5 | 155 | 24 |
 | imagenes.html | A1200 | 53 | 113 | 1 | 1023 | 193 | 640 | 94 |
 | js.html | objetivo | 2 | 2 | 28 | 15 | 1 | 156 | 16 |
 | js.html | A1200 | 57 | 97 | 1635 | 1108 | 6 | 681 | 51 |
 
-Memoria: 350 KB para prueba.html (con el motor JS, 330 KB para una página pequeña). En la configuración objetivo
-una página va en menos de medio segundo. Hoy (2026-10-21) el navegador ocupa 3,4 MB al cargarse, y una web real
-como freemem.space tarda unos 23 s entera (con sus imágenes y fuentes) en la configuración objetivo, en la red del
-emulador, y gasta 29-39 MB, casi todo en sus imágenes (tarea 40h). En un A1200 el estilo y la maqueta son lo lento: `./dash --profile` (Dash D23) señala la cascada (`_estilo_nodo`,
-`_cumple_desde`: cada elemento prueba todos los selectores) y el corte en palabras (`_palabras`).
+Memory: 350 KB for prueba.html (with the JS engine, 330 KB for a small page). In the target configuration
+a page takes less than half a second. Today (2026-10-21) the browser takes up 3.4 MB when loaded, and a real
+website such as freemem.space takes about 23 s to load fully (with its images and fonts) in the target configuration,
+on the emulator's network, and uses 29-39 MB, almost all of it for its images (task 40h). On an A1200 style and layout are the slow parts: `./dash --profile` (Dash D23) points at the cascade (`_estilo_nodo`,
+`_cumple_desde`: every element tries every selector) and word splitting (`_palabras`).
 
-Las primeras medidas del A1200 (tarea 17) eran el triple de lentas: el modo de pruebas de Dash (`--autoclose`)
-miraba el reloj en cada vuelta de cada `while` (arreglado en Dash, D34).
+The first A1200 measurements (task 17) were three times slower: Dash's test mode (`--autoclose`)
+checked the clock on every iteration of every `while` (fixed in Dash, D34).
 
-## Requisitos previstos
+## Expected requirements
 
-- AmigaOS 3.x con un 68030 o superior y FPU (68881/68882 o la del 040/060), y mucha memoria Fast.
-  Un A500 o un A1200 sin ampliar no son el objetivo.
-- MUI 3.8 o 5, AmiSSL 5 (HTTPS), una pila TCP/IP (`bsdsocket.library`). Con MUI 3.8 la pantalla completa
-  de los vídeos deja un marco gris de unos píxeles (el espaciado de ventana de sus preferencias).
+- AmigaOS 3.x with a 68030 or better and an FPU (68881/68882 or the built-in one of the 040/060), and plenty of
+  Fast RAM. An A500 or an unexpanded A1200 is not the target.
+- MUI 3.8 or 5, AmiSSL 5 (HTTPS), a TCP/IP stack (`bsdsocket.library`). With MUI 3.8, full-screen video leaves
+  a grey border a few pixels wide (the window spacing from its preferences).
 
-## Paquete
+## Package
 
-`tools/paquete.sh` deja `build/dashweb.lha` (el navegador, el visor, `LEEME` con la instalación y las licencias).
-Requisitos en el Amiga: AmigaOS 3.x, 68020 o mejor, MUI 3.8 o 5, una pila TCP/IP (bsdsocket.library) y, para
-HTTPS, AmiSSL 5.
+`tools/paquete.sh` produces `build/dashweb.lha` (the browser, the viewer, `LEEME` with the installation instructions
+and the licenses). Requirements on the Amiga: AmigaOS 3.x, 68020 or better, MUI 3.8 or 5, a TCP/IP stack
+(bsdsocket.library) and, for HTTPS, AmiSSL 5.
 
-## Probar
+## Testing
 
-Necesita el toolchain de Dash (`m68k-amigaos-gcc` en `/opt/amiga`) y Dash en `~/Projects/FreeMEMLang/.worktrees/dashweb`
-(o la variable `DASH`). Las variables del emulador son las de Dash (`docs/INSTALACION.md` de Dash).
+It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and Dash in `~/Projects/FreeMEMLang/.worktrees/dashweb`
+(or the `DASH` variable). The emulator variables are Dash's (Dash's `docs/INSTALACION.md`).
 
 ```bash
-python3 tests/run.py                   # compila los tests y los ejecuta en FS-UAE
-python3 tests/run.py --memcheck        # con la comprobación de memoria de Dash
+python3 tests/run.py                   # builds the tests and runs them in FS-UAE
+python3 tests/run.py --memcheck        # with Dash's memory check
 tools/medir_visor.py --pagina prueba.html --maquina objetivo --captura visor.png
 tools/medir_visor.py --maquina rtg --sistema ~/.cache/dash-emu/sys32rtg38 --programa src/dashweb.dash \
-    --pagina https://freemem.space/ --captura mui38.png     # con MUI 3.8 (sys32rtg con el MUI 3.8 de Aminet)
+    --pagina https://freemem.space/ --captura mui38.png     # with MUI 3.8 (sys32rtg with MUI 3.8 from Aminet)
 tools/emu_sys_fuentes.sh ~/.cache/dash-emu/sys31ssl <disco del Workbench .hdf> ~/.cache/dash-emu/sys31web
 ```
 
-## Compilar el motor JavaScript
+## Building the JavaScript engine
 
-Necesita el toolchain de Dash (`m68k-amigaos-gcc` en `/opt/amiga`) y el repo de Dash al lado
-(`../FreeMEMLang`, o la variable `DASH`), del que se usa el float por software.
+It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and the Dash repo alongside
+(`../FreeMEMLang`, or the `DASH` variable), whose software float is used.
 
 ```bash
-tools/build_qjs.sh 000                       # 68000, float por software (fp-bit)
-tools/build_qjs.sh 020fpu -m68020 -m68881    # 68020+ con FPU
-tools/build_qjs.sh lib                       # build/qjs-lib/libqjs.a para lib/js.dash (con fdlibm)
-export DASH_KICKSTART=... DASH_EMU_SYS=...   # como en Dash
+tools/build_qjs.sh 000                       # 68000, software float (fp-bit)
+tools/build_qjs.sh 020fpu -m68020 -m68881    # 68020+ with FPU
+tools/build_qjs.sh lib                       # build/qjs-lib/libqjs.a for lib/js.dash (with fdlibm)
+export DASH_KICKSTART=... DASH_EMU_SYS=...   # as in Dash
 tools/emu_qjs.py build/qjs-000/qjs tests/js "hello.js" "test_language.js"
 ```
 
-## Licencia
+## License
 
-MIT (ver [LICENSE](LICENSE)). `third_party/quickjs` y `third_party/hubbub` también son MIT; `third_party/fdlibm`
-lleva la licencia de Sun de cada fichero. Las demás librerías de `third_party` llevan la suya en su carpeta.
+MIT (see [LICENSE](LICENSE)). `third_party/quickjs` and `third_party/hubbub` are MIT too; `third_party/fdlibm`
+carries Sun's license in each file. The other libraries in `third_party` carry their own in their folder.

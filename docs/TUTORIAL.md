@@ -1,5 +1,7 @@
 # Tutorial: un programa para el Amiga con Dash, paso a paso
 
+*[English](TUTORIAL.en.md) | Castellano*
+
 Este tutorial enseña cómo se conectan las piezas de un programa de Amiga hecho con Dash: la ventana, los eventos,
 el temporizador, la red, las señales, otro proceso y los ficheros. No enseña el lenguaje.
 

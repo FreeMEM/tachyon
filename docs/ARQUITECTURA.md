@@ -1,5 +1,7 @@
 # Arquitectura de dashweb
 
+*[English](ARQUITECTURA.en.md) | Castellano*
+
 Cómo está hecho dashweb por dentro, tal como es el código el 2026-10-20 (commit `cdfe376`: v0.2.0-alfa más el
 encargo 37 en curso). Sustituye al borrador del 2026-10-15.
 

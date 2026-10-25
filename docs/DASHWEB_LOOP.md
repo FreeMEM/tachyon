@@ -512,6 +512,13 @@ tarea, con el estilo de Dash.
       salida: Traspaso:Tachyon/Tachyon https://tachyon.freemem.space/ >Traspaso:salida.txt. Hasta entenderlo, sin
       versión nueva (sería un paso atrás en su sistema).
       Hecho (2026-10-24; ver la bitácora): la FPU empezaba en precisión simple.
+- [ ] 54. **Enviar un informe de depuración (usuario, 2026-10-25: "para mañana", la primera).** Que un usuario,
+      cuando algo le falla, pueda mandar desde Tachyon los registros de depuración a un servidor nuestro, para abrir
+      una incidencia con ellos. Pensar antes de hacer: qué se guarda (errores de JavaScript, de red, la dirección,
+      memoria, versión, sistema, MUI, CPU), cuánto (un registro circular en memoria o en T:), cómo lo pide el usuario
+      (un menú "Enviar informe..." que enseña lo que se va a mandar y pide permiso; nada sin que lo pida), a dónde
+      (un servidor propio con HTTPS; ¿o crear la issue en GitHub?), qué devuelve (un código para citarlo en la
+      issue) y la privacidad (sin cookies ni contraseñas ni lo escrito en formularios; direcciones, solo si quiere).
 - [~] 38. **youtube.com (usuario, 2026-10-20; 2026-10-24: "sería un puntazo", la siguiente).** Que la portada y la
       página de un vídeo de https://www.youtube.com funcionen bien (hoy los vídeos de YouTube incrustados ya se ven,
       tarea 30). Empezar como la 37a: cómo sale, errores, memoria, y partirla en subtareas.

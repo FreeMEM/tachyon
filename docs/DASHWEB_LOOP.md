@@ -4807,3 +4807,12 @@ Formato:
 - Batería: 109/109 (2905 s, Dash 1a7144e).
 - Visto: test_jsdom_mutaciones (nueva); las de js, jsdom, dom, documento, react, idioma y navegar_js.
 
+
+### 2026-10-25 — Publicada la v0.7.3-alfa
+- Con la 38a y 38b (YouTube: scripts de 10 MB, MutationObserver, TreeWalker, Range, <template>, la caché del
+  preludio). Batería 109/109 (Dash 1a7144e: las bibliotecas de matemáticas se cierran al salir); Wikipedia con MUI
+  3.8 (sys32rtg38ancha). PR #12; paquete en un worktree limpio de main; release con tachyon.lha, Tachyon.gz y los
+  nueve catálogos (11 ficheros); las descargas responden (200).
+- El ejecutable publicado lleva el arreglo de Dash 1a7144e, que de momento solo está en la rama dashweb local (la
+  sesión "dash" lo lleva a main con su PR #57).
+- El loop se para aquí (lo pidió el usuario). Lo siguiente: 38c (YouTube pintada) y después la 53.

@@ -1,5 +1,7 @@
 # QuickJS en AmigaOS 3.x
 
+*[English](quickjs_amiga.en.md) | Castellano*
+
 Medido el 2026-10-15 en FS-UAE (A1200, Kickstart 3.1, 8 MB de Fast). Primeras pruebas de una sesión de
 investigación previa; los scripts están ahora en `tools/`.
 

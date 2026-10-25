@@ -1,5 +1,7 @@
 # Cómo se ha construido dashweb
 
+*[English](COMO_SE_CONSTRUYE.en.md) | Castellano*
+
 Una guía para hacer otras aplicaciones para el Amiga con Dash y MUI, tomando dashweb como ejemplo.
 
 No enseña Dash ni C. Para eso están el manual de Dash (`docs/MANUAL_REFERENCIA.md` y

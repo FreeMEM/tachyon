@@ -6,7 +6,8 @@
 # Acciones: "e N" espera N/50 s; "c X Y" clic en X, Y dentro de los bordes de la ventana;
 # "C X Y" lo mismo con Mayúsculas pulsada; "v X Y" lleva el puntero a X, Y sin pulsar; "t COD" pulsa y suelta la tecla raw COD (0x4D abajo, 0x40 espacio...); "a COD" la misma con Amiga
 # derecha (atajos de menú: 0x22 = D); "m M E" elige con el ratón el elemento E del menú M (desde 0,
-# separadores incluidos); "r X Y" pulsa el botón derecho en X, Y, "p X Y" lo lleva pulsado al punto X, Y
+# separadores incluidos); "h M E N" lo mismo, pero con el menú abierto N/50 s antes de soltar (para una captura);
+# "r X Y" pulsa el botón derecho en X, Y, "p X Y" lo lleva pulsado al punto X, Y
 # de la pantalla y "s" lo suelta (menús de MUI). Escribe lo que hace.
 
 @header "#include <devices/input.h>"
@@ -151,7 +152,7 @@ end
 # Elige con el ratón el elemento "elemento" (desde 0, separadores incluidos) del menú "menu" de la
 # ventana: botón derecho en el título, pasos de un píxel hasta el elemento, soltar (como test_gt_events
 # de Dash). 0 si la ventana no tiene ese menú.
-@native func menu_raton(win: Int, menu: Int, elemento: Int) -> Int
+@native func menu_raton(win: Int, menu: Int, elemento: Int, espera: Int) -> Int
 """
     struct Window *w = (struct Window *)win;
     struct Screen *scr = w->WScreen;
@@ -200,7 +201,7 @@ end
             DoIO((struct IORequest *)io);
             Delay(1);
         }
-        Delay(10);
+        Delay(espera > 10 ? espera : 10);
         memset(&ie, 0, sizeof(ie));
         ie.ie_Class = IECLASS_RAWMOUSE;
         ie.ie_Code = IECODE_RBUTTON | IECODE_UP_PREFIX;
@@ -298,8 +299,11 @@ Main
                 Print "clicar: suelta el botón derecho"
                 i = i + 1
             elif a == "m" and i + 2 < arg_count()
-                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + ": " + menu_raton(w, Int(arg(i + 1)), Int(arg(i + 2)))
+                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + ": " + menu_raton(w, Int(arg(i + 1)), Int(arg(i + 2)), 10)
                 i = i + 3
+            elif a == "h" and i + 3 < arg_count()
+                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + " abierto " + arg(i + 3) + ": " + menu_raton(w, Int(arg(i + 1)), Int(arg(i + 2)), Int(arg(i + 3)))
+                i = i + 4
             elif a == "a" and i + 1 < arg_count()
                 evento(w, 3, 0, 0, str_to_int(str_replace(arg(i + 1), "0x", ""), 16))
                 Print "clicar: Amiga+" + arg(i + 1)

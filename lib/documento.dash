@@ -653,12 +653,7 @@ func documento_al_dia(d: Documento) -> Bool
     if d.hojas != nil and _documento_toques_hojas(toques)
         firma = estilo_firma(d.doc)
         if firma != d.hojas_firma
-            traidas = d.hojas.traidas
-            if traidas == nil
-                var vacias: {String: String} = {}
-                traidas = vacias
-            end
-            d.hojas = estilo_hojas_con(d.doc, d.direccion, traidas)
+            d.hojas = estilo_hojas_otra_vez(d.doc, d.direccion, d.hojas)
             d.hojas_firma = firma
             imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
             hojas_nuevas = true

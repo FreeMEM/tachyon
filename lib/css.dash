@@ -83,6 +83,12 @@ struct HojaCSS
     fotogramas: {String: [Declaracion]} = nil
     # @keyframes: el nombre -> todos sus fotogramas, en orden (lib/animacion.dash, para animar de verdad)
     cuadros: {String: [Fotograma]} = nil
+    # para leerla una vez y usarla otra vez cuando el JavaScript cambia las hojas (lib/estilo.dash; tarea 38c2): el
+    # orden de su primera regla, si tiene @layer (el puesto de sus capas se apunta al leerla: esa se lee otra vez) y si
+    # sus url() ya son completas
+    orden0: Int = 0
+    con_capas: Bool = false
+    absolutas: Bool = false
 end
 
 # Sin comentarios /* ... */
@@ -566,6 +572,8 @@ func css_leer(texto: String, orden: Int) -> HojaCSS
     hoja = HojaCSS(reglas, importes)
     var ninguno: [String] = nil
     _css_bloque(hoja, css_sin_comentarios(texto), orden, ninguno)
+    hoja.orden0 = orden
+    hoja.con_capas = str_find(texto, "@layer") >= 0
     return hoja
 end
 

@@ -2203,7 +2203,7 @@ func jsdom_preludio_js() -> String
     j = j + "function correr(s, codigo) {\n"
     j = j + "var antes = scriptActual;\n"
     j = j + "scriptActual = s;\n"
-    j = j + "try { (0, eval)(codigo); } catch (e) { console.log('JS (script añadido): ' + (e && e.stack || e)); }\n"
+    j = j + "try { (0, eval)(codigo); } catch (e) { console.log('JS (script añadido): ' + (e && e.stack ? e + ' | ' + e.stack : e)); }\n"
     j = j + "scriptActual = antes;\n"
     j = j + "}\n"
     j = j + "function ejecutarScript(s) {\n"

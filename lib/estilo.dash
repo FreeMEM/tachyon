@@ -104,6 +104,10 @@ struct Hojas
     lista: [HojaCSS]
     autor: [Bool]
     traidas: {String: String} = nil    # textos de hojas ya traídos (lib/recursos.dash): no se piden otra vez
+    # las hojas ya leídas, por su dirección (o el texto de un <style> grande): las de las hojas de antes se usan otra
+    # vez cuando el JavaScript cambia un <style> o <link> (estilo_hojas_otra_vez)
+    leidas: {String: HojaCSS} = nil
+    previas: {String: HojaCSS} = nil
     # los selectores por su parte de la derecha: "#id", ".clase" o la etiqueta; los demás en universales
     indice: {String: [Entrada]} = nil
     universales: [Entrada] = nil
@@ -178,13 +182,68 @@ end
 
 # Lo mismo con las hojas externas ya traídas (dirección -> texto en Latin-1); las que falten se piden
 func estilo_hojas_con(doc: Nodo, base: String, traidas: {String: String}) -> Hojas
+    var ninguna: Hojas = nil
+    return _estilo_hojas(doc, base, traidas, ninguna)
+end
+
+# Las hojas otra vez, porque el JavaScript metió, quitó o cambió un <style> o <link>: las que siguen igual no se
+# leen otra vez (YouTube mete <style> con la de 3,8 MB ya leída: leerla otra vez, con la de antes aún viva, eran 29
+# MB más y el Amiga se quedaba sin memoria; tarea 38c2)
+func estilo_hojas_otra_vez(doc: Nodo, base: String, antes: Hojas) -> Hojas
+    traidas = antes.traidas
+    if traidas == nil
+        var vacias: {String: String} = {}
+        traidas = vacias
+    end
+    return _estilo_hojas(doc, base, traidas, antes)
+end
+
+func _estilo_hojas(doc: Nodo, base: String, traidas: {String: String}, antes: Hojas) -> Hojas
     var lista: [HojaCSS] = [estilo_hoja_navegador()]
     var autor: [Bool] = [false]
     h = Hojas(lista, autor)
     h.traidas = traidas
+    var leidas: {String: HojaCSS} = {}
+    h.leidas = leidas
+    if antes != nil
+        h.previas = antes.leidas
+    end
     css_capas_reiniciar()
     _estilo_recoger(h, doc, url_parse(base))
+    h.previas = nil
     return h
+end
+
+# La hoja de clave k ya leída en las hojas de antes (sin @layer), con el orden de sus reglas puesto para ir aquí; o nil
+func _estilo_previa(h: Hojas, k: String) -> HojaCSS
+    var ninguna: HojaCSS = nil
+    if h.previas == nil or not h.previas.has(k)
+        return ninguna
+    end
+    hoja = h.previas[k]
+    if hoja.con_capas
+        return ninguna
+    end
+    diferencia = h.lista.length * ESTILO_ORDEN_HOJA - hoja.orden0
+    if diferencia != 0
+        for regla in hoja.reglas
+            regla.orden = regla.orden + diferencia
+        end
+        hoja.orden0 = hoja.orden0 + diferencia
+    end
+    return hoja
+end
+
+# La hoja del texto t (de clave k: un <style> grande o una dirección), leída ahora o la de antes
+func _estilo_leer(h: Hojas, k: String, t: String) -> HojaCSS
+    hoja = _estilo_previa(h, k)
+    if hoja == nil
+        hoja = css_leer(t, h.lista.length * ESTILO_ORDEN_HOJA)
+    end
+    if h.leidas != nil and k != ""
+        h.leidas[k] = hoja
+    end
+    return hoja
 end
 
 # Lo que dice qué hojas tiene la página, para saber sin leerlas si el JavaScript las cambió: de cada <style> lo que
@@ -214,7 +273,13 @@ end
 
 func _estilo_recoger(h: Hojas, n: Nodo, base: Url)
     if n.tipo == DOM_ELEMENTO and n.nombre == "style"
-        _estilo_agregar(h, css_leer(dom_texto(n), h.lista.length * ESTILO_ORDEN_HOJA), base, 0)
+        texto = dom_texto(n)
+        # (los pequeños se leen otra vez: cuesta poco y su texto como clave ocuparía más que leerlos)
+        clave = ""
+        if texto.length >= 8192
+            clave = "s" + texto
+        end
+        _estilo_agregar(h, _estilo_leer(h, clave, texto), base, 0)
     elif n.tipo == DOM_ELEMENTO and n.nombre == "link" and str_find(str_lower(dom_atributo(n, "rel")), "stylesheet") >= 0
         href = dom_atributo(n, "href")
         if url_es_data(href)
@@ -229,18 +294,22 @@ func _estilo_recoger(h: Hojas, n: Nodo, base: Url)
 end
 
 func _estilo_agregar(h: Hojas, hoja: HojaCSS, base: Url, nivel: Int)
-    # las url() relativas de una hoja son relativas a la hoja (no a la página): se dejan completas
-    if hoja.caras != nil
-        for c in hoja.caras
-            c.src = _css_absolutas(c.src, base)
-        end
-    end
-    for regla in hoja.reglas
-        for d in regla.declaraciones
-            if str_find(d.valor, "url(") >= 0
-                d.valor = _css_absolutas(d.valor, base)
+    # las url() relativas de una hoja son relativas a la hoja (no a la página): se dejan completas (una vez: una hoja
+    # usada otra vez ya las tiene)
+    if not hoja.absolutas
+        if hoja.caras != nil
+            for c in hoja.caras
+                c.src = _css_absolutas(c.src, base)
             end
         end
+        for regla in hoja.reglas
+            for d in regla.declaraciones
+                if str_find(d.valor, "url(") >= 0
+                    d.valor = _css_absolutas(d.valor, base)
+                end
+            end
+        end
+        hoja.absolutas = true
     end
     if nivel < 4
         for imp in hoja.importes
@@ -311,7 +380,7 @@ func _estilo_cargar(h: Hojas, direccion: String, nivel: Int)
     u = url_parse(direccion)
     texto = ""
     if h.traidas != nil and h.traidas.has(direccion)
-        _estilo_agregar(h, css_leer(h.traidas[direccion], h.lista.length * ESTILO_ORDEN_HOJA), u, nivel)
+        _estilo_agregar(h, _estilo_leer(h, "l" + direccion, h.traidas[direccion]), u, nivel)
         return
     end
     if u.esquema == "http" or u.esquema == "https"
@@ -328,7 +397,7 @@ func _estilo_cargar(h: Hojas, direccion: String, nivel: Int)
         end
         texto = utf8_a_latin1(leido)
     end
-    _estilo_agregar(h, css_leer(texto, h.lista.length * ESTILO_ORDEN_HOJA), u, nivel)
+    _estilo_agregar(h, _estilo_leer(h, "l" + direccion, texto), u, nivel)
 end
 
 # === Selectores ===

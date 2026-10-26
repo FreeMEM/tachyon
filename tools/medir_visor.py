@@ -57,6 +57,10 @@ def main():
                     "tools/emu_sys_fuentes.sh)")
     ap.add_argument("--acciones", metavar="'TÍTULO e 100 c X Y ...'",
                     help="tools/amiga/clicar.dash in the background: clicks and keys in that window")
+    ap.add_argument("--memoria", type=int, metavar="MB", help="Zorro III memory of the 68040 machines (default 128): "
+                    "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
+    ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
+                    "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
     ap.add_argument("--local", action="store_true",
                     help="the page from the emulated disk, without network: FS-UAE's bsdsocket.library makes the "
                          "emulated CPU many times slower (measure the A1200 like this)")
@@ -154,12 +158,18 @@ def main():
                 programs.append(str(ROOT / "tests" / "pages" / args.pagina))
                 prog_args = ["DH0:p1", ""]
                 red = ""
+            fondo = []
+            if args.acciones:
+                fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
+            if args.latido:
+                fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,
                                kickstart=os.environ.get("DASH_KICKSTART_32" if args.maquina.startswith("rtg") else "DASH_KICKSTART"),
-                               extra_config=red + MAQUINAS[args.maquina],
+                               extra_config=red + (MAQUINAS[args.maquina] if not args.memoria else
+                                                   MAQUINAS[args.maquina].replace("zorro_iii_memory = 131072",
+                                                                                  f"zorro_iii_memory = {args.memoria * 1024}")),
                                screenshot=shot, system=args.sistema, keep=args.guardar,
-                               background=[(str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones)]
-                               if args.acciones else None, args=prog_args)[0]
+                               background=fondo or None, args=prog_args)[0]
         finally:
             server.kill()
             server.wait()

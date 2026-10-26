@@ -193,12 +193,13 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D71. **La caché de largos de texto expulsa el texto grande** (2026-10-26, tarea 38c; propuesta a la sesión "dash").
+- [x] D71. **La caché de largos de texto expulsa el texto grande** (2026-10-26, tarea 38c; propuesta a la sesión "dash").
       _dash_str_len guarda el largo de 8 textos de 64 bytes o más y los cambia por turno: al leer la hoja CSS de
       YouTube (3,8 MB, 18 623 reglas), cada cuerpo de regla largo entra y a las 8 reglas sale la hoja, y el corte
       siguiente hace strlen de 3,8 MB: css_leer tarda 184 s en un 68040 con JIT (tests/bench/css_grande.dash).
       Propuesto: que entre en un hueco libre o en el del texto más corto (medirlo otra vez cuesta menos). Probado en
       una copia: 10,1 s, las mismas reglas.
+      Hecha por la sesión dash (9142671 en la rama dashweb: _dash_sc_slot, con test en host_harness.c): 9,96 s.
 - [x] D70. **Comparar textos con nil sin leer la dirección 0** (2026-10-23, tarea 43; propuesta a la sesión "dash").
       `a == b` entre String es `strcmp(a, b) == 0`: con `a` nil (un campo `String = nil`) lee la dirección 0. En un 68k
       clásico no se nota; AmigaOS 4 no lo deja y el programa se cae (un usuario con la v0.3.0). Propuesto: nil como
@@ -541,12 +542,17 @@ tarea, con el estilo de Dash.
       a y b hechas (2026-10-25; ver la bitácora). Para la c: style de un envoltorio de ShadyDOM, "not a function"
       en playerApi y attached (el reproductor), la memoria (46 MB de JavaScript al final) y una captura pintada.
       Partes de la c (2026-10-26):
-      [~] c1. La hoja CSS de 3,8 MB: leerla son 184 s de los ~400 de la carga (necesita D71: 10 s).
-      [ ] c2. El cuelgue sin mensaje hacia los 400 s de la carga (dos veces sin --memcheck; con él, no): el emulador
+      [x] c1. La hoja CSS de 3,8 MB: leerla son 184 s de los ~400 de la carga (necesita D71: 10 s). Hecha.
+      [x] c2. El cuelgue sin mensaje hacia los 400 s de la carga (dos veces sin --memcheck; con él, no): el emulador
           deja de responder (ni las capturas). YouTube no da siempre lo mismo: a veces el script principal entero
           (10,8 MB), a veces partido (base de 1,2 MB y "late,app" de 9,6 MB, que llega después).
+          Hecha (2026-10-27): las hojas leídas otra vez sin soltar las de antes (29 MB más); y el JavaScript deja una
+          reserva al sistema.
       [ ] c3. Lo de antes: style de un envoltorio de ShadyDOM (YouTube pone ShadyDOM={force:true,noPatch:true}: en
           Chrome también lo usa, así que es otro camino de su código), "not a function" en playerApi y attached.
+      [ ] c5. El velo gris sobre toda la portada (no es un "backdrop") y la rejilla, que se queda en el esqueleto.
+      [ ] c6. La memoria: 46-52 MB de JavaScript y ~29 MB la hoja de 3,8 MB leída; en la máquina de 128 MB quedan
+          6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
 - [ ] 53. **Las webs de chat (usuario, 2026-10-24: "si se viesen las webs de gemini, chatgpt, claude, etc y se pudiese
       conversar con ellas... ya sería la releche").** gemini.google.com, chatgpt.com, claude.ai: que se vean y se pueda
@@ -4885,3 +4891,29 @@ Formato:
 - ShadyDOM: la página pone ShadyDOM={force:true,preferPerformance:true,noPatch:true}, así que Chrome también usa
   el envoltorio sin style: el fallo de style viene de otro camino del código de YouTube (38c3).
 - El loop se para aquí: uso semanal al 93 % (regla 1). Lo siguiente: compilar con D71 cuando llegue, 38c2 y 38c3.
+
+### 2026-10-27 — Tarea 38c1 y 38c2: YouTube sin cuelgue (D71, hojas usadas otra vez, reserva para el sistema)
+- El usuario mandó seguir aunque el uso semanal pasaba del 90 % (2026-10-26).
+- D71 en Dash (9142671 en la rama dashweb, de la sesión "dash"): leer la hoja de YouTube, de 184 a 9,96 s
+  (tests/bench/css_grande.dash).
+- El cuelgue (38c2), con tools/amiga/latido.dash (nuevo, medir_visor --latido S): un programa en segundo plano que
+  cada S segundos dice la memoria libre, el mayor bloque y, de la pila guardada de Tachyon, las direcciones que caen
+  en su código (con m68k-amigaos-nm del ejecutable, y para las static de Dash el .o del mismo .c). El Amiga seguía
+  vivo; Tachyon, en _css_buscar, se comía de 17 MB libres a 700 KB en 10 s y ahí se quedaba (ni capturas: shot
+  necesita 5 MB seguidos a 1680x1050). La causa: cuando el JavaScript mete un <style>, documento.dash rehacía las
+  hojas leyendo otra vez todas, también la de 3,8 MB, con las de antes aún vivas: 29 MB más.
+  - Ahora (lib/estilo.dash, estilo_hojas_otra_vez) cada Hojas guarda las hojas leídas por su dirección (y los
+    <style> de 8 KB o más por su texto) y al rehacerlas usa las mismas: se renumera el orden de sus reglas para su
+    nuevo puesto y sus url() ya son completas. Las que tienen @layer se leen otra vez (el puesto de sus capas se
+    apunta al leer). test_documento_hojas_js: la misma hoja, con otra metida delante y detrás.
+  - Y el JavaScript deja al sistema una reserva (lib/js.dash, funciones de memoria propias para QuickJS): 1/16 de la
+    memoria, de 512 KB a 6 MB; pasada, "out of memory" en el script. test_js: sin tope, un script que pide sin parar
+    deja más de 400 KB libres (sin la reserva falla: "reserva: true false").
+- El error de un script que mete el JavaScript decía solo la pila (en QuickJS no lleva el mensaje): ahora el mensaje
+  y la pila.
+- medir_visor --memoria MB: la memoria de las máquinas 68040 (para poder capturar YouTube, con 256).
+- Cómo queda (máquina RTG ancha, MUI 3.8): con el script entero, "entera" a los 275-317 s; con 128 MB, el
+  JavaScript llega a su "out of memory" y quedan 6 MB; con 256 MB, 143 MB libres al final. Con el partido, 45 s.
+  Sale la barra de arriba (logo, buscador, menús) bajo un velo gris, y la rejilla en su esqueleto (captura enviada
+  al usuario). Siguen los "not a function" de playerApi (this.getRoot().getPlayer().getPlayerPromise(), 38c3).
+- Batería: 110/110 (3078 s, Dash 9142671).

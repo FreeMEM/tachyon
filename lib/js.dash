@@ -234,6 +234,54 @@ static size_t _jg_tamano(const void *p) { return p ? ((const _JgCab *)p - 1)->n 
 static const JSMallocFunctions _jg_funciones = { _jg_malloc, _jg_free, _jg_realloc, _jg_tamano };
 #endif
 
+/* The memory of QuickJS, like quickjs.c's for the Amiga (its size in 8 bytes in front), but leaving the system a
+   reserve: a sixteenth of all the memory, between 512 KB and 6 MB. Without it, YouTube's JavaScript took the last
+   19 MB of the RTG machine and the whole Amiga stopped (not even a screen picture could be taken; tarea 38c2): now
+   the script gets "out of memory" and the rest goes on. AvailMem is asked every 64 KB asked for (and for every
+   block of 16 KB or more): asking it every time would cost too much */
+#define _JM_CABECERA 8
+static ULONG _jm_reserva = 0, _jm_desde = 0;
+static int _jm_hay(size_t n) {
+    if (_jm_reserva == 0) {
+        ULONG r = AvailMem(MEMF_ANY | MEMF_TOTAL) / 16;
+        _jm_reserva = r < 512UL * 1024 ? 512UL * 1024 : r > 6UL * 1024 * 1024 ? 6UL * 1024 * 1024 : r;
+    }
+    _jm_desde += n;
+    if (_jm_desde < 64UL * 1024 && n < 16UL * 1024) return 1;
+    _jm_desde = 0;
+    return AvailMem(MEMF_ANY) > _jm_reserva + n;
+}
+static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const char *)p - _JM_CABECERA))[0] : 0; }
+static void *_jm_malloc(JSMallocState *s, size_t n) {
+    size_t *p;
+    if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
+    p = malloc(n + _JM_CABECERA);
+    if (!p) return NULL;
+    p[0] = n;
+    s->malloc_count++;
+    s->malloc_size += n + _JM_CABECERA;
+    return (char *)p + _JM_CABECERA;
+}
+static void _jm_free(JSMallocState *s, void *q) {
+    if (!q) return;
+    s->malloc_count--;
+    s->malloc_size -= _jm_tamano(q) + _JM_CABECERA;
+    free((char *)q - _JM_CABECERA);
+}
+static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
+    size_t antes, *p;
+    if (!q) return n ? _jm_malloc(s, n) : NULL;
+    if (!n) { _jm_free(s, q); return NULL; }
+    antes = _jm_tamano(q);
+    if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
+    p = realloc((char *)q - _JM_CABECERA, n + _JM_CABECERA);
+    if (!p) return NULL;
+    p[0] = n;
+    s->malloc_size += n - antes;
+    return (char *)p + _JM_CABECERA;
+}
+static const JSMallocFunctions _jm_funciones = { _jm_malloc, _jm_free, _jm_realloc, _jm_tamano };
+
 static void _js_rechazos_decir(void);
 /* The jobs waiting (Promise.then, async functions): run them all, up to a limit */
 static void _js_trabajos(JSRuntime *rt) {
@@ -473,7 +521,7 @@ end
 #ifdef _JS_GUARDAS
     m->rt = JS_NewRuntime2(&_jg_funciones, NULL);
 #else
-    m->rt = JS_NewRuntime();
+    m->rt = JS_NewRuntime2(&_jm_funciones, NULL);
 #endif
     if (m->rt) {
         /* the stack the program really has, less 64 KB for the C below QuickJS: 192 KB with the 256 KB of @stack here

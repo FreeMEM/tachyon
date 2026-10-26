@@ -193,6 +193,12 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D71. **La caché de largos de texto expulsa el texto grande** (2026-10-26, tarea 38c; propuesta a la sesión "dash").
+      _dash_str_len guarda el largo de 8 textos de 64 bytes o más y los cambia por turno: al leer la hoja CSS de
+      YouTube (3,8 MB, 18 623 reglas), cada cuerpo de regla largo entra y a las 8 reglas sale la hoja, y el corte
+      siguiente hace strlen de 3,8 MB: css_leer tarda 184 s en un 68040 con JIT (tests/bench/css_grande.dash).
+      Propuesto: que entre en un hueco libre o en el del texto más corto (medirlo otra vez cuesta menos). Probado en
+      una copia: 10,1 s, las mismas reglas.
 - [x] D70. **Comparar textos con nil sin leer la dirección 0** (2026-10-23, tarea 43; propuesta a la sesión "dash").
       `a == b` entre String es `strcmp(a, b) == 0`: con `a` nil (un campo `String = nil`) lee la dirección 0. En un 68k
       clásico no se nota; AmigaOS 4 no lo deja y el programa se cae (un usuario con la v0.3.0). Propuesto: nil como
@@ -534,6 +540,14 @@ tarea, con el estilo de Dash.
       c. Lo que pida después (customElements nativo si el polyfill no basta, ShadyDOM, ytd-app...).
       a y b hechas (2026-10-25; ver la bitácora). Para la c: style de un envoltorio de ShadyDOM, "not a function"
       en playerApi y attached (el reproductor), la memoria (46 MB de JavaScript al final) y una captura pintada.
+      Partes de la c (2026-10-26):
+      [~] c1. La hoja CSS de 3,8 MB: leerla son 184 s de los ~400 de la carga (necesita D71: 10 s).
+      [ ] c2. El cuelgue sin mensaje hacia los 400 s de la carga (dos veces sin --memcheck; con él, no): el emulador
+          deja de responder (ni las capturas). YouTube no da siempre lo mismo: a veces el script principal entero
+          (10,8 MB), a veces partido (base de 1,2 MB y "late,app" de 9,6 MB, que llega después).
+      [ ] c3. Lo de antes: style de un envoltorio de ShadyDOM (YouTube pone ShadyDOM={force:true,noPatch:true}: en
+          Chrome también lo usa, así que es otro camino de su código), "not a function" en playerApi y attached.
+      [ ] c4. Una captura de la portada pintada y comparada con Chrome.
 - [ ] 53. **Las webs de chat (usuario, 2026-10-24: "si se viesen las webs de gemini, chatgpt, claude, etc y se pudiese
       conversar con ellas... ya sería la releche").** gemini.google.com, chatgpt.com, claude.ai: que se vean y se pueda
       escribir y leer la respuesta. Lo difícil: piden entrar con una cuenta (formularios, cookies, redirecciones de
@@ -4856,3 +4870,18 @@ Formato:
 - Con la 54 (enviar un informe de depuración). Batería 110/110; el envío, probado desde la máquina RTG ancha con
   MUI 3.8. PR #13; paquete en un worktree limpio de main; release con tachyon.lha, Tachyon.gz y los nueve catálogos
   (11 ficheros); las descargas responden (200). El receptor ya estaba en marcha en el servidor de las webs.
+
+### 2026-10-26 — Tarea 38c (parte): YouTube, dónde se va el tiempo; el loop se para (uso semanal 93 %)
+- Base: 110/110 (2973 s, Dash 1a7144e).
+- La portada en la máquina RTG ancha (MUI 3.8), dos veces sin --memcheck: blanca a los 6 min y luego nada más (ni
+  salida ni capturas: el emulador deja de responder) hacia los 400 s de la carga. Con --memcheck no se colgó: 0
+  errores, "entera" a los 229 s. YouTube no da siempre lo mismo: el script principal entero (10,8 MB) o partido
+  (base de 1,2 MB y "late,app" de 9,6 MB, que llega después). Apuntado como 38c2.
+- Con --perfil: el 46 % del tiempo es _css_bloque leyendo la hoja de 3,8 MB ("estilo hecho" 200 s después de los
+  scripts). Medido aparte (tests/bench/css_grande.dash, 68040 con JIT): 184 s, 18 623 reglas. La causa, en Dash: la
+  caché de largos de 8 huecos va por turno; cada cuerpo de regla de 64 bytes o más entra, a las 8 reglas sale la hoja
+  y el corte siguiente hace strlen de 3,8 MB. Con una copia de Dash que echa el texto más corto: 10,1 s. Encargado a
+  la sesión "dash" como D71; queda en cola (no empieza nada nuevo con el uso por encima del 90 %).
+- ShadyDOM: la página pone ShadyDOM={force:true,preferPerformance:true,noPatch:true}, así que Chrome también usa
+  el envoltorio sin style: el fallo de style viene de otro camino del código de YouTube (38c3).
+- El loop se para aquí: uso semanal al 93 % (regla 1). Lo siguiente: compilar con D71 cuando llegue, 38c2 y 38c3.

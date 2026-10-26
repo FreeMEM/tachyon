@@ -1,0 +1,9 @@
+# Cuánto tarda leer una hoja de estilo grande (la de YouTube son 3,7 MB; tarea 38c). Uso: css_grande FICHERO
+import "../../lib/css.dash"
+
+Main
+    texto = file_read_text(arg(0))
+    t0 = time_ms()
+    hoja = css_leer(texto, 0)
+    Print "" + texto.length + " bytes, " + hoja.reglas.length + " reglas en " + (time_ms() - t0) + " ms"
+end

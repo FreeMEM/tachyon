@@ -566,6 +566,8 @@ tarea, con el estilo de Dash.
           guarda la elección ("Your YouTube History is off", como sin cuenta). La rejilla de vídeos sin probar.
       [ ] c6. La memoria: 46-52 MB de JavaScript y ~29 MB la hoja de 3,8 MB leída; en la máquina de 128 MB quedan
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
+          En parte (2026-10-27): las hojas sin los scripts traídos y las declaraciones leídas al usarse: "entera" en
+          128 MB con 15,5 MB libres. Siguen: los selectores de la hoja (15,8 MB leída) y el JavaScript (54 MB).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
@@ -5060,4 +5062,16 @@ Formato:
 - Con eso, en 128 MB: tras la primera "hojas otra vez", 24,5 MB libres en vez de 13,7; pero el JavaScript aún se
   quedaba sin memoria al final (siguiente vuelta: la hoja leída, 22 MB).
 - Batería: 114/114 (3484 s).
+
+### 2026-10-27 — Tarea 38c6 (parte): las declaraciones de cada regla, leídas al usarlas; YouTube cabe en 128 MB
+- tests/bench/css_grande.dash dice ahora también lo que ocupa la hoja leída: la de YouTube (3,8 MB, 18 623 reglas),
+  22 MB.
+- Ahora (lib/css.dash, css_regla_declaraciones) cada regla guarda lo de entre sus llaves y lo lee la primera vez que se
+  piden sus declaraciones (al cumplirla un elemento, o al buscar content para ::before/::after): la mayoría de las de
+  YouTube no las usa ningún elemento. Las url() se completan en el texto; los var() que nombran (vars_usadas), del
+  texto. La hoja: 15,8 MB y 7,0 s (antes 22 MB y 10,7 s). test_css y test_css_cdo piden las declaraciones así.
+- YouTube en la máquina RTG ancha de 128 MB: "entera" a los 218 s con 15,5 MB libres (mínimo 7,8 MB); antes se quedaba
+  sin memoria. En la captura faltan un par de iconos y el aviso de detrás del diálogo no se pinta entero (se mira).
+- Compilación puesta en Traspaso.
+- Batería: 114/114 (3407 s).
 

@@ -53,12 +53,23 @@ end
 
 struct Regla
     selectores: [Selector]
-    declaraciones: [Declaracion]
+    declaraciones: [Declaracion]   # nil hasta que se piden (css_regla_declaraciones): mientras, el texto
     orden: Int
     medios: [String] = nil      # las condiciones de los @media que la rodean (nil: vale siempre)
     expandidas: [Declaracion] = nil   # las declaraciones con los atajos (margin, border...) ya partidos (lib/estilo.dash)
     con_content: Int = -1       # 1 si declara content (lib/estilo.dash: los ::before/::after sin él no se miran)
     capa: Int = 1000            # @layer: el puesto de su capa (1000: fuera de capas, gana a todas)
+    texto: String = ""          # lo de entre sus llaves, hasta que se leen sus declaraciones
+end
+
+# Las declaraciones de una regla, leídas la primera vez que se piden (tarea 38c6): la mayoría de las reglas de una hoja
+# grande no las usa ningún elemento de la página; leídas todas, la de YouTube (3,8 MB, 18 623 reglas) ocupaba 22 MB
+func css_regla_declaraciones(r: Regla) -> [Declaracion]
+    if r.declaraciones == nil
+        r.declaraciones = css_declaraciones(r.texto)
+        r.texto = ""
+    end
+    return r.declaraciones
 end
 
 # Un @font-face: la familia (en minúsculas, sin comillas), su src entero, font-weight (100-900) y font-style
@@ -684,7 +695,9 @@ func _css_bloque(hoja: HojaCSS, s: String, orden: Int, medios: [String]) -> Int
                 end
             end
             if selectores.length > 0
-                r = Regla(selectores, css_declaraciones(s[llave + 1:cierre]), orden)
+                var sin_leer: [Declaracion] = nil
+                r = Regla(selectores, sin_leer, orden)
+                r.texto = s[llave + 1:cierre]
                 r.medios = medios
                 r.capa = _css_capa
                 hoja.reglas.push(r)

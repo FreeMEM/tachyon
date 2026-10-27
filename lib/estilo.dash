@@ -326,9 +326,15 @@ func _estilo_agregar(h: Hojas, hoja: HojaCSS, base: Url, nivel: Int)
             end
         end
         for regla in hoja.reglas
-            for d in regla.declaraciones
-                if str_find(d.valor, "url(") >= 0
-                    d.valor = _css_absolutas(d.valor, base)
+            if regla.declaraciones == nil
+                if str_find(regla.texto, "url(") >= 0
+                    regla.texto = _css_absolutas(regla.texto, base)
+                end
+            else
+                for d in regla.declaraciones
+                    if str_find(d.valor, "url(") >= 0
+                        d.valor = _css_absolutas(d.valor, base)
+                    end
                 end
             end
         end
@@ -1249,8 +1255,13 @@ func _estilo_indexar(h: Hojas)
     var usadas: {String: Int} = {}
     for hoja in h.lista
         for regla in hoja.reglas
-            for d in regla.declaraciones
-                _vars_nombradas(d.valor, usadas)
+            # (sin leer sus declaraciones: los var() de su texto)
+            if regla.declaraciones == nil
+                _vars_nombradas(regla.texto, usadas)
+            else
+                for d in regla.declaraciones
+                    _vars_nombradas(d.valor, usadas)
+                end
             end
         end
     end
@@ -1331,7 +1342,7 @@ end
 func _declarar_entrada(e: Entrada, ganadoras: {String: Candidata})
     r = e.regla
     if r.expandidas == nil
-        r.expandidas = _expandir(r.declaraciones)
+        r.expandidas = _expandir(css_regla_declaraciones(r))
     end
     # la capa (@layer) pesa más que la especificidad
     esp = e.sel.especificidad + r.capa * 1000000
@@ -3046,9 +3057,11 @@ func _con_content(n: Nodo, indice: {String: [Entrada]}, clave: String) -> Bool
         r = e.regla
         if r.con_content < 0
             r.con_content = 0
-            for d in r.declaraciones
-                if d.propiedad == "content"
-                    r.con_content = 1
+            if r.declaraciones != nil or str_find(r.texto, "content") >= 0
+                for d in css_regla_declaraciones(r)
+                    if d.propiedad == "content"
+                        r.con_content = 1
+                    end
                 end
             end
         end

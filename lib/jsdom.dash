@@ -479,8 +479,27 @@ func jsdom_estilo_calculado(n: Nodo, propiedad: String) -> String
         end
         return "inline"
     end
+    # lo que no dice ninguna regla: su valor inicial, como en un navegador (iron-fit-behavior de Polymer, en el diálogo de
+    # cookies de YouTube, mira top !== 'auto' para saber si ya está colocado: con "" no se ponía position: fixed y el
+    # diálogo quedaba debajo de su fondo; tarea 38c5)
+    if _jsdom_iniciales == nil
+        var d: {String: String} = {}
+        for par in css_partir(JSDOM_INICIALES, 32)
+            dos = css_partir(par, 61)
+            if dos.length == 2
+                d[dos[0]] = dos[1]
+            end
+        end
+        _jsdom_iniciales = d
+    end
+    if _jsdom_iniciales.has(propiedad)
+        return _jsdom_iniciales[propiedad]
+    end
     return ""
 end
+
+var _jsdom_iniciales: {String: String} = nil
+const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s"
 
 # === XMLHttpRequest y fetch (tarea 37e2) ===
 # Las peticiones del JavaScript de cada motor van sin esperar (lib/http.dash); jsdom_peticiones_avanzar, en cada

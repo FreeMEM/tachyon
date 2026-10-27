@@ -2,12 +2,16 @@
 # instanceof (HTMLIFrameElement no es todo elemento; SVGElement, Text, Window, EventTarget), classList como lista
 # (Array.from, for...of, [0]), attachShadow, PromiseRejectionEvent (sin él core-js cambia el Promise de QuickJS por
 # el suyo) y selectores largos desde querySelector uno tras otro (la caché de longitudes de Dash y los textos de C).
+# Y un accesor sin getter sobre style en el prototipo de un elemento propio (como los componentes de YouTube) deja el
+# style de los nodos (tarea 38c5); uno con getter manda. getComputedStyle da el valor inicial de lo que no dice nada.
 # memcheck
 # expect-out: iframe false true | div true false | svg true false true | text true false | window true true
 # expect-out: clases a,b,c a b c a 3
 # expect-out: sombra true 1 true
 # expect-out: function true
 # expect-out: largos 1 1 1 1
+# expect-out: accesor object color: red puesto 1 | con getter mio | suelta rednull
+# expect-out: inicial auto none 0px static 1 | puesto 5px
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -22,5 +26,7 @@ Main
     Print js_evaluar(js, "var h = document.createElement('div'); var sr = h.attachShadow({mode: 'open'}); sr.appendChild(document.createElement('span')); 'sombra ' + (h.shadowRoot === sr) + ' ' + sr.childNodes.length + ' ' + (sr.host === h)", "t.js")
     Print js_evaluar(js, "typeof PromiseRejectionEvent + ' ' + (new PromiseRejectionEvent('unhandledrejection', {reason: 1}).reason === 1)", "t.js")
     Print js_evaluar(js, "var q = ['link[rel=\"preload\"][as=\"font\"][href=\"/_next/static/media/Archivo_latin-s.p.3svcjah2pla0_.woff2\"]', 'link[rel=\"preload\"][href=\"/_next/static/media/Archivo_latin-s.p.3svcjah2pla0_.woff2\"]', 'html > body > div#d.a.b.c > iframe#f, html > body > div#d > svg#s > path#p', 'link[rel=\"preload\"][as=\"font\"][href=\"/_next/static/media/Archivo_latin-s.p.3svcjah2pla0_.woff2\"]']; 'largos ' + q.map(function (s) { return document.querySelectorAll(s).length >= 1 ? 1 : 0; }).join(' ')", "t.js")
+    Print js_evaluar(js, "var X = function () {}; X.prototype = Object.create(HTMLElement.prototype); var puesto = 0; Object.defineProperty(X.prototype, 'style', {set: function (v) { puesto++; }, get: undefined, configurable: true}); var x = document.createElement('div'); Object.setPrototypeOf(x, X.prototype); x.style = 'a'; x.style.cssText = 'color: red'; var Y = function () {}; Y.prototype = Object.create(HTMLElement.prototype); Object.defineProperties(Y.prototype, {style: {get: function () { return 'mio'; }, set: function (v) {}, configurable: true}}); var y = document.createElement('div'); Object.setPrototypeOf(y, Y.prototype); 'accesor ' + typeof x.style + ' ' + x.getAttribute('style') + ' puesto ' + puesto + ' | con getter ' + y.style + ' | suelta ' + (0, x.style.removeProperty)('color') + x.getAttribute('style')", "t.js")
+    Print js_evaluar(js, "var c = getComputedStyle(d); var e = document.createElement('div'); e.style.top = '5px'; d.appendChild(e); 'inicial ' + [c.top, c.maxWidth, c.marginTop, c.position, c.opacity].join(' ') + ' | puesto ' + getComputedStyle(e).top", "t.js")
     js_liberar(js)
 end

@@ -162,11 +162,14 @@ func cajas_volcar(n: Nodo, hondo: Int)
     if n.tipo == DOM_ELEMENTO and (n.nombre == dw_cajas or str_find(dom_atributo(n, "class"), dw_cajas) >= 0)
         l = "caja " + hondo + " " + n.nombre + "." + dom_atributo(n, "class") + " [" + n.caja_x + "," + n.caja_y + " " + n.caja_w + "x" + n.caja_h + "]"
         if n.estilo != nil
-            for k in ["display", "position", "width", "min-width", "max-width", "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-wrap", "flex-direction", "order", "font-size", "grid-template-columns", "grid-column", "box-sizing", "padding", "margin"]
+            for k in ["display", "position", "top", "left", "z-index", "opacity", "width", "min-width", "max-width", "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-wrap", "flex-direction", "order", "font-size", "grid-template-columns", "grid-column", "box-sizing", "padding", "margin"]
                 if n.estilo.has(k)
                     l = l + " " + k + "=" + n.estilo[k]
                 end
             end
+        end
+        if dom_atributo(n, "style") != ""
+            l = l + " | style=" + dom_atributo(n, "style")
         end
         Print l
     end

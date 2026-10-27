@@ -1,12 +1,15 @@
-# Test: Selectors 4 (tarea 31k): :is(), :where(), :has() (> + ~ y descendiente), :not() con lista,
-# :nth-last-of-type(); su especificidad (:where cuenta 0, :is la de su argumento más específico) y
-# querySelectorAll con :is() desde JavaScript (ami64.com lo usa).
+# Test: Selectors 4 (tarea 31k): :is(), :where(), :has() (> + ~ y descendiente; y de varias partes, como
+# ":scope > li + li.g": tarea 38c7), :not() con lista, :nth-last-of-type(); su especificidad (:where cuenta 0, :is la
+# de su argumento más específico) y querySelectorAll con :is() desde JavaScript (ami64.com lo usa).
 # memcheck
 # expect-out: :is(.x, #c): a c
 # expect-out: div:has(> p): a
 # expect-out: div:has(span): c
 # expect-out: li:has(+ li): e f
 # expect-out: li:has(~ li.g): e f
+# expect-out: ul:has(> li + li.g): u
+# expect-out: li:has(+ li ~ li.g): e
+# expect-out: div:has(> p b): a
 # expect-out: p:not(.y, .z): b
 # expect-out: li:nth-last-of-type(1): g
 # expect-out: :where(.x) p: b
@@ -28,8 +31,8 @@ func ids(n: Nodo, sel: Selector) -> String
 end
 
 Main
-    doc = dom_desde_html("<html><body><div id=a class=x><p id=b>hola</p></div><div id=c><span id=d></span></div><ul><li id=e></li><li id=f></li><li id=g class=g></li></ul></body></html>")
-    for s in [":is(.x, #c)", "div:has(> p)", "div:has(span)", "li:has(+ li)", "li:has(~ li.g)", "p:not(.y, .z)", "li:nth-last-of-type(1)", ":where(.x) p"]
+    doc = dom_desde_html("<html><body><div id=a class=x><p id=b>hola <b>x</b></p></div><div id=c><span id=d></span></div><ul id=u><li id=e></li><li id=f></li><li id=g class=g></li></ul></body></html>")
+    for s in [":is(.x, #c)", "div:has(> p)", "div:has(span)", "li:has(+ li)", "li:has(~ li.g)", "ul:has(> li + li.g)", "li:has(+ li ~ li.g)", "div:has(> p b)", "p:not(.y, .z)", "li:nth-last-of-type(1)", ":where(.x) p"]
         Print s + ":" + ids(doc, css_selector(s))
     end
     Print "especificidad: " + css_selector(":where(#a) p").especificidad + " " + css_selector(":is(#a) p").especificidad + " " + css_selector("p:is(.x, div)").especificidad + " " + css_selector(":where(*):has(.a, .b)").especificidad

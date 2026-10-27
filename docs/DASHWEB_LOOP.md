@@ -5006,3 +5006,18 @@ Formato:
   catálogos de hoy; la anterior, Tachyon.24oct).
 - Batería: 113/113 (3376 s).
 
+### 2026-10-27 — Tarea 38c7 (parte): menos estilos enteros en YouTube y :has() de varias partes
+- Tras el botón, el estilo seguía pesando más que la maqueta (64 s frente a 20 s en una carga con clic). Dos causas
+  que se quitan:
+  - Un atributo que nombra una parte de un :has() que no es la última (el aria-hidden del :has() universal de
+    YouTube, ":has(>[role=dialog]:not([aria-hidden=true]) .ytwChannelBlocksViewModelHost) [dialog]") subía hasta
+    <html>: ahora solo si debajo del elemento hay alguno de la última parte (_has_sujeto_dentro).
+  - Un :hover en <body> con selectores de hermanos y :hover rehacía su padre, <html> (todo): ahora solo <body>.
+- Y el motor de selectores evaluaba mal un :has() de varias partes (":has(> [role=dialog] .x)" pedía que el hijo
+  fuera el .x): ahora como ":scope > [role=dialog] .x" sobre los de debajo (o, con + y ~, los hermanos de después y lo
+  suyo); :scope nuevo (el elemento del :has(); fuera de uno, la raíz). test_selectores4 y test_estilo_has_partes.
+- YouTube con clic: estilo tras los cambios de 64 a 49 s; quedan 2 enteros por hojas nuevas y 1 por un contenido con
+  elementos. Una vez, el POST de upgrade_visitor_cookie (al pulsar Reject all) no tuvo respuesta y YouTube enseñó su
+  capa de error; en la anterior respondió en 16 s (la red del emulador con tres a la vez; se mira si se repite).
+- Batería: 113/113 (3429 s).
+

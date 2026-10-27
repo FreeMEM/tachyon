@@ -516,6 +516,12 @@ end
 func _cumple_pseudo(n: Nodo, p: String) -> Bool
     if p == "hover"
         return n.raton
+    elif p == "scope"
+        # (el elemento del :has() que se está mirando; fuera de uno, la raíz)
+        if _ambito == nil
+            return n.padre != nil and n.padre.tipo == DOM_DOCUMENTO
+        end
+        return n == _ambito
     elif p == "first-child"
         return _es_primero(n)
     elif p == "last-child"
@@ -575,6 +581,9 @@ func _cumple_pseudo(n: Nodo, p: String) -> Bool
     return false
 end
 
+# El elemento de :scope (el del :has() que se mira); nil fuera de uno
+var _ambito: Nodo = nil
+
 # :has(): un selector relativo a n (> hijo, + hermano siguiente, ~ hermanos siguientes, o descendiente)
 func _tiene(n: Nodo, relativo: String) -> Bool
     comb = " "
@@ -588,6 +597,32 @@ func _tiene(n: Nodo, relativo: String) -> Bool
         return false
     end
     sel = lista[0]
+    if sel.partes.length > 1
+        # de varias partes (":has(> [role=dialog] .x)"): ":scope > [role=dialog] .x" en los de debajo de n, o con + y ~
+        # en los hermanos de después y lo suyo (antes se miraba el selector entero en cada hijo: el hijo tenía que ser
+        # el .x)
+        rel = _selectores_de(":scope " + comb + " " + s)
+        if rel.length == 0
+            return false
+        end
+        antes = _ambito
+        _ambito = n
+        r = false
+        if comb == ">" or comb == " "
+            r = _tiene_debajo(n, rel[0])
+        elif n.padre != nil
+            visto = false
+            for h in n.padre.hijos
+                if h == n
+                    visto = true
+                elif visto and h.tipo == DOM_ELEMENTO and not r
+                    r = estilo_cumple(h, rel[0]) or _tiene_debajo(h, rel[0])
+                end
+            end
+        end
+        _ambito = antes
+        return r
+    end
     if comb == ">"
         for h in n.hijos
             if h.tipo == DOM_ELEMENTO and estilo_cumple(h, sel)
@@ -633,6 +668,9 @@ end
 # Las pseudo-clases que se saben sin interacción y :hover (las demás, :focus..., nunca se cumplen;
 # querySelector da un error con ellas, como los navegadores con las que no conocen)
 func css_pseudo_conocida(p: String) -> Bool
+    if p == "scope"
+        return true
+    end
     if p == "hover"
         # (con el ratón encima: Nodo.raton, que pone lib/documento.dash)
         return true
@@ -2074,6 +2112,10 @@ func _estilo_toque(t: Toque, hojas: Hojas) -> Bool
         end
         for r in rasgos
             if hojas.invalida_hermanos.has(r)
+                # (los hermanos de <body> o <head>: solo el otro, que no tiene nada que ver; con <html>, todo)
+                if n.padre != nil and n.padre.nombre == "html"
+                    return _estilo_subarbol(n, hojas)
+                end
                 return _estilo_subarbol(n.padre, hojas)
             end
         end
@@ -2172,6 +2214,11 @@ func _estilo_has(t: Toque, hojas: Hojas) -> Bool
                 toca = _has_cruza(a.sujeto, rasgos)
             else
                 toca = _has_cruza(a.rasgos, rasgos)
+                # un atributo de n que nombra una parte de antes de la última: el :has() solo cambia si debajo de n
+                # hay alguno de la última (":has(>[role=dialog]:not([aria-hidden=true]) .x)" sin .x dentro: nada)
+                if toca and not a.hermanos and not _has_cruza(a.sujeto, rasgos)
+                    toca = _has_sujeto_dentro(n, a.sujeto)
+                end
             end
         end
         # (un vecino del que entra o sale: solo cuenta con + o ~; lo que entra o sale se apunta aparte)
@@ -2183,6 +2230,30 @@ func _estilo_has(t: Toque, hojas: Hojas) -> Bool
         end
     end
     return true
+end
+
+# ¿Hay debajo de n (sin contarlo) alguno con una etiqueta, id, clase o atributo de sujeto?
+func _has_sujeto_dentro(n: Nodo, sujeto: {String: Int}) -> Bool
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            var r: {String: Int} = {}
+            r[h.nombre] = 1
+            for at in h.atributos
+                r["[" + at.nombre] = 1
+            end
+            id = dom_id(h)
+            if id != ""
+                r["#" + id] = 1
+            end
+            for c in dom_clases(h)
+                r["." + c] = 1
+            end
+            if _has_cruza(sujeto, r) or _has_sujeto_dentro(h, sujeto)
+                return true
+            end
+        end
+    end
+    return false
 end
 
 func _has_cruza(a: {String: Int}, b: {String: Int}) -> Bool

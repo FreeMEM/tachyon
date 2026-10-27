@@ -4,7 +4,8 @@
 # una clase que entra en uno de dentro, un hijo directo que entra (:has(> li.x)), una clase en el hermano de después
 # (:has(+ .b)), un :has() que no es la última parte (.w:has(.m) .t) y uno que sale. Una clase que nadie nombra (ni
 # dentro de un :has()) no rehace nada; cambiar solo el texto de uno de dentro, solo ese; un innerHTML que quita el
-# elemento que hacía cumplir el :has(), sí.
+# elemento que hacía cumplir el :has(), sí. Un atributo que nombra la primera parte de un :has() universal
+# ("div:has(> [role=dialog] .host) .marca", como uno de YouTube) en uno sin ningún .host debajo: solo él.
 # memcheck
 # expect-out: clase: true red iguales true
 # expect-out: hijo: true blue iguales true
@@ -13,6 +14,7 @@
 # expect-out: sale: true black iguales true
 # expect-out: nada que ver: true partes 0
 # expect-out: texto: true partes 1 | html: true black iguales true
+# expect-out: role: true partes 2 color purple iguales true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -68,4 +70,16 @@ Main
     estilo_aplicar(doc, hojas)
     Print texto + " | " + paso(doc, hojas, js, "html", "$('c2').innerHTML = '<b>b</b>'", "c2")
     js_liberar(js)
+    css2 = "<style>div:has(> [role=dialog] .host) .marca { color: purple } [role] { margin: 1px }</style>"
+    doc2 = dom_desde_html(css2 + "<body><div id=g><div role=dialog><i id=i2>x</i><b class=host>h</b></div><p class=marca id=pm>m</p></div></body>")
+    hojas2 = estilo_hojas(doc2, "file:///y.html")
+    estilo_aplicar(doc2, hojas2)
+    js2 = js_nuevo()
+    jsdom_preparar(js2, doc2)
+    js_evaluar(js2, "document.getElementById('i2').setAttribute('role', 'note')", "x")
+    aria = "role: " + estilo_aplicar_partes(doc2, hojas2, doc2.toques) + " partes " + estilo_partes_cuantas() + " color " + dom_por_id(doc2, "pm").estilo["color"]
+    antes = foto(doc2)
+    estilo_aplicar(doc2, hojas2)
+    Print aria + " iguales " + (antes == foto(doc2))
+    js_liberar(js2)
 end

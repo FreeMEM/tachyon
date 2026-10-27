@@ -70,13 +70,16 @@ const DOCUMENTO_CARO = 150
 # maqueta. Cuando mide un elemento que no estaba en ella (lo escondido que se acaba de enseñar: el diálogo de cookies
 # de YouTube se centraba con su tamaño a 0), lib/jsdom.dash llama a documento_maquetar_por_js, que lo pone al día ya.
 # Tras una, la siguiente espera el doble de lo que tardó: una página que mete y mide en un bucle no maqueta en cada vuelta.
+# Si lo que mide sí estaba, pero él o uno de arriba tiene cambios (iron-fit-behavior le pone position: fixed, top y left
+# a 0 y mide para centrarlo; con la caja de antes lo mandaba fuera de la pantalla), también, y sin esperar, hasta 4 seguidas
 var _documentos_js: [Documento] = []
 var _documento_por_js_fin: Int = 0
 var _documento_por_js_ms: Int = 0
+var _documento_por_js_seguidas: Int = 0
 
 @c
 """
-static int _documento_por_js_c(_Dash_Nodo *doc) { return documento_maquetar_por_js(doc) ? 1 : 0; }
+static int _documento_por_js_c(_Dash_Nodo *doc, _Dash_Nodo *n) { return documento_maquetar_por_js(doc, n) ? 1 : 0; }
 """
 end
 
@@ -91,14 +94,53 @@ func _documento_con_js(d: Documento)
     _documentos_js.push(d)
 end
 
-func documento_maquetar_por_js(doc: Nodo) -> Bool
+# ¿Tiene n, o uno de arriba, cambios del JavaScript aún sin maquetar?
+func _documento_cadena_tocada(doc: Nodo, n: Nodo) -> Bool
+    if doc.toques == nil
+        return false
+    end
+    for t in doc.toques
+        if t.tipo == TOQUE_TODO
+            return true
+        end
+        p = n
+        while p != nil
+            if t.nodo == p
+                return true
+            end
+            p = p.padre
+        end
+    end
+    return false
+end
+
+# Las hojas, para el getComputedStyle del JavaScript (lib/jsdom.dash)
+func _documento_hojas_al_js(d: Documento)
+    if d.js != 0
+        jsdom_poner_hojas(d.doc, d.hojas)
+    end
+end
+
+func documento_maquetar_por_js(doc: Nodo, n: Nodo) -> Bool
     for d in _documentos_js
         if d.doc == doc
             if d.pagina == nil or d.ancho <= 0 or d.js == 0 or jsdom_cambios(d.js) == d.cambios
                 return false
             end
             ahora = time_ms()
-            if _documento_por_js_fin > 0 and ahora < _documento_por_js_fin + 2 * _documento_por_js_ms
+            pronto = _documento_por_js_fin > 0 and ahora < _documento_por_js_fin + 2 * _documento_por_js_ms
+            if not pronto
+                _documento_por_js_seguidas = 0
+            end
+            if jsdom_caja_valida(n, doc)
+                if not _documento_cadena_tocada(doc, n)
+                    return false
+                end
+                if pronto and _documento_por_js_seguidas >= 4
+                    return false
+                end
+                _documento_por_js_seguidas = _documento_por_js_seguidas + 1
+            elif pronto
                 return false
             end
             antes = documento_aplazar
@@ -351,6 +393,7 @@ func documento_avanzar(d: Documento) -> Bool
         d.titulo = d.direccion
     end
     d.hojas = estilo_hojas_con(d.doc, d.direccion, traidos)
+    _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)
     traza("estilo hecho")
@@ -419,6 +462,7 @@ func documento_desde_html(d: Documento, texto: String, t0: Int) -> Documento
         d.titulo = d.direccion
     end
     d.hojas = estilo_hojas(d.doc, d.direccion)
+    _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)
     imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
@@ -721,6 +765,7 @@ func _documento_al_dia(d: Documento) -> Bool
         firma = estilo_firma(d.doc)
         if firma != d.hojas_firma
             d.hojas = estilo_hojas_otra_vez(d.doc, d.direccion, d.hojas)
+            _documento_hojas_al_js(d)
             d.hojas_firma = firma
             imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
             hojas_nuevas = true
@@ -1440,6 +1485,7 @@ func documento_liberar(d: Documento)
     end
     if d.js != 0
         jsdom_peticiones_cancelar(d.js)
+        jsdom_quitar_hojas(d.doc)
         js_liberar(d.js)
         d.js = 0
         var quedan: [Documento] = []

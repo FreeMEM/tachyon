@@ -555,6 +555,8 @@ tarea, con el estilo de Dash.
           Falta: pulsar "Reject all" cae en el fondo (tp-yt-iron-overlay-backdrop, z-index 2201 y fixed) y no en el
           botón: el diálogo (tp-yt-paper-dialog) se maqueta con capa 0 y a la izquierda, sin el position: fixed ni
           el z-index que le pone iron-overlay/iron-fit. Después, la portada de verdad.
+          Hecho el botón (2026-10-27): el diálogo, centrado encima de la portada; "Reject all" lo cierra y YouTube
+          guarda la elección ("Your YouTube History is off", como sin cuenta). La rejilla de vídeos sin probar.
       [ ] c6. La memoria: 46-52 MB de JavaScript y ~29 MB la hoja de 3,8 MB leída; en la máquina de 128 MB quedan
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
@@ -4984,4 +4986,23 @@ Formato:
   estilo y maqueta tras los cambios, de 83 a 47 s. "Entera" sigue hacia los 225 s: entre los scripts y "entera", 90 s
   son los temporizadores de YouTube, 40 s estilo y maqueta y 16 s el estilo de la primera vez.
 - Batería: 112/112 (3330 s).
+
+### 2026-10-27 — Tarea 38c5: "Reject all" en YouTube (getComputedStyle y medidas al momento)
+- Con una traza temporal del clic: caía en el fondo del diálogo porque el diálogo no tenía position: fixed (su
+  z-index no contaba). iron-fit-behavior decide si ya está colocado con getComputedStyle (top/left !== 'auto') y lo
+  guarda (_fitInfo): había quitado el top: 0px que puso antes y preguntó enseguida; getComputedStyle mira primero el
+  atributo style y luego lo calculado, que era el de antes ("0px").
+  - Ahora (lib/jsdom.dash, lib/estilo.dash estilo_calcular_uno): si el elemento o uno de arriba tiene cambios sin
+    estilo aún, su estilo se calcula al momento (del de más arriba con cambios hasta él) y no se guarda: el paso de
+    después ve igual qué cambió. lib/documento.dash le da a jsdom las hojas de cada documento (jsdom_poner_hojas).
+    test_documento_estilo_js (nuevo).
+- Ya con position: fixed, salía arriba a la izquierda, fuera de la pantalla: iron-fit lo pone en top 0 y left 0, mide
+  y lo centra con lo medido, y la maqueta al pedir una medida solo se hacía si el elemento no estaba en la anterior.
+  Ahora también si él o uno de arriba tiene cambios, sin esperar, hasta 4 seguidas (el gancho de jsdom pasa el
+  elemento). test_documento_medir_js: uno que cambia de ancho.
+- En el emulador (máquina RTG ancha): el diálogo centrado encima de la portada, como en Chrome; "Reject all" lo
+  cierra, YouTube pide upgrade_visitor_cookie?eom=1 y carga otra vez la portada: "Your YouTube History is off"
+  (como sin cuenta y sin historial). Capturas enviadas al usuario. Compilación puesta en Traspaso (con los
+  catálogos de hoy; la anterior, Tachyon.24oct).
+- Batería: 113/113 (3376 s).
 

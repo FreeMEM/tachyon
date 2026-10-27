@@ -1964,6 +1964,72 @@ end
 var _partes_hechas: [Nodo] = nil
 var _partes_cuantas: Int = 0
 
+# El estilo de n ahora mismo, sin guardarlo: getComputedStyle de un elemento con cambios del JavaScript que aún no
+# tienen estilo (tarea 38c5: iron-fit-behavior quita el top que puso y pregunta enseguida; con el estilo de antes,
+# "0px", creía que ya estaba colocado y no le ponía position: fixed al diálogo de cookies de YouTube). desde es el de
+# más arriba con cambios (n o uno de sus antepasados): de él hasta n, cada uno con lo que hereda del de arriba; luego
+# todos se quedan como estaban (guardarlo cambiaría lo que ve después estilo_aplicar_partes: qué cambió)
+func estilo_calcular_uno(n: Nodo, desde: Nodo, hojas: Hojas) -> {String: String}
+    if n.tipo != DOM_ELEMENTO or hojas == nil
+        return n.estilo
+    end
+    var cadena: [Nodo] = []
+    p = n
+    while p != nil
+        if p.tipo != DOM_ELEMENTO or p.nombre == "html" or p.padre == nil or p.padre.tipo != DOM_ELEMENTO or p.padre.estilo == nil
+            return n.estilo
+        end
+        cadena.insert(0, p)
+        if p == desde
+            break
+        end
+        p = p.padre
+    end
+    if hojas.indice == nil or hojas.indice_ancho != css_vista_ancho()
+        _estilo_indexar(hojas)
+    end
+    var estilos: [{String: String}] = []
+    var varss: [{String: String}] = []
+    var antes: [Nodo] = []
+    var despues: [Nodo] = []
+    for c in cadena
+        estilos.push(c.estilo)
+        varss.push(c.vars)
+        antes.push(c.pseudo_antes)
+        despues.push(c.pseudo_despues)
+    end
+    apuntar = estilo_apuntar
+    marcar = estilo_marcar
+    estilo_apuntar = false
+    estilo_marcar = false
+    var limpios: {String: Int} = {}
+    _antepasados = limpios
+    _vars_usadas = hojas.vars_usadas
+    var hechas: {String: {String: Candidata}} = {}
+    _ganadoras_hechas = hechas
+    _estilo_cadena(cadena[0].padre, 1)
+    for c in cadena
+        _estilo_propio(c, hojas, c.padre.estilo, _estilo_vars_de(c.padre))
+        _antepasados_cambiar(c, 1)
+    end
+    for c in cadena
+        _antepasados_cambiar(c, -1)
+    end
+    _estilo_cadena(cadena[0].padre, -1)
+    nuevo = n.estilo
+    k = 0
+    for c in cadena
+        c.estilo = estilos[k]
+        c.vars = varss[k]
+        c.pseudo_antes = antes[k]
+        c.pseudo_despues = despues[k]
+        k = k + 1
+    end
+    estilo_apuntar = apuntar
+    estilo_marcar = marcar
+    return nuevo
+end
+
 # Cuántos elementos (o elementos con todo lo suyo) rehízo el último estilo_aplicar_partes
 func estilo_partes_cuantas() -> Int
     return _partes_cuantas

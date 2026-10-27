@@ -487,8 +487,13 @@ end
 # getComputedStyle: lo calculado por lib/estilo.dash; si el elemento es nuevo (sin estilo aún),
 # display según la etiqueta
 func jsdom_estilo_calculado(n: Nodo, propiedad: String) -> String
-    if n.estilo.has(propiedad)
-        return n.estilo[propiedad]
+    e = n.estilo
+    fresco = _jsdom_estilo_fresco(n)
+    if fresco != nil
+        e = fresco
+    end
+    if e.has(propiedad)
+        return e[propiedad]
     end
     if propiedad == "display" and n.tipo == DOM_ELEMENTO
         if jsdom_cumple(n, "html, body, div, p, h1, h2, h3, h4, h5, h6, ul, ol, dl, pre, blockquote, form, table, header, footer, nav, section, article, aside, main, figure, fieldset, address, hr")
@@ -520,6 +525,114 @@ func jsdom_estilo_calculado(n: Nodo, propiedad: String) -> String
 end
 
 var _jsdom_iniciales: {String: String} = nil
+
+# Las hojas de cada documento con JavaScript (lib/documento.dash las apunta y las quita): con ellas, getComputedStyle
+# calcula al momento el estilo de un elemento que tiene cambios sin estilo aún, él o uno de arriba (como un navegador;
+# estilo_calcular_uno, tarea 38c5)
+var _jsdom_docs: [Nodo] = []
+var _jsdom_hojas: [Hojas] = []
+# (el último calculado así, mientras no haya más cambios: iron-fit pide top, left, bottom, right... seguidos)
+var _jsdom_fresco_nodo: Nodo = nil
+var _jsdom_fresco_ultimo: Toque = nil
+var _jsdom_fresco_cuantos: Int = 0
+var _jsdom_fresco: {String: String} = nil
+
+func jsdom_poner_hojas(doc: Nodo, h: Hojas)
+    i = 0
+    while i < _jsdom_docs.length
+        if _jsdom_docs[i] == doc
+            _jsdom_hojas[i] = h
+            return
+        end
+        i = i + 1
+    end
+    _jsdom_docs.push(doc)
+    _jsdom_hojas.push(h)
+end
+
+func jsdom_quitar_hojas(doc: Nodo)
+    var docs: [Nodo] = []
+    var hojas: [Hojas] = []
+    i = 0
+    while i < _jsdom_docs.length
+        if _jsdom_docs[i] != doc
+            docs.push(_jsdom_docs[i])
+            hojas.push(_jsdom_hojas[i])
+        end
+        i = i + 1
+    end
+    _jsdom_docs = docs
+    _jsdom_hojas = hojas
+    var nadie: Nodo = nil
+    _jsdom_fresco_nodo = nadie
+    var ninguno: Toque = nil
+    _jsdom_fresco_ultimo = ninguno
+    var nada: {String: String} = nil
+    _jsdom_fresco = nada
+end
+
+# El estilo de n al momento si él o uno de arriba tiene cambios del JavaScript sin estilo aún; nil si no
+func _jsdom_estilo_fresco(n: Nodo) -> {String: String}
+    var nada: {String: String} = nil
+    if n.tipo != DOM_ELEMENTO
+        return nada
+    end
+    doc = n
+    while doc.padre != nil
+        doc = doc.padre
+    end
+    if doc.tipo != DOM_DOCUMENTO or doc.toques == nil or doc.toques.length == 0
+        return nada
+    end
+    ultimo = doc.toques[doc.toques.length - 1]
+    if n == _jsdom_fresco_nodo and ultimo == _jsdom_fresco_ultimo and doc.toques.length == _jsdom_fresco_cuantos
+        return _jsdom_fresco
+    end
+    var hojas: Hojas = nil
+    i = 0
+    while i < _jsdom_docs.length
+        if _jsdom_docs[i] == doc
+            hojas = _jsdom_hojas[i]
+        end
+        i = i + 1
+    end
+    if hojas == nil
+        return nada
+    end
+    # el de más arriba con cambios (con demasiados para apuntarlos, todos)
+    var cadena: [Nodo] = []
+    p = n
+    while p != nil and p.tipo == DOM_ELEMENTO
+        cadena.push(p)
+        p = p.padre
+    end
+    alto = -1
+    for t in doc.toques
+        if t.tipo == TOQUE_TODO
+            alto = cadena.length - 1
+            break
+        end
+        k = cadena.length - 1
+        while k > alto
+            if t.nodo == cadena[k]
+                alto = k
+            end
+            k = k - 1
+        end
+    end
+    # (<html> no se calcula así: el de debajo)
+    if alto > cadena.length - 2
+        alto = cadena.length - 2
+    end
+    if alto < 0
+        return nada
+    end
+    _jsdom_fresco = estilo_calcular_uno(n, cadena[alto], hojas)
+    _jsdom_fresco_nodo = n
+    _jsdom_fresco_ultimo = ultimo
+    _jsdom_fresco_cuantos = doc.toques.length
+    return _jsdom_fresco
+end
 const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s"
 
 # === XMLHttpRequest y fetch (tarea 37e2) ===
@@ -1242,10 +1355,10 @@ static JSValue _jsdom_defaultValue(JSContext *ctx, JSValueConst this_val) {
 /* Lo pone lib/documento.dash: si el JavaScript cambió el documento de ese árbol, maquetarlo ya (como hace un navegador
    al pedirle una medida). Se llama cuando se mide un elemento sin caja de la última maqueta: lo que estaba escondido
    y se acaba de enseñar (el diálogo de cookies de YouTube se centraba con su tamaño a 0; tarea 38c5) */
-static int (*jsdom_al_pedir_caja)(_Dash_Nodo *doc) = 0;
+static int (*jsdom_al_pedir_caja)(_Dash_Nodo *doc, _Dash_Nodo *n) = 0;
 static void _jsdom_caja_al_dia(JSContext *ctx, _Dash_Nodo *n) {
     _JsDom *d = _jsdom_de(ctx);
-    if (jsdom_al_pedir_caja && d && d->doc && n && !jsdom_caja_valida(n, d->doc)) jsdom_al_pedir_caja(d->doc);
+    if (jsdom_al_pedir_caja && d && d->doc && n) jsdom_al_pedir_caja(d->doc, n);
 }
 
 /* offsetWidth/offsetHeight...: its box in the last layout (tarea 37b); before the first one, 0 if not shown

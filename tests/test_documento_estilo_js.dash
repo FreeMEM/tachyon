@@ -1,0 +1,24 @@
+# Test: getComputedStyle justo después de un cambio del JavaScript da el estilo de ahora, como un navegador, aunque el
+# estilo de la página aún no se haya rehecho (tarea 38c5: iron-fit-behavior quitaba el top: 0px que puso y preguntaba
+# enseguida; con el de antes creía que el diálogo de cookies de YouTube ya estaba colocado y no le ponía position:
+# fixed). Un top quitado del style, una clase puesta en el padre y una en el elemento; uno sin cambios da lo de antes.
+# Después, el estilo de la página se rehace igual (lo calculado al momento no se guarda).
+# memcheck
+# expect-out: quitado auto | padre red | propia 7px | quieto 3px | luego red 7px
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    h = "<head><style>.r { color: red } .m { margin-left: 7px } #q { margin-left: 3px }</style></head><body><div id=p><div id=d style='top: 0px'>x</div></div><div id=q>q</div><script>var p = document.getElementById('p'), d = document.getElementById('d'), q = document.getElementById('q'); function cs(e, k) { return getComputedStyle(e)[k] }</script></body>"
+    doc = documento_html("http://x/", h)
+    documento_maquetar(doc, 300)
+    s = "quitado " + js_evaluar(doc.js, "d.style.top = ''; cs(d, 'top')", "t.js")
+    s = s + " | padre " + js_evaluar(doc.js, "p.className = 'r'; cs(d, 'color')", "t.js")
+    s = s + " | propia " + js_evaluar(doc.js, "d.className = 'm'; cs(d, 'marginLeft')", "t.js")
+    s = s + " | quieto " + js_evaluar(doc.js, "cs(q, 'marginLeft')", "t.js")
+    documento_al_dia(doc)
+    e = dom_por_id(doc.doc, "d").estilo
+    Print s + " | luego " + e["color"] + " " + e["margin-left"]
+    documento_liberar(doc)
+end

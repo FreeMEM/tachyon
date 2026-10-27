@@ -60,9 +60,62 @@ struct Documento
     maqueta_ms: Int = 0
     maqueta_fin: Int = 0
     aplazada: Int = -1
+    pintar_luego: Bool = false # se maquetó porque el JavaScript pidió una medida: el próximo documento_al_dia dice true
 end
 
 const DOCUMENTO_CARO = 150
+
+# === Maquetar al pedir una medida (tarea 38c5) ===
+# Un navegador maqueta en cuanto el JavaScript pide la medida de algo que cambió; aquí el JavaScript ve la última
+# maqueta. Cuando mide un elemento que no estaba en ella (lo escondido que se acaba de enseñar: el diálogo de cookies
+# de YouTube se centraba con su tamaño a 0), lib/jsdom.dash llama a documento_maquetar_por_js, que lo pone al día ya.
+# Tras una, la siguiente espera el doble de lo que tardó: una página que mete y mide en un bucle no maqueta en cada vuelta.
+var _documentos_js: [Documento] = []
+var _documento_por_js_fin: Int = 0
+var _documento_por_js_ms: Int = 0
+
+@c
+"""
+static int _documento_por_js_c(_Dash_Nodo *doc) { return documento_maquetar_por_js(doc) ? 1 : 0; }
+"""
+end
+
+@native func _documento_enganchar()
+"""
+    jsdom_al_pedir_caja = _documento_por_js_c;
+"""
+end
+
+func _documento_con_js(d: Documento)
+    _documento_enganchar()
+    _documentos_js.push(d)
+end
+
+func documento_maquetar_por_js(doc: Nodo) -> Bool
+    for d in _documentos_js
+        if d.doc == doc
+            if d.pagina == nil or d.ancho <= 0 or d.js == 0 or jsdom_cambios(d.js) == d.cambios
+                return false
+            end
+            ahora = time_ms()
+            if _documento_por_js_fin > 0 and ahora < _documento_por_js_fin + 2 * _documento_por_js_ms
+                return false
+            end
+            antes = documento_aplazar
+            documento_aplazar = false
+            hecho = _documento_al_dia(d)
+            documento_aplazar = antes
+            _documento_por_js_fin = time_ms()
+            _documento_por_js_ms = _documento_por_js_fin - ahora
+            if hecho
+                d.pintar_luego = true
+                traza("maquetada ya: el JavaScript pidió una medida")
+            end
+            return hecho
+        end
+    end
+    return false
+end
 # (lo pone el navegador; las pruebas quieren cada cambio al momento)
 var documento_aplazar: Bool = false
 
@@ -286,6 +339,7 @@ func documento_avanzar(d: Documento) -> Bool
     traidos = d.recursos.traidos
     if dom_buscar(d.doc, "script") != nil
         d.js = js_nuevo()
+        _documento_con_js(d)
         jsdom_preparar(d.js, d.doc)
         jsdom_ejecutar_scripts_con(d.js, d.doc, d.direccion, traidos)
         d.cambios = jsdom_cambios(d.js)
@@ -354,6 +408,7 @@ func documento_desde_html(d: Documento, texto: String, t0: Int) -> Documento
     d.doc = dom_desde_html5(texto)
     if dom_buscar(d.doc, "script") != nil
         d.js = js_nuevo()
+        _documento_con_js(d)
         jsdom_preparar(d.js, d.doc)
         jsdom_ejecutar_scripts(d.js, d.doc, d.direccion)
         d.cambios = jsdom_cambios(d.js)
@@ -624,6 +679,18 @@ end
 
 # Si el JavaScript cambió el documento desde la última maqueta: estilo, imágenes y maqueta otra vez
 func documento_al_dia(d: Documento) -> Bool
+    luego = d.pintar_luego
+    d.pintar_luego = false
+    hecho = _documento_al_dia(d)
+    if luego
+        # (lo maquetado al pedir una medida, entero: no se sabe qué zona cambió)
+        d.zona = false
+        return true
+    end
+    return hecho
+end
+
+func _documento_al_dia(d: Documento) -> Bool
     if not d.raton_toques and (d.js == 0 or jsdom_cambios(d.js) == d.cambios)
         return false
     end
@@ -1375,6 +1442,13 @@ func documento_liberar(d: Documento)
         jsdom_peticiones_cancelar(d.js)
         js_liberar(d.js)
         d.js = 0
+        var quedan: [Documento] = []
+        for o in _documentos_js
+            if o != d
+                quedan.push(o)
+            end
+        end
+        _documentos_js = quedan
     end
 end
 

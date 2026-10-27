@@ -551,6 +551,10 @@ tarea, con el estilo de Dash.
       [ ] c3. Lo de antes: style de un envoltorio de ShadyDOM (YouTube pone ShadyDOM={force:true,noPatch:true}: en
           Chrome también lo usa, así que es otro camino de su código), "not a function" en playerApi y attached.
       [ ] c5. El velo gris sobre toda la portada (no es un "backdrop") y la rejilla, que se queda en el esqueleto.
+          En parte (2026-10-27): el velo era el fondo del diálogo de cookies, que ya sale con sus textos y botones.
+          Falta: pulsar "Reject all" cae en el fondo (tp-yt-iron-overlay-backdrop, z-index 2201 y fixed) y no en el
+          botón: el diálogo (tp-yt-paper-dialog) se maqueta con capa 0 y a la izquierda, sin el position: fixed ni
+          el z-index que le pone iron-overlay/iron-fit. Después, la portada de verdad.
       [ ] c6. La memoria: 46-52 MB de JavaScript y ~29 MB la hoja de 3,8 MB leída; en la máquina de 128 MB quedan
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
@@ -4917,3 +4921,27 @@ Formato:
   Sale la barra de arriba (logo, buscador, menús) bajo un velo gris, y la rejilla en su esqueleto (captura enviada
   al usuario). Siguen los "not a function" de playerApi (this.getRoot().getPlayer().getPlayerPromise(), 38c3).
 - Batería: 110/110 (3078 s, Dash 9142671).
+
+### 2026-10-27 — Tarea 38c5 (parte): el diálogo de cookies de YouTube, con sus textos y botones
+- Dos commits. El primero (903c39f): el diálogo se pintaba debajo de su fondo.
+  - YouTube define style en el prototipo de sus componentes con solo un setter; el preludio envuelve
+    Object.defineProperty para que ese accesor guarde el getter del de Node.
+  - removeProperty se llamaba suelta (sin this).
+  - getComputedStyle da los valores iniciales de CSS (top auto, position static, z-index auto...) en vez de "":
+    iron-fit-behavior miraba top !== 'auto' para colocar el diálogo.
+  - CAJAS= vuelca también top, left, z-index, opacity y el style.
+- El segundo: los textos salían "zClosurez" (el saneador de polymer-resin mira si una propiedad está en un elemento
+  limpio de su etiqueta y, si parece nativa y no la conoce, cambia el valor).
+  - Un prototipo por etiqueta (PT[tag] = Object.create(N), y HTML*Element.prototype el de su etiqueta): name, href,
+    src, text, type, value... solo en las etiquetas que los tienen; data solo en los textos y comentarios.
+    _jsdom_objeto (lib/jsdom.dash) le pone a cada nodo el de su etiqueta.
+  - Medir obliga a maquetar (como un navegador): el JavaScript que pide offsetWidth o getBoundingClientRect con
+    cambios pendientes maqueta en ese momento (documento_maquetar_por_js, por un gancho en C de jsdom); como mucho
+    una vez cada dos veces lo que tardó la anterior. iron-fit centraba el diálogo con su tamaño a 0.
+  - Tests: test_jsdom_interfaces (las etiquetas, los prototipos, data) y test_documento_medir_js (nuevo).
+- Cómo queda: a los 190 s el primer pintado; en la captura de los 350 s, la página de cookies entera ("Before you
+  continue to YouTube", Reject all / Accept all / More options; captura enviada al usuario).
+- Pulsar "Reject all" (clicar en medir_visor --acciones) no hace nada: con una traza temporal del clic, cae en
+  tp-yt-iron-overlay-backdrop (fixed, capa 2201) porque el diálogo tiene capa 0. Apuntado en c5.
+- Batería: 111/111 (3278 s).
+

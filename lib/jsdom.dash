@@ -805,6 +805,23 @@ static JSValue _jsdom_objeto(JSContext *ctx, _Dash_Nodo *n) {
     if (JS_IsException(o)) return o;
     _dash_retain(n);
     JS_SetOpaque(o, n);
+    /* un elemento, con el prototipo de su etiqueta si el preludio lo tiene (__dashweb_protos: text de <a>, href, src...
+       solo en las suyas; tarea 38c5); un texto o un comentario, con el suyo (data) */
+    {
+        const char *clave = n->tipo == DOM_ELEMENTO ? (const char *)n->nombre : n->tipo == DOM_TEXTO ? "#text"
+                          : n->tipo == DOM_COMENTARIO ? "#comment" : NULL;
+        JSValue g, pt;
+        if (clave && !*clave) clave = NULL;
+        g = clave ? JS_GetGlobalObject(ctx) : JS_UNDEFINED;
+        pt = clave ? JS_GetPropertyStr(ctx, g, "__dashweb_protos") : JS_UNDEFINED;
+        if (JS_IsObject(pt)) {
+            JSValue p = JS_GetPropertyStr(ctx, pt, clave);
+            if (JS_IsObject(p)) JS_SetPrototype(ctx, o, p);
+            JS_FreeValue(ctx, p);
+        }
+        JS_FreeValue(ctx, pt);
+        JS_FreeValue(ctx, g);
+    }
     d->nodos[i] = n;
     d->objetos[i] = JS_DupValue(ctx, o);
     d->usados++;
@@ -1197,10 +1214,20 @@ static JSValue _jsdom_defaultValue(JSContext *ctx, JSValueConst this_val) {
     return _jsdom_cadena(ctx, jsdom_atributo(n, (STRPTR)"value"));
 }
 
+/* Lo pone lib/documento.dash: si el JavaScript cambió el documento de ese árbol, maquetarlo ya (como hace un navegador
+   al pedirle una medida). Se llama cuando se mide un elemento sin caja de la última maqueta: lo que estaba escondido
+   y se acaba de enseñar (el diálogo de cookies de YouTube se centraba con su tamaño a 0; tarea 38c5) */
+static int (*jsdom_al_pedir_caja)(_Dash_Nodo *doc) = 0;
+static void _jsdom_caja_al_dia(JSContext *ctx, _Dash_Nodo *n) {
+    _JsDom *d = _jsdom_de(ctx);
+    if (jsdom_al_pedir_caja && d && d->doc && n && !jsdom_caja_valida(n, d->doc)) jsdom_al_pedir_caja(d->doc);
+}
+
 /* offsetWidth/offsetHeight...: its box in the last layout (tarea 37b); before the first one, 0 if not shown
    (display: none here or above, or out of the document) and otherwise a nominal size (magic 0: width, 1: height) */
 static JSValue _jsdom_tamano(JSContext *ctx, JSValueConst this_val, int magic) {
     _JSDOM_ESTE;
+    _jsdom_caja_al_dia(ctx, n);
     if (n->tipo != DOM_ELEMENTO) return JS_NewInt32(ctx, 0);
     if (jsdom_caja_valida(n, _jsdom_de(ctx)->doc)) return JS_NewInt32(ctx, magic ? n->caja_h : n->caja_w);
     if (_jsdom_de(ctx)->doc->caja_pase || !jsdom_visible(n)) return JS_NewInt32(ctx, 0);
@@ -1212,6 +1239,7 @@ static JSValue _jsdom_tamano(JSContext *ctx, JSValueConst this_val, int magic) {
 static JSValue _jsdom_caja(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     _Dash_Nodo *n = argc > 0 ? _jsdom_nodo(ctx, argv[0]) : NULL;
     JSValue a;
+    _jsdom_caja_al_dia(ctx, n);
     if (!n || !jsdom_caja_valida(n, _jsdom_de(ctx)->doc)) return JS_NULL;
     a = JS_NewArray(ctx);
     JS_SetPropertyUint32(ctx, a, 0, JS_NewInt32(ctx, n->caja_x));

@@ -550,6 +550,11 @@ tarea, con el estilo de Dash.
           reserva al sistema.
       [ ] c3. Lo de antes: style de un envoltorio de ShadyDOM (YouTube pone ShadyDOM={force:true,noPatch:true}: en
           Chrome también lo usa, así que es otro camino de su código), "not a function" en playerApi y attached.
+          Visto (2026-10-27): los dos ytd-player de la página están definidos y son de su clase, pero no tienen
+          getPlayerPromise ni preparePlayer (de RIn.YtPlayerBehavior), y ytd-app no tiene getPlayer. ytd-player se
+          declara con disableElementRegistration y se registra con _.Ih()(yJ0, "ytd-player", ..., {mode: 2}) (umQ y
+          b_N: su propio sistema de componentes, con hostElement); en modo 1 (jr4) los métodos de los behaviors se
+          reenvían al elemento (getInitialMethods). Falta ver por qué en modo 2 no llegan al elemento aquí.
       [ ] c5. El velo gris sobre toda la portada (no es un "backdrop") y la rejilla, que se queda en el esqueleto.
           En parte (2026-10-27): el velo era el fondo del diálogo de cookies, que ya sale con sus textos y botones.
           Falta: pulsar "Reject all" cae en el fondo (tp-yt-iron-overlay-backdrop, z-index 2201 y fixed) y no en el
@@ -5020,4 +5025,12 @@ Formato:
   elementos. Una vez, el POST de upgrade_visitor_cookie (al pulsar Reject all) no tuvo respuesta y YouTube enseñó su
   capa de error; en la anterior respondió en 16 s (la red del emulador con tres a la vez; se mira si se repite).
 - Batería: 113/113 (3429 s).
+
+### 2026-10-27 — Tarea 38c3 (parte): dónde fallan el reproductor y el POST que no salió
+- El POST de upgrade_visitor_cookie que no tuvo respuesta (vuelta anterior): nunca se llegó a enviar; las peticiones
+  del JavaScript no esperan turno (si no hay una conexión libre a ese servidor se abre otra), pero abrir una TLS en el
+  68040 emulado con tres emuladores a la vez tardaba 8-17 s (GenerateIT, 17 s) y YouTube enseñó su error antes. No es
+  de Tachyon: se mira otra vez si pasa con un solo emulador.
+- Los "not a function" de playerApi (getRoot().getPlayer().getPlayerPromise()) y de attached en ytd-watch-flexy
+  (_.dd(this).preparePlayer()), con una traza temporal al pulsar: lo apuntado en c3. Sin cambios en el código.
 

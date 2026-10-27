@@ -100,6 +100,20 @@ func _requisitos(sel: Selector) -> [String]
     return r
 end
 
+# Un :has() de los selectores (tarea 38c7): el elemento que lo lleva (su clave, como _clave; "" cualquiera) y lo que
+# nombra dentro. Con él, un cambio del JavaScript rehace solo los de arriba que pueden ser ese elemento, y solo si
+# toca algo que nombra (antes, con un :has() en las hojas, cada cambio era el estilo entero: YouTube, 18 veces)
+struct HasAncla
+    clave: String
+    ultima: Bool                 # está en la última parte del selector: basta él solo (y todo lo suyo si cambia)
+    rasgos: {String: Int}        # las ".c", "#i", "[a", etiquetas y ":hover" de dentro
+    sujeto: {String: Int}        # las de la última parte de dentro (de cada una, con comas): lo que entra o sale
+                                 # tiene que llevar una para que cambie (salvo con + o ~)
+    hermanos: Bool = false       # dentro hay + o ~: también los hermanos de antes, y cualquier cosa que entre o salga
+    hijo: Bool = false           # ":has(> x)", una parte: solo el padre del que cambia
+    todo: Bool = false           # una parte de dentro no nombra nada de eso (:focus-visible, *): cualquier cambio
+end
+
 struct Hojas
     lista: [HojaCSS]
     autor: [Bool]
@@ -121,6 +135,7 @@ struct Hojas
     cuadros: {String: [Fotograma]} = nil        # y todos sus fotogramas (lib/animacion.dash)
     # lo que nombran los selectores, para saber si un cambio del JavaScript toca algún estilo (estilo_aplicar_partes)
     con_has: Bool = false              # algún selector usa :has() (un cambio puede tocar el estilo de los de arriba)
+    has_anclas: [HasAncla] = nil       # cada :has() de los selectores (_estilo_has)
     clases_usadas: {String: Int} = nil
     ids_usados: {String: Int} = nil
     atributos_usados: {String: Int} = nil
@@ -865,6 +880,15 @@ func _estilo_usos(h: Hojas, sel: Selector)
         end
         k = k + 1
     end
+    k = 0
+    for parte in sel.partes
+        for ps in parte.simple.pseudo
+            if str_find(ps, "has(") >= 0
+                h.has_anclas.push(_has_ancla(parte.simple, ps, k == ultima))
+            end
+        end
+        k = k + 1
+    end
     for parte in sel.partes
         si = parte.simple
         for c in si.clases
@@ -896,6 +920,131 @@ func _estilo_usos(h: Hojas, sel: Selector)
                 _estilo_usos_texto(h, ps)
             end
         end
+    end
+end
+
+# El :has() de la pseudoclase ps (que puede ir dentro de otra: "not(:has(.x))") en la parte si de un selector
+func _has_ancla(si: SelSimple, ps: String, ultima: Bool) -> HasAncla
+    clave = _clave(si)
+    if clave == "*"
+        clave = ""
+    end
+    var rasgos: {String: Int} = {}
+    var sujeto: {String: Int} = {}
+    a = HasAncla(clave, ultima, rasgos, sujeto)
+    _has_dentro(a, ps[str_find(ps, "has(") + 4:])
+    return a
+end
+
+# Lo que nombra el argumento de un :has() (t empieza después de su paréntesis): por cada parte (entre combinadores),
+# sus .clases, #ids, [atributos], su etiqueta y :hover (también los de un :not() de dentro, que no cuentan como
+# nombrar: :not(.x) lo cumple casi todo)
+func _has_dentro(a: HasAncla, t: String)
+    n = t.length
+    i = 0
+    nivel = 0
+    partes = 0
+    empezada = false
+    algo = false
+    var ahora: {String: Int} = {}
+    while i < n
+        c = str_code(t, i)
+        if nivel == 0 and (c == 32 or c == 62 or c == 43 or c == 126 or c == 44 or c == 41)
+            if empezada
+                partes = partes + 1
+                if not algo
+                    a.todo = true
+                end
+            end
+            if c == 62 and partes == 0 and not empezada
+                a.hijo = true
+            end
+            if c == 43 or c == 126
+                a.hermanos = true
+            end
+            if (c == 44 or c == 41) and empezada
+                for k in ahora.keys()
+                    a.sujeto[k] = 1
+                end
+            end
+            if c == 44
+                partes = 2
+            end
+            if empezada
+                var nuevo: {String: Int} = {}
+                ahora = nuevo
+            end
+            empezada = false
+            algo = false
+            i = i + 1
+            if c == 41
+                break
+            end
+        elif c == 34 or c == 39
+            j = i + 1
+            while j < n and str_code(t, j) != c
+                j = j + 1
+            end
+            empezada = true
+            i = j + 1
+        elif c == 40
+            nivel = nivel + 1
+            i = i + 1
+        elif c == 41
+            nivel = nivel - 1
+            i = i + 1
+        elif c == 46 or c == 35 or c == 91
+            j = i + 1
+            while j < n and _estilo_letra(str_code(t, j))
+                j = j + 1
+            end
+            if j > i + 1
+                r = t[i:j]
+                if c == 91
+                    r = "[" + str_lower(t[i + 1:j])
+                end
+                a.rasgos[r] = 1
+                if nivel == 0
+                    ahora[r] = 1
+                    algo = true
+                end
+            end
+            if c == 91
+                while j < n and str_code(t, j) != 93
+                    j = j + 1
+                end
+                j = j + 1
+            end
+            empezada = true
+            i = j
+        elif c == 58
+            j = i + 1
+            while j < n and (_estilo_letra(str_code(t, j)) or str_code(t, j) == 58)
+                j = j + 1
+            end
+            if t[i:j] == ":hover"
+                a.rasgos[":hover"] = 1
+            end
+            empezada = true
+            i = j
+        elif nivel == 0 and not empezada and _estilo_letra(c)
+            j = i + 1
+            while j < n and _estilo_letra(str_code(t, j))
+                j = j + 1
+            end
+            r = str_lower(t[i:j])
+            a.rasgos[r] = 1
+            ahora[r] = 1
+            algo = true
+            empezada = true
+            i = j
+        else
+            empezada = true
+            i = i + 1
+        end
+    end
+    if partes != 1
+        a.hijo = false
     end
 end
 
@@ -994,6 +1143,8 @@ func _estilo_indexar(h: Hojas)
     h.hermanos = 0
     h.hermanos_arriba = false
     h.con_has = false
+    var anclas: [HasAncla] = []
+    h.has_anclas = anclas
     var inv: {String: {String: Int}} = {}
     h.invalida = inv
     var invh: {String: Int} = {}
@@ -1761,9 +1912,9 @@ end
 # false si no se puede (:has() en las hojas, demasiados cambios, o hay que rehacer <html> entero): estilo_aplicar.
 func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
     estilo_raro = dom_atributo(doc, "modo") == "quirks"
-    if hojas.con_has or hojas.indice == nil or hojas.indice_ancho != css_vista_ancho() or hojas.invalida == nil
+    if hojas.indice == nil or hojas.indice_ancho != css_vista_ancho() or hojas.invalida == nil or hojas.has_anclas == nil
         if traza_activa
-            traza("estilo entero: :has() " + hojas.con_has)
+            traza("estilo entero: hojas sin índice")
         end
         return false
     end
@@ -1797,7 +1948,7 @@ func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
             end
             return false
         end
-        if not _estilo_toque(t, hojas)
+        if not _estilo_toque(t, hojas) or not _estilo_has(t, hojas)
             if traza_activa
                 traza("estilo entero: " + t.tipo + " " + t.nombre + " [" + t.antes + "] -> [" + t.despues + "] en " + t.nodo.nombre)
             end
@@ -1812,6 +1963,11 @@ end
 
 var _partes_hechas: [Nodo] = nil
 var _partes_cuantas: Int = 0
+
+# Cuántos elementos (o elementos con todo lo suyo) rehízo el último estilo_aplicar_partes
+func estilo_partes_cuantas() -> Int
+    return _partes_cuantas
+end
 
 func _estilo_toque(t: Toque, hojas: Hojas) -> Bool
     n = t.nodo
@@ -1904,6 +2060,159 @@ func _estilo_toque(t: Toque, hojas: Hojas) -> Bool
         return _estilo_subarbol(n.padre, hojas)
     end
     return _estilo_subarbol(n, hojas)
+end
+
+# Los :has() que puede cambiar t (tarea 38c7): el cambio en un elemento lo ven los de arriba (y, con + o ~ dentro,
+# sus hermanos de antes). Para cada :has() que nombra algo del cambio, los de arriba que pueden llevarlo: él solo si
+# está en la última parte del selector (y todo lo suyo si su estilo cambia); si no, todo lo suyo. false: todo
+func _estilo_has(t: Toque, hojas: Hojas) -> Bool
+    if hojas.has_anclas.length == 0
+        return true
+    end
+    n = t.nodo
+    var rasgos: {String: Int} = {}
+    estructura = t.tipo != TOQUE_ATRIBUTO
+    cualquiera = false
+    if t.tipo == TOQUE_ATRIBUTO
+        if t.nombre == "class"
+            for c in _estilo_clases_distintas(t.antes, t.despues)
+                rasgos["." + c] = 1
+            end
+        elif t.nombre == "id"
+            rasgos["#" + t.antes] = 1
+            rasgos["#" + t.despues] = 1
+        elif t.nombre == ":hover"
+            rasgos[":hover"] = 1
+        else
+            rasgos["[" + t.nombre] = 1
+        end
+    elif t.tipo == TOQUE_ENTRA
+        _has_rasgos_de(n, rasgos)
+    elif t.tipo == TOQUE_SALE and t.quitado != nil
+        _has_rasgos_de(t.quitado, rasgos)
+    elif t.tipo != TOQUE_CONTENIDO or t.nombre != "#texto"
+        # (otro contenido: no se sabe qué elementos salieron)
+        cualquiera = true
+    end
+    # el elemento de un :has() está por encima: del que cambia, o del que perdió o cambió sus hijos
+    base = n.padre
+    if t.tipo == TOQUE_SALE or t.tipo == TOQUE_CONTENIDO
+        base = n
+    end
+    for a in hojas.has_anclas
+        toca = a.todo or cualquiera
+        if not toca
+            if estructura and not a.hermanos
+                toca = _has_cruza(a.sujeto, rasgos)
+            else
+                toca = _has_cruza(a.rasgos, rasgos)
+            end
+        end
+        # (un vecino del que entra o sale: solo cuenta con + o ~; lo que entra o sale se apunta aparte)
+        if t.tipo == TOQUE_VECINO and not a.hermanos
+            toca = false
+        end
+        if toca and not _has_rehacer(n, base, t.tipo == TOQUE_SALE, a, hojas)
+            return false
+        end
+    end
+    return true
+end
+
+func _has_cruza(a: {String: Int}, b: {String: Int}) -> Bool
+    if a.length > b.length
+        for k in b.keys()
+            if a.has(k)
+                return true
+            end
+        end
+        return false
+    end
+    for k in a.keys()
+        if b.has(k)
+            return true
+        end
+    end
+    return false
+end
+
+# La etiqueta, el id, las clases y los nombres de los atributos de n y de todo lo suyo
+func _has_rasgos_de(n: Nodo, r: {String: Int})
+    if n.tipo != DOM_ELEMENTO
+        return
+    end
+    r[n.nombre] = 1
+    for at in n.atributos
+        r["[" + at.nombre] = 1
+    end
+    id = dom_id(n)
+    if id != ""
+        r["#" + id] = 1
+    end
+    for c in dom_clases(n)
+        r["." + c] = 1
+    end
+    for h in n.hijos
+        _has_rasgos_de(h, r)
+    end
+end
+
+# Los que pueden llevar el :has() a: desde base hacia arriba (solo base con ":has(> x)"); con + o ~ dentro, también
+# los hermanos de antes de n y de los suyos de arriba (los hijos de n, si de n salió uno). false: todo
+func _has_rehacer(n: Nodo, base: Nodo, salio: Bool, a: HasAncla, hojas: Hojas) -> Bool
+    if a.hermanos
+        if salio
+            for h in n.hijos
+                if h.tipo == DOM_ELEMENTO and not _has_uno(h, a, hojas)
+                    return false
+                end
+            end
+        end
+        q = n
+        while q != nil and q.tipo == DOM_ELEMENTO and q.padre != nil
+            for h in q.padre.hijos
+                if h == q
+                    break
+                end
+                if h.tipo == DOM_ELEMENTO and not _has_uno(h, a, hojas)
+                    return false
+                end
+            end
+            q = q.padre
+        end
+    end
+    p = base
+    while p != nil and p.tipo == DOM_ELEMENTO
+        if not _has_uno(p, a, hojas)
+            return false
+        end
+        if a.hijo
+            return true
+        end
+        p = p.padre
+    end
+    return true
+end
+
+func _has_uno(e: Nodo, a: HasAncla, hojas: Hojas) -> Bool
+    if a.clave != ""
+        c = str_code(a.clave, 0)
+        if c == 35
+            if dom_id(e) != a.clave[1:]
+                return true
+            end
+        elif c == 46
+            if not _estilo_en(dom_clases(e), a.clave[1:])
+                return true
+            end
+        elif e.nombre != a.clave
+            return true
+        end
+    end
+    if a.ultima and not _estilo_solo(e, hojas)
+        return true
+    end
+    return _estilo_subarbol(e, hojas)
 end
 
 # Los antecesores de n (y n) en el filtro de antecesores (cuanto 1) o fuera (-1)

@@ -1,7 +1,8 @@
 # Test: estilo_aplicar_partes (tarea 33): tras los cambios del JavaScript (clases, un nodo nuevo delante de otro,
 # una variable de CSS que cambia en un antecesor) se rehace solo lo que cuelga de los nodos cambiados, y el
-# resultado es el mismo que rehaciendo todo. Con un :has() en las hojas no se puede (false); un cambio en <html>
-# tampoco. Un transform en el atributo style no rehace los de dentro; un color sí (aunque gane .z li) (tarea 37e3).
+# resultado es el mismo que rehaciendo todo. Con un :has() en las hojas también se puede (test_estilo_has_partes); con
+# un cambio en <html>, no. Un transform en el atributo style no rehace los de dentro; un color sí (aunque gane .z li)
+# (tarea 37e3).
 # memcheck
 # expect-out: toques 7, por partes true
 # expect-out: p1 red p2 blue nuevo green l1 black v #654321 o none
@@ -9,7 +10,7 @@
 # expect-out: body: por partes true, l2 orange
 # expect-out: iguales true
 # expect-out: transform: hijo igual true, translateY(5px) | color: hijo igual false, l1 orange
-# expect-out: con :has false; en html false; una clase que nadie nombra en body true
+# expect-out: con :has true; en html false; una clase que nadie nombra en body true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"

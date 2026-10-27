@@ -560,8 +560,9 @@ tarea, con el estilo de Dash.
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
-          138 s compilar el principal (10,8 MB). Hecho: find_var con un índice (compilarlo, 66 s). Siguen: el
-          estilo entero por :has() con cada cambio, la maqueta entera con cada cambio, los temporizadores de YouTube.
+          138 s compilar el principal (10,8 MB). Hecho: find_var con un índice (compilarlo, 66 s) y el estilo por
+          partes también con :has() (de 18 estilos enteros a 4). Siguen: la maqueta entera con cada cambio y los
+          temporizadores de YouTube (90 s de los 140 entre los scripts y "entera").
 - [ ] 53. **Las webs de chat (usuario, 2026-10-24: "si se viesen las webs de gemini, chatgpt, claude, etc y se pudiese
       conversar con ellas... ya sería la releche").** gemini.google.com, chatgpt.com, claude.ai: que se vean y se pueda
       escribir y leer la respuesta. Lo difícil: piden entrar con una cuenta (formularios, cookies, redirecciones de
@@ -4964,4 +4965,23 @@ Formato:
   en el emulador, 66 s.
 - La carga entera de YouTube: scripts de 158 a 77 s, primer pintado de 190 a 108 s, "entera" de 300 a 221 s.
 - Batería: 111/111 (3230 s).
+
+### 2026-10-27 — Tarea 38c7 (parte): el estilo por partes también con :has() en las hojas
+- Tras los scripts, cada cambio del JavaScript rehacía el estilo entero de YouTube (1,7-8 s) porque su hoja tiene 29
+  selectores con :has() (estilo_aplicar_partes se rendía con uno): 18 veces en una carga, 83 s de estilo y maqueta.
+- Ahora (lib/estilo.dash, HasAncla): por cada :has() se apunta la clave del elemento que lo lleva, si está en la
+  última parte del selector, lo que nombra dentro (clases, ids, atributos, etiquetas, :hover; y lo de su última parte
+  aparte), si usa + o ~ y si es ":has(> x)". Un cambio rehace además los de arriba que pueden llevar ese :has() (con
+  + o ~, también sus hermanos de antes; con "> x", solo el padre), y solo si toca algo que nombra: un atributo, lo que
+  nombra en cualquier parte; lo que entra o sale, lo de la última parte. El elemento solo si el :has() está en la
+  última parte (y todo lo suyo si su estilo cambia); si no, todo lo suyo.
+- lib/jsdom.dash: un TOQUE_CONTENIDO lleva "#texto" cuando no salió ningún elemento (textContent o innerHTML en uno
+  que solo tenía texto, un texto que entra): ningún :has() puede cambiar por él.
+- test_estilo_has_partes (nuevo): una clase dentro, un hijo directo, un hermano, un :has() en medio del selector, uno
+  que sale, una clase que nadie nombra, solo texto y un innerHTML; cada vez, lo mismo que rehaciendo todo.
+  test_estilo_partes: con :has() ya se puede.
+- YouTube: de 18 estilos enteros a 4 (2 por :has(): un aria-hidden y un contenido con elementos; 2 por hojas nuevas);
+  estilo y maqueta tras los cambios, de 83 a 47 s. "Entera" sigue hacia los 225 s: entre los scripts y "entera", 90 s
+  son los temporizadores de YouTube, 40 s estilo y maqueta y 16 s el estilo de la primera vez.
+- Batería: 112/112 (3330 s).
 

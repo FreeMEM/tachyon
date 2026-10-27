@@ -1,0 +1,71 @@
+# Test: estilo_aplicar_partes con :has() en las hojas (tarea 38c7). Antes, cualquier cambio del JavaScript era el
+# estilo entero (YouTube tiene 29 selectores con :has(): 18 veces en una carga); ahora se rehacen también los de arriba
+# que pueden llevar el :has() y solo si el cambio toca algo que nombra. Cada vez, el mismo resultado que rehaciendo todo:
+# una clase que entra en uno de dentro, un hijo directo que entra (:has(> li.x)), una clase en el hermano de después
+# (:has(+ .b)), un :has() que no es la última parte (.w:has(.m) .t) y uno que sale. Una clase que nadie nombra (ni
+# dentro de un :has()) no rehace nada; cambiar solo el texto de uno de dentro, solo ese; un innerHTML que quita el
+# elemento que hacía cumplir el :has(), sí.
+# memcheck
+# expect-out: clase: true red iguales true
+# expect-out: hijo: true blue iguales true
+# expect-out: hermano: true green iguales true
+# expect-out: en medio: true orange iguales true
+# expect-out: sale: true black iguales true
+# expect-out: nada que ver: true partes 0
+# expect-out: texto: true partes 1 | html: true black iguales true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+
+func foto(n: Nodo) -> String
+    r = ""
+    if n.tipo == DOM_ELEMENTO
+        r = n.nombre + "#" + dom_id(n) + "." + dom_atributo(n, "class") + "=" + n.estilo["color"] + ";"
+    end
+    for h in n.hijos
+        r = r + foto(h)
+    end
+    return r
+end
+
+func paso(doc: Nodo, hojas: Hojas, js: Int, nombre: String, codigo: String, id: String) -> String
+    var nada: [Toque] = nil
+    doc.toques = nada
+    js_evaluar(js, codigo, "x")
+    parte = estilo_aplicar_partes(doc, hojas, doc.toques)
+    r = nombre + ": " + parte + " " + dom_por_id(doc, id).estilo["color"]
+    antes = foto(doc)
+    estilo_aplicar(doc, hojas)
+    return r + " iguales " + (antes == foto(doc))
+end
+
+Main
+    css = "<style>.card:has(.sel) { color: red } ul:has(> li.x) { color: blue } .a:has(+ .b) { color: green }"
+    css = css + " .w:has(.m) .t { color: orange } section:has(.otra) { color: gray }</style>"
+    h = css + "<body><div class=card id=c><p><span id=s>s</span></p></div><ul id=u><li>a</li></ul>"
+    h = h + "<div class=a id=a>a</div><div id=b>b</div><div class=w><div id=m>m</div><p class=t id=t>t</p></div>"
+    h = h + "<section id=z><div><div><i id=i>i</i></div></div></section><div class=card id=c2><em id=s2>e</em></div></body>"
+    doc = dom_desde_html(h)
+    hojas = estilo_hojas(doc, "file:///x.html")
+    estilo_aplicar(doc, hojas)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var $ = function (i) { return document.getElementById(i) };"
+    js_evaluar(js, c, "x")
+    Print paso(doc, hojas, js, "clase", "$('s').className = 'sel'", "c")
+    Print paso(doc, hojas, js, "hijo", "var l = document.createElement('li'); l.className = 'x'; $('u').appendChild(l)", "u")
+    Print paso(doc, hojas, js, "hermano", "$('b').className = 'b'", "a")
+    Print paso(doc, hojas, js, "en medio", "$('m').className = 'm'", "t")
+    Print paso(doc, hojas, js, "sale", "$('s').parentNode.removeChild($('s'))", "c")
+    var nada: [Toque] = nil
+    doc.toques = nada
+    js_evaluar(js, "$('i').className = 'nadie'", "x")
+    Print "nada que ver: " + estilo_aplicar_partes(doc, hojas, doc.toques) + " partes " + estilo_partes_cuantas()
+    doc.toques = nada
+    js_evaluar(js, "$('i').textContent = 'otro'", "x")
+    texto = "texto: " + estilo_aplicar_partes(doc, hojas, doc.toques) + " partes " + estilo_partes_cuantas()
+    js_evaluar(js, "$('s2').className = 'sel'", "x")
+    estilo_aplicar(doc, hojas)
+    Print texto + " | " + paso(doc, hojas, js, "html", "$('c2').innerHTML = '<b>b</b>'", "c2")
+    js_liberar(js)
+end

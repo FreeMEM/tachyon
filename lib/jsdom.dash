@@ -78,15 +78,34 @@ func jsdom_poner_texto(n: Nodo, t: String)
         # lo medido en él y en los de fuera ya no vale: tarea 37e6)
         dom_tocar(n)
         if n.tipo == DOM_TEXTO and n.padre != nil and n.padre.tipo == DOM_ELEMENTO
-            dom_apuntar(n.padre, TOQUE_CONTENIDO, "", "", "")
+            dom_apuntar(n.padre, TOQUE_CONTENIDO, "#texto", "", "")
         end
         return
     end
+    solo_texto = _jsdom_sin_elementos(n)
     _jsdom_vaciar(n)
     if t != ""
         dom_agregar(n, dom_nodo(DOM_TEXTO, "", t))
     end
-    dom_apuntar(n, TOQUE_CONTENIDO, "", "", "")
+    dom_apuntar(n, TOQUE_CONTENIDO, _jsdom_marca_texto(solo_texto), "", "")
+end
+
+# (un TOQUE_CONTENIDO en un elemento que no tenía elementos dentro lleva "#texto": no salió ninguno, y los que entran
+# se apuntan aparte; a lib/estilo.dash le dice que ningún :has() puede cambiar por él)
+func _jsdom_sin_elementos(n: Nodo) -> Bool
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            return false
+        end
+    end
+    return true
+end
+
+func _jsdom_marca_texto(solo: Bool) -> String
+    if solo
+        return "#texto"
+    end
+    return ""
 end
 
 # Sin hijos (los que quedan vivos, por ejemplo en el JS, ya no tienen padre)
@@ -236,8 +255,9 @@ end
 
 # innerHTML = html: los hijos se cambian por lo que da ese HTML (leído como el cuerpo de una página)
 func jsdom_poner_html(n: Nodo, html: String)
+    solo_texto = _jsdom_sin_elementos(n)
     _jsdom_vaciar(n)
-    dom_apuntar(n, TOQUE_CONTENIDO, "", "", "")
+    dom_apuntar(n, TOQUE_CONTENIDO, _jsdom_marca_texto(solo_texto), "", "")
     trozo = dom_desde_html("<body>" + html)
     cuerpo = dom_buscar(trozo, "body")
     if cuerpo == nil
@@ -323,7 +343,7 @@ end
 func _jsdom_entra(n: Nodo)
     if n.tipo != DOM_ELEMENTO
         if n.padre != nil
-            dom_apuntar(n.padre, TOQUE_CONTENIDO, "", "", "")
+            dom_apuntar(n.padre, TOQUE_CONTENIDO, "#texto", "", "")
         end
         return
     end

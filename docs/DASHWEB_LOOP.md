@@ -555,6 +555,8 @@ tarea, con el estilo de Dash.
           declara con disableElementRegistration y se registra con _.Ih()(yJ0, "ytd-player", ..., {mode: 2}) (umQ y
           b_N: su propio sistema de componentes, con hostElement); en modo 1 (jr4) los métodos de los behaviors se
           reenvían al elemento (getInitialMethods). Falta ver por qué en modo 2 no llegan al elemento aquí.
+          Hecho lo del reproductor (2026-10-27): era Infinity (FPU emulada; ver la bitácora). Sin errores de JS.
+          Queda: style del envoltorio de ShadyDOM, si vuelve a salir.
       [ ] c5. El velo gris sobre toda la portada (no es un "backdrop") y la rejilla, que se queda en el esqueleto.
           En parte (2026-10-27): el velo era el fondo del diálogo de cookies, que ya sale con sus textos y botones.
           Falta: pulsar "Reject all" cae en el fondo (tp-yt-iron-overlay-backdrop, z-index 2201 y fixed) y no en el
@@ -5033,4 +5035,18 @@ Formato:
   de Tachyon: se mira otra vez si pasa con un solo emulador.
 - Los "not a function" de playerApi (getRoot().getPlayer().getPlayerPromise()) y de attached en ytd-watch-flexy
   (_.dd(this).preparePlayer()), con una traza temporal al pulsar: lo apuntado en c3. Sin cambios en el código.
+
+### 2026-10-27 — Tarea 38c3: el reproductor de YouTube sin sus métodos era Infinity (la FPU emulada)
+- Siguiendo el reenvío de métodos de su componente (b_N, $Py, FIK) con trazas temporales y comparando con Chrome (en
+  Chrome el ytd-player tiene 27 métodos; aquí 11): la lista sale de Y.prototype.behaviors.flat(Infinity), y el
+  behavior del reproductor va dentro de un array (RIn.YtPlayerBehavior = [{...}]): flat(Infinity) no aplanaba.
+- En el emulador, isNaN(Infinity) es true e Infinity === Infinity false; en C igual: GCC genera bien fcmp y fseq, y la
+  FPU emulada de FS-UAE da "no ordenados" al comparar infinitos (también con uae_fpu_softfloat). QuickJS tomaba
+  Infinity por 0 al pasarlo a entero (JS_ToInt32Sat mira isnan): fallaban flat, slice(0, Infinity), substring, at,
+  fill, charAt, copyWithin e isNaN(Infinity).
+- Ahora (third_party/quickjs/amiga/math.h, cambio 7 de docs/quickjs_amiga.md): isnan, isinf e isfinite por los bits
+  del double. test_js_infinito (nuevo): lo mismo que en el PC. Las comparaciones directas siguen siendo de la FPU (en
+  el emulador, Infinity === Infinity falso); en un 68882, 68040 o Emu68 de verdad, sin probar.
+- YouTube: 0 errores de JavaScript en la carga (antes, los "not a function" de attached y playerApi).
+- Batería: 114/114 (3413 s).
 

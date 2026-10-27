@@ -1,0 +1,12 @@
+# Test: Infinity en el JavaScript (tarea 38c3). La FPU emulada de FS-UAE compara mal los infinitos (Infinity ==
+# Infinity es falso, e isnan(Infinity) verdadero): QuickJS tomaba Infinity por 0 al pasarlo a entero y el reproductor
+# de YouTube se quedaba sin sus métodos ([].flat(Infinity) no aplanaba). Con isnan, isinf e isfinite por los bits
+# (third_party/quickjs/amiga/math.h), lo mismo que en el PC.
+# expect-out: false 3 abc 2 3  3 777  Infinity 233 false true true Infinity -Infinity
+import "../lib/js.dash"
+
+Main
+    js = js_nuevo()
+    Print js_evaluar(js, "[isNaN(Infinity), [1,2,3].slice(0, Infinity).length, 'abc'.substring(0, Infinity), [1,2,3].indexOf(3, -Infinity), 'abcabc'.lastIndexOf('a', Infinity), [5,6].at(-Infinity), [1,[2,[3]]].flat(Infinity).length, new Array(3).fill(7, 0, Infinity).join(''), 'abc'.charAt(Infinity), Math.trunc(Infinity), [1,2,3].copyWithin(0, 1, Infinity).join(''), isFinite(Infinity), Number.isFinite(1e308), isNaN(NaN), Math.max(1, Infinity), String(-Infinity)].join(' ')", "t.js")
+    js_liberar(js)
+end

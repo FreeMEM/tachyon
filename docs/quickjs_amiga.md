@@ -44,6 +44,12 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
    direccionamiento abierto; ninguna variable se quita, así que las de un nombre están todas en el tramo que empieza
    en su hash). Compilarlo: 66 s (en el PC, de 1,03 a 0,49 s); el bytecode sale idéntico. Medido con
    `tests/bench/js_grande.dash`.
+7. `isnan`, `isinf` e `isfinite` por los bits del double (`amiga/math.h`, tarea 38c3): la FPU emulada de FS-UAE
+   compara mal los infinitos (`fcmp` de Infinity con Infinity da "no ordenados": `inf == inf` es falso e `isnan(inf)`
+   verdadero, también con `__builtin_isnan`; GCC genera bien `fcmp` y `fseq`). QuickJS tomaba Infinity por 0 al
+   pasarlo a entero (`JS_ToInt32Sat`): fallaban `[].flat(Infinity)` (el reproductor de YouTube se quedaba sin sus
+   métodos), `slice(0, Infinity)`, `substring`, `at`, `fill`, `charAt`, `copyWithin` e `isNaN(Infinity)`. Las
+   comparaciones directas (`Infinity === Infinity`) siguen siendo de la FPU: en el emulador, falsas.
 
 `third_party/quickjs/amiga/fenv.h` está vacío: el de libnix no compila y QuickJS no usa nada de él.
 `third_party/quickjs/amiga/qjsamiga.c` es un lanzador de pruebas: ejecuta los `.js` dados y mide tiempo

@@ -37,6 +37,13 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
    de coger y se salta los finally: la librería de señales de Preact en xataka.com se quedaba con un computed a
    medias y luego cada clic daba "Cycle detected"). lib/js.dash lo usa en el primer corte de los 30 s; si el script
    sigue 5 s más, el corte ya no se puede coger.
+6. `find_var` con un índice por nombre (tarea 38c7): buscaba cada variable mirando todas las de su función, y al
+   resolver un nombre se busca en su función y en todas las de alrededor. Un script minificado mete miles de
+   variables en una sola función: el principal de YouTube (10,8 MB) tardaba 138 s en compilarse en el 68040 emulado,
+   el 56 % en `find_var` (gprof en el PC). Con 32 variables o más, la función lleva una tabla hash (`vars_htab`,
+   direccionamiento abierto; ninguna variable se quita, así que las de un nombre están todas en el tramo que empieza
+   en su hash). Compilarlo: 66 s (en el PC, de 1,03 a 0,49 s); el bytecode sale idéntico. Medido con
+   `tests/bench/js_grande.dash`.
 
 `third_party/quickjs/amiga/fenv.h` está vacío: el de libnix no compila y QuickJS no usa nada de él.
 `third_party/quickjs/amiga/qjsamiga.c` es un lanzador de pruebas: ejecuta los `.js` dados y mide tiempo

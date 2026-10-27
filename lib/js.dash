@@ -98,6 +98,8 @@ static int _js_avisado = 0;
    RTG machine, and then builds its whole app: it was cut at 120 s; tarea 38a) */
 static LONG _js_extra = 0;
 static void _js_empieza(void) { _js_desde = _js_ms(); _js_avisado = 0; _js_extra = 0; }
+/* lo que tardó en compilarse el último script de js_evaluar */
+static LONG _js_compilado_ms = 0;
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
@@ -567,6 +569,7 @@ end
     _JsMotor *m = (_JsMotor *)js;
     char *fuente, *texto;
     int copia, grande, quitar = 0;
+    ULONG t0;
     JSValue v;
     STRPTR r;
     if (!m) return (STRPTR)"";
@@ -591,10 +594,15 @@ end
         quitar = JS_GetStripInfo(m->rt);
         JS_SetStripInfo(m->rt, quitar | JS_STRIP_SOURCE);
     }
-    v = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL);
+    /* compilar y ejecutar por separado, para js_ms_compilar (como JS_Eval sin COMPILE_ONLY) */
+    t0 = _js_ms();
+    v = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+    _js_compilado_ms = (LONG)(_js_ms() - t0);
     if (grande)
         JS_SetStripInfo(m->rt, quitar);
     if (copia) free(fuente);
+    if (!JS_IsException(v))
+        v = JS_EvalFunction(m->ctx, v);
     _js_trabajos(m->rt);
     if (JS_IsException(v)) {
         m->error = _js_excepcion(m->ctx);
@@ -606,6 +614,13 @@ end
     r = _dash_str_dup((STRPTR)(texto ? texto : ""), TRUE);
     free(texto);
     return r;
+"""
+end
+
+# Los ms que tardó en compilarse el último código de js_evaluar (el resto, hasta lo que tardó entera, es ejecutarlo)
+@native(borrow) func js_ms_compilar() -> Int
+"""
+    return _js_compilado_ms;
 """
 end
 

@@ -558,6 +558,10 @@ tarea, con el estilo de Dash.
       [ ] c6. La memoria: 46-52 MB de JavaScript y ~29 MB la hoja de 3,8 MB leída; en la máquina de 128 MB quedan
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
+      [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
+          máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
+          138 s compilar el principal (10,8 MB). Hecho: find_var con un índice (compilarlo, 66 s). Siguen: el
+          estilo entero por :has() con cada cambio, la maqueta entera con cada cambio, los temporizadores de YouTube.
 - [ ] 53. **Las webs de chat (usuario, 2026-10-24: "si se viesen las webs de gemini, chatgpt, claude, etc y se pudiese
       conversar con ellas... ya sería la releche").** gemini.google.com, chatgpt.com, claude.ai: que se vean y se pueda
       escribir y leer la respuesta. Lo difícil: piden entrar con una cuenta (formularios, cookies, redirecciones de
@@ -4944,4 +4948,20 @@ Formato:
 - Pulsar "Reject all" (clicar en medir_visor --acciones) no hace nada: con una traza temporal del clic, cae en
   tp-yt-iron-overlay-backdrop (fixed, capa 2201) porque el diálogo tiene capa 0. Apuntado en c5.
 - Batería: 111/111 (3278 s).
+
+### 2026-10-27 — Tarea 38c7 (parte): YouTube compila su script en la mitad (find_var con un índice en QuickJS)
+- El usuario pidió primero la velocidad y luego el botón ("Velocidad y luego botón").
+- Dónde se va el tiempo (máquina RTG ancha, 256 MB): con --perfil, el 69 % es JavaScript (48 % ejecutando los scripts
+  de la página, 20 % sus temporizadores); estilo y maqueta, poco cada uno. Separando compilar de ejecutar
+  (js_evaluar compila con JS_EVAL_FLAG_COMPILE_ONLY y luego JS_EvalFunction; js_ms_compilar da lo que tardó; con
+  TRAZA, una línea por script de 1 s o más): el principal de YouTube, 10,8 MB, 149 s, de ellos 138 s compilar.
+- tests/bench/js_grande.dash (nuevo): compila un fichero dentro de una función que no se llama. Con el script de
+  YouTube: 145 s. Descartados: el malloc de libnix (bloques de 1 MB en vez de 16 KB, 141 s; uno que nunca libera,
+  140 s) y la línea y columna de cada función (JS_STRIP_DEBUG, 138 s).
+- En el PC (QuickJS compilado con gprof): 1,03 s, y el 56 % en find_var, que busca cada variable mirando todas las
+  de su función; el script mete miles en una sola. Ahora, con 32 o más, la función lleva una tabla hash
+  (third_party/quickjs, cambio 6 de docs/quickjs_amiga.md). En el PC, 0,49 s y el mismo bytecode (la misma suma);
+  en el emulador, 66 s.
+- La carga entera de YouTube: scripts de 158 a 77 s, primer pintado de 190 a 108 s, "entera" de 300 a 221 s.
+- Batería: 111/111 (3230 s).
 

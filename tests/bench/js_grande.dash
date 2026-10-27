@@ -1,0 +1,11 @@
+# Cuánto tarda QuickJS en compilar un script grande (el principal de YouTube son 10,8 MB; tarea 38c7). Lo compila
+# dentro de una función que no se llama: solo compilar. Uso: js_grande FICHERO
+import "../../lib/js.dash"
+
+Main
+    texto = file_read_text(arg(0))
+    js = js_nuevo()
+    t0 = time_ms()
+    js_evaluar(js, "(function () {\n" + texto + "\n})", "grande.js")
+    Print "" + texto.length + " bytes compilados en " + js_ms_compilar() + " ms (todo " + (time_ms() - t0) + " ms), error '" + js_error(js) + "', memoria libre " + mem_total() / 1024 + " KB"
+end

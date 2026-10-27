@@ -18,6 +18,7 @@ import "estilo.dash"
 import "formularios.dash"
 import "jsdom_preludio.dash"
 import "lienzo.dash"
+import "traza.dash"
 
 # === La parte en Dash (la llaman las funciones de C de abajo) ===
 
@@ -705,7 +706,11 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
                 end
             end
             jsdom_script_actual = s
+            t0 = time_ms()
             js_evaluar(js, codigo, nombre)
+            if traza_activa and time_ms() - t0 >= 1000
+                traza("script de " + codigo.length + " bytes en " + (time_ms() - t0) + " ms (compilar " + js_ms_compilar() + "): " + nombre)
+            end
             var ninguno: Nodo = nil
             jsdom_script_actual = ninguno
             if js_error(js) != ""

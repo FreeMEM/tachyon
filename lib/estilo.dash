@@ -118,6 +118,9 @@ struct Hojas
     lista: [HojaCSS]
     autor: [Bool]
     traidas: {String: String} = nil    # textos de hojas ya traídos (lib/recursos.dash): no se piden otra vez
+    # (al hacerlas, los textos que se usan como hoja: luego traidas se queda solo con ellos; con todo lo traído, el
+    # script de 10,8 MB de YouTube seguía en memoria mientras la página estaba abierta; tarea 38c6)
+    traidas_usadas: {String: String} = nil
     # las hojas ya leídas, por su dirección (o el texto de un <style> grande): las de las hojas de antes se usan otra
     # vez cuando el JavaScript cambia un <style> o <link> (estilo_hojas_otra_vez)
     leidas: {String: HojaCSS} = nil
@@ -223,9 +226,14 @@ func _estilo_hojas(doc: Nodo, base: String, traidas: {String: String}, antes: Ho
     if antes != nil
         h.previas = antes.leidas
     end
+    var usadas: {String: String} = {}
+    h.traidas_usadas = usadas
     css_capas_reiniciar()
     _estilo_recoger(h, doc, url_parse(base))
     h.previas = nil
+    h.traidas = h.traidas_usadas
+    var nada: {String: String} = nil
+    h.traidas_usadas = nada
     return h
 end
 
@@ -395,6 +403,9 @@ func _estilo_cargar(h: Hojas, direccion: String, nivel: Int)
     u = url_parse(direccion)
     texto = ""
     if h.traidas != nil and h.traidas.has(direccion)
+        if h.traidas_usadas != nil
+            h.traidas_usadas[direccion] = h.traidas[direccion]
+        end
         _estilo_agregar(h, _estilo_leer(h, "l" + direccion, h.traidas[direccion]), u, nivel)
         return
     end
@@ -411,6 +422,9 @@ func _estilo_cargar(h: Hojas, direccion: String, nivel: Int)
             return
         end
         texto = utf8_a_latin1(leido)
+    end
+    if h.traidas_usadas != nil
+        h.traidas_usadas[direccion] = texto
     end
     _estilo_agregar(h, _estilo_leer(h, "l" + direccion, texto), u, nivel)
 end

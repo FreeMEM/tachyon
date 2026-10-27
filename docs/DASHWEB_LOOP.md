@@ -5050,3 +5050,14 @@ Formato:
 - YouTube: 0 errores de JavaScript en la carga (antes, los "not a function" de attached y playerApi).
 - Batería: 114/114 (3413 s).
 
+### 2026-10-27 — Tarea 38c6 (parte): las hojas ya no guardan los scripts traídos
+- YouTube en la máquina RTG ancha de 128 MB (con lo de hoy): tras los scripts, 52 MB libres; tras el estilo, 23; y cada
+  "hojas otra vez" se llevaba 3-4 MB hasta quedar 611 KB, sin llegar a "entera".
+- Una causa: Hojas.traidas era el diccionario de todo lo traído por lib/recursos.dash, scripts incluidos (el de 10,8 MB
+  de YouTube), y pasaba de unas hojas a las siguientes: seguía en memoria mientras la página estaba abierta. Ahora
+  (lib/estilo.dash, traidas_usadas) las hojas guardan solo los textos que usaron como hoja (también los que trajeron
+  ellas mismas: así no se piden otra vez en cada "hojas otra vez").
+- Con eso, en 128 MB: tras la primera "hojas otra vez", 24,5 MB libres en vez de 13,7; pero el JavaScript aún se
+  quedaba sin memoria al final (siguiente vuelta: la hoja leída, 22 MB).
+- Batería: 114/114 (3484 s).
+

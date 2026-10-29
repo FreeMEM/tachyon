@@ -10,246 +10,45 @@
 # "r X Y" pulsa el botón derecho en X, Y, "p X Y" lo lleva pulsado al punto X, Y
 # de la pantalla y "s" lo suelta (menús de MUI). Escribe lo que hace.
 
-@header "#include <devices/input.h>"
-@header "#include <intuition/intuitionbase.h>"
+# (Dash 2.0: con los builtins window_find, window_found_*, input_*; antes, C con input.device)
 
-# La ventana cuyo título empieza por t (en cualquier pantalla), o 0
-@native(borrow) func ventana(t: String) -> Int
-"""
-    struct Screen *s;
-    struct Window *w, *r = NULL;
-    ULONG lock = LockIBase(0);
-    LONG n = strlen((char *)t);
-    for (s = IntuitionBase->FirstScreen; s && !r; s = s->NextScreen)
-        for (w = s->FirstWindow; w && !r; w = w->NextWindow)
-            if (w->Title && !strncmp((char *)w->Title, (char *)t, n)) r = w;
-    UnlockIBase(lock);
-    return (LONG)r;
-"""
+func ventana(t: String) -> Int
+    return window_find(t)
 end
 
-@native(borrow) func ventana_texto(win: Int) -> String
-"""
-    static char b[80];
-    struct Window *w = (struct Window *)win;
-    sprintf(b, "%d,%d %dx%d bordes %d,%d", w->LeftEdge, w->TopEdge, w->Width, w->Height, w->BorderLeft, w->BorderTop);
-    return (STRPTR)b;
-"""
+func ventana_texto(win: Int) -> String
+    return "" + window_found_box(win, 0) + "," + window_found_box(win, 1) + " " + window_found_box(win, 2) + "x" + window_found_box(win, 3) + " bordes " + window_found_box(win, 4) + "," + window_found_box(win, 5)
 end
 
 # La ventana delante de todo y activa (los clics y las teclas van a la ventana activa)
-@native(borrow) func al_frente(win: Int)
-"""
-    struct Window *w = (struct Window *)win;
-    ScreenToFront(w->WScreen);
-    WindowToFront(w);
-    ActivateWindow(w);
-    Delay(10);
-"""
+func al_frente(win: Int)
+    window_found_activate(win)
+    time_delay(10)
 end
 
-@native func evento(win: Int, tipo: Int, x: Int, y: Int, codigo: Int)
-"""
-    struct MsgPort *port = CreateMsgPort();
-    struct IOStdReq *io = port ? (struct IOStdReq *)CreateIORequest(port, sizeof(struct IOStdReq)) : NULL;
-    struct Window *w = (struct Window *)win;
-    if (w && io && OpenDevice((CONST_STRPTR)"input.device", 0, (struct IORequest *)io, 0) == 0) {
-        struct InputEvent ie;
-        struct IEPointerPixel pp;
-        io->io_Command = IND_WRITEEVENT;
-        io->io_Data = &ie;
-        io->io_Length = sizeof(ie);
-        if (tipo == 4 || tipo == 5) {    /* botón derecho: 4 pulsar en x, y; 5 soltar */
-            if (tipo == 4) {
-                memset(&ie, 0, sizeof(ie));
-                pp.iepp_Screen = w->WScreen;
-                pp.iepp_Position.X = w->LeftEdge + w->BorderLeft + x;
-                pp.iepp_Position.Y = w->TopEdge + w->BorderTop + y;
-                ie.ie_Class = IECLASS_NEWPOINTERPOS;
-                ie.ie_SubClass = IESUBCLASS_PIXEL;
-                ie.ie_EventAddress = (APTR)&pp;
-                DoIO((struct IORequest *)io);
-                Delay(3);
-            }
-            memset(&ie, 0, sizeof(ie));
-            ie.ie_Class = IECLASS_RAWMOUSE;
-            ie.ie_Code = tipo == 4 ? IECODE_RBUTTON : IECODE_RBUTTON | IECODE_UP_PREFIX;
-            ie.ie_Qualifier = (tipo == 4 ? IEQUALIFIER_RBUTTON : 0) | IEQUALIFIER_RELATIVEMOUSE;
-            DoIO((struct IORequest *)io);
-        } else if (tipo == 6) {          /* mover el puntero a x, y sin pulsar */
-            memset(&ie, 0, sizeof(ie));
-            pp.iepp_Screen = w->WScreen;
-            pp.iepp_Position.X = w->LeftEdge + w->BorderLeft + x;
-            pp.iepp_Position.Y = w->TopEdge + w->BorderTop + y;
-            ie.ie_Class = IECLASS_NEWPOINTERPOS;
-            ie.ie_SubClass = IESUBCLASS_PIXEL;
-            ie.ie_EventAddress = (APTR)&pp;
-            DoIO((struct IORequest *)io);
-        } else if (tipo == 1 || tipo == 7) {   /* clic (7: con Mayúsculas izquierda pulsada) */
-            UWORD mayus = tipo == 7 ? IEQUALIFIER_LSHIFT : 0;
-            if (tipo == 7) {
-                memset(&ie, 0, sizeof(ie));
-                ie.ie_Class = IECLASS_RAWKEY;
-                ie.ie_Code = 0x60;
-                ie.ie_Qualifier = IEQUALIFIER_LSHIFT;
-                DoIO((struct IORequest *)io);
-                Delay(2);
-            }
-            memset(&ie, 0, sizeof(ie));
-            pp.iepp_Screen = w->WScreen;
-            pp.iepp_Position.X = w->LeftEdge + w->BorderLeft + x;
-            pp.iepp_Position.Y = w->TopEdge + w->BorderTop + y;
-            ie.ie_Class = IECLASS_NEWPOINTERPOS;
-            ie.ie_SubClass = IESUBCLASS_PIXEL;
-            ie.ie_EventAddress = (APTR)&pp;
-            DoIO((struct IORequest *)io);
-            Delay(3);
-            memset(&ie, 0, sizeof(ie));
-            ie.ie_Class = IECLASS_RAWMOUSE;
-            ie.ie_Code = IECODE_LBUTTON;
-            ie.ie_Qualifier = IEQUALIFIER_LEFTBUTTON | IEQUALIFIER_RELATIVEMOUSE | mayus;
-            DoIO((struct IORequest *)io);
-            Delay(3);
-            ie.ie_Code = IECODE_LBUTTON | IECODE_UP_PREFIX;
-            ie.ie_Qualifier = IEQUALIFIER_RELATIVEMOUSE | mayus;
-            DoIO((struct IORequest *)io);
-            if (tipo == 7) {
-                Delay(50);           /* (como una persona: Mayúsculas sigue pulsada mientras el programa atiende el clic) */
-                memset(&ie, 0, sizeof(ie));
-                ie.ie_Class = IECLASS_RAWKEY;
-                ie.ie_Code = 0x60 | IECODE_UP_PREFIX;
-                DoIO((struct IORequest *)io);
-            }
-        } else {                         /* tecla (tipo 3: con Amiga derecha, para los menús) */
-            memset(&ie, 0, sizeof(ie));
-            ie.ie_Class = IECLASS_RAWKEY;
-            if (tipo == 3) {             /* como un teclado: primero Amiga derecha (0x67) */
-                ie.ie_Code = 0x67;
-                ie.ie_Qualifier = IEQUALIFIER_RCOMMAND;
-                DoIO((struct IORequest *)io);
-                Delay(2);
-            }
-            ie.ie_Code = codigo;
-            ie.ie_Qualifier = tipo == 3 ? IEQUALIFIER_RCOMMAND : 0;
-            DoIO((struct IORequest *)io);
-            Delay(2);
-            ie.ie_Code = codigo | IECODE_UP_PREFIX;
-            DoIO((struct IORequest *)io);
-            if (tipo == 3) {
-                Delay(2);
-                ie.ie_Code = 0x67 | IECODE_UP_PREFIX;
-                ie.ie_Qualifier = 0;
-                DoIO((struct IORequest *)io);
-            }
-        }
-        CloseDevice((struct IORequest *)io);
-    }
-    if (io) DeleteIORequest((struct IORequest *)io);
-    if (port) DeleteMsgPort(port);
-"""
+# x, y dentro de los bordes de la ventana, como los cuentan los input_* (desde su esquina)
+func bx(win: Int, x: Int) -> Int
+    return window_found_box(win, 4) + x
 end
 
-# Elige con el ratón el elemento "elemento" (desde 0, separadores incluidos) del menú "menu" de la
-# ventana: botón derecho en el título, pasos de un píxel hasta el elemento, soltar (como test_gt_events
-# de Dash). 0 si la ventana no tiene ese menú.
-@native func menu_raton(win: Int, menu: Int, elemento: Int, espera: Int) -> Int
-"""
-    struct Window *w = (struct Window *)win;
-    struct Screen *scr = w->WScreen;
-    struct Menu *m = w->MenuStrip;
-    struct MenuItem *it;
-    struct MsgPort *port;
-    struct IOStdReq *io;
-    struct InputEvent ie;
-    struct IEPointerPixel pp;
-    LONG k, pasos, tx, ty, hecho = 0;
-    for (k = 0; k < menu && m; k++) m = m->NextMenu;
-    it = m ? m->FirstItem : NULL;
-    for (k = 0; k < elemento && it; k++) it = it->NextItem;
-    if (!it) return 0;
-    port = CreateMsgPort();
-    io = port ? (struct IOStdReq *)CreateIORequest(port, sizeof(struct IOStdReq)) : NULL;
-    if (io && OpenDevice((CONST_STRPTR)"input.device", 0, (struct IORequest *)io, 0) == 0) {
-        io->io_Command = IND_WRITEEVENT;
-        io->io_Data = &ie;
-        io->io_Length = sizeof(ie);
-        memset(&ie, 0, sizeof(ie));
-        pp.iepp_Screen = scr;
-        pp.iepp_Position.X = m->LeftEdge + m->Width / 2;
-        pp.iepp_Position.Y = scr->BarHeight / 2;
-        ie.ie_Class = IECLASS_NEWPOINTERPOS;
-        ie.ie_SubClass = IESUBCLASS_PIXEL;
-        ie.ie_EventAddress = (APTR)&pp;
-        DoIO((struct IORequest *)io);
-        Delay(5);
-        memset(&ie, 0, sizeof(ie));
-        ie.ie_Class = IECLASS_RAWMOUSE;
-        ie.ie_Code = IECODE_RBUTTON;
-        ie.ie_Qualifier = IEQUALIFIER_RBUTTON | IEQUALIFIER_RELATIVEMOUSE;
-        DoIO((struct IORequest *)io);
-        Delay(10);
-        tx = m->LeftEdge + it->LeftEdge + it->Width / 2;
-        ty = scr->BarHeight + 1 + it->TopEdge + it->Height / 2;
-        pasos = 0;
-        while ((scr->MouseX != tx || scr->MouseY != ty) && pasos++ < 600) {
-            memset(&ie, 0, sizeof(ie));
-            ie.ie_Class = IECLASS_RAWMOUSE;
-            ie.ie_Code = IECODE_NOBUTTON;
-            ie.ie_Qualifier = IEQUALIFIER_RBUTTON | IEQUALIFIER_RELATIVEMOUSE;
-            ie.ie_X = scr->MouseX < tx ? 1 : scr->MouseX > tx ? -1 : 0;
-            ie.ie_Y = scr->MouseY < ty ? 1 : scr->MouseY > ty ? -1 : 0;
-            DoIO((struct IORequest *)io);
-            Delay(1);
-        }
-        Delay(espera > 10 ? espera : 10);
-        memset(&ie, 0, sizeof(ie));
-        ie.ie_Class = IECLASS_RAWMOUSE;
-        ie.ie_Code = IECODE_RBUTTON | IECODE_UP_PREFIX;
-        ie.ie_Qualifier = IEQUALIFIER_RELATIVEMOUSE;
-        DoIO((struct IORequest *)io);
-        CloseDevice((struct IORequest *)io);
-        hecho = 1;
-    }
-    if (io) DeleteIORequest((struct IORequest *)io);
-    if (port) DeleteMsgPort(port);
-    return hecho;
-"""
+func by(win: Int, y: Int) -> Int
+    return window_found_box(win, 5) + y
 end
 
-# Con el botón derecho pulsado, lleva el puntero paso a paso al punto X, Y de la pantalla (menús de MUI)
-@native func mover_derecho(win: Int, tx: Int, ty: Int)
-"""
-    struct Window *w = (struct Window *)win;
-    struct Screen *scr = w->WScreen;
-    struct MsgPort *port = CreateMsgPort();
-    struct IOStdReq *io = port ? (struct IOStdReq *)CreateIORequest(port, sizeof(struct IOStdReq)) : NULL;
-    struct InputEvent ie;
-    LONG pasos = 0;
-    if (io && OpenDevice((CONST_STRPTR)"input.device", 0, (struct IORequest *)io, 0) == 0) {
-        io->io_Command = IND_WRITEEVENT;
-        io->io_Data = &ie;
-        io->io_Length = sizeof(ie);
-        while ((scr->MouseX != tx || scr->MouseY != ty) && pasos++ < 800) {
-            memset(&ie, 0, sizeof(ie));
-            ie.ie_Class = IECLASS_RAWMOUSE;
-            ie.ie_Code = IECODE_NOBUTTON;
-            ie.ie_Qualifier = IEQUALIFIER_RBUTTON | IEQUALIFIER_RELATIVEMOUSE;
-            ie.ie_X = scr->MouseX < tx ? 1 : scr->MouseX > tx ? -1 : 0;
-            ie.ie_Y = scr->MouseY < ty ? 1 : scr->MouseY > ty ? -1 : 0;
-            DoIO((struct IORequest *)io);
-            Delay(1);
-        }
-        CloseDevice((struct IORequest *)io);
-    }
-    if (io) DeleteIORequest((struct IORequest *)io);
-    if (port) DeleteMsgPort(port);
-"""
+# 1 si eligió el elemento, 0 si la ventana no tiene ese menú
+func menu_raton(menu: Int, elemento: Int, espera: Int) -> Int
+    if input_menu(menu, elemento, espera)
+        return 1
+    end
+    return 0
 end
 
-@native(borrow) func esperar(ticks: Int)
-"""
-    Delay(ticks > 0 ? ticks : 1);
-"""
+func esperar(ticks: Int)
+    if ticks > 0
+        time_delay(ticks)
+    else
+        time_delay(1)
+    end
 end
 
 Main
@@ -275,41 +74,43 @@ Main
                 esperar(Int(arg(i + 1)))
                 i = i + 2
             elif a == "c" and i + 2 < arg_count()
-                evento(w, 1, Int(arg(i + 1)), Int(arg(i + 2)), 0)
+                input_click(bx(w, Int(arg(i + 1))), by(w, Int(arg(i + 2))), 0)
                 Print "clicar: clic " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
             elif a == "C" and i + 2 < arg_count()
-                evento(w, 7, Int(arg(i + 1)), Int(arg(i + 2)), 0)
+                input_click(bx(w, Int(arg(i + 1))), by(w, Int(arg(i + 2))), 1)
                 Print "clicar: clic con Mayúsculas " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
             elif a == "v" and i + 2 < arg_count()
-                evento(w, 6, Int(arg(i + 1)), Int(arg(i + 2)), 0)
+                input_move(bx(w, Int(arg(i + 1))), by(w, Int(arg(i + 2))))
                 Print "clicar: ratón a " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
             elif a == "r" and i + 2 < arg_count()
-                evento(w, 4, Int(arg(i + 1)), Int(arg(i + 2)), 0)
+                input_move(bx(w, Int(arg(i + 1))), by(w, Int(arg(i + 2))))
+                time_delay(3)
+                input_button(2, true)
                 Print "clicar: botón derecho en " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
             elif a == "p" and i + 2 < arg_count()
-                mover_derecho(w, Int(arg(i + 1)), Int(arg(i + 2)))
+                input_move_screen(Int(arg(i + 1)), Int(arg(i + 2)), 2)
                 Print "clicar: con el botón derecho a " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
             elif a == "s"
-                evento(w, 5, 0, 0, 0)
+                input_button(2, false)
                 Print "clicar: suelta el botón derecho"
                 i = i + 1
             elif a == "m" and i + 2 < arg_count()
-                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + ": " + menu_raton(w, Int(arg(i + 1)), Int(arg(i + 2)), 10)
+                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + ": " + menu_raton(Int(arg(i + 1)), Int(arg(i + 2)), 10)
                 i = i + 3
             elif a == "h" and i + 3 < arg_count()
-                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + " abierto " + arg(i + 3) + ": " + menu_raton(w, Int(arg(i + 1)), Int(arg(i + 2)), Int(arg(i + 3)))
+                Print "clicar: menú " + arg(i + 1) + " elemento " + arg(i + 2) + " abierto " + arg(i + 3) + ": " + menu_raton(Int(arg(i + 1)), Int(arg(i + 2)), Int(arg(i + 3)))
                 i = i + 4
             elif a == "a" and i + 1 < arg_count()
-                evento(w, 3, 0, 0, str_to_int(str_replace(arg(i + 1), "0x", ""), 16))
+                input_key(str_to_int(str_replace(arg(i + 1), "0x", ""), 16), 8)
                 Print "clicar: Amiga+" + arg(i + 1)
                 i = i + 2
             elif a == "t" and i + 1 < arg_count()
-                evento(w, 2, 0, 0, str_to_int(str_replace(arg(i + 1), "0x", ""), 16))
+                input_key(str_to_int(str_replace(arg(i + 1), "0x", ""), 16), 0)
                 Print "clicar: tecla " + arg(i + 1)
                 i = i + 2
             else

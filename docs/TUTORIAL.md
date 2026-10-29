@@ -339,23 +339,29 @@ programa no se ha probado con señal.
 Contar las palabras de un texto corto es rápido. Pero el patrón sirve para lo que tarda de verdad: decodificar una
 imagen, comprimir, buscar. Si se hace en el programa principal, la ventana se para mientras dura.
 
-`task_start(funcion, numero)` ejecuta una función en otro proceso de AmigaOS. Esa función **solo puede ser C**
-(`@native`): los textos, listas y `Print` de Dash no están preparados para dos procesos a la vez.
+`task_start(funcion, numero)` ejecuta una función en otro proceso de AmigaOS. Esa función **solo puede usar
+números, `Bool` y búferes**: los textos, listas y `Print` de Dash no están preparados para dos procesos a la vez.
+Dash 2.0 lo comprueba al compilar.
 
 ```ruby
-# Cuenta las palabras de un texto acabado en 0. Corre en otro proceso: solo C, nada de Dash dentro
-@native func contar_palabras(datos: Int) -> Int
-"""
-    const unsigned char *p = (const unsigned char *)datos;
-    long n = 0;
-    int dentro = 0;
-    while (*p) {
-        if (*p <= ' ') dentro = 0;
-        else if (!dentro) { dentro = 1; n++; }
-        p++;
-    }
-    return n;
-"""
+# Cuenta las palabras de un texto acabado en 0. Corre en otro proceso a la vez que el programa: solo enteros y
+# búferes, sin textos ni listas de Dash (dashc lo comprueba al compilar)
+func contar_palabras(datos: Int) -> Int
+    n = 0
+    dentro = false
+    i = 0
+    c = buffer_get_byte(datos, 0)
+    while c != 0
+        if c <= 32
+            dentro = false
+        elif not dentro
+            dentro = true
+            n = n + 1
+        end
+        i = i + 1
+        c = buffer_get_byte(datos, i)
+    end
+    return n
 end
 ```
 

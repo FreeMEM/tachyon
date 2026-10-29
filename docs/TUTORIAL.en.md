@@ -339,23 +339,29 @@ program has not been tested with a signal.
 Counting the words in a short text is quick. But the pattern works for things that really take time: decoding an
 image, compressing, searching. Done in the main program, it stalls the window for as long as it lasts.
 
-`task_start(funcion, numero)` runs a function in another AmigaOS process. That function **can only be C**
-(`@native`): Dash's strings, lists and `Print` aren't ready for two processes at once.
+`task_start(funcion, numero)` runs a function in another AmigaOS process. That function **can only use numbers,
+`Bool` and buffers**: Dash's strings, lists and `Print` aren't ready for two processes at once. Dash 2.0 checks
+it when compiling.
 
 ```ruby
-# Counts the words in a 0-terminated text. Runs in another process: C only, no Dash inside
-@native func contar_palabras(datos: Int) -> Int
-"""
-    const unsigned char *p = (const unsigned char *)datos;
-    long n = 0;
-    int dentro = 0;
-    while (*p) {
-        if (*p <= ' ') dentro = 0;
-        else if (!dentro) { dentro = 1; n++; }
-        p++;
-    }
-    return n;
-"""
+# Counts the words in a 0-terminated text. Runs in another process alongside the program: only integers and
+# buffers, no Dash strings or lists (dashc checks it when compiling)
+func contar_palabras(datos: Int) -> Int
+    n = 0
+    dentro = false
+    i = 0
+    c = buffer_get_byte(datos, 0)
+    while c != 0
+        if c <= 32
+            dentro = false
+        elif not dentro
+            dentro = true
+            n = n + 1
+        end
+        i = i + 1
+        c = buffer_get_byte(datos, i)
+    end
+    return n
 end
 ```
 

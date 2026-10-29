@@ -11,6 +11,7 @@
 import "dom.dash"
 
 @link "../build/img-lib/libimg.a"
+@link "../build/pegamento-lib/libpegamento.a"
 
 
 # El árbol de Hubbub del texto (Latin-1, o los bytes UTF-8 tal cual con utf8); 0 si no se pudo

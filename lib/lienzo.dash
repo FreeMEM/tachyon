@@ -13,6 +13,7 @@
 # - Cada lienzo sabe qué zona suya cambió (sucio): se repinta solo esa parte de la página.
 
 const LZ_GRANDE = 90000
+@link "../build/pegamento-lib/libpegamento.a"
 
 
 # El lienzo de un elemento <canvas> (0 si su JavaScript no pidió getContext("2d"))

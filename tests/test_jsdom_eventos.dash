@@ -31,10 +31,12 @@ Window W
     height 100
 end
 
-@native(borrow) func esperar_ms(ms: Int)
-"""
-    Delay(ms / 20 > 0 ? ms / 20 : 1);
-"""
+func esperar_ms(ms: Int)
+    if ms < 40
+        time_delay(1)
+    else
+        time_delay(ms / 20)
+    end
 end
 
 Main

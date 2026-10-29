@@ -19,10 +19,8 @@
 
 import "../lib/http.dash"
 
-@native(borrow) func esperar(ticks: Int)
-"""
-    Delay(ticks);
-"""
+func esperar(ticks: Int)
+    time_delay(ticks)
 end
 
 func traer(direccion: String) -> Respuesta

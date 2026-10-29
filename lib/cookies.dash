@@ -27,12 +27,8 @@ const COOKIES_MAX = 300
 const COOKIES_SIEMPRE = 2147483000     # "no caduca" (enero de 2038: un Int no llega más allá)
 
 # Segundos desde el 1 de enero de 1970 según el reloj del Amiga (DateStamp cuenta desde 1978)
-@native func cookies_ahora() -> Int
-"""
-    struct DateStamp d;
-    DateStamp(&d);
-    return 252460800L + d.ds_Days * 86400L + d.ds_Minute * 60L + d.ds_Tick / 50;
-"""
+func cookies_ahora() -> Int
+    return time_unix()
 end
 
 # Los trozos de t entre cualquiera de los caracteres de seps (sin los vacíos)

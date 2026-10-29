@@ -918,7 +918,7 @@ func _css_media_posible(medios: String) -> Bool
 end
 
 # Lo mismo para quien lo use desde fuera (matchMedia de lib/jsdom.dash)
-func css_media_vale(medios: String) -> Bool
+@export func css_media_vale(medios: String) -> Bool
     return _css_media_pantalla(medios)
 end
 

@@ -95,6 +95,22 @@ def build_qjs_lib() -> bool:
     return r.returncode == 0
 
 
+def build_pegamento_lib() -> bool:
+    """build/pegamento-lib/libpegamento.a (Dash 2.0: the C of lib/js, lienzo, jsdom, html5 and documento, in
+    src_c/tachyon.c) when it is missing or older than its C, the .dash files whose structs it sees, or dashc"""
+    lib = ROOT / "build" / "pegamento-lib" / "libpegamento.a"
+    sources = list((ROOT / "src_c").glob("*.c")) + list((ROOT / "lib").glob("*.dash")) + \
+        list((ROOT / "src").glob("*.dash")) + [ROOT / "tools" / "build_pegamento.sh", DASH / "dashc" / "dashc"]
+    if lib.exists() and lib.stat().st_mtime >= max(f.stat().st_mtime for f in sources if f.exists()):
+        return True
+    print("building build/pegamento-lib/libpegamento.a (tools/build_pegamento.sh)...", flush=True)
+    r = subprocess.run([str(ROOT / "tools" / "build_pegamento.sh")], capture_output=True, text=True,
+                       env=dict(os.environ, DASH=str(DASH)))
+    if r.returncode != 0:
+        print("tools/build_pegamento.sh failed:\n" + r.stdout + r.stderr, file=sys.stderr)
+    return r.returncode == 0
+
+
 def build_video_lib() -> bool:
     """build/video-lib/libvideo.a (lib/video.dash links it) when it is missing or older than its sources"""
     lib = ROOT / "build" / "video-lib" / "libvideo.a"
@@ -136,6 +152,8 @@ def main():
     if any("js.dash" in t.read_text() or "documento.dash" in t.read_text() for t in tests + programas) and not build_qjs_lib():
         return 1
     if not build_img_lib():
+        return 1
+    if not build_pegamento_lib():
         return 1
     if any("video.dash" in t.read_text() for t in tests + programas) and not build_video_lib():
         return 1

@@ -11,409 +11,35 @@
 import "dom.dash"
 
 @link "../build/img-lib/libimg.a"
-@header "#include <hubbub/hubbub.h>"
-@header "#include <hubbub/parser.h>"
-@header "#include <hubbub/tree.h>"
 
-@c
-"""
-/* lib/html5.dash: the tree Hubbub builds, as numbered nodes (1 = the document) */
-typedef struct {
-    short tipo;              /* DOM_ELEMENTO 1, DOM_TEXTO 3, DOM_COMENTARIO 8, DOM_DOCUMENTO 9, doctype 10 */
-    char *nombre;            /* element: its name in lower case */
-    char *texto;             /* text and comment (UTF-8) */
-    LONG padre;
-    LONG *hijos;
-    LONG nh, ch;
-    char **an, **av;         /* attributes: names (lower case) and values */
-    LONG na, ca;
-} _H5Nodo;
-
-typedef struct {
-    _H5Nodo *n;
-    LONG cuantos, cap;
-    char *doctype;
-    BOOL mal;                /* out of memory */
-    int modo;                /* hubbub_quirks_mode: 0 no-quirks, 1 limited, 2 quirks */
-} _H5;
-
-static char *_h5_copia(const uint8_t *p, size_t len, BOOL minusculas) {
-    char *r = (char *)malloc(len + 1);
-    size_t i;
-    if (!r) return NULL;
-    for (i = 0; i < len; i++) r[i] = (minusculas && p[i] >= 'A' && p[i] <= 'Z') ? p[i] + 32 : p[i];
-    r[len] = 0;
-    return r;
-}
-
-static LONG _h5_nuevo(_H5 *h, int tipo) {
-    _H5Nodo *x;
-    if (h->cuantos + 1 >= h->cap) {
-        LONG cap = h->cap ? h->cap * 2 : 1024;
-        _H5Nodo *n = (_H5Nodo *)realloc(h->n, cap * sizeof(_H5Nodo));
-        if (!n) { h->mal = TRUE; return 0; }
-        h->n = n;
-        h->cap = cap;
-    }
-    h->cuantos++;
-    x = &h->n[h->cuantos];
-    memset(x, 0, sizeof(*x));
-    x->tipo = tipo;
-    return h->cuantos;
-}
-
-#define _H5N(h, id) (&(h)->n[(LONG)(id)])
-
-static void _h5_meter(_H5 *h, LONG padre, LONG hijo, LONG pos) {
-    _H5Nodo *p = _H5N(h, padre);
-    LONG i;
-    if (p->nh + 1 > p->ch) {
-        LONG ch = p->ch ? p->ch * 2 : 4;
-        LONG *n = (LONG *)realloc(p->hijos, ch * sizeof(LONG));
-        if (!n) { h->mal = TRUE; return; }
-        p->hijos = n;
-        p->ch = ch;
-    }
-    if (pos < 0 || pos > p->nh) pos = p->nh;
-    for (i = p->nh; i > pos; i--) p->hijos[i] = p->hijos[i - 1];
-    p->hijos[pos] = hijo;
-    p->nh++;
-    _H5N(h, hijo)->padre = padre;
-}
-
-static void _h5_sacar(_H5 *h, LONG hijo) {
-    LONG padre = _H5N(h, hijo)->padre, i, j;
-    _H5Nodo *p;
-    if (!padre) return;
-    p = _H5N(h, padre);
-    for (i = 0, j = 0; i < p->nh; i++) if (p->hijos[i] != hijo) p->hijos[j++] = p->hijos[i];
-    p->nh = j;
-    _H5N(h, hijo)->padre = 0;
-}
-
-static LONG _h5_posicion(_H5 *h, LONG padre, LONG hijo) {
-    _H5Nodo *p = _H5N(h, padre);
-    LONG i;
-    for (i = 0; i < p->nh; i++) if (p->hijos[i] == hijo) return i;
-    return -1;
-}
-
-static void _h5_atributo(_H5 *h, LONG id, const hubbub_attribute *a) {
-    _H5Nodo *x = _H5N(h, id);
-    char *nombre = _h5_copia(a->name.ptr, a->name.len, TRUE);
-    LONG i;
-    if (!nombre) { h->mal = TRUE; return; }
-    for (i = 0; i < x->na; i++) if (!strcmp(x->an[i], nombre)) { free(nombre); return; }
-    if (x->na + 1 > x->ca) {
-        LONG ca = x->ca ? x->ca * 2 : 4;
-        char **an = (char **)realloc(x->an, ca * sizeof(char *)), **av;
-        if (!an) { free(nombre); h->mal = TRUE; return; }
-        x->an = an;
-        av = (char **)realloc(x->av, ca * sizeof(char *));
-        if (!av) { free(nombre); h->mal = TRUE; return; }
-        x->av = av;
-        x->ca = ca;
-    }
-    x->an[x->na] = nombre;
-    x->av[x->na] = _h5_copia(a->value.ptr, a->value.len, FALSE);
-    x->na++;
-}
-
-static hubbub_error _h5_comentario(void *ctx, const hubbub_string *d, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG id = _h5_nuevo(h, 8);
-    if (!id) return HUBBUB_NOMEM;
-    _H5N(h, id)->texto = _h5_copia(d->ptr, d->len, FALSE);
-    *r = (void *)id;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_doctype(void *ctx, const hubbub_doctype *d, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG id = _h5_nuevo(h, 10);
-    if (!id) return HUBBUB_NOMEM;
-    if (!h->doctype && d->name.len) h->doctype = _h5_copia(d->name.ptr, d->name.len, FALSE);
-    *r = (void *)id;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_elemento(void *ctx, const hubbub_tag *t, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG id = _h5_nuevo(h, 1);
-    uint32_t i;
-    if (!id) return HUBBUB_NOMEM;
-    _H5N(h, id)->nombre = _h5_copia(t->name.ptr, t->name.len, TRUE);
-    for (i = 0; i < t->n_attributes; i++) _h5_atributo(h, id, &t->attributes[i]);
-    *r = (void *)id;
-    return h->mal ? HUBBUB_NOMEM : HUBBUB_OK;
-}
-
-static hubbub_error _h5_texto(void *ctx, const hubbub_string *d, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG id = _h5_nuevo(h, 3);
-    if (!id) return HUBBUB_NOMEM;
-    _H5N(h, id)->texto = _h5_copia(d->ptr, d->len, FALSE);
-    *r = (void *)id;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_ref(void *ctx, void *n) { return HUBBUB_OK; }
-
-/* a text right after another text joins it (the parser expects that: result = the node that stays) */
-static BOOL _h5_juntar(_H5 *h, LONG anterior, LONG hijo) {
-    _H5Nodo *a, *b;
-    char *t;
-    if (anterior <= 0) return FALSE;
-    a = _H5N(h, anterior);
-    b = _H5N(h, hijo);
-    if (a->tipo != 3 || b->tipo != 3 || b->padre) return FALSE;
-    t = (char *)malloc(strlen(a->texto ? a->texto : "") + strlen(b->texto ? b->texto : "") + 1);
-    if (!t) { h->mal = TRUE; return FALSE; }
-    strcpy(t, a->texto ? a->texto : "");
-    strcat(t, b->texto ? b->texto : "");
-    free(a->texto);
-    a->texto = t;
-    return TRUE;
-}
-
-static hubbub_error _h5_agregar(void *ctx, void *padre, void *hijo, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    _H5Nodo *p = _H5N(h, padre);
-    LONG ultimo = p->nh ? p->hijos[p->nh - 1] : 0;
-    if (_h5_juntar(h, ultimo, (LONG)hijo)) { *r = (void *)ultimo; return HUBBUB_OK; }
-    _h5_sacar(h, (LONG)hijo);
-    _h5_meter(h, (LONG)padre, (LONG)hijo, -1);
-    *r = hijo;
-    return h->mal ? HUBBUB_NOMEM : HUBBUB_OK;
-}
-
-static hubbub_error _h5_antes(void *ctx, void *padre, void *hijo, void *ref, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG pos = _h5_posicion(h, (LONG)padre, (LONG)ref);
-    _H5Nodo *p = _H5N(h, padre);
-    if (pos > 0 && _h5_juntar(h, p->hijos[pos - 1], (LONG)hijo)) { *r = (void *)p->hijos[pos - 1]; return HUBBUB_OK; }
-    _h5_sacar(h, (LONG)hijo);
-    pos = _h5_posicion(h, (LONG)padre, (LONG)ref);
-    _h5_meter(h, (LONG)padre, (LONG)hijo, pos);
-    *r = hijo;
-    return h->mal ? HUBBUB_NOMEM : HUBBUB_OK;
-}
-
-static hubbub_error _h5_quitar(void *ctx, void *padre, void *hijo, void **r) {
-    _h5_sacar((_H5 *)ctx, (LONG)hijo);
-    *r = hijo;
-    return HUBBUB_OK;
-}
-
-static LONG _h5_clonar(_H5 *h, LONG id, BOOL hondo) {
-    LONG c = _h5_nuevo(h, _H5N(h, id)->tipo), i;
-    _H5Nodo *o, *x;
-    if (!c) return 0;
-    o = _H5N(h, id);
-    x = _H5N(h, c);
-    if (o->nombre) x->nombre = strdup(o->nombre);
-    if (o->texto) x->texto = strdup(o->texto);
-    for (i = 0; i < o->na; i++) {
-        hubbub_attribute a;
-        o = _H5N(h, id);
-        a.ns = HUBBUB_NS_NULL;
-        a.name.ptr = (const uint8_t *)o->an[i]; a.name.len = strlen(o->an[i]);
-        a.value.ptr = (const uint8_t *)o->av[i]; a.value.len = o->av[i] ? strlen(o->av[i]) : 0;
-        _h5_atributo(h, c, &a);
-    }
-    if (hondo) {
-        for (i = 0; i < _H5N(h, id)->nh; i++) {
-            LONG k = _h5_clonar(h, _H5N(h, id)->hijos[i], TRUE);
-            if (k) _h5_meter(h, c, k, -1);
-        }
-    }
-    return c;
-}
-
-static hubbub_error _h5_clon(void *ctx, void *n, bool hondo, void **r) {
-    LONG c = _h5_clonar((_H5 *)ctx, (LONG)n, hondo);
-    if (!c) return HUBBUB_NOMEM;
-    *r = (void *)c;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_mudar(void *ctx, void *n, void *nuevo) {
-    _H5 *h = (_H5 *)ctx;
-    while (_H5N(h, n)->nh > 0) {
-        LONG k = _H5N(h, n)->hijos[0];
-        _h5_sacar(h, k);
-        _h5_meter(h, (LONG)nuevo, k, -1);
-        if (h->mal) return HUBBUB_NOMEM;
-    }
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_padre(void *ctx, void *n, bool solo_elementos, void **r) {
-    _H5 *h = (_H5 *)ctx;
-    LONG p = _H5N(h, n)->padre;
-    if (p && solo_elementos && _H5N(h, p)->tipo != 1) p = 0;
-    *r = (void *)p;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_tiene_hijos(void *ctx, void *n, bool *r) {
-    *r = _H5N((_H5 *)ctx, n)->nh > 0;
-    return HUBBUB_OK;
-}
-
-static hubbub_error _h5_formulario(void *ctx, void *f, void *n) { return HUBBUB_OK; }
-
-static hubbub_error _h5_atributos(void *ctx, void *n, const hubbub_attribute *a, uint32_t k) {
-    _H5 *h = (_H5 *)ctx;
-    uint32_t i;
-    for (i = 0; i < k; i++) _h5_atributo(h, (LONG)n, &a[i]);
-    return h->mal ? HUBBUB_NOMEM : HUBBUB_OK;
-}
-
-static hubbub_error _h5_modo(void *ctx, hubbub_quirks_mode m) { ((_H5 *)ctx)->modo = (int)m; return HUBBUB_OK; }
-static hubbub_error _h5_juego(void *ctx, const char *e) { return HUBBUB_OK; }
-static hubbub_error _h5_script(void *ctx, void *s) { return HUBBUB_OK; }
-
-static void _h5_liberar_todo(_H5 *h) {
-    LONG i, k;
-    if (!h) return;
-    for (i = 1; i <= h->cuantos; i++) {
-        _H5Nodo *x = &h->n[i];
-        free(x->nombre);
-        free(x->texto);
-        free(x->hijos);
-        for (k = 0; k < x->na; k++) { free(x->an[k]); free(x->av[k]); }
-        free(x->an);
-        free(x->av);
-    }
-    free(h->n);
-    free(h->doctype);
-    free(h);
-}
-"""
-end
 
 # El árbol de Hubbub del texto (Latin-1, o los bytes UTF-8 tal cual con utf8); 0 si no se pudo
-@native(borrow) func _h5_analizar(texto: String, utf8: Bool) -> Int
-"""
-    _H5 *h = (_H5 *)calloc(1, sizeof(_H5));
-    hubbub_parser *p = NULL;
-    hubbub_tree_handler th;
-    hubbub_parser_optparams o;
-    hubbub_error e;
-    if (!h) return 0;
-    if (_h5_nuevo(h, 9) != 1 || hubbub_parser_create(utf8 ? "UTF-8" : "ISO-8859-1", true, &p) != HUBBUB_OK) {
-        _h5_liberar_todo(h);
-        return 0;
-    }
-    th.create_comment = _h5_comentario;
-    th.create_doctype = _h5_doctype;
-    th.create_element = _h5_elemento;
-    th.create_text = _h5_texto;
-    th.ref_node = _h5_ref;
-    th.unref_node = _h5_ref;
-    th.append_child = _h5_agregar;
-    th.insert_before = _h5_antes;
-    th.remove_child = _h5_quitar;
-    th.clone_node = _h5_clon;
-    th.reparent_children = _h5_mudar;
-    th.get_parent = _h5_padre;
-    th.has_children = _h5_tiene_hijos;
-    th.form_associate = _h5_formulario;
-    th.add_attributes = _h5_atributos;
-    th.set_quirks_mode = _h5_modo;
-    th.encoding_change = _h5_juego;
-    th.complete_script = _h5_script;
-    th.ctx = h;
-    o.tree_handler = &th;
-    hubbub_parser_setopt(p, HUBBUB_PARSER_TREE_HANDLER, &o);
-    o.document_node = (void *)1;
-    hubbub_parser_setopt(p, HUBBUB_PARSER_DOCUMENT_NODE, &o);
-    o.enable_scripting = true;
-    hubbub_parser_setopt(p, HUBBUB_PARSER_ENABLE_SCRIPTING, &o);
-    e = hubbub_parser_parse_chunk(p, (const uint8_t *)texto, strlen((const char *)texto));
-    if (e == HUBBUB_OK) e = hubbub_parser_completed(p);
-    hubbub_parser_destroy(p);
-    if (e != HUBBUB_OK || h->mal) {
-        _h5_liberar_todo(h);
-        return 0;
-    }
-    return (LONG)h;
-"""
-end
+@extern("html5") func _h5_analizar(texto: String, utf8: Bool) -> Int
 
-@native(borrow) func _h5_liberar(h: Int)
-"""
-    _h5_liberar_todo((_H5 *)h);
-"""
-end
+@extern("html5") func _h5_liberar(h: Int)
 
-@native(borrow) func _h5_tipo(h: Int, id: Int) -> Int
-"""
-    return _H5N((_H5 *)h, id)->tipo;
-"""
-end
+@extern("html5") func _h5_tipo(h: Int, id: Int) -> Int
 
-@native(borrow) func _h5_nombre(h: Int, id: Int) -> String
-"""
-    char *t = _H5N((_H5 *)h, id)->nombre;
-    return (STRPTR)(t ? t : "");
-"""
-end
+@extern("html5") func _h5_nombre(h: Int, id: Int) -> String
 
 # (los textos y valores salen como textos de Dash, copiados: uno de C de 64 o más se mediría entero en cada
 # str_code, y el script de React de pre.opentimetrack.com, 26 KB, tardaba 7 s en pasar a Latin-1; D61)
-@native(borrow) func _h5_texto(h: Int, id: Int) -> String
-"""
-    char *t = _H5N((_H5 *)h, id)->texto;
-    return _dash_str_dup((STRPTR)(t ? t : ""), TRUE);
-"""
-end
+@extern("html5") func _h5_texto_de(h: Int, id: Int) -> String
 
-@native(borrow) func _h5_nhijos(h: Int, id: Int) -> Int
-"""
-    return _H5N((_H5 *)h, id)->nh;
-"""
-end
+@extern("html5") func _h5_nhijos(h: Int, id: Int) -> Int
 
-@native(borrow) func _h5_hijo(h: Int, id: Int, i: Int) -> Int
-"""
-    return _H5N((_H5 *)h, id)->hijos[i];
-"""
-end
+@extern("html5") func _h5_hijo(h: Int, id: Int, i: Int) -> Int
 
-@native(borrow) func _h5_natributos(h: Int, id: Int) -> Int
-"""
-    return _H5N((_H5 *)h, id)->na;
-"""
-end
+@extern("html5") func _h5_natributos(h: Int, id: Int) -> Int
 
-@native(borrow) func _h5_atr_nombre(h: Int, id: Int, i: Int) -> String
-"""
-    return (STRPTR)_H5N((_H5 *)h, id)->an[i];
-"""
-end
+@extern("html5") func _h5_atr_nombre(h: Int, id: Int, i: Int) -> String
 
-@native(borrow) func _h5_atr_valor(h: Int, id: Int, i: Int) -> String
-"""
-    char *t = _H5N((_H5 *)h, id)->av[i];
-    return _dash_str_dup((STRPTR)(t ? t : ""), TRUE);
-"""
-end
+@extern("html5") func _h5_atr_valor(h: Int, id: Int, i: Int) -> String
 
-@native(borrow) func _h5_doctype_de(h: Int) -> String
-"""
-    char *t = ((_H5 *)h)->doctype;
-    return (STRPTR)(t ? t : "");
-"""
-end
+@extern("html5") func _h5_doctype_de(h: Int) -> String
 
 # El modo de la página según su doctype: 0 estándar, 1 casi estándar, 2 quirks (las páginas viejas sin doctype)
-@native(borrow) func _h5_modo_de(h: Int) -> Int
-"""
-    return (LONG)((_H5 *)h)->modo;
-"""
-end
+@extern("html5") func _h5_modo_de(h: Int) -> Int
 
 # El árbol del documento con las reglas de HTML5 (o el de dom_desde_html si Hubbub no puede)
 func dom_desde_html5(texto: String) -> Nodo
@@ -462,9 +88,9 @@ func _h5_copiar(h: Int, id: Int, padre: Nodo)
             dom_agregar(padre, e)
             _h5_copiar(h, c, e)
         elif t == DOM_TEXTO and padre.nombre == "script"
-            dom_agregar(padre, dom_nodo(t, "", utf8_a_js(_h5_texto(h, c))))
+            dom_agregar(padre, dom_nodo(t, "", utf8_a_js(_h5_texto_de(h, c))))
         elif t == DOM_TEXTO or t == DOM_COMENTARIO
-            dom_agregar(padre, dom_nodo(t, "", utf8_a_latin1(_h5_texto(h, c))))
+            dom_agregar(padre, dom_nodo(t, "", utf8_a_latin1(_h5_texto_de(h, c))))
         end
         i = i + 1
     end

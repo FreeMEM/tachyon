@@ -10,9 +10,6 @@
 
 import "http.dash"
 
-@header "#include <dos/dostags.h>"
-@header "#include <proto/locale.h>"
-
 # (las pruebas la cambian por la de un servidor local)
 var actualizar_api: String = "https://api.github.com/repos/FreeMEM/tachyon/releases?per_page=3"
 # los ficheros de cada versión publicada: + "v0.7.0-alfa/Tachyon-espanol.catalog"
@@ -204,79 +201,71 @@ func actualizar_catalogo_poner(c: Carga, url: String, cajon: String) -> String
 end
 
 # El idioma de un catálogo (su trozo LANG: "español"), "" si no es un catálogo
-@native(borrow) func actualizar_catalogo_lang(fichero: String) -> String
-"""
-    UBYTE b[512];
-    char idioma[64];
-    LONG n = 0, i = 12, largo;
-    BPTR f;
-    idioma[0] = 0;
-    if (fichero && (f = Open((STRPTR)fichero, MODE_OLDFILE))) {
-        n = Read(f, b, sizeof(b));
-        Close(f);
-    }
-    if (n >= 12 && !memcmp(b, "FORM", 4) && !memcmp(b + 8, "CTLG", 4)) {
-        while (i + 8 <= n) {
-            largo = (b[i + 4] << 24) | (b[i + 5] << 16) | (b[i + 6] << 8) | b[i + 7];
-            if (largo < 0) break;
-            if (!memcmp(b + i, "LANG", 4)) {
-                LONG k = 0;
-                while (k < largo && k < (LONG)sizeof(idioma) - 1 && i + 8 + k < n && b[i + 8 + k]) {
-                    idioma[k] = b[i + 8 + k];
-                    k++;
-                }
-                idioma[k] = 0;
-                break;
-            }
-            i += 8 + largo + (largo & 1);
-        }
-    }
-    return _dash_str_dup((STRPTR)idioma, TRUE);
-"""
+func actualizar_catalogo_lang(fichero: String) -> String
+    b = buffer_alloc(512)
+    n = 0
+    f = file_open(fichero, 1005)
+    if f != 0
+        n = file_read(f, b, 512)
+        file_close(f)
+    end
+    idioma = ""
+    if n >= 12 and str_from_buffer(b, 0, 4) == "FORM" and str_from_buffer(b, 8, 4) == "CTLG"
+        i = 12
+        while i + 8 <= n
+            largo = (buffer_get_byte(b, i + 4) << 24) | (buffer_get_byte(b, i + 5) << 16) | (buffer_get_byte(b, i + 6) << 8) | buffer_get_byte(b, i + 7)
+            if largo < 0
+                break
+            end
+            if str_from_buffer(b, i, 4) == "LANG"
+                k = 0
+                while k < largo and k < 63 and i + 8 + k < n and buffer_get_byte(b, i + 8 + k) != 0
+                    k = k + 1
+                end
+                idioma = str_from_buffer(b, i + 8, k)
+                break
+            end
+            i = i + 8 + largo + (largo & 1)
+        end
+    end
+    buffer_free(b)
+    return idioma
 end
 
 # El idioma elegido el primero en las Preferencias de Locale ("español"), "" si no se sabe
-@native func actualizar_idioma_preferido() -> String
-"""
-    /* (una base propia: el programa puede no usar locale.library) */
-    struct LocaleBase *LocaleBase = (struct LocaleBase *)OpenLibrary((CONST_STRPTR)"locale.library", 38);
-    char idioma[64];
-    idioma[0] = 0;
-    if (LocaleBase) {
-        struct Locale *loc = OpenLocale(NULL);
-        if (loc) {
-            if (loc->loc_PrefLanguages[0]) {
-                strncpy(idioma, (char *)loc->loc_PrefLanguages[0], sizeof(idioma) - 1);
-                idioma[sizeof(idioma) - 1] = 0;
-            }
-            CloseLocale(loc);
-        }
-        CloseLibrary((struct Library *)LocaleBase);
-    }
-    return _dash_str_dup((STRPTR)idioma, TRUE);
-"""
+func actualizar_idioma_preferido() -> String
+    return locale_language()
 end
 
 # Un idioma como va en el nombre de un fichero publicado: sin acentos, que GitHub los cambia ("español": "espanol")
-@native(borrow) func actualizar_ascii(idioma: String) -> String
-"""
-    static const char *de = "\xc0\xc1\xc2\xc3\xc4\xc5\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd1\xd2\xd3\xd4\xd5\xd6\xd8\xd9\xda\xdb\xdc\xdd"
-                            "\xe0\xe1\xe2\xe3\xe4\xe5\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf1\xf2\xf3\xf4\xf5\xf6\xf8\xf9\xfa\xfb\xfc\xfd\xff";
-    static const char *a = "AAAAAACEEEEIIIINOOOOOOUUUUY" "aaaaaaceeeeiiiinoooooouuuuyy";
-    char r[64];
-    int k = 0;
-    const UBYTE *p = (const UBYTE *)(idioma ? idioma : (STRPTR)"");
-    for (; *p && k < (int)sizeof(r) - 3; p++) {
-        const char *q = *p >= 0x80 ? strchr(de, *p) : NULL;
-        if (*p == 0xdf) { r[k++] = 's'; r[k++] = 's'; }
-        else if (*p == 0xe6) { r[k++] = 'a'; r[k++] = 'e'; }
-        else if (*p == 0xc6) { r[k++] = 'A'; r[k++] = 'E'; }
-        else if (q) r[k++] = a[q - de];
-        else if (*p < 0x80) r[k++] = *p;
-    }
-    r[k] = 0;
-    return _dash_str_dup((STRPTR)r, TRUE);
-"""
+func actualizar_ascii(idioma: String) -> String
+    # las letras con tilde de Latin-1 (sus códigos) y sus letras sin ella
+    de = [192, 193, 194, 195, 196, 197, 199, 200, 201, 202, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213, 214, 216, 217, 218, 219, 220, 221, 224, 225, 226, 227, 228, 229, 231, 232, 233, 234, 235, 236, 237, 238, 239, 241, 242, 243, 244, 245, 246, 248, 249, 250, 251, 252, 253, 255]
+    a = "AAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy"
+    r = ""
+    i = 0
+    while i < idioma.length and r.length < 61
+        o = str_code(idioma, i)
+        if o == 223
+            r = r + "ss"
+        elif o == 230
+            r = r + "ae"
+        elif o == 198
+            r = r + "AE"
+        elif o >= 128
+            k = 0
+            while k < de.length and de[k] != o
+                k = k + 1
+            end
+            if k < de.length
+                r = r + a[k:k + 1]
+            end
+        else
+            r = r + idioma[i]
+        end
+        i = i + 1
+    end
+    return r
 end
 
 # Dónde está publicado el catálogo de una versión en un idioma (lo bajan las que se quedan sin el suyo)
@@ -313,98 +302,109 @@ func actualizar_bajar(n: Novedad) -> Carga
 end
 
 # Dónde está el ejecutable que corre (su cajón y su nombre: "Work:Tachyon/Tachyon")
-@native func actualizar_programa() -> String
-"""
-    char dir[300], nombre[108];
-    struct Process *p = (struct Process *)FindTask(NULL);
-    dir[0] = 0;
-    nombre[0] = 0;
-    if (!GetProgramDir() || !NameFromLock(GetProgramDir(), (STRPTR)dir, 200)) return _dash_str_dup((STRPTR)"", TRUE);
-    if (p->pr_CLI) GetProgramName((STRPTR)nombre, sizeof(nombre));
-    else if (p->pr_Task.tc_Node.ln_Name) strncpy(nombre, p->pr_Task.tc_Node.ln_Name, sizeof(nombre) - 1);
-    nombre[sizeof(nombre) - 1] = 0;
-    if (!nombre[0]) strcpy(nombre, "Tachyon");
-    AddPart((STRPTR)dir, FilePart((STRPTR)nombre), sizeof(dir));
-    return _dash_str_dup((STRPTR)dir, TRUE);
-"""
+func actualizar_programa() -> String
+    return program_path()
 end
 
 # El día de hoy (días desde 1978): para mirar como mucho una vez al día
-@native func actualizar_hoy() -> Int
-"""
-    struct DateStamp d;
-    DateStamp(&d);
-    return d.ds_Days;
-"""
+func actualizar_hoy() -> Int
+    return clock_days()
 end
 
 # Descomprime T:Tachyon.gz, lo comprueba y lo pone en lugar de programa (el de antes, como programa.old); 0 si
 # quedó instalado o el número de por qué no (y el de antes sigue como estaba): actualizar_instalar
-@native(borrow) func _actualizar_instalar(programa: String) -> Int
-"""
-    LONG err = 0;
-    char nuevo[320], viejo[320];
-    UBYTE *gz = NULL, *ex = NULL;
-    LONG n = 0, i, ok = FALSE;
-    int largo = 0;
-    ULONG crc, c, k, isize, crc_gz;
-    BPTR f;
-    struct FileInfoBlock *fib;
-    if (!programa || !programa[0] || strlen((char *)programa) > 300) { err = 1; goto fin; }
-    /* el gzip entero en memoria */
-    f = Open((STRPTR)"T:Tachyon.gz", MODE_OLDFILE);
-    if (!f) { err = 2; goto fin; }
-    fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL);
-    if (fib && ExamineFH(f, fib)) n = fib->fib_Size;
-    if (fib) FreeDosObject(DOS_FIB, fib);
-    if (n > 18 && (gz = (UBYTE *)AllocVec(n, MEMF_ANY))) ok = Read(f, gz, n) == n;
-    Close(f);
-    if (!ok) { err = 3; goto fin; }
-    if (gz[0] != 0x1f || gz[1] != 0x8b || gz[2] != 8) { err = 4; goto fin; }
-    i = 10;
-    if (gz[3] & 4) i += 2 + (gz[10] | (gz[11] << 8));
-    if (gz[3] & 8) { while (i < n && gz[i]) i++; i++; }
-    if (gz[3] & 16) { while (i < n && gz[i]) i++; i++; }
-    if (gz[3] & 2) i += 2;
-    if (i >= n - 8) { err = 4; goto fin; }
-    crc_gz = gz[n - 8] | (gz[n - 7] << 8) | (gz[n - 6] << 16) | ((ULONG)gz[n - 5] << 24);
-    isize = gz[n - 4] | (gz[n - 3] << 8) | (gz[n - 2] << 16) | ((ULONG)gz[n - 1] << 24);
-    ex = (UBYTE *)stbi_zlib_decode_malloc_guesssize_headerflag((const char *)gz + i, n - i - 8, isize + 64, &largo, 0);
-    if (!ex) { err = 5; goto fin; }
-    /* entero: su tamaño y su CRC-32 (el del gzip), un ejecutable y de Tachyon */
-    {
-        static ULONG tabla[256];
-        for (k = 0; k < 256; k++) {
-            crc = k;
-            for (c = 0; c < 8; c++) crc = (crc >> 1) ^ (0xEDB88320 & (0 - (crc & 1)));
-            tabla[k] = crc;
-        }
-        crc = 0xFFFFFFFF;
-        for (k = 0; k < (ULONG)largo; k++) crc = tabla[(crc ^ ex[k]) & 0xFF] ^ (crc >> 8);
-        crc = ~crc;
-    }
-    if ((ULONG)largo != isize || crc != crc_gz) { err = 6; goto fin; }
-    if (largo < 64 || ex[0] != 0 || ex[1] != 0 || ex[2] != 3 || ex[3] != 0xF3) { err = 7; goto fin; }
-    ok = FALSE;
-    for (k = 0; k + 14 < (ULONG)largo && !ok; k++) ok = !memcmp(ex + k, "$VER: Tachyon ", 14);
-    if (!ok) { err = 8; goto fin; }
-    /* programa.new, y luego el cambio: programa -> programa.old, programa.new -> programa */
-    sprintf(nuevo, "%s.new", (char *)programa);
-    sprintf(viejo, "%s.old", (char *)programa);
-    f = Open((STRPTR)nuevo, MODE_NEWFILE);
-    if (!f) { err = 9; goto fin; }
-    ok = Write(f, ex, largo) == largo;
-    Close(f);
-    if (!ok) { DeleteFile((STRPTR)nuevo); err = 10; goto fin; }
-    DeleteFile((STRPTR)viejo);
-    if (!Rename(programa, (STRPTR)viejo)) { DeleteFile((STRPTR)nuevo); err = 11; goto fin; }
-    if (!Rename((STRPTR)nuevo, programa)) { Rename((STRPTR)viejo, programa); DeleteFile((STRPTR)nuevo); err = 12; goto fin; }
-    DeleteFile((STRPTR)"T:Tachyon.gz");
-fin:
-    if (gz) FreeVec(gz);
-    if (ex) free(ex);
-    return err;
-"""
+func _actualizar_instalar(programa: String) -> Int
+    if programa == "" or programa.length > 300
+        return 1
+    end
+    # el gzip entero en memoria
+    n = file_size(ACTUALIZAR_GZ)
+    if n < 0
+        return 2
+    end
+    gz = 0
+    if n > 18
+        gz = buffer_alloc(n)
+    end
+    if gz == 0
+        return 3
+    end
+    if file_load(ACTUALIZAR_GZ, gz, n) != n
+        buffer_free(gz)
+        return 3
+    end
+    if buffer_get_byte(gz, 0) != 31 or buffer_get_byte(gz, 1) != 139 or buffer_get_byte(gz, 2) != 8
+        buffer_free(gz)
+        return 4
+    end
+    crc_gz = _act_le32(gz, n - 8)
+    isize = _act_le32(gz, n - 4)
+    ex = 0
+    if isize > 0
+        ex = buffer_alloc(isize + 64)
+    end
+    if ex == 0
+        buffer_free(gz)
+        return 5
+    end
+    largo = inflate_auto(gz, n, ex, isize + 64)
+    buffer_free(gz)
+    e = _act_comprobar(ex, largo, isize, crc_gz)
+    if e == 0
+        e = _act_cambiar(programa, ex, largo)
+    end
+    buffer_free(ex)
+    return e
+end
+
+# Un entero de 32 bits en little endian (el final de un gzip)
+func _act_le32(b: Int, i: Int) -> Int
+    return buffer_get_byte(b, i) | (buffer_get_byte(b, i + 1) << 8) | (buffer_get_byte(b, i + 2) << 16) | (buffer_get_byte(b, i + 3) << 24)
+end
+
+# Entero: su tamaño y su CRC-32 (el del gzip), un ejecutable y de Tachyon; 0 si está bien
+func _act_comprobar(ex: Int, largo: Int, isize: Int, crc_gz: Int) -> Int
+    if largo < 0
+        return 5
+    end
+    if largo != isize or crc32(ex, largo, 0) != crc_gz
+        return 6
+    end
+    if largo < 64 or buffer_get_byte(ex, 0) != 0 or buffer_get_byte(ex, 1) != 0 or buffer_get_byte(ex, 2) != 3 or buffer_get_byte(ex, 3) != 243
+        return 7
+    end
+    if str_find(str_from_buffer(ex, 0, largo), "$VER: Tachyon ") < 0
+        return 8
+    end
+    return 0
+end
+
+# programa.new, y luego el cambio: programa -> programa.old, programa.new -> programa
+func _act_cambiar(programa: String, ex: Int, largo: Int) -> Int
+    nuevo = programa + ".new"
+    viejo = programa + ".old"
+    f = file_open(nuevo, 1006)
+    if f == 0
+        return 9
+    end
+    ok = file_write(f, ex, largo) == largo
+    file_close(f)
+    if not ok
+        file_delete(nuevo)
+        return 10
+    end
+    file_delete(viejo)
+    if not file_rename(programa, viejo)
+        file_delete(nuevo)
+        return 11
+    end
+    if not file_rename(nuevo, programa)
+        file_rename(viejo, programa)
+        file_delete(nuevo)
+        return 12
+    end
+    file_delete(ACTUALIZAR_GZ)
+    return 0
 end
 
 # Lo mismo con el porqué en texto ("" si quedó instalado)
@@ -418,17 +418,9 @@ func actualizar_instalar(programa: String) -> String
 end
 
 # Abre otra vez Tachyon (el nuevo) y sigue sin esperar; false si no se pudo
-@native(borrow) func actualizar_lanzar(programa: String) -> Bool
-"""
-    char orden[330];
-    BPTR nada;
-    LONG r;
-    if (!programa || strlen((char *)programa) > 300) return FALSE;
-    sprintf(orden, "\"%s\"", (char *)programa);
-    nada = Open((STRPTR)"NIL:", MODE_NEWFILE);
-    if (!nada) return FALSE;
-    r = SystemTags((STRPTR)orden, SYS_Input, nada, SYS_Output, NULL, SYS_Asynch, TRUE, NP_StackSize, 65536, TAG_DONE);
-    if (r == -1) { Close(nada); return FALSE; }
-    return TRUE;
-"""
+func actualizar_lanzar(programa: String) -> Bool
+    if programa.length > 300
+        return false
+    end
+    return run_program("\"" + programa + "\"")
 end

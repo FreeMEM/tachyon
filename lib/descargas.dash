@@ -11,8 +11,6 @@
 import "http.dash"
 import "idioma.dash"
 
-@header "#include <proto/wb.h>"
-
 const DESCARGA_BAJANDO = 0
 const DESCARGA_HECHA = 1
 const DESCARGA_ERROR = 2
@@ -173,46 +171,23 @@ func descargas_accion(accion: String, id: Int) -> String
 end
 
 # El cajón del fichero en el Workbench (workbench.library 44: AmigaOS 3.5 o más)
-@native(borrow) func _abrir_cajon(ruta: String) -> Bool
-"""
-    struct Library *wb;
-    char cajon[300];
-    STRPTR fin;
-    BOOL ok = FALSE;
-    if (!ruta || strlen((char *)ruta) >= sizeof(cajon)) return FALSE;
-    strcpy(cajon, (char *)ruta);
-    fin = PathPart((STRPTR)cajon);
-    *fin = 0;
-    if (!(wb = OpenLibrary((STRPTR)"workbench.library", 44))) return FALSE;
-    {
-        struct Library *WorkbenchBase = wb;
-        ok = OpenWorkbenchObjectA((STRPTR)cajon, NULL);
-    }
-    CloseLibrary(wb);
-    return ok;
-"""
+func _abrir_cajon(ruta: String) -> Bool
+    # el cajón de la ruta (lo que va antes del último "/" o ":", como PathPart)
+    i = ruta.length - 1
+    while i >= 0 and ruta[i] != "/" and ruta[i] != ":"
+        i = i - 1
+    end
+    cajon = ruta[:i + 1]
+    if i >= 0 and ruta[i] == "/"
+        cajon = ruta[:i]
+    end
+    return wb_open(cajon)
 end
 
 # Dónde guardar: el selector de ficheros de ASL con el nombre ya puesto y en el cajón de la última vez (Return y
-# listo, como en los navegadores; el dialog_file de Dash no deja dar un nombre); "" si se cancela
-@native(borrow) func descargas_pedir_ruta(titulo: String, cajon: String, nombre: String) -> String
-"""
-    struct FileRequester *fr;
-    static char r[512];
-    r[0] = 0;
-    if (!_dash_asl_open()) return _dash_str_dup((STRPTR)"", TRUE);
-    fr = (struct FileRequester *)AllocAslRequestTags(ASL_FileRequest, TAG_DONE);
-    if (!fr) return _dash_str_dup((STRPTR)"", TRUE);
-    if (AslRequestTags(fr, ASLFR_TitleText, (ULONG)titulo, ASLFR_DoSaveMode, TRUE, ASLFR_RejectIcons, TRUE,
-                       ASLFR_InitialDrawer, (ULONG)cajon, ASLFR_InitialFile, (ULONG)nombre, TAG_DONE)) {
-        strncpy(r, (char *)fr->fr_Drawer, sizeof(r) - 1);
-        r[sizeof(r) - 1] = 0;
-        if (fr->fr_File && fr->fr_File[0]) AddPart((STRPTR)r, fr->fr_File, sizeof(r));
-        else r[0] = 0;
-    }
-    FreeAslRequest(fr);
-    return _dash_str_dup((STRPTR)r, TRUE);
-"""
+# listo, como en los navegadores: dialog_file_at); "" si se cancela
+func descargas_pedir_ruta(titulo: String, cajon: String, nombre: String) -> String
+    return dialog_file_at(titulo, "", true, cajon, nombre)
 end
 
 # "1,5 MB", "640 KB", "512 bytes"

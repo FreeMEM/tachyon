@@ -1,4 +1,5 @@
-# Imágenes decodificadas por dashweb (tarea 29), sin los datatypes: JPEG con TJpgDec (third_party/tjpgd),
+# Imágenes decodificadas por dashweb (tarea 29), sin los datatypes (con Dash 2.0, los builtins image_decode*, que
+# llevan el C que antes iba aquí): JPEG con TJpgDec (third_party/tjpgd),
 # que decodifica ya reducido a 1/2, 1/4 o 1/8; WebP (con y sin pérdida, con alfa; no animado) con el
 # decodificador de libwebp (third_party/libwebp), que también reduce al decodificar; JPEG progresivo, PNG,
 # GIF y BMP con stb_image (third_party/stb), reducidos después; SVG con nanosvg (third_party/nanosvg),
@@ -8,434 +9,99 @@
 #   img = imagen_decodificar("T:foto.jpg", 1280, 1024)   # 0 si no se puede: entonces image_load
 #
 # Una imagen más grande que ancho x alto se reduce hasta caber (para no gastar memoria ni tiempo en
-# píxeles que no se van a ver); la proporción se guarda. tools/build_img.sh hace la librería.
-
-@link "../build/img-lib/libimg.a"
-@header "#include <tjpgd.h>"
-@header "#include <webp_inc/webp/decode.h>"
-@header "#include <nanosvg.h>"
-@header "#include <nanosvgrast.h>"
-
-@c
-"""
-/* lib/imagen_dec.dash: a decoded picture (malloc) until image_from_rgb takes it */
-typedef struct {
-    LONG w, h, alfa;      /* alfa: 4 bytes per pixel (RGBA), else 3 (RGB) */
-    UBYTE *px;
-} _ImgDec;
-
-extern unsigned char *stbi_load_from_memory(const unsigned char *buffer, int len, int *x, int *y,
-                                            int *comp, int req_comp);
-extern int stbi_info_from_memory(const unsigned char *buffer, int len, int *x, int *y, int *comp);
-extern void stbi_image_free(void *p);
-
-/* The whole file in memory (AllocVec); NULL if it cannot be read */
-static UBYTE *_imgdec_fichero(STRPTR nombre, LONG *largo) {
-    BPTR f = Open(nombre, MODE_OLDFILE);
-    UBYTE *d = NULL;
-    LONG n;
-    if (!f) return NULL;
-    Seek(f, 0, OFFSET_END);
-    n = Seek(f, 0, OFFSET_BEGINNING);
-    if (n > 0 && n < 64 * 1024 * 1024 && (d = (UBYTE *)AllocVec(n, MEMF_ANY))) {
-        if (Read(f, d, n) != n) { FreeVec(d); d = NULL; }
-    }
-    Close(f);
-    *largo = n;
-    return d;
-}
-
-/* TJpgDec reads from memory and writes the decoded blocks into the picture */
-typedef struct {
-    UBYTE *datos;
-    LONG largo, pos;
-    _ImgDec *img;
-} _ImgDecJpeg;
-
-static size_t _imgdec_jpeg_leer(JDEC *jd, uint8_t *buf, size_t n) {
-    _ImgDecJpeg *j = (_ImgDecJpeg *)jd->device;
-    if (n > (size_t)(j->largo - j->pos)) n = j->largo - j->pos;
-    if (buf) memcpy(buf, j->datos + j->pos, n);
-    j->pos += n;
-    return n;
-}
-
-static int _imgdec_jpeg_poner(JDEC *jd, void *bitmap, JRECT *r) {
-    _ImgDecJpeg *j = (_ImgDecJpeg *)jd->device;
-    _ImgDec *img = j->img;
-    UBYTE *src = (UBYTE *)bitmap;
-    LONG ancho = r->right - r->left + 1, y, x0 = r->left, x1 = r->right;
-    if (x1 >= img->w) x1 = img->w - 1;
-    for (y = r->top; y <= r->bottom; y++, src += ancho * 3)
-        if (y < img->h && x0 <= x1) memcpy(img->px + (y * img->w + x0) * 3, src, (x1 - x0 + 1) * 3);
-    return 1;
-}
-
-/* A baseline JPEG, reduced by 2^s so that it is not much bigger than maxw x maxh; NULL if TJpgDec
-   cannot (progressive JPEG...) */
-static _ImgDec *_imgdec_jpeg(UBYTE *datos, LONG largo, LONG maxw, LONG maxh) {
-    JDEC jd;
-    _ImgDecJpeg j;
-    void *trabajo = AllocVec(32768, MEMF_ANY);
-    _ImgDec *img = NULL;
-    int s = 0;
-    if (!trabajo) return NULL;
-    j.datos = datos;
-    j.largo = largo;
-    j.pos = 0;
-    if (jd_prepare(&jd, _imgdec_jpeg_leer, trabajo, 32768, &j) == JDR_OK) {
-        while (s < 3 && (jd.width >> (s + 1)) >= maxw && (jd.height >> (s + 1)) >= maxh) s++;
-        img = (_ImgDec *)AllocVec(sizeof(_ImgDec), MEMF_CLEAR);
-        if (img) {
-            img->w = (jd.width + (1 << s) - 1) >> s;
-            img->h = (jd.height + (1 << s) - 1) >> s;
-            img->px = (UBYTE *)AllocVec(img->w * img->h * 3, MEMF_CLEAR);
-            j.img = img;
-            if (!img->px || jd_decomp(&jd, _imgdec_jpeg_poner, s) != JDR_OK) {
-                if (img->px) FreeVec(img->px);
-                FreeVec(img);
-                img = NULL;
-            }
-        }
-    }
-    FreeVec(trabajo);
-    return img;
-}
-
-/* Smaller by k in each direction (the average of each k x k square) */
-static void _imgdec_reducir(_ImgDec *img, LONG k) {
-    LONG c = img->alfa ? 4 : 3, w = img->w / k, h = img->h / k, x, y, i, j, n, sum[4];
-    UBYTE *nuevo, *d;
-    if (k < 2 || w < 1 || h < 1) return;
-    nuevo = (UBYTE *)AllocVec(w * h * c, MEMF_ANY);
-    if (!nuevo) return;
-    for (y = 0, d = nuevo; y < h; y++)
-        for (x = 0; x < w; x++) {
-            sum[0] = sum[1] = sum[2] = sum[3] = 0;
-            for (j = 0; j < k; j++) {
-                UBYTE *s = img->px + ((y * k + j) * img->w + x * k) * c;
-                for (i = 0; i < k; i++, s += c)
-                    for (n = 0; n < c; n++) sum[n] += s[n];
-            }
-            for (n = 0; n < c; n++) *d++ = sum[n] / (k * k);
-        }
-    FreeVec(img->px);
-    img->px = nuevo;
-    img->w = w;
-    img->h = h;
-}
-
-/* A WebP (lossy or lossless, with alpha; not animated), decoded already scaled so that it is not much
-   bigger than maxw x maxh (the aspect ratio is kept); NULL if libwebp cannot */
-static _ImgDec *_imgdec_webp(UBYTE *datos, LONG largo, LONG maxw, LONG maxh) {
-    WebPDecoderConfig cfg;
-    _ImgDec *img;
-    LONG w, h, tw, th, c;
-    if (!WebPInitDecoderConfig(&cfg)) return NULL;
-    if (WebPGetFeatures(datos, largo, &cfg.input) != VP8_STATUS_OK || cfg.input.has_animation) return NULL;
-    w = cfg.input.width;
-    h = cfg.input.height;
-    tw = w;
-    th = h;
-    if (w > maxw && h > maxh) {
-        /* the smallest size that still covers maxw x maxh */
-        if (maxw * h > maxh * w) { tw = maxw; th = (h * maxw + w - 1) / w; }
-        else { th = maxh; tw = (w * maxh + h - 1) / h; }
-        cfg.options.use_scaling = 1;
-        cfg.options.scaled_width = tw;
-        cfg.options.scaled_height = th;
-    }
-    c = cfg.input.has_alpha ? 4 : 3;
-    img = (_ImgDec *)AllocVec(sizeof(_ImgDec), MEMF_CLEAR);
-    if (!img) return NULL;
-    img->px = (UBYTE *)AllocVec(tw * th * c, MEMF_ANY);
-    if (!img->px) { FreeVec(img); return NULL; }
-    cfg.output.colorspace = c == 4 ? MODE_RGBA : MODE_RGB;
-    cfg.output.is_external_memory = 1;
-    cfg.output.u.RGBA.rgba = img->px;
-    cfg.output.u.RGBA.stride = tw * c;
-    cfg.output.u.RGBA.size = tw * th * c;
-    if (WebPDecode(datos, largo, &cfg) != VP8_STATUS_OK) {
-        WebPFreeDecBuffer(&cfg.output);
-        FreeVec(img->px);
-        FreeVec(img);
-        return NULL;
-    }
-    WebPFreeDecBuffer(&cfg.output);
-    img->w = tw;
-    img->h = th;
-    img->alfa = c == 4;
-    return img;
-}
-
-/* Does it look like SVG text? (an XML declaration or comments, then an <svg ...> element) */
-static int _imgdec_es_svg(UBYTE *datos, LONG largo) {
-    LONG i = 0, n = largo < 4096 ? largo : 4096;
-    if (n >= 3 && datos[0] == 0xEF && datos[1] == 0xBB && datos[2] == 0xBF) i = 3;
-    while (i < n && (datos[i] == ' ' || datos[i] == '\t' || datos[i] == '\r' || datos[i] == '\n')) i++;
-    if (i >= n || datos[i] != '<') return 0;
-    for (; i + 4 < n; i++)
-        if (datos[i] == '<' && datos[i + 1] == 's' && datos[i + 2] == 'v' && datos[i + 3] == 'g' &&
-            (datos[i + 4] == ' ' || datos[i + 4] == '>' || datos[i + 4] == '\n' || datos[i + 4] == '\r' || datos[i + 4] == '\t'))
-            return 1;
-    return 0;
-}
-
-/* An SVG drawn by nanosvg: at its own size (width/height or viewBox), or, when maxw x maxh is smaller
-   than the defaults (the size at which it is seen), at the smallest scale that covers it; NULL if it
-   cannot be parsed */
-static _ImgDec *_imgdec_svg(UBYTE *datos, LONG largo, LONG maxw, LONG maxh) {
-    char *texto = (char *)AllocVec(largo + 1, MEMF_ANY);
-    NSVGimage *svg;
-    NSVGrasterizer *r;
-    _ImgDec *img = NULL;
-    float escala = 1.0f, ex, ey;
-    LONG w, h;
-    if (!texto) return NULL;
-    CopyMem(datos, texto, largo);
-    texto[largo] = 0;
-    svg = nsvgParse(texto, "px", 96.0f);
-    FreeVec(texto);
-    if (!svg) return NULL;
-    if (svg->width < 1.0f || svg->height < 1.0f) { nsvgDelete(svg); return NULL; }
-    if (maxw < 1280 || maxh < 1024) {
-        ex = (float)maxw / svg->width;
-        ey = (float)maxh / svg->height;
-        escala = ex > ey ? ex : ey;
-    } else {
-        /* its own size, but not bigger than the defaults */
-        ex = (float)maxw / svg->width;
-        ey = (float)maxh / svg->height;
-        if (ex < 1.0f || ey < 1.0f) escala = ex < ey ? ex : ey;
-    }
-    w = (LONG)(svg->width * escala + 0.5f);
-    h = (LONG)(svg->height * escala + 0.5f);
-    if (w < 1) w = 1;
-    if (h < 1) h = 1;
-    if (w > 4096 || h > 4096) { nsvgDelete(svg); return NULL; }
-    r = nsvgCreateRasterizer();
-    img = (_ImgDec *)AllocVec(sizeof(_ImgDec), MEMF_CLEAR);
-    if (img) img->px = (UBYTE *)AllocVec(w * h * 4, MEMF_CLEAR);
-    if (!r || !img || !img->px) {
-        if (img) { if (img->px) FreeVec(img->px); FreeVec(img); }
-        if (r) nsvgDeleteRasterizer(r);
-        nsvgDelete(svg);
-        return NULL;
-    }
-    nsvgRasterize(r, svg, 0, 0, escala, img->px, w, h, w * 4);
-    nsvgDeleteRasterizer(r);
-    nsvgDelete(svg);
-    img->w = w;
-    img->h = h;
-    img->alfa = 1;
-    return img;
-}
-
-/* PNG, GIF, BMP or a JPEG TJpgDec does not take, with stb_image; NULL if it cannot */
-static _ImgDec *_imgdec_stb(UBYTE *datos, LONG largo, LONG maxw, LONG maxh) {
-    int w, h, comp, pedir;
-    unsigned char *px;
-    _ImgDec *img;
-    LONG k = 1, n;
-    if (!stbi_info_from_memory(datos, largo, &w, &h, &comp)) return NULL;
-    pedir = comp == 2 || comp == 4 ? 4 : 3;
-    px = stbi_load_from_memory(datos, largo, &w, &h, &comp, pedir);
-    if (!px) return NULL;
-    img = (_ImgDec *)AllocVec(sizeof(_ImgDec), MEMF_CLEAR);
-    n = (LONG)w * h * pedir;
-    if (img) img->px = (UBYTE *)AllocVec(n, MEMF_ANY);
-    if (!img || !img->px) { if (img) FreeVec(img); stbi_image_free(px); return NULL; }
-    CopyMem(px, img->px, n);
-    stbi_image_free(px);
-    img->w = w;
-    img->h = h;
-    img->alfa = pedir == 4;
-    while (img->w / (k + 1) >= maxw && img->h / (k + 1) >= maxh) k++;
-    _imgdec_reducir(img, k);
-    return img;
-}
-
-/* El fichero decodificado (NULL si no es de estos formatos). Solo C, memoria de exec y el malloc de libnix
-   (con su semáforo): vale también en otro proceso (_imgdec_tarea) */
-static _ImgDec *_imgdec_hacer(const char *fichero, LONG maxw, LONG maxh) {
-    LONG largo = 0;
-    UBYTE *datos = _imgdec_fichero((STRPTR)fichero, &largo);
-    _ImgDec *img = NULL;
-    if (!datos) return NULL;
-    if (largo > 2 && datos[0] == 0xFF && datos[1] == 0xD8) img = _imgdec_jpeg(datos, largo, maxw, maxh);
-    else if (largo > 12 && !memcmp(datos, "RIFF", 4) && !memcmp(datos + 8, "WEBP", 4)) img = _imgdec_webp(datos, largo, maxw, maxh);
-    else if (_imgdec_es_svg(datos, largo)) img = _imgdec_svg(datos, largo, maxw, maxh);
-    if (!img) img = _imgdec_stb(datos, largo, maxw, maxh);
-    FreeVec(datos);
-    return img;
-}
-
-/* Lo que necesita la tarea que decodifica: su propia copia del nombre */
-typedef struct { LONG maxw, maxh; char fichero[1]; } _ImgDecPedido;
-"""
-end
-
-@native(borrow) func _imgdec(fichero: String, maxw: Int, maxh: Int) -> Int
-"""
-    return (LONG)_imgdec_hacer((const char *)fichero, maxw, maxh);
-"""
-end
-
-@native(borrow) func _imgdec_pedido(fichero: String, maxw: Int, maxh: Int) -> Int
-"""
-    _ImgDecPedido *q = (_ImgDecPedido *)AllocVec(sizeof(_ImgDecPedido) + strlen((const char *)fichero), MEMF_ANY);
-    if (!q) return 0;
-    q->maxw = maxw;
-    q->maxh = maxh;
-    strcpy(q->fichero, (const char *)fichero);
-    return (LONG)q;
-"""
-end
-
-@native func _imgdec_pedido_liberar(q: Int)
-"""
-    if (q) FreeVec((APTR)q);
-"""
-end
-
-# La función de la tarea (task_start): en otro proceso, solo C
-@native func _imgdec_tarea(q: Int) -> Int
-"""
-    _ImgDecPedido *p = (_ImgDecPedido *)q;
-    return (LONG)_imgdec_hacer(p->fichero, p->maxw, p->maxh);
-"""
-end
-
-@native func _imgdec_ancho(d: Int) -> Int
-"""
-    return ((_ImgDec *)d)->w;
-"""
-end
-
-@native func _imgdec_alto(d: Int) -> Int
-"""
-    return ((_ImgDec *)d)->h;
-"""
-end
-
-@native func _imgdec_alfa(d: Int) -> Bool
-"""
-    return ((_ImgDec *)d)->alfa != 0;
-"""
-end
-
-@native func _imgdec_pixeles(d: Int) -> Int
-"""
-    return (LONG)((_ImgDec *)d)->px;
-"""
-end
-
-@native func _imgdec_liberar(d: Int)
-"""
-    _ImgDec *img = (_ImgDec *)d;
-    if (!img) return;
-    if (img->px) FreeVec(img->px);
-    FreeVec(img);
-"""
-end
+# píxeles que no se van a ver); la proporción se guarda.
 
 # La imagen del fichero decodificada aquí (cabe en maxw x maxh, reducida si es más grande); 0 si el
 # formato no es de estos o picture.datatype es anterior a V43
 func imagen_decodificar(fichero: String, maxw: Int, maxh: Int) -> Int
-    d = _imgdec(fichero, maxw, maxh)
+    return _imgdec_imagen(_imgdec(fichero, maxw, maxh), -1)
+end
+
+# imagen_decodificar teñida (tinte: 0xRRGGBB)
+func imagen_decodificar_tinte(fichero: String, maxw: Int, maxh: Int, tinte: Int) -> Int
+    return _imgdec_imagen(_imgdec(fichero, maxw, maxh), tinte)
+end
+
+# image_decode con los tamaños de Tachyon: 1280x1024 o más es "no se sabe a qué tamaño se ve" (un tope: un SVG va a
+# su tamaño); menos, el tamaño al que se ve (un SVG se dibuja para cubrirlo)
+func _imgdec(fichero: String, maxw: Int, maxh: Int) -> Int
+    if maxw >= 1280 and maxh >= 1024
+        return image_decode(fichero, -maxw, -maxh)
+    end
+    return image_decode(fichero, maxw, maxh)
+end
+
+# La imagen de pantalla de lo decodificado (teñido si tinte >= 0), que se libera; 0 si d es 0
+func _imgdec_imagen(d: Int, tinte: Int) -> Int
     if d == 0
         return 0
     end
-    img = image_from_rgb(_imgdec_pixeles(d), _imgdec_ancho(d), _imgdec_alto(d), _imgdec_alfa(d))
-    _imgdec_liberar(d)
+    if tinte >= 0
+        _imgdec_tenir(d, tinte)
+    end
+    img = image_from_decoded(d)
+    image_decoded_free(d)
     return img
+end
+
+# Todos los píxeles del color rgb, con su transparencia (una máscara de mask-image teñida con el fondo del elemento)
+func _imgdec_tenir(d: Int, rgb: Int)
+    k = 3
+    if image_decoded_alpha(d)
+        k = 4
+    end
+    r = (rgb >> 16) & 255
+    g = (rgb >> 8) & 255
+    b = rgb & 255
+    p = image_decoded_pixels(d)
+    fin = p + image_decoded_width(d) * image_decoded_height(d) * k
+    while p < fin
+        buffer_set_byte(p, 0, r)
+        buffer_set_byte(p, 1, g)
+        buffer_set_byte(p, 2, b)
+        p = p + k
+    end
 end
 
 # === En otro proceso (la ventana sigue respondiendo mientras) ===
 
 struct Decodificando
     tarea: Int
-    pedido: Int
     tinte: Int = -1     # una máscara (mask-image): todos los píxeles de este color (0xRRGGBB), con su transparencia
-end
-
-# Todos los píxeles del color rgb, con su transparencia (una máscara de mask-image teñida con el fondo del elemento)
-@native func _imgdec_tenir(d: Int, rgb: Int)
-"""
-    _ImgDec *img = (_ImgDec *)d;
-    LONG n, k;
-    UBYTE *p;
-    if (!img || !img->px) return;
-    k = img->alfa ? 4 : 3;
-    n = img->w * img->h;
-    p = (UBYTE *)img->px;
-    while (n-- > 0) {
-        p[0] = (UBYTE)((rgb >> 16) & 255);
-        p[1] = (UBYTE)((rgb >> 8) & 255);
-        p[2] = (UBYTE)(rgb & 255);
-        p += k;
-    }
-"""
-end
-
-# imagen_decodificar teñida (tinte: 0xRRGGBB)
-func imagen_decodificar_tinte(fichero: String, maxw: Int, maxh: Int, tinte: Int) -> Int
-    d = _imgdec(fichero, maxw, maxh)
-    if d == 0
-        return 0
-    end
-    _imgdec_tenir(d, tinte)
-    img = image_from_rgb(_imgdec_pixeles(d), _imgdec_ancho(d), _imgdec_alto(d), _imgdec_alfa(d))
-    _imgdec_liberar(d)
-    return img
 end
 
 # Empieza a decodificar el fichero en otro proceso, con prioridad -1 (avanza cuando el programa espera);
 # nil si no se pudo empezar (entonces, imagen_decodificar)
 func imagen_empezar(fichero: String, maxw: Int, maxh: Int) -> Decodificando
     var nada: Decodificando = nil
-    q = _imgdec_pedido(fichero, maxw, maxh)
-    if q == 0
-        return nada
+    w = maxw
+    h = maxh
+    if maxw >= 1280 and maxh >= 1024
+        w = -maxw
+        h = -maxh
     end
-    t = task_start_with(_imgdec_tarea, q, IMAGEN_PILA, -1)
+    t = image_decode_start(fichero, w, h)
     if t == 0
-        _imgdec_pedido_liberar(q)
         return nada
     end
-    return Decodificando(t, q)
+    return Decodificando(t)
 end
-
-# Los decodificadores (stb_image, nanosvg, libwebp) piden bastante pila
-const IMAGEN_PILA = 262144
 
 # ¿Ya ha terminado? (no espera)
 func imagen_lista(d: Decodificando) -> Bool
-    return task_done(d.tarea)
+    return image_decode_ready(d.tarea)
 end
 
 # La imagen (como imagen_decodificar: 0 si el formato no es de estos, o si picture.datatype es anterior a
 # V43); espera si aún no ha terminado
 func imagen_acabar(d: Decodificando) -> Int
-    r = _imagen_terminar(d)
-    if r == 0
-        return 0
-    end
-    if d.tinte >= 0
-        _imgdec_tenir(r, d.tinte)
-    end
-    img = image_from_rgb(_imgdec_pixeles(r), _imgdec_ancho(r), _imgdec_alto(r), _imgdec_alfa(r))
-    _imgdec_liberar(r)
-    return img
+    return _imgdec_imagen(_imagen_terminar(d), d.tinte)
 end
 
-# Lo decodificado por la tarea (_ImgDec, 0 si nada), con la tarea ya liberada
+# Lo decodificado por la tarea (0 si nada), con la tarea ya liberada
 func _imagen_terminar(d: Decodificando) -> Int
-    r = task_result(d.tarea)
-    task_free(d.tarea)
-    _imgdec_pedido_liberar(d.pedido)
+    r = image_decode_finish(d.tarea)
     d.tarea = 0
-    d.pedido = 0
     return r
 end
 
@@ -455,16 +121,16 @@ func _imgdec_texto(d: Int, x: Int, y: Int) -> String
     if d == 0
         return "no"
     end
-    w = _imgdec_ancho(d)
+    w = image_decoded_width(d)
     k = 3
-    if _imgdec_alfa(d)
+    if image_decoded_alpha(d)
         k = 4
     end
-    p = _imgdec_pixeles(d) + (y * w + x) * k
-    r = "" + w + "x" + _imgdec_alto(d) + " alfa=" + _imgdec_alfa(d) + " " + buffer_get_byte(p, 0) + "," + buffer_get_byte(p, 1) + "," + buffer_get_byte(p, 2)
+    p = image_decoded_pixels(d) + (y * w + x) * k
+    r = "" + w + "x" + image_decoded_height(d) + " alfa=" + image_decoded_alpha(d) + " " + buffer_get_byte(p, 0) + "," + buffer_get_byte(p, 1) + "," + buffer_get_byte(p, 2)
     if k == 4
         r = r + "," + buffer_get_byte(p, 3)
     end
-    _imgdec_liberar(d)
+    image_decoded_free(d)
     return r
 end

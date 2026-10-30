@@ -157,6 +157,8 @@ var dw_dibujos_y1: Int = -1
 # CAJAS=texto (argumento): al acabar, la caja y el estilo de maqueta de los elementos con ese texto en su class (o
 # con ese nombre de etiqueta), por la salida ("": no)
 var dw_cajas: String = ""
+# CAJASEN=ms (argumento): lo mismo, una vez, a esos ms de empezar la página aunque no acabe (-1: no)
+var dw_cajas_en: Int = -1
 
 func cajas_volcar(n: Nodo, hondo: Int)
     if n.tipo == DOM_ELEMENTO and (n.nombre == dw_cajas or str_find(dom_atributo(n, "class"), dw_cajas) >= 0)
@@ -1232,6 +1234,7 @@ func maxi(a: Int, b: Int) -> Int
 end
 
 func temporizadores(w: Ventana)
+    cajas_a_su_hora(w)
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
         espera = jsdom_temporizadores(w.actual.js)
@@ -1344,7 +1347,16 @@ func raton(w: Ventana)
     temporizadores(w)
 end
 
+# CAJASEN: las cajas una vez, a su hora (desde tic y desde temporizadores: con temporizadores seguidos no hay tic)
+func cajas_a_su_hora(w: Ventana)
+    if dw_cajas_en >= 0 and w.actual != nil and w.actual.doc != nil and w.carga == nil and w.preparando == nil and time_ms() - w.empezada >= dw_cajas_en
+        dw_cajas_en = -1
+        cajas_volcar(w.actual.doc, 0)
+    end
+end
+
 func tic(w: Ventana)
+    cajas_a_su_hora(w)
     avanzar_carga(w)
     ir_pedido(w)
     # (la pestaña descartada que volvía a su sitio: con la página ya cargada, lo más cerca que se pueda)
@@ -2100,6 +2112,8 @@ Main
             elif str_starts(arg(i), "DESCARGAS=")
                 # DESCARGAS=dirección: los ficheros de las versiones (el catálogo propio) de ahí, pedido ya (para probarlo)
                 actualizar_descargas = arg(i)[10:]
+            elif str_starts(arg(i), "CAJASEN=")
+                dw_cajas_en = Int(arg(i)[8:])
             elif str_starts(arg(i), "CAJAS=")
                 dw_cajas = arg(i)[6:]
             elif str_starts(arg(i), "DIBUJOS=")
@@ -2117,7 +2131,7 @@ Main
             nueva_ventana(preferencia(FICHERO_PREFERENCIAS, "inicio"))
         end
         for i in (0..arg_count() - 1)
-            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=")
+            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=")
                 nueva_ventana(arg(i))
             end
         end

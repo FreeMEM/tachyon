@@ -591,7 +591,10 @@ tarea, con el estilo de Dash.
              medio colocar (top/left puestos, sin centrar) porque los temporizadores tardan 17-119 s, casi todo
              JavaScript (3 maquetas en el de 119 s): es de velocidad. Con QuickJS y dashweb en -DJS_PERFIL, Tachyon
              se para a los 37 s de la carga (rc None): el perfil no sirve aquí.
-          [ ] b. La barra de arriba sale dos veces (dos buscadores).
+          [ ] b. La barra de arriba sale dos veces (dos buscadores). Visto (CAJASEN a los 300 s): dentro del buscador,
+             el contenido del componente (div.ytSearchboxComponentInputWrapper y lo suyo) está dos veces seguidas en
+             el mismo padre: se pintó dos veces. Sospecha: su connectedCallback otra vez (la barra se mueve en la
+             página de un vídeo) sin disconnectedCallback; en la portada, una vez. Mirarlo con una traza del preludio.
           [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
           [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
           [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;
@@ -5150,4 +5153,7 @@ Formato:
 - c9a: a los 580 s el diálogo va a medio colocar; los temporizadores de la página tardan 17-119 s y en el de 119 s
   solo hay 3 maquetas (es JavaScript). La memoria libre baja de 139 a 77 MB en 400 s sin llegar a "entera". El
   perfil de QuickJS (-DJS_PERFIL, en un worktree aparte) para Tachyon a los 37 s: sin datos.
+- c9b: CAJASEN=ms (medir_visor --cajas-en MS) vuelca las cajas a esa hora aunque la página no acabe (desde tic y
+  desde temporizadores: con temporizadores seguidos no hay tic). En la página del vídeo, el contenido del buscador
+  está dos veces en el mismo padre (apuntado en c9b). Sin batería: solo cambia un argumento de depuración.
 

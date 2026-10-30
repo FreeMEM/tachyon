@@ -193,8 +193,8 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; sin sesión "dash" viva a la que
-      encargarla). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
+- [ ] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; encargada a las sesiones dashc y
+      freememlang-51, que se reparten el Dash de .worktrees/dashweb y el runtime de dashc). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
       textos cortos, structs) se quedan en sus listas libres para siempre. Tras YouTube en 128 MB, al salir a
       tachyon:inicio vuelven 84 MB de los 124 del principio y el mayor bloque libre es de 11,8 MB (114 MB al empezar):
       los charcos que quedan, repartidos, no dejan un hueco seguido para el script de 10,5 MB de la recarga tras
@@ -5151,8 +5151,8 @@ Formato:
   soltar entera la página de antes al llegar la nueva. En los dos casos, la misma memoria libre y el mismo mayor
   bloque (69 MB y 8 MB en la recarga tras "Accept all").
 - La causa está en Dash: un solo pool de exec con charcos de 4 KB y los bloques de hasta 128 bytes guardados en sus
-  listas libres para siempre. Apuntado como D80 con la propuesta; no hay ninguna sesión "dash" viva para encargarla
-  (la de D71 acabó el 28 de octubre). Lo pregunto al usuario.
+  listas libres para siempre. Apuntado como D80 con la propuesta. Encargada después a dashc y freememlang-51 (el
+  usuario: sí hay sesiones con Dash).
 - Compilación de 38c8 (b52ef74) en Traspaso:Tachyon/Tachyon.30oct (la de dash2 sigue como Tachyon).
 
 ### 2026-10-30 — Tarea 38 (c9): cómo sale la página de un vídeo

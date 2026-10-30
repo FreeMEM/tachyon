@@ -5218,3 +5218,11 @@ Formato:
   antes suelta entera con menos de 16 MB seguidos. En 128 MB tras "Accept all", YouTube dio otra variante
   (base_module_set) que aún no sale. Las baterías y medir_visor van ahora con flock /run/user/1000/dash-emu-red.lock
   (acordado con freememlang-51) para no chocar en los puertos.
+- Batería: 117/117 (3754 s), con customElements de serie, lo de D80 y los scripts UTF-8 sin copia (commits de 38c9b
+  y 38c8).
+
+### 2026-10-30 — Tarea 56: el paquete comprimido
+- tools/lha.py en lugar de tools/lha_lh0.py: -lh5- (LZSS de 8 KB y Huffman por bloques, como LHa para UNIX); lo
+  que no encoge va como -lh0-. Lhasa y LHa para UNIX (el de las herramientas del compilador cruzado) lo extraen
+  igual, con su CRC; el ejecutable queda al 51 % (LHa para UNIX, 50 %). El visor ya no va en el paquete y el LEEME
+  avisa de "tachyon (1).lha". Sin probar con el LhA del Amiga (no hay ninguno en el PC).

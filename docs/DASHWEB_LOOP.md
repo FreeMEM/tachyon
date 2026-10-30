@@ -595,6 +595,14 @@ tarea, con el estilo de Dash.
              el contenido del componente (div.ytSearchboxComponentInputWrapper y lo suyo) está dos veces seguidas en
              el mismo padre: se pintó dos veces. Sospecha: su connectedCallback otra vez (la barra se mueve en la
              página de un vídeo) sin disconnectedCallback; en la portada, una vez. Mirarlo con una traza del preludio.
+             Visto con trazas (2026-10-30): yt-searchbox es un envoltorio Wiz de YouTube (kevlar_base: render() en
+             connectedCallback, y disconnectedCallback lo vacía con innerText = ""). El mismo yt-searchbox recibe:
+             pintado, vaciado (4 hijos a 0), vaciado (0 a 0), pintado, pintado: las reacciones llegan dobles
+             (D, D, C, C) al redistribuir ShadyDOM (su __shady_native_removeChild/insertBefore pasan por los envoltorios
+             del polyfill de customElements, webcomponents-all-noPatch 88:106 y 198:376). El MutationObserver del
+             polyfill (yc) solo vive con readyState "loading" (Tachyon lo pasa a "interactive" bien) y isConnected
+             sube hasta document: falta ver de dónde sale la segunda reacción. Siguiente: un test con el polyfill de
+             YouTube en local (un elemento con contadores, movido con removeChild + insertBefore).
           [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
           [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
           [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;

@@ -193,6 +193,15 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; sin sesión "dash" viva a la que
+      encargarla). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
+      textos cortos, structs) se quedan en sus listas libres para siempre. Tras YouTube en 128 MB, al salir a
+      tachyon:inicio vuelven 84 MB de los 124 del principio y el mayor bloque libre es de 11,8 MB (114 MB al empezar):
+      los charcos que quedan, repartidos, no dejan un hueco seguido para el script de 10,5 MB de la recarga tras
+      "Accept all". Propuesto: (a) un builtin que devuelva las listas libres al pool (FreePooled: los charcos vacíos
+      vuelven a exec), llamado al soltar una página; (b) charcos más grandes (64 KB) para que lo de Dash no se reparta
+      entre los bloques grandes. Y aparte: asignar un texto que es un campo o variable lo copia entero (el script de
+      10,8 MB llegaba a estar cuatro veces); un "mover" (o textos compartidos) ahorraría las copias grandes.
 - [x] D71. **La caché de largos de texto expulsa el texto grande** (2026-10-26, tarea 38c; propuesta a la sesión "dash").
       _dash_str_len guarda el largo de 8 textos de 64 bytes o más y los cambia por turno: al leer la hoja CSS de
       YouTube (3,8 MB, 18 623 reglas), cada cuerpo de regla largo entra y a las 8 reglas sale la hoja, y el corte
@@ -574,7 +583,8 @@ tarea, con el estilo de Dash.
           cuenta). Hecho: la página de antes suelta su JavaScript al llegar la nueva, un pool por motor de QuickJS,
           gzip de una vez a su texto y menos copias del script. Falta en 128 MB: tras la primera portada el mayor
           bloque libre es de 8-10 MB y el script (10,5 MB) no cabe seguido; con la página vieja soltada entera,
-          igual (60 MB que no vuelven: buscar quién los guarda; Dash copia cada texto que se asigna).
+          igual. Visto (2026-10-30): son las listas libres de Dash (D80); vaciar las cachés globales de estilo y
+          maqueta no cambió nada (probado y quitado).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
@@ -5107,4 +5117,17 @@ Formato:
 - Probado y quitado: soltar entera la página de antes con poca memoria (la memoria libre y el mayor bloque, igual).
 - Queda (c8): en 128 MB el script de la recarga aún no cabe seguido (mayor bloque 8-10 MB de 46-61 libres).
 - Batería: 115/115 (3594 s).
+
+### 2026-10-30 — Tarea 38c8 (parte): qué memoria no vuelve tras YouTube
+- Con medir_visor --latido 10 y un clic en el botón de inicio a los 300 s (máquina RTG ancha, 128 MB): al empezar,
+  124 MB libres y el mayor bloque de 114 MB; tras YouTube, en tachyon:inicio, 84 MB libres y el mayor bloque de
+  11,8 MB. Se quedan unos 40 MB y lo libre está troceado.
+- Probado y quitado (sin cambio medible): vaciar las variables globales del estilo y la maqueta que guardan nodos y
+  reglas del último estilo (_ganadoras_hechas, _partes_hechas, _selectores_leidos...) y, con menos de 48 MB libres,
+  soltar entera la página de antes al llegar la nueva. En los dos casos, la misma memoria libre y el mismo mayor
+  bloque (69 MB y 8 MB en la recarga tras "Accept all").
+- La causa está en Dash: un solo pool de exec con charcos de 4 KB y los bloques de hasta 128 bytes guardados en sus
+  listas libres para siempre. Apuntado como D80 con la propuesta; no hay ninguna sesión "dash" viva para encargarla
+  (la de D71 acabó el 28 de octubre). Lo pregunto al usuario.
+- Compilación de 38c8 (b52ef74) en Traspaso:Tachyon/Tachyon.30oct (la de dash2 sigue como Tachyon).
 

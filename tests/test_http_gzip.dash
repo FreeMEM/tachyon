@@ -1,7 +1,8 @@
 # Test: gzip y deflate en lib/http.dash (tarea 33b). Los textos se piden comprimidos (Accept-Encoding: gzip,
 # deflate) y lo que va a un fichero no (identity). 64 KB de texto UTF-8 en gzip (con nombre de fichero en la
 # cabecera), gzip en trozos (chunked), deflate con zlib y deflate sin cabecera, esperando y sin esperar; al final,
-# en Latin-1 ("café").
+# en Latin-1 ("café"). Uno de 600 KB que comprimido ocupa mucho menos de su cuarta parte: se reserva de una vez lo que
+# dice su ISIZE, directamente en el texto (tarea 38c8: el script de YouTube, 10,8 MB, no se descomprimía con 70 MB libres).
 # emu-server: http.py 40868
 # memcheck
 # expect-out: acepta: [gzip, deflate] [identity]
@@ -10,6 +11,7 @@
 # expect-out: deflate: 200 64894 caf? []
 # expect-out: deflate_crudo: 200 64894 caf? []
 # expect-out: sin esperar: 200 64894 233 []
+# expect-out: grande: 200 612004 caf? [] reservado true directo true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/http.dash"
@@ -39,4 +41,7 @@ Main
     end
     t = http_texto(c.respuesta)
     Print "sin esperar: " + c.respuesta.estado + " " + t.length + " " + str_code(t, t.length - 1) + " [" + c.respuesta.error + "]"
+    antes = http_inflados_directos()
+    g = http_get(base + "/comprimido/gzip_grande", 10000)
+    Print "grande: " + ver(g) + " reservado " + (http_inflado_tope() == 612005) + " directo " + (http_inflados_directos() == antes + 1)
 end

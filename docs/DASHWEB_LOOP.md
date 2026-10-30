@@ -568,6 +568,13 @@ tarea, con el estilo de Dash.
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
           En parte (2026-10-27): las hojas sin los scripts traídos y las declaraciones leídas al usarse: "entera" en
           128 MB con 15,5 MB libres. Siguen: los selectores de la hoja (15,8 MB leída) y el JavaScript (54 MB).
+      [~] c8. (usuario, 2026-10-30, en su CoffinOS de Amiberry) Tras "Accept all" la portada se queda en el
+          esqueleto (los recuadros grises de #home-page-skeleton) y sin la barra de arriba.
+          En parte (2026-10-30): era la memoria (con 256 MB sale "Try searching to get started", como en Chrome sin
+          cuenta). Hecho: la página de antes suelta su JavaScript al llegar la nueva, un pool por motor de QuickJS,
+          gzip de una vez a su texto y menos copias del script. Falta en 128 MB: tras la primera portada el mayor
+          bloque libre es de 8-10 MB y el script (10,5 MB) no cabe seguido; con la página vieja soltada entera,
+          igual (60 MB que no vuelven: buscar quién los guarda; Dash copia cada texto que se asigna).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
@@ -5074,4 +5081,30 @@ Formato:
   sin memoria. En la captura faltan un par de iconos y el aviso de detrás del diálogo no se pinta entero (se mira).
 - Compilación puesta en Traspaso.
 - Batería: 114/114 (3407 s).
+
+### 2026-10-30 — Tarea 38c8 (parte): YouTube tras "Accept all" (la memoria de la recarga)
+- El usuario, en su CoffinOS de Amiberry (con el Tachyon de la rama dash2, compilado con dashc): tras "Accept all" la
+  portada se queda en el esqueleto, sin la barra de arriba. En el emulador, dev y dash2 cargan igual (0 errores,
+  "entera" a los 234 y 258 s, el diálogo de cookies). Con 256 MB y "Accept all": YouTube guarda la elección, carga
+  otra vez la portada y dice "Try searching to get started" (como Chrome sin cuenta ni historial; captura enviada).
+  Con 128 MB, lo del usuario: "out of memory" en la recarga.
+- Por qué: la página de antes seguía con sus 55 MB de JavaScript (y sus temporizadores) hasta acabar la nueva; y el
+  script principal, que en la recarga llega en gzip, no se descomprimía ("could not decompress").
+  - Ahora (src/dashweb.dash, lib/documento.dash documento_soltar_js) al llegar la página nueva la de antes suelta su
+    JavaScript y se queda pintada sin él: la recarga empieza con 68-74 MB libres en vez de 10-15.
+    test_documento_soltar_js (nuevo).
+  - lib/http.dash: el gzip reserva lo que dice su ISIZE (antes, 4 veces lo comprimido, y doblando: 16 MB con los 8 de
+    antes vivos para 10,5 MB) y va directamente a un texto de Dash (_dash_str_alloc, stbi_zlib_decode_noheader_buffer):
+    un solo bloque. Si no sale, la traza dice el mayor bloque libre. test_http_gzip: uno de 600 KB, reservado de
+    una vez y directo.
+  - lib/js.dash: cada motor de QuickJS pide su memoria a su propio pool de exec (charcos de 512 KB; de 128 KB arriba,
+    bloque propio) y la devuelve con DeletePool: con el malloc de libnix sus bloques se mezclaban con los de la página
+    (tras la primera portada, 61 MB libres y el mayor bloque de 5 MB; ahora 8-10 MB). Compilar el script principal,
+    lo mismo (54-60 s).
+  - lib/recursos.dash y lib/jsdom.dash: el cuerpo se suelta antes de guardar su texto, y el script traído se ejecuta
+    sin copiarlo a una variable y se quita de los traídos al acabar (Dash copia cada texto que se asigna: el de
+    YouTube estaba hasta cuatro veces). La traza dice cada script con src y su largo.
+- Probado y quitado: soltar entera la página de antes con poca memoria (la memoria libre y el mayor bloque, igual).
+- Queda (c8): en 128 MB el script de la recarga aún no cabe seguido (mayor bloque 8-10 MB de 46-61 libres).
+- Batería: 115/115 (3594 s).
 

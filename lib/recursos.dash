@@ -124,6 +124,8 @@ func recursos_avanzar(r: Recursos) -> Int
                         texto = texto_decodificar_js(resp.cuerpo, resp.juego)
                     end
                 end
+                # (el cuerpo, fuera antes de guardar su texto: así no hay tres copias a la vez)
+                resp.cuerpo = ""
                 r.cola.remove(i)
                 _recursos_llego(r, p.direccion, texto, p.es_css, p.nivel)
                 hechas = hechas + 1

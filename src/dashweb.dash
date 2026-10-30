@@ -889,6 +889,11 @@ func avanzar_carga(w: Ventana)
         mui_set_value(w.v.progreso, 90)
         dw_estado(w, tr(110, "Fetching style sheets and scripts..."))
         vista(w)
+        # la de antes se queda pintada, pero sin su JavaScript: así no suma su memoria a la de la nueva
+        if w.actual != nil
+            documento_soltar_js(w.actual)
+            w.js_cuando = -1
+        end
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
     end
     if w.preparando == nil

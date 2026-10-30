@@ -73,6 +73,7 @@ typedef struct _JsMotorS {
     char *error;
     void *extra;                                  /* other modules' data (lib/jsdom.dash) */
     void (*liberar_extra)(struct _JsMotorS *m);   /* called before the context is freed */
+    APTR pool;                                    /* where its memory comes from (_jm_malloc) */
 } _JsMotor;
 
 /* js_gc_siempre: the cycle collector after every script, call and job (to find reference-count bugs) */
@@ -240,8 +241,14 @@ static const JSMallocFunctions _jg_funciones = { _jg_malloc, _jg_free, _jg_reall
    reserve: a sixteenth of all the memory, between 512 KB and 6 MB. Without it, YouTube's JavaScript took the last
    19 MB of the RTG machine and the whole Amiga stopped (not even a screen picture could be taken; tarea 38c2): now
    the script gets "out of memory" and the rest goes on. AvailMem is asked every 64 KB asked for (and for every
-   block of 16 KB or more): asking it every time would cost too much */
+   block of 16 KB or more): asking it every time would cost too much.
+   Each engine takes its memory from its own exec pool (puddles of 512 KB; 128 KB or more, a block of its own) and
+   gives it all back with DeletePool. With libnix's malloc its blocks were mixed with the page's in the same 16 KB
+   chunks: after YouTube, 61 MB free but no hole bigger than 5 MB, and the 10.5 MB of its next script did not fit
+   anywhere (tarea 38c8, "Accept all" on 128 MB). */
 #define _JM_CABECERA 8
+#define _JM_CHARCO (512UL * 1024)
+#define _JM_SOLO (128UL * 1024)
 static ULONG _jm_reserva = 0, _jm_desde = 0;
 static int _jm_hay(size_t n) {
     if (_jm_reserva == 0) {
@@ -257,7 +264,7 @@ static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const ch
 static void *_jm_malloc(JSMallocState *s, size_t n) {
     size_t *p;
     if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
-    p = malloc(n + _JM_CABECERA);
+    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     p[0] = n;
     s->malloc_count++;
@@ -268,7 +275,7 @@ static void _jm_free(JSMallocState *s, void *q) {
     if (!q) return;
     s->malloc_count--;
     s->malloc_size -= _jm_tamano(q) + _JM_CABECERA;
-    free((char *)q - _JM_CABECERA);
+    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, _jm_tamano(q) + _JM_CABECERA);
 }
 static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     size_t antes, *p;
@@ -276,9 +283,11 @@ static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     if (!n) { _jm_free(s, q); return NULL; }
     antes = _jm_tamano(q);
     if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
-    p = realloc((char *)q - _JM_CABECERA, n + _JM_CABECERA);
+    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     p[0] = n;
+    memcpy((char *)p + _JM_CABECERA, q, antes < n ? antes : n);
+    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, antes + _JM_CABECERA);
     s->malloc_size += n - antes;
     return (char *)p + _JM_CABECERA;
 }
@@ -523,7 +532,9 @@ end
 #ifdef _JS_GUARDAS
     m->rt = JS_NewRuntime2(&_jg_funciones, NULL);
 #else
-    m->rt = JS_NewRuntime2(&_jm_funciones, NULL);
+    m->pool = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+    if (!m->pool) { free(m); return 0; }
+    m->rt = JS_NewRuntime2(&_jm_funciones, m->pool);
 #endif
     if (m->rt) {
         /* the stack the program really has, less 64 KB for the C below QuickJS: 192 KB with the 256 KB of @stack here
@@ -547,6 +558,7 @@ end
     }
     if (!m->ctx) {
         if (m->rt) JS_FreeRuntime(m->rt);
+        if (m->pool) DeletePool(m->pool);
         free(m);
         return 0;
     }
@@ -816,6 +828,7 @@ end
 #endif
     JS_FreeContext(m->ctx);
     JS_FreeRuntime(m->rt);
+    if (m->pool) DeletePool(m->pool);
     free(m->error);
     free(m);
 """

@@ -193,7 +193,7 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; encargada a las sesiones dashc y
+- [x] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; encargada a las sesiones dashc y
       freememlang-51, que se reparten el Dash de .worktrees/dashweb y el runtime de dashc). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
       textos cortos, structs) se quedan en sus listas libres para siempre. Tras YouTube en 128 MB, al salir a
       tachyon:inicio vuelven 84 MB de los 124 del principio y el mayor bloque libre es de 11,8 MB (114 MB al empezar):
@@ -520,6 +520,21 @@ tarea, con el estilo de Dash.
          lib/jsdom.dash los async que llegan tarde.
       b. Cada web: comparar con Chrome y arreglar lo que salga.
 
+- [ ] 55. **amigatronics.com, que se vea bien (usuario, 2026-10-30, por la sesión dashc: "haz que la web de
+      amigatronics.com se vea bien en Tachyon").** Un usuario con PiStorm la usa a diario con IBrowse, donde se ve
+      "bastante bien". WordPress.com (tema con cabecera, menú, cinta de "Últimas 10 publicaciones", tres columnas,
+      calendario, botones de compartir). Con un User-Agent que no es de Chrome llega directa (200, 280 KB); a Chrome le
+      sale antes un "Checking your browser" (403) con JavaScript. Referencia de Chrome a 1572x875:
+      .playwright-mcp/amigatronics_chrome.png. Partes: a. cómo sale ahora en Tachyon (256 y 128 MB); b. comparar con
+      Chrome y arreglar lo que salga. Al acabar, avisar al usuario.
+- [ ] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
+      descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
+      IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
+      "(1)" como comodín: "Unable to open archive!" (con -Qw va). Hacer: un .lha comprimido (-lh5-; tools/lha_lh0.py
+      solo escribe -lh0-, y la actualización desde Tachyon debe saber abrirlo) y decirlo en el LEEME y en las notas.
+      Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
+      solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
+
 - [x] 49. **tachyon.freemem.space sale en azul en el CoffinOS del usuario (2026-10-24, con la compilación de 48c y
       48e).** Solo el fondo: ni la cabecera, ni los textos, ni las estrellas; "Listo" en la barra, y sigue así tras un
       minuto. En el emulador sale entera (18-25 s) en todas las pruebas: MUI 5 y MUI 3.8, 1024x768 y 1680x1050, 16 y
@@ -585,13 +600,20 @@ tarea, con el estilo de Dash.
           bloque libre es de 8-10 MB y el script (10,5 MB) no cabe seguido; con la página vieja soltada entera,
           igual. Visto (2026-10-30): son las listas libres de Dash (D80); vaciar las cachés globales de estilo y
           maqueta no cambió nada (probado y quitado).
+          Con D80 (3bdc7be en dashweb: charcos propios de bloques pequeños y mem_trim, que suelta los vacíos): Tachyon
+          llama a mem_trim cada 2 s; los scripts en UTF-8 van a QuickJS tal como llegaron (js_evaluar_utf8, la
+          respuesta en Recursos.scripts), sin la copia a ASCII ni la de guardarlo; y si el mayor bloque libre baja de
+          16 MB al empezar otra página, la de antes se suelta entera. Medido en 128 MB: tras "Accept all" el script
+          ya no se pierde por memoria, pero YouTube sirvió otra variante (base_module_set: 1,2 MB y luego 9,5 MB que
+          pide su JavaScript, tres veces, y no se ejecuta): sigue el esqueleto. Siguiente: ver qué hace con esos
+          9,5 MB (¿XHR + eval? ¿un texto de 9,5 MB en QuickJS, o el doble si no es ASCII?).
       [ ] c9. La página de un vídeo (visto el 2026-10-30, watch?v=jNQXAC9IVRw, 256 MB: "entera" hacia los 110 s, el
           script principal 64 s). Partes:
           [ ] a. El diálogo de cookies sale arriba a la izquierda (en la portada, centrado). Visto: a los 580 s va a
              medio colocar (top/left puestos, sin centrar) porque los temporizadores tardan 17-119 s, casi todo
              JavaScript (3 maquetas en el de 119 s): es de velocidad. Con QuickJS y dashweb en -DJS_PERFIL, Tachyon
              se para a los 37 s de la carga (rc None): el perfil no sirve aquí.
-          [ ] b. La barra de arriba sale dos veces (dos buscadores). Visto (CAJASEN a los 300 s): dentro del buscador,
+          [x] b. La barra de arriba sale dos veces (dos buscadores). Visto (CAJASEN a los 300 s): dentro del buscador,
              el contenido del componente (div.ytSearchboxComponentInputWrapper y lo suyo) está dos veces seguidas en
              el mismo padre: se pintó dos veces. Sospecha: su connectedCallback otra vez (la barra se mueve en la
              página de un vídeo) sin disconnectedCallback; en la portada, una vez. Mirarlo con una traza del preludio.
@@ -602,9 +624,21 @@ tarea, con el estilo de Dash.
              del polyfill de customElements, webcomponents-all-noPatch 88:106 y 198:376). El MutationObserver del
              polyfill (yc) solo vive con readyState "loading" (Tachyon lo pasa a "interactive" bien) y isConnected
              sube hasta document: falta ver de dónde sale la segunda reacción (la segunda redistribución llega desde
-             kd, el vaciado de pintados pendientes de ShadyDOM antes de un dispatchEvent). Siguiente: un test con el
-             polyfill de YouTube en local (un elemento con contadores, movido con removeChild + insertBefore), o
-             customElements nativo en el preludio (con él, YouTube no pone el polyfill de customElements).
+             kd, el vaciado de pintados pendientes de ShadyDOM antes de un dispatchEvent).
+             Causa (2026-10-30, página local con el polyfill de YouTube, igual en Chrome con forcePolyfill y en
+             Tachyon): el polyfill de customElements, sin la opción shadyDomFastWalk, recorre el subárbol con mc,
+             que entra en los hijos del anfitrión (ShadyDOM ya les ha puesto ahí lo de su sombra) y además en
+             __CE_shadowRoot (los hijos lógicos de la sombra): un elemento dentro de una sombra sale dos veces y
+             recibe D, D, C, C. Con customElements de serie, Chrome da D, C (YouTube no carga el polyfill); con
+             window.customElements = {forcePolyfill, shadyDomFastWalk} antes del polyfill, Tachyon también da D, C
+             (no vale para quedarse: una página que mire si hay customElements creería que sí). Arreglo:
+             customElements de serie en el preludio (define, get, whenDefined, upgrade; las reacciones al meter,
+             quitar y cambiar atributos; los creados por el analizador y por createElement). Hecho a la vez:
+             append, prepend, before, after, replaceWith, remove e insertAdjacentElement ya no pasan por los
+             appendChild/insertBefore/removeChild de la página (test_jsdom_sin_doble); no arreglaba esto.
+             Hecho (2026-10-30): customElements de serie en el preludio (test_jsdom_custom). En la página del vídeo
+             (256 MB, a los 600 s): un buscador, y el diálogo de cookies ya centrado (sin el polyfill, todo va más
+             rápido: mirar si c9a sigue).
           [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
           [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
           [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;
@@ -5171,4 +5205,16 @@ Formato:
   desconectarse) y las reacciones de customElements llegan dobles al redistribuir ShadyDOM. Apuntado en c9b.
 - El loop se para aquí (2026-10-30, ~17:50): D80 espera al usuario (no hay sesión "dash") y lo siguiente de c9 es
   largo (un test con el polyfill o customElements nativo; la lentitud de los temporizadores, c9a).
-
+- c9b, la causa: el recorrido del polyfill de customElements (mc) visita dos veces lo que hay dentro de una sombra de
+  ShadyDOM (por el anfitrión y por __CE_shadowRoot). Reproducido con una página local en Chrome con forcePolyfill y en
+  Tachyon; con shadyDomFastWalk sale bien. Arreglo apuntado en c9b: customElements de serie en el preludio.
+- D80 (freememlang-51, df65026 en la rama dashc): mem_puddle y mem_trim. mem_trim devuelve los bloques al pool, no
+  al sistema, y el dash1 de dashc no enlaza Tachyon dev (falta _dash_str_forget, de la rama dashweb): sin medir.
+  Pedido que suelte al sistema los charcos vacíos y que llegue a .worktrees/dashweb.
+- c9b hecho: customElements de serie en el preludio (define, get, getName, whenDefined, upgrade; las reacciones salen
+  de appendChild, insertBefore, removeChild, replaceChild, innerHTML, textContent, setAttribute... y cloneNode, sobre
+  el árbol de verdad; lo de dentro de un <template> no se mejora). YouTube ya no carga el polyfill: un buscador.
+- c8 con D80 (3bdc7be en .worktrees/dashweb): mem_trim cada 2 s, scripts UTF-8 a QuickJS sin copias y la página de
+  antes suelta entera con menos de 16 MB seguidos. En 128 MB tras "Accept all", YouTube dio otra variante
+  (base_module_set) que aún no sale. Las baterías y medir_visor van ahora con flock /run/user/1000/dash-emu-red.lock
+  (acordado con freememlang-51) para no chocar en los puertos.

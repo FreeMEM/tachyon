@@ -389,12 +389,12 @@ Los cambios que necesitó QuickJS para AmigaOS están en `docs/quickjs_amiga.md`
 
 `tools/paquete.sh` deja `build/dashweb.lha`:
 
-1. Compila las librerías de C si faltan y luego `src/dashweb.dash` y `src/visor.dash`.
+1. Compila las librerías de C si faltan y luego `src/dashweb.dash` (el visor no va en el paquete: es para pruebas).
 2. Copia `iconos/` (la barra de herramientas, que se carga de `PROGDIR:iconos/`).
 3. Pasa `LEEME` y el guion del Installer a Latin-1.
 4. Hace los iconos del Workbench (`tools/iconos_wb.py`): el del cajón y los de dentro.
 5. Copia las licencias de todo lo que va dentro.
-6. Lo empaqueta en LHA sin comprimir (`tools/lha_lh0.py`; Lhasa en Linux solo descomprime).
+6. Lo empaqueta en LHA comprimido con `-lh5-`, como LhA (`tools/lha.py`; Lhasa en Linux solo descomprime).
 
 Detalles que importan en el Amiga:
 

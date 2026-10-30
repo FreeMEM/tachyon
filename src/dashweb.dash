@@ -144,6 +144,8 @@ struct Pestana
     titulo: String = ""       # el de su página, para su botón aunque esté descartada
 end
 
+# Con un mayor bloque libre por debajo de esto (bytes), al cargar otra página la de antes se suelta entera
+const POCO_SEGUIDO = 16777216
 # Por debajo de esta memoria libre (KB), las pestañas de detrás se descartan (POCAMEMORIA=KB lo cambia, para probarlo)
 var dw_poca_memoria: Int = 4096
 
@@ -159,6 +161,8 @@ var dw_dibujos_y1: Int = -1
 var dw_cajas: String = ""
 # CAJASEN=ms (argumento): lo mismo, una vez, a esos ms de empezar la página aunque no acabe (-1: no)
 var dw_cajas_en: Int = -1
+# cuándo se devolvieron al sistema los bloques pequeños libres (memoria_recortar)
+var dw_recorte: Int = 0
 
 func cajas_volcar(n: Nodo, hondo: Int)
     if n.tipo == DOM_ELEMENTO and (n.nombre == dw_cajas or str_find(dom_atributo(n, "class"), dw_cajas) >= 0)
@@ -895,6 +899,17 @@ func avanzar_carga(w: Ventana)
         if w.actual != nil
             documento_soltar_js(w.actual)
             w.js_cuando = -1
+            # sin un hueco grande seguido, fuera también lo demás (árbol, estilo, maqueta, imágenes), de vuelta al sistema:
+            # la portada de YouTube tras "Accept all" pide 10,5 MB seguidos para su script, y con 128 MB lo que quedaba
+            # de la de antes la partía en trozos de 10 MB (tarea 38c8)
+            if memoria_mayor_bloque() < POCO_SEGUIDO
+                documento_liberar(w.actual)
+                var ninguna: Documento = nil
+                w.actual = ninguna
+                n = mem_trim()
+                traza("la página de antes, fuera por falta de memoria seguida: devueltos " + n / 1024 + " KB; mayor bloque libre " + memoria_mayor_bloque() / 1024 + " KB")
+                mui_canvas_redraw(w.v.pagina)
+            end
         end
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
     end
@@ -1235,6 +1250,7 @@ end
 
 func temporizadores(w: Ventana)
     cajas_a_su_hora(w)
+    memoria_recortar()
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
         espera = jsdom_temporizadores(w.actual.js)
@@ -1355,8 +1371,22 @@ func cajas_a_su_hora(w: Ventana)
     end
 end
 
+# Los bloques pequeños de Dash que se han quedado libres, de vuelta al sistema cada 2 s (D80): sin esto se quedaban en
+# charcos repartidos por la memoria, y con 128 MB el mayor bloque libre no daba para el script principal de YouTube
+# (10,5 MB seguidos)
+func memoria_recortar()
+    if time_ms() - dw_recorte >= 2000
+        dw_recorte = time_ms()
+        n = mem_trim()
+        if n >= 65536
+            traza("devueltos al sistema " + (n / 1024) + " KB de bloques pequeños")
+        end
+    end
+end
+
 func tic(w: Ventana)
     cajas_a_su_hora(w)
+    memoria_recortar()
     avanzar_carga(w)
     ir_pedido(w)
     # (la pestaña descartada que volvía a su sitio: con la página ya cargada, lo más cerca que se pueda)

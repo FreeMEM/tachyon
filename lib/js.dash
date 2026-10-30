@@ -101,6 +101,8 @@ static LONG _js_extra = 0;
 static void _js_empieza(void) { _js_desde = _js_ms(); _js_avisado = 0; _js_extra = 0; }
 /* lo que tardó en compilarse el último script de js_evaluar */
 static LONG _js_compilado_ms = 0;
+/* el código de js_evaluar ya está en UTF-8 (js_evaluar_utf8): va a QuickJS tal cual */
+static int _js_es_utf8 = 0;
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
@@ -592,7 +594,7 @@ end
     {
         const unsigned char *p = (const unsigned char *)(codigo ? (const char *)codigo : "");
         while (*p && *p < 0x80) p++;
-        copia = *p != 0;
+        copia = *p != 0 && !_js_es_utf8;
         fuente = copia ? _js_utf8(codigo ? (const char *)codigo : "") : (char *)(codigo ? (const char *)codigo : "");
     }
     if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
@@ -625,6 +627,18 @@ end
     JS_FreeValue(m->ctx, v);
     r = _dash_str_dup((STRPTR)(texto ? texto : ""), TRUE);
     free(texto);
+    return r;
+"""
+end
+
+# js_evaluar con un código que ya está en UTF-8 (un script de fuera, tal como llegó): sin pasarlo de Latin-1 a UTF-8,
+# así que sin copiarlo (el de YouTube son 10,8 MB; con 128 MB no había otro hueco así; tarea 38c8)
+@native(borrow) func js_evaluar_utf8(js: Int, codigo: String, nombre: String) -> String
+"""
+    STRPTR r;
+    _js_es_utf8 = 1;
+    r = js_evaluar(js, codigo, nombre);
+    _js_es_utf8 = 0;
     return r;
 """
 end

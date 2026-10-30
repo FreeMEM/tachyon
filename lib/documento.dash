@@ -383,7 +383,7 @@ func documento_avanzar(d: Documento) -> Bool
         d.js = js_nuevo()
         _documento_con_js(d)
         jsdom_preparar(d.js, d.doc)
-        jsdom_ejecutar_scripts_con(d.js, d.doc, d.direccion, traidos)
+        jsdom_ejecutar_scripts_con(d.js, d.doc, d.direccion, traidos, d.recursos.scripts)
         d.cambios = jsdom_cambios(d.js)
     end
     _documento_olvidar_tocados(d)

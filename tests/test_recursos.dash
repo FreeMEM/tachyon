@@ -1,12 +1,12 @@
 # Test: lib/recursos.dash. Las hojas CSS (y sus @import, que se descubren al llegar) y los <script src>
 # de una página se traen a la vez y sin esperar; después el estilo y los scripts usan esos textos sin
-# volver a pedirlos. Un recurso que no existe queda como "". Un script llega en ASCII: la í de js_simple.js, como
-# \u00ed (38 bytes; tarea 38).
+# volver a pedirlos. Un recurso que no existe queda como "". Un script en UTF-8 se queda en su respuesta tal cual
+# (r.scripts: js_simple.js, 34 bytes con su í) y QuickJS lo lee sin copiarlo ni pasarlo a ASCII (tarea 38c8).
 # emu-server: http.py 40857
 # memcheck
 # expect-out: faltan al empezar: 3
 # expect-out: traídos: 4
-# expect-out: estilo.css: 37 bytes, imp.css: 20 bytes, js_simple.js: 38 bytes, no.css: []
+# expect-out: estilo.css: 37 bytes, imp.css: 20 bytes, js_simple.js: 34 bytes en UTF-8, no.css: []
 # expect-out: p: teal em: olive
 # expect-out: script traído
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
@@ -34,14 +34,14 @@ Main
     end
     Print "traídos: " + r.traidos.length
     t = r.traidos
-    Print "estilo.css: " + t["http://127.0.0.1:40857/estilo.css"].length + " bytes, imp.css: " + t["http://127.0.0.1:40857/imp.css"].length + " bytes, js_simple.js: " + t["http://127.0.0.1:40857/pages/js_simple.js"].length + " bytes, no.css: [" + t["http://127.0.0.1:40857/pages/no.css"] + "]"
+    Print "estilo.css: " + t["http://127.0.0.1:40857/estilo.css"].length + " bytes, imp.css: " + t["http://127.0.0.1:40857/imp.css"].length + " bytes, js_simple.js: " + r.scripts["http://127.0.0.1:40857/pages/js_simple.js"].cuerpo.length + " bytes en UTF-8, no.css: [" + t["http://127.0.0.1:40857/pages/no.css"] + "]"
     estilo_aplicar(doc, estilo_hojas_con(doc, base, r.traidos))
     p = dom_buscar(doc, "p")
     em = dom_buscar(doc, "em")
     Print "p: " + p.estilo["color"] + " em: " + em.estilo["color"]
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    jsdom_ejecutar_scripts_con(js, doc, base, r.traidos)
+    jsdom_ejecutar_scripts_con(js, doc, base, r.traidos, r.scripts)
     Print js_evaluar(js, "desde_src", "x")
     js_liberar(js)
     recursos_cancelar(r)

@@ -378,7 +378,7 @@ func _leer_cuerpo(c: Conexion, r: Respuesta, f: Int)
             p = _http_inflar(b.buf, b.n)
             if p == 0
                 r.error = tr(406, "could not decompress")
-                traza("sin descomprimir: " + b.n / 1024 + " KB, " + http_inflado_tope() / 1024 + " KB reservados al empezar; mayor bloque libre " + _http_mayor_bloque() / 1024 + " KB")
+                traza("sin descomprimir: " + b.n / 1024 + " KB, " + http_inflado_tope() / 1024 + " KB reservados al empezar; mayor bloque libre " + memoria_mayor_bloque() / 1024 + " KB")
             else
                 r.cuerpo = str_from_buffer(p, 0, _http_inflados())
                 _http_soltar_inflado(p)
@@ -474,7 +474,8 @@ end
 """
 end
 
-@native(borrow) func _http_mayor_bloque() -> Int
+# El mayor bloque de memoria libre seguida (bytes)
+@native(borrow) func memoria_mayor_bloque() -> Int
 """
     return (LONG)AvailMem(MEMF_ANY | MEMF_LARGEST);
 """

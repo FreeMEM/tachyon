@@ -815,11 +815,13 @@ end
 # escribe en la salida y se sigue con el siguiente. Cuántos se ejecutaron.
 func jsdom_ejecutar_scripts(js: Int, doc: Nodo, base: String) -> Int
     var traidos: {String: String} = {}
-    return jsdom_ejecutar_scripts_con(js, doc, base, traidos)
+    var cuerpos: {String: Respuesta} = {}
+    return jsdom_ejecutar_scripts_con(js, doc, base, traidos, cuerpos)
 end
 
-# Lo mismo con los src ya traídos (dirección -> texto; lib/recursos.dash); los que falten se piden
-func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {String: String}) -> Int
+# Lo mismo con los src ya traídos (dirección -> texto, o en cuerpos su respuesta en UTF-8; lib/recursos.dash); los que
+# falten se piden
+func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {String: String}, cuerpos: {String: Respuesta}) -> Int
     var scripts: [Nodo] = []
     _jsdom_scripts(doc, scripts)
     hechos = 0
@@ -840,8 +842,17 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
             if traido
                 # el traído, sin copiarlo a una variable (Dash copia el texto: el de YouTube son 10,8 MB, y tras otra
                 # página no había dos huecos así; tarea 38c8) y fuera en cuanto se ha ejecutado
-                largo = traidos[nombre].length
-                js_evaluar(js, traidos[nombre], nombre)
+                if cuerpos.has(nombre)
+                    # (la respuesta en una variable: su cuerpo va prestado, sin copia)
+                    rc = cuerpos[nombre]
+                    cuerpos.remove(nombre)
+                    largo = rc.cuerpo.length
+                    js_evaluar_utf8(js, rc.cuerpo, nombre)
+                    rc.cuerpo = ""
+                else
+                    largo = traidos[nombre].length
+                    js_evaluar(js, traidos[nombre], nombre)
+                end
                 traidos.remove(nombre)
             else
                 codigo = dom_texto(s)

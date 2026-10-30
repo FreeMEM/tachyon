@@ -587,7 +587,10 @@ tarea, con el estilo de Dash.
           maqueta no cambió nada (probado y quitado).
       [ ] c9. La página de un vídeo (visto el 2026-10-30, watch?v=jNQXAC9IVRw, 256 MB: "entera" hacia los 110 s, el
           script principal 64 s). Partes:
-          [ ] a. El diálogo de cookies sale arriba a la izquierda (en la portada, centrado).
+          [ ] a. El diálogo de cookies sale arriba a la izquierda (en la portada, centrado). Visto: a los 580 s va a
+             medio colocar (top/left puestos, sin centrar) porque los temporizadores tardan 17-119 s, casi todo
+             JavaScript (3 maquetas en el de 119 s): es de velocidad. Con QuickJS y dashweb en -DJS_PERFIL, Tachyon
+             se para a los 37 s de la carga (rc None): el perfil no sirve aquí.
           [ ] b. La barra de arriba sale dos veces (dos buscadores).
           [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
           [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
@@ -5144,4 +5147,7 @@ Formato:
   a los 110 s, y el reproductor pide 22 trozos a googlevideo.com (videoplayback). Captura de los 880 s enviada al
   usuario: el diálogo de cookies arriba a la izquierda, la barra de arriba dos veces, los títulos recomendados
   pisándose y el reproductor vacío; un "InternalError: interrupted" en mo_apuntar. Apuntado como c9 a-e.
+- c9a: a los 580 s el diálogo va a medio colocar; los temporizadores de la página tardan 17-119 s y en el de 119 s
+  solo hay 3 maquetas (es JavaScript). La memoria libre baja de 139 a 77 MB en 400 s sin llegar a "entera". El
+  perfil de QuickJS (-DJS_PERFIL, en un worktree aparte) para Tachyon a los 37 s: sin datos.
 

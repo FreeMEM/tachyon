@@ -585,6 +585,14 @@ tarea, con el estilo de Dash.
           bloque libre es de 8-10 MB y el script (10,5 MB) no cabe seguido; con la página vieja soltada entera,
           igual. Visto (2026-10-30): son las listas libres de Dash (D80); vaciar las cachés globales de estilo y
           maqueta no cambió nada (probado y quitado).
+      [ ] c9. La página de un vídeo (visto el 2026-10-30, watch?v=jNQXAC9IVRw, 256 MB: "entera" hacia los 110 s, el
+          script principal 64 s). Partes:
+          [ ] a. El diálogo de cookies sale arriba a la izquierda (en la portada, centrado).
+          [ ] b. La barra de arriba sale dos veces (dos buscadores).
+          [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
+          [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
+          [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;
+             sin MSE no hay vídeo. Mirar qué API pide y si se puede darle un vídeo entero (lo de la tarea 30).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
@@ -5130,4 +5138,10 @@ Formato:
   listas libres para siempre. Apuntado como D80 con la propuesta; no hay ninguna sesión "dash" viva para encargarla
   (la de D71 acabó el 28 de octubre). Lo pregunto al usuario.
 - Compilación de 38c8 (b52ef74) en Traspaso:Tachyon/Tachyon.30oct (la de dash2 sigue como Tachyon).
+
+### 2026-10-30 — Tarea 38 (c9): cómo sale la página de un vídeo
+- watch?v=jNQXAC9IVRw en la máquina RTG ancha con 256 MB: el script principal en 64 s (compilar 53), "scripts hechos"
+  a los 110 s, y el reproductor pide 22 trozos a googlevideo.com (videoplayback). Captura de los 880 s enviada al
+  usuario: el diálogo de cookies arriba a la izquierda, la barra de arriba dos veces, los títulos recomendados
+  pisándose y el reproductor vacío; un "InternalError: interrupted" en mo_apuntar. Apuntado como c9 a-e.
 

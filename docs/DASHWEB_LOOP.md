@@ -601,8 +601,10 @@ tarea, con el estilo de Dash.
              (D, D, C, C) al redistribuir ShadyDOM (su __shady_native_removeChild/insertBefore pasan por los envoltorios
              del polyfill de customElements, webcomponents-all-noPatch 88:106 y 198:376). El MutationObserver del
              polyfill (yc) solo vive con readyState "loading" (Tachyon lo pasa a "interactive" bien) y isConnected
-             sube hasta document: falta ver de dónde sale la segunda reacción. Siguiente: un test con el polyfill de
-             YouTube en local (un elemento con contadores, movido con removeChild + insertBefore).
+             sube hasta document: falta ver de dónde sale la segunda reacción (la segunda redistribución llega desde
+             kd, el vaciado de pintados pendientes de ShadyDOM antes de un dispatchEvent). Siguiente: un test con el
+             polyfill de YouTube en local (un elemento con contadores, movido con removeChild + insertBefore), o
+             customElements nativo en el preludio (con él, YouTube no pone el polyfill de customElements).
           [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
           [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
           [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;
@@ -5164,4 +5166,9 @@ Formato:
 - c9b: CAJASEN=ms (medir_visor --cajas-en MS) vuelca las cajas a esa hora aunque la página no acabe (desde tic y
   desde temporizadores: con temporizadores seguidos no hay tic). En la página del vídeo, el contenido del buscador
   está dos veces en el mismo padre (apuntado en c9b). Sin batería: solo cambia un argumento de depuración.
+- c9b con trazas temporales del preludio (en un worktree aparte; no van al repositorio): el mismo yt-searchbox recibe
+  pintado, vaciado, vaciado, pintado, pintado. Es un envoltorio Wiz (render() al conectarse, innerText = "" al
+  desconectarse) y las reacciones de customElements llegan dobles al redistribuir ShadyDOM. Apuntado en c9b.
+- El loop se para aquí (2026-10-30, ~17:50): D80 espera al usuario (no hay sesión "dash") y lo siguiente de c9 es
+  largo (un test con el polyfill o customElements nativo; la lentitud de los temporizadores, c9a).
 

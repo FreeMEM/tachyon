@@ -44,9 +44,11 @@ func _menor(a: Int, b: Int) -> Int
     return b
 end
 
-# La esquina de la vista en la pantalla (los fondos fixed se ponen respecto a ella)
+# La esquina de la vista en la pantalla y su tamaño (los fondos fixed se ponen y se miden respecto a ella)
 var _pintor_vx: Int = 0
 var _pintor_vy: Int = 0
+var _pintor_vw: Int = 0
+var _pintor_vh: Int = 0
 
 func pintar(p: Pagina, im: Imagenes, desde: Int, x0: Int, y0: Int, ancho: Int, alto: Int)
     if ancho <= 0 or alto <= 0
@@ -54,6 +56,8 @@ func pintar(p: Pagina, im: Imagenes, desde: Int, x0: Int, y0: Int, ancho: Int, a
     end
     _pintor_vx = x0
     _pintor_vy = y0
+    _pintor_vw = ancho
+    _pintor_vh = alto
     derecha = x0 + ancho - 1
     abajo = y0 + alto - 1
     zx0 = x0
@@ -575,27 +579,36 @@ func _fondo_pintar(im: Imagenes, d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1
     e = d.nodo.estilo
     bw = d.ancho
     bh = d.alto
+    # dónde se coloca (aw x ah): la caja, o la vista con background-attachment: fixed (con cover en el body de una página
+    # larga, la imagen se escalaba al alto de toda la página, no cabía y el fondo no salía: amigatronics.com; tarea 55)
+    fija = d.estilo != 1 and e.has("background-attachment") and e["background-attachment"] == "fixed"
+    aw = bw
+    ah = bh
+    if fija and _pintor_vw > 0 and _pintor_vh > 0
+        aw = _pintor_vw
+        ah = _pintor_vh
+    end
     # el tamaño
     tam = _fondo_valor(e, d, "size", "auto")
     sw = iw
     sh = ih
     if tam == "cover" or tam == "contain"
-        ancha = bw * ih > bh * iw
+        ancha = aw * ih > ah * iw
         if ancha == (tam == "cover")
-            sw = bw
-            sh = ih * bw / iw
+            sw = aw
+            sh = ih * aw / iw
         else
-            sh = bh
-            sw = iw * bh / ih
+            sh = ah
+            sw = iw * ah / ih
         end
     elif tam != "auto"
         partes = css_partir(tam, 32)
         if partes.length > 0 and partes[0] != "auto"
-            sw = estilo_px(partes[0], 16, bw)
+            sw = estilo_px(partes[0], 16, aw)
             sh = ih * sw / iw
         end
         if partes.length > 1 and partes[1] != "auto"
-            sh = estilo_px(partes[1], 16, bh)
+            sh = estilo_px(partes[1], 16, ah)
             if partes[0] == "auto"
                 sw = iw * sh / ih
             end
@@ -624,8 +637,8 @@ func _fondo_pintar(im: Imagenes, d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1
             a = b
             b = c
         end
-        px = _fondo_lugar(a, bw - sw)
-        py = _fondo_lugar(b, bh - sh)
+        px = _fondo_lugar(a, aw - sw)
+        py = _fondo_lugar(b, ah - sh)
     end
     # recorte: la caja y lo visible
     cx0 = x
@@ -656,7 +669,7 @@ func _fondo_pintar(im: Imagenes, d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1
     # sitio es respecto a la vista, no a la caja (los dos fondos de los ojos de Acid2, desplazados 1 px, solo casan así)
     ax = x + px
     ay = y + py
-    if d.estilo != 1 and e.has("background-attachment") and e["background-attachment"] == "fixed"
+    if fija
         ax = _pintor_vx + px
         ay = _pintor_vy + py
     end

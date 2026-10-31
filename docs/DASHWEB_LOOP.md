@@ -193,6 +193,13 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
+      runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
+      NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
+      todos los píxeles da una imagen sin máscara, opaca. El logo de amigatronics.com (transpa.png, 1600x250, 1 bit, el
+      color 0 verde y transparente) sale como un recuadro verde de 432x68 en la RTG. Arreglo: sin ningún opaco, una
+      máscara vacía (o no pintar nada); con algo opaco y algo claro, como ahora. Lo decodificado está bien (alfa 0:
+      test_imagen_paleta_trns; los tests van en el A1200, sin RTG, y no ven el pintado).
 - [x] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; encargada a las sesiones dashc y
       freememlang-51, que se reparten el Dash de .worktrees/dashweb y el runtime de dashc). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
       textos cortos, structs) se quedan en sus listas libres para siempre. Tras YouTube en 128 MB, al salir a
@@ -527,6 +534,14 @@ tarea, con el estilo de Dash.
       sale antes un "Checking your browser" (403) con JavaScript. Referencia de Chrome a 1572x875:
       .playwright-mcp/amigatronics_chrome.png. Partes: a. cómo sale ahora en Tachyon (256 y 128 MB); b. comparar con
       Chrome y arreglar lo que salga. Al acabar, avisar al usuario.
+      Visto (2026-10-30, 256 MB): casi todo negro y sin textos. Hecho: offsetParent null en body, html y lo fijo (el
+      sticky-sidebar subía por offsetParent sin fin hasta que el vigilante cortaba el JavaScript); unicode-range en
+      @font-face (solo el trozo que toca Latin-1: con el de latin-ext no salían las tildes); los fondos fixed medidos
+      y puestos respecto a la vista (con cover en el body, la imagen escalada al alto de la página no cabía: fondo
+      negro); DOMParser y XMLSerializer (la cinta lee su RSS: "No se pudo cargar el feed"; su test aún con 166 objetos
+      vivos en memcheck, por mirar). Pendiente: el logo transparente sale verde (D81, en Dash); el menú se parte en
+      dos líneas; los botones de compartir (fijos a la derecha en Chrome) salen en medio; la franja negra de arriba
+      con los iconos sociales.
 - [ ] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
       descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
       IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
@@ -534,6 +549,12 @@ tarea, con el estilo de Dash.
       solo escribe -lh0-, y la actualización desde Tachyon debe saber abrirlo) y decirlo en el LEEME y en las notas.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
+
+- [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
+      Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
+      pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
+      llegó, con el pedidor de ficheros, como las descargas de la tarea 47) y "Guardar enlace como..." para el enlace
+      bajo el ratón (con una tecla al pulsarlo, o un menú), que lo baja con el gestor de descargas en vez de abrirlo.
 
 - [x] 49. **tachyon.freemem.space sale en azul en el CoffinOS del usuario (2026-10-24, con la compilación de 48c y
       48e).** Solo el fondo: ni la cabecera, ni los textos, ni las estrellas; "Listo" en la barra, y sigue así tras un
@@ -5226,3 +5247,16 @@ Formato:
   que no encoge va como -lh0-. Lhasa y LHa para UNIX (el de las herramientas del compilador cruzado) lo extraen
   igual, con su CRC; el ejecutable queda al 51 % (LHa para UNIX, 50 %). El visor ya no va en el paquete y el LEEME
   avisa de "tachyon (1).lha". Sin probar con el LhA del Amiga (no hay ninguno en el PC).
+
+### 2026-10-31 — Tarea 55 (parte): amigatronics.com
+- offsetParent null en body, html y lo fijo (test_jsdom_geometria); unicode-range en @font-face (test_fuente_web);
+  fondos fixed medidos y puestos respecto a la vista (test_pintor_fondo_fijo: con el pintor de antes, 0 0 | 0 0);
+  DOMParser y XMLSerializer (test_jsdom_domparser) y getElementsByTagName con prefijo (atom:link); un documento
+  soltado olvida sus avisos (dom_olvidar_toques: quitar el <html> de un documento creado dejaba un ciclo documento ->
+  aviso -> documento). D81 (freememlang-51, 3f9493e): el logo transparente ya no sale verde (test_imagen_paleta_trns
+  mira la decodificación; el pintado en la RTG lo mira test_image_clear_rtg de Dash). Visto en la RTG de 256 MB:
+  fondo, tildes, logo y la cinta con los titulares del RSS. Faltan el menú en dos líneas, la cinta montada sobre su
+  etiqueta y los botones de compartir en medio.
+- Batería: 119/120 (4105 s). Falló test_imagen_paleta_trns: su http_a_fichero, tras cargar la página, no trajo el
+  PNG ("decodificada: no"); solo pasa. ¿Una conexión reutilizada que el servidor ya cerró, sin reintento? Por mirar.
+  El test baja ahora el PNG al principio y pasa (dos veces seguidas).

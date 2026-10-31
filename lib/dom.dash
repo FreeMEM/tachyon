@@ -158,6 +158,16 @@ func dom_apuntar(n: Nodo, tipo: Int, nombre: String, antes: String, despues: Str
     end
 end
 
+# Un documento que se suelta deja sus avisos: un hijo quitado del propio documento (removeChild(documentElement), lo que
+# hace el DOMParser de XML de lib/jsdom_preludio.js) deja un aviso cuyo nodo es el documento, y el documento no se
+# liberaba nunca (tarea 55)
+func dom_olvidar_toques(n: Nodo)
+    if n.tipo == DOM_DOCUMENTO
+        var nada: [Toque] = nil
+        n.toques = nada
+    end
+end
+
 # El elemento hijo sale de padre: un TOQUE_SALE en padre que lo recuerda
 func dom_apuntar_salida(padre: Nodo, hijo: Nodo)
     dom_apuntar(padre, TOQUE_SALE, "", "", "")

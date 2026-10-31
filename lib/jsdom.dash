@@ -939,7 +939,10 @@ typedef struct {
 
 static void _jsdom_finalizar(JSRuntime *rt, JSValue val) {
     _Dash_Nodo *n = (_Dash_Nodo *)JS_GetOpaque(val, _jsdom_clase);
-    if (n) _dash_release(n);
+    if (n) {
+        dom_olvidar_toques(n);   /* (sin el ciclo documento -> aviso -> documento) */
+        _dash_release(n);
+    }
 }
 
 static _JsDom *_jsdom_de(JSContext *ctx) { return (_JsDom *)JS_GetContextOpaque(ctx); }

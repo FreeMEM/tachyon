@@ -5260,3 +5260,10 @@ Formato:
 - Batería: 119/120 (4105 s). Falló test_imagen_paleta_trns: su http_a_fichero, tras cargar la página, no trajo el
   PNG ("decodificada: no"); solo pasa. ¿Una conexión reutilizada que el servidor ya cerró, sin reintento? Por mirar.
   El test baja ahora el PNG al principio y pasa (dos veces seguidas).
+
+### 2026-10-31 — Publicada la v0.7.5-alfa
+- Con 38c8/c9b (YouTube, memoria con D80), 55 (amigatronics.com, con D81) y 56 (paquete -lh5- de 2 MB, sin visor).
+  Compilada con el Dash de .worktrees/dashweb en 3f9493e (D80 y D81). Batería 119/120 (el fallo, en un test nuevo,
+  arreglado). PR #14; paquete en un worktree limpio de main; release (prerrelease) con tachyon.lha, Tachyon.gz y
+  los nueve catálogos (11 ficheros); las descargas responden (200) y el .lha bajado pasa lha -t. version.json de
+  webs-freemem al día (el servidor reconstruye la web solo).

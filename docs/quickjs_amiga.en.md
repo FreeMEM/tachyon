@@ -37,6 +37,19 @@ In `third_party/quickjs/quickjs.c` (second commit of the repo, to see the diff):
    uncatchable and skips the finally blocks: Preact's signals library on xataka.com was left with a half-updated
    computed, and from then on every click gave "Cycle detected"). lib/js.dash uses it for the first cut-off at 30 s;
    if the script keeps running for 5 more seconds, the cut-off can no longer be caught.
+6. `find_var` with an index by name (task 38c7): it looked for each variable among all those of its function, and
+   resolving a name looks for it in its function and in all those around it. A minified script puts thousands of
+   variables in one function: YouTube's main one (10.8 MB) took 138 s to compile in the emulated 68040, 56 % of it in
+   `find_var` (gprof on the PC). With 32 variables or more, the function gets a hash table (`vars_htab`, open
+   addressing; no variable is ever removed, so those with one name are all in the run that starts at its hash).
+   Compiling it: 66 s (on the PC, from 1.03 to 0.49 s); the bytecode comes out identical. Measured with
+   `tests/bench/js_grande.dash`.
+7. `isnan`, `isinf` and `isfinite` from the double's bits (`amiga/math.h`, task 38c3): FS-UAE's emulated FPU
+   compares infinities wrongly (`fcmp` of Infinity with Infinity gives "unordered": `inf == inf` is false and
+   `isnan(inf)` true, also with `__builtin_isnan`; GCC emits a correct `fcmp` and `fseq`). QuickJS took Infinity as 0
+   when making it an integer (`JS_ToInt32Sat`): `[].flat(Infinity)` failed (YouTube's player was left without its
+   methods), and so did `slice(0, Infinity)`, `substring`, `at`, `fill`, `charAt`, `copyWithin` and
+   `isNaN(Infinity)`. Direct comparisons (`Infinity === Infinity`) are still up to the FPU: false in the emulator.
 
 `third_party/quickjs/amiga/fenv.h` is empty: libnix's one doesn't compile and QuickJS uses nothing from it.
 `third_party/quickjs/amiga/qjsamiga.c` is a test launcher: it runs the given `.js` files and measures time

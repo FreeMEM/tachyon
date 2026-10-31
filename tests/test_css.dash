@@ -33,7 +33,7 @@ Main
     for r in hoja.reglas
         for s in r.selectores
             linea = "" + r.orden + " " + css_selector_texto(s) + " [" + s.especificidad + "]"
-            for d in r.declaraciones
+            for d in css_regla_declaraciones(r)
                 linea = linea + " " + d.propiedad + "=" + d.valor
                 if d.importante
                     linea = linea + "!"

@@ -180,9 +180,11 @@ class Handler(socketserver.StreamRequestHandler):
             import zlib
             modo = path.split("/")[2]
             data, cabeceras = LARGO, [("Content-Type", "text/plain; charset=utf-8")]
+            if modo == "gzip_grande":           # 600 KB que comprimidos ocupan mucho menos de su cuarta parte
+                data = b"linea de dashweb\n" * 36000 + "café".encode("utf-8")
             if "gzip" in self.acepta:
                 if modo.startswith("gzip"):
-                    data = gzip.compress(LARGO, mtime=0)
+                    data = gzip.compress(data, mtime=0)
                     data = data[:3] + bytes([data[3] | 8]) + data[4:10] + b"largo.txt\0" + data[10:]   # with FNAME
                     cabeceras.append(("Content-Encoding", "gzip"))
                 elif modo == "deflate":

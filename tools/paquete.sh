@@ -1,7 +1,8 @@
 #!/bin/sh
-# El paquete de Tachyon (antes dashweb) para el Amiga: build/tachyon.lha con el navegador (MUI) y sus iconos, el visor, los
+# El paquete de Tachyon (antes dashweb) para el Amiga: build/tachyon.lha con el navegador (MUI) y sus iconos, los
 # iconos de Workbench (tools/iconos_wb.py), el guion del Installer (paquete/Instalar),
-# paquete/LEEME y las licencias de Tachyon y de lo que lleva dentro (LHA sin comprimir: tools/lha_lh0.py); y
+# paquete/LEEME y las licencias de Tachyon y de lo que lleva dentro (LHA comprimido con -lh5-: tools/lha.py; sin
+# comprimir, IBrowse cortaba la descarga de 6,9 MB hacia los 3,3 MB; el visor, solo para pruebas, no va); y
 # build/Tachyon.gz, el ejecutable solo con gzip, que va también en cada versión publicada: con él se actualiza Tachyon
 # desde sí mismo (lib/actualizar.dash, tarea 44; no sabe abrir .lha). Necesita el toolchain y Dash (DASH, por
 # defecto ~/Projects/FreeMEMLang/.worktrees/dashweb) y el SDK de MUI de Dash; `lha` (Lhasa) para comprobarlo.
@@ -20,7 +21,6 @@ cd "$DASH"
 # con --fpu, como libqjs, libimg y libvideo (-m68881): mezclar las dos formas rompe los números con decimales que
 # cruzan entre ellas (sin él, las fuentes web no salían: la escala de stb_truetype llegaba en fp0; tarea 40a)
 PYTHONPATH=$DASH ./dash --fpu "$R/src/dashweb.dash" -o "$B/Tachyon/Tachyon"
-PYTHONPATH=$DASH ./dash --fpu "$R/src/visor.dash" -o "$B/Tachyon/visor"
 python3 "$R/tools/iconos.py" >/dev/null
 cp -r "$R/iconos" "$B/Tachyon/iconos"   # la barra de herramientas (PROGDIR:iconos/)
 # los catálogos de idiomas (PROGDIR:Catalogs/<idioma>/Tachyon.catalog; tarea 45g): uno por catalogos/*.ct
@@ -46,9 +46,10 @@ printf '%s\n' "stb_image y stb_truetype (https://github.com/nothings/stb), de Se
     "(o MIT, a elegir; ver la cabecera de third_party/stb/*.h en el código de Tachyon)." > "$B/Tachyon/Licencias/stb"
 cd "$B"
 rm -f "$R/build/tachyon.lha"
-python3 "$R/tools/lha_lh0.py" "$R/build/tachyon.lha" Tachyon Tachyon.info   # Lhasa only extracts
+python3 "$R/tools/lha.py" "$R/build/tachyon.lha" Tachyon Tachyon.info   # Lhasa only extracts
 ls -l "$R/build/tachyon.lha"
 lha -l "$R/build/tachyon.lha" | tail -12
+lha -t "$R/build/tachyon.lha" >/dev/null   # (el CRC de cada fichero: que lh5 descomprime bien)
 gzip -9 -n -c "$B/Tachyon/Tachyon" > "$R/build/Tachyon.gz"
 ls -l "$R/build/Tachyon.gz"
 # y los catálogos sueltos, para la actualización automática (lib/actualizar.dash: Tachyon-<idioma>.catalog), con el

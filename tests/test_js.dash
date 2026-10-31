@@ -6,6 +6,8 @@
 # la conversión de libgcc devuelve el resultado en la FPU (tarea 28g). La memoria que usa (js_memoria) y su
 # tope (js_limite): con malloc_usable_size a 0 en Amiga, QuickJS no contaba nada y el tope no saltaba (28l). Al
 # pasarlo se lanza InternalError, o null si ni ese objeto cabe.
+# Y sin tope, el JavaScript deja al sistema su reserva (1/16 de la memoria, de 512 KB a 6 MB; tarea 38c2): YouTube
+# se comía los últimos 19 MB y el Amiga entero se paraba.
 # expect-out: 3
 # expect-out: hola desde JS 42
 # expect-out: [canción]
@@ -18,6 +20,7 @@
 # expect-out: true 1152921504606847000 -4611686018427388000
 # expect-out: memoria: true
 # expect-out: sin memoria: true
+# expect-out: reserva: true true
 # expect-out: 6
 
 import "../lib/js.dash"
@@ -38,6 +41,11 @@ Main
     # con un tope de 1 MB, un script que pide más recibe "out of memory" (y el programa sigue)
     js_limite(js, js_memoria(js) + 1000000)
     Print js_evaluar(js, "try { var a = []; for (var i = 0; i < 300000; i++) a.push({i: i}); 'no' } catch (e) { a = null; 'sin memoria: ' + (e === null || String(e) == 'InternalError: out of memory') }", "prueba.js")
+    js_limite(js, 256 * 1024 * 1024)
+    r = js_evaluar(js, "var b = []; try { for (var i = 0; i < 100000; i++) b.push('x'.repeat(10000) + i); 'no' } catch (e) { (e === null || String(e) == 'InternalError: out of memory') + ''}", "prueba.js")
+    queda = mem_total()
+    js_evaluar(js, "b = null", "prueba.js")
+    Print "reserva: " + r + " " + (queda > 400000)
     js_evaluar(js, "var total = 0; function sumar(n) { total += n; return total; }", "prueba.js")
     js_evaluar(js, "sumar(1); sumar(2)", "prueba.js")
     Print js_evaluar(js, "sumar(3)", "prueba.js")

@@ -144,6 +144,8 @@ struct Pestana
     titulo: String = ""       # el de su página, para su botón aunque esté descartada
 end
 
+# Con un mayor bloque libre por debajo de esto (bytes), al cargar otra página la de antes se suelta entera
+const POCO_SEGUIDO = 16777216
 # Por debajo de esta memoria libre (KB), las pestañas de detrás se descartan (POCAMEMORIA=KB lo cambia, para probarlo)
 var dw_poca_memoria: Int = 4096
 
@@ -157,16 +159,23 @@ var dw_dibujos_y1: Int = -1
 # CAJAS=texto (argumento): al acabar, la caja y el estilo de maqueta de los elementos con ese texto en su class (o
 # con ese nombre de etiqueta), por la salida ("": no)
 var dw_cajas: String = ""
+# CAJASEN=ms (argumento): lo mismo, una vez, a esos ms de empezar la página aunque no acabe (-1: no)
+var dw_cajas_en: Int = -1
+# cuándo se devolvieron al sistema los bloques pequeños libres (memoria_recortar)
+var dw_recorte: Int = 0
 
 func cajas_volcar(n: Nodo, hondo: Int)
     if n.tipo == DOM_ELEMENTO and (n.nombre == dw_cajas or str_find(dom_atributo(n, "class"), dw_cajas) >= 0)
         l = "caja " + hondo + " " + n.nombre + "." + dom_atributo(n, "class") + " [" + n.caja_x + "," + n.caja_y + " " + n.caja_w + "x" + n.caja_h + "]"
         if n.estilo != nil
-            for k in ["display", "position", "width", "min-width", "max-width", "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-wrap", "flex-direction", "order", "font-size", "grid-template-columns", "grid-column", "box-sizing", "padding", "margin"]
+            for k in ["display", "position", "top", "left", "z-index", "opacity", "width", "min-width", "max-width", "flex", "flex-grow", "flex-shrink", "flex-basis", "flex-wrap", "flex-direction", "order", "font-size", "grid-template-columns", "grid-column", "box-sizing", "padding", "margin"]
                 if n.estilo.has(k)
                     l = l + " " + k + "=" + n.estilo[k]
                 end
             end
+        end
+        if dom_atributo(n, "style") != ""
+            l = l + " | style=" + dom_atributo(n, "style")
         end
         Print l
     end
@@ -886,6 +895,22 @@ func avanzar_carga(w: Ventana)
         mui_set_value(w.v.progreso, 90)
         dw_estado(w, tr(110, "Fetching style sheets and scripts..."))
         vista(w)
+        # la de antes se queda pintada, pero sin su JavaScript: así no suma su memoria a la de la nueva
+        if w.actual != nil
+            documento_soltar_js(w.actual)
+            w.js_cuando = -1
+            # sin un hueco grande seguido, fuera también lo demás (árbol, estilo, maqueta, imágenes), de vuelta al sistema:
+            # la portada de YouTube tras "Accept all" pide 10,5 MB seguidos para su script, y con 128 MB lo que quedaba
+            # de la de antes la partía en trozos de 10 MB (tarea 38c8)
+            if memoria_mayor_bloque() < POCO_SEGUIDO
+                documento_liberar(w.actual)
+                var ninguna: Documento = nil
+                w.actual = ninguna
+                n = mem_trim()
+                traza("la página de antes, fuera por falta de memoria seguida: devueltos " + n / 1024 + " KB; mayor bloque libre " + memoria_mayor_bloque() / 1024 + " KB")
+                mui_canvas_redraw(w.v.pagina)
+            end
+        end
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
     end
     if w.preparando == nil
@@ -1224,6 +1249,8 @@ func maxi(a: Int, b: Int) -> Int
 end
 
 func temporizadores(w: Ventana)
+    cajas_a_su_hora(w)
+    memoria_recortar()
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
         espera = jsdom_temporizadores(w.actual.js)
@@ -1336,7 +1363,30 @@ func raton(w: Ventana)
     temporizadores(w)
 end
 
+# CAJASEN: las cajas una vez, a su hora (desde tic y desde temporizadores: con temporizadores seguidos no hay tic)
+func cajas_a_su_hora(w: Ventana)
+    if dw_cajas_en >= 0 and w.actual != nil and w.actual.doc != nil and w.carga == nil and w.preparando == nil and time_ms() - w.empezada >= dw_cajas_en
+        dw_cajas_en = -1
+        cajas_volcar(w.actual.doc, 0)
+    end
+end
+
+# Los bloques pequeños de Dash que se han quedado libres, de vuelta al sistema cada 2 s (D80): sin esto se quedaban en
+# charcos repartidos por la memoria, y con 128 MB el mayor bloque libre no daba para el script principal de YouTube
+# (10,5 MB seguidos)
+func memoria_recortar()
+    if time_ms() - dw_recorte >= 2000
+        dw_recorte = time_ms()
+        n = mem_trim()
+        if n >= 65536
+            traza("devueltos al sistema " + (n / 1024) + " KB de bloques pequeños")
+        end
+    end
+end
+
 func tic(w: Ventana)
+    cajas_a_su_hora(w)
+    memoria_recortar()
     avanzar_carga(w)
     ir_pedido(w)
     # (la pestaña descartada que volvía a su sitio: con la página ya cargada, lo más cerca que se pueda)
@@ -1649,11 +1699,11 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (con la fecha del día en que se cambia la versión: van juntas)
-const DASHWEB_VERSION = "0.7.4-alfa"
+const DASHWEB_VERSION = "0.7.5-alfa"
 
 @native(borrow) func texto_version(v: String) -> String
 """
-    static const char __attribute__((used)) ver[] = "$VER: Tachyon 0.7.4-alfa (25.10.2026)";
+    static const char __attribute__((used)) ver[] = "$VER: Tachyon 0.7.5-alfa (31.10.2026)";
     static char b[160];
     sprintf(b, "\033c\033bTachyon %s\033n\n\033c", (char *)v);
     return (STRPTR)b;
@@ -2092,6 +2142,8 @@ Main
             elif str_starts(arg(i), "DESCARGAS=")
                 # DESCARGAS=dirección: los ficheros de las versiones (el catálogo propio) de ahí, pedido ya (para probarlo)
                 actualizar_descargas = arg(i)[10:]
+            elif str_starts(arg(i), "CAJASEN=")
+                dw_cajas_en = Int(arg(i)[8:])
             elif str_starts(arg(i), "CAJAS=")
                 dw_cajas = arg(i)[6:]
             elif str_starts(arg(i), "DIBUJOS=")
@@ -2109,7 +2161,7 @@ Main
             nueva_ventana(preferencia(FICHERO_PREFERENCIAS, "inicio"))
         end
         for i in (0..arg_count() - 1)
-            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=")
+            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=")
                 nueva_ventana(arg(i))
             end
         end

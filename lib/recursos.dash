@@ -24,13 +24,17 @@ end
 
 struct Recursos
     traidos: {String: String}
+    # los scripts en UTF-8: su respuesta, para que QuickJS lea el cuerpo tal cual (en traidos, ""): sin copiarlo ni
+    # pasarlo a ASCII, que con el de YouTube (10,8 MB) pedía otro hueco así y con 128 MB no lo había (tarea 38c8)
+    scripts: {String: Respuesta}
     cola: [Pedido]
 end
 
 func recursos_nuevos() -> Recursos
     var traidos: {String: String} = {}
+    var scripts: {String: Respuesta} = {}
     var cola: [Pedido] = []
-    return Recursos(traidos, cola)
+    return Recursos(traidos, scripts, cola)
 end
 
 func recursos_pendientes(r: Recursos) -> Int
@@ -64,10 +68,11 @@ func recursos_pedir(r: Recursos, direccion: String, es_css: Bool, nivel: Int)
     else
         # los scripts, con lo que no es ASCII como \uXXXX (utf8_a_js_ascii)
         if es_css
-            _recursos_llego(r, direccion, utf8_a_latin1(t), es_css, nivel)
+            r.traidos[direccion] = utf8_a_latin1(t)
         else
-            _recursos_llego(r, direccion, utf8_a_js_ascii(t), es_css, nivel)
+            r.traidos[direccion] = utf8_a_js_ascii(t)
         end
+        _recursos_llego(r, direccion, es_css, nivel)
     end
 end
 
@@ -93,11 +98,12 @@ func _recursos_en(r: Recursos, n: Nodo, base: Url)
     end
 end
 
-func _recursos_llego(r: Recursos, direccion: String, texto: String, es_css: Bool, nivel: Int)
-    r.traidos[direccion] = texto
-    if es_css and nivel < 4 and str_find(texto, "@import") >= 0
+# (el texto ya está en r.traidos: puesto ahí al hacerlo, sin pasar por una variable, que Dash lo copiaría al guardarlo,
+# y el script principal de YouTube son 10,8 MB que con 128 MB no cabían otra vez seguidos; tarea 38c8)
+func _recursos_llego(r: Recursos, direccion: String, es_css: Bool, nivel: Int)
+    if es_css and nivel < 4 and str_find(r.traidos[direccion], "@import") >= 0
         u = url_parse(direccion)
-        for imp in css_importes(texto)
+        for imp in css_importes(r.traidos[direccion])
             recursos_pedir(r, url_text(url_resolve(u, imp)), true, nivel + 1)
         end
     end
@@ -116,16 +122,24 @@ func recursos_avanzar(r: Recursos) -> Int
         if p.carga != nil
             if http_avanzar(p.carga)
                 resp = p.carga.respuesta
-                texto = ""
                 if resp.error == "" and resp.estado == 200
                     if p.es_css
-                        texto = http_texto(resp)
+                        r.traidos[p.direccion] = http_texto(resp)
+                    elif texto_es_utf8(resp.juego)
+                        r.scripts[p.direccion] = resp
+                        r.traidos[p.direccion] = ""
                     else
-                        texto = texto_decodificar_js(resp.cuerpo, resp.juego)
+                        r.traidos[p.direccion] = texto_decodificar_js(resp.cuerpo, resp.juego)
                     end
+                else
+                    r.traidos[p.direccion] = ""
+                end
+                # (el cuerpo, fuera en cuanto está su texto)
+                if not r.scripts.has(p.direccion)
+                    resp.cuerpo = ""
                 end
                 r.cola.remove(i)
-                _recursos_llego(r, p.direccion, texto, p.es_css, p.nivel)
+                _recursos_llego(r, p.direccion, p.es_css, p.nivel)
                 hechas = hechas + 1
                 continue
             end

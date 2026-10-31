@@ -1,0 +1,23 @@
+# Test: el JavaScript mide algo que estaba escondido y se acaba de enseñar, y recibe su tamaño de verdad: se maqueta en
+# ese momento, como en un navegador (tarea 38c5: iron-fit-behavior centraba el diálogo de cookies de YouTube con su
+# tamaño a 0). Lo que ya estaba en la maqueta y no cambió no maqueta otra vez; y una maqueta así espera el doble de lo
+# que tardó la anterior: meter y medir en un bucle no maqueta en cada vuelta. Uno que ya estaba y cambia de ancho,
+# sí, enseguida (iron-fit-behavior coloca el diálogo y lo mide). Después, documento_al_dia dice que hay que repintar.
+# memcheck
+# expect-out: antes 0 | ya 200 50 200 | quieto 120 | bucle true | cambia 50 | pintar true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    h = "<head><style>#d { display: none; width: 200px; height: 50px } #e { width: 120px; height: 10px }</style></head><body style='margin:0'><div id=d>x</div><div id=e>y</div><script>var d = document.getElementById('d'), e = document.getElementById('e');</script></body>"
+    d = documento_html("http://x/", h)
+    s = "antes " + js_evaluar(d.js, "d.offsetWidth", "t.js")
+    documento_maquetar(d, 300)
+    s = s + " | ya " + js_evaluar(d.js, "d.style.display = 'block'; [d.offsetWidth, d.offsetHeight, d.getBoundingClientRect().width].join(' ')", "t.js")
+    s = s + " | quieto " + js_evaluar(d.js, "e.offsetWidth", "t.js")
+    s = s + " | bucle " + js_evaluar(d.js, "var n = 0; for (var i = 0; i < 6; i++) { var x = document.createElement('div'); x.style.width = '30px'; document.body.appendChild(x); if (x.offsetWidth == 30) n++; } n < 6", "t.js")
+    s = s + " | cambia " + js_evaluar(d.js, "e.style.width = '50px'; e.offsetWidth", "t.js")
+    Print s + " | pintar " + documento_al_dia(d)
+    documento_liberar(d)
+end

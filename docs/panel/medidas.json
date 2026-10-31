@@ -1,44 +1,58 @@
 [
-{
-"medida": "Recolocar al bajar por pre.opentimetrack.com",
-"antes": 9000,
-"ahora": 2000,
-"unidad": "ms",
-"nota": "Lo típico de cada recolocación; antes 6-12 s, ahora 1,6-3 s (37e6)"
-},
-{
-"medida": "Pintar al bajar por pre.opentimetrack.com (270 s)",
-"antes": 90.6,
-"ahora": 35.8,
-"unidad": "s",
-"nota": "Total de pintar; solo se repinta lo que cambia (37e7)"
-},
-{
-"medida": "Imágenes de freemem.space en memoria",
-"antes": 15.2,
-"ahora": 4.3,
-"unidad": "MB",
-"nota": "Cada imagen al tamaño en que se ve (40h)"
-},
-{
-"medida": "Memoria de freemem.space entera",
-"antes": 29,
-"ahora": 23,
-"unidad": "MB",
-"nota": "Al acabar de cargar; el pico al decodificar sigue en ~62 MB"
-},
-{
-"medida": "freemem.space entera",
-"antes": 23.5,
-"ahora": 23.6,
-"unidad": "s",
-"nota": "Con imágenes y fuentes, máquina RTG emulada"
-},
-{
-"medida": "Menéame entera",
-"antes": 208,
-"ahora": 168,
-"unidad": "s",
-"nota": "La red en una tarea aparte: avanza aunque la maqueta o el JavaScript tarden (42e)"
-}
+ {
+  "medida": "Recolocar al bajar por pre.opentimetrack.com",
+  "antes": 9000,
+  "ahora": 2000,
+  "unidad": "ms",
+  "nota": "Lo típico de cada recolocación; antes 6-12 s, ahora 1,6-3 s (37e6)"
+ },
+ {
+  "medida": "Pintar al bajar por pre.opentimetrack.com (270 s)",
+  "antes": 90.6,
+  "ahora": 35.8,
+  "unidad": "s",
+  "nota": "Total de pintar; solo se repinta lo que cambia (37e7)"
+ },
+ {
+  "medida": "Imágenes de freemem.space en memoria",
+  "antes": 15.2,
+  "ahora": 4.3,
+  "unidad": "MB",
+  "nota": "Cada imagen al tamaño en que se ve (40h)"
+ },
+ {
+  "medida": "Memoria de freemem.space entera",
+  "antes": 29,
+  "ahora": 23,
+  "unidad": "MB",
+  "nota": "Al acabar de cargar; el pico al decodificar sigue en ~62 MB"
+ },
+ {
+  "medida": "freemem.space entera",
+  "antes": 23.5,
+  "ahora": 23.6,
+  "unidad": "s",
+  "nota": "Con imágenes y fuentes, máquina RTG emulada"
+ },
+ {
+  "medida": "Menéame entera",
+  "antes": 208,
+  "ahora": 168,
+  "unidad": "s",
+  "nota": "La red en una tarea aparte: avanza aunque la maqueta o el JavaScript tarden (42e)"
+ },
+ {
+  "medida": "Leer la hoja CSS de YouTube (3,8 MB)",
+  "antes": 184,
+  "ahora": 10,
+  "unidad": "s",
+  "nota": "La caché de largos de texto de Dash echaba la hoja (D71); 68040 con JIT, tests/bench/css_grande.dash"
+ },
+ {
+  "medida": "Memoria libre al cargar la portada de YouTube (128 MB)",
+  "antes": 0.7,
+  "ahora": 6.6,
+  "unidad": "MB",
+  "nota": "Antes el Amiga se quedaba sin memoria y Tachyon colgado; las hojas ya leídas se usan otra vez y el JavaScript deja una reserva (38c2)"
+ }
 ]

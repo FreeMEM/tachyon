@@ -1,0 +1,60 @@
+# Test: un PNG de paleta con tRNS (el color 0 transparente) deja ver lo de debajo, a su tamaño y escalado (tarea 55).
+# El logo de amigatronics.com es así (1600x250, 1 bit, color 0 verde y transparente, dibujado a 432x68) y salía como
+# un recuadro verde. tests/pages/paleta_trns.png, hecho con PIL igual. Sobre un fondo blanco: blanco es 2.
+# emu-server: http.py 40853
+# memcheck
+# expect-out: decodificada: 533x83 alfa=true 71,112,76,0
+# expect-out: en otro proceso: 533x83 alfa=true 71,112,76,0
+# expect-out: a su tamaño: 2 2
+# expect-out: escalado: 2 2
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/pintor.dash"
+import "../lib/imagen_dec.dash"
+
+Window W
+    title "Paleta"
+    width 300
+    height 140
+end
+
+@native(borrow) func esperar(ticks: Int)
+"""
+    Delay(ticks);
+"""
+end
+
+Main
+    # (primero, con la conexión recién abierta: en la batería, después de cargar la página, una vez no llegó)
+    # lo decodificado, reducido a lo que se dibuja en amigatronics.com (432x68: a un tercio), aquí y en otro proceso
+    http_a_fichero("http://127.0.0.1:40853/pages/paleta_trns.png", "T:paleta_trns.png", 10000)
+    Print "decodificada: " + imagen_probar("T:paleta_trns.png", 432, 68, 10, 10)
+    d = imagen_empezar("T:paleta_trns.png", 432, 68)
+    while not imagen_lista(d)
+        esperar(1)
+    end
+    Print "en otro proceso: " + imagen_acabar_probar(d, 10, 10)
+    file_delete("T:paleta_trns.png")
+    W.open
+    x0 = W.inner_left
+    y0 = W.inner_top
+    h = "<html><body style='margin: 0; background: #fff'><img src=paleta_trns.png><br><img src=paleta_trns.png width=432 height=68></body></html>"
+    doc = dom_desde_html(h)
+    base = "http://127.0.0.1:40853/pages/prueba.html"
+    estilo_aplicar(doc, estilo_hojas(doc, base))
+    im = imagenes_nuevas()
+    imagenes_cargar(im, doc, base)
+    p = maquetar(doc, 280)
+    yb = 0
+    for d in p.dibujos
+        if d.tipo == D_IMAGEN and d.ancho == 432
+            yb = d.y
+        end
+    end
+    pintar(p, im, 0, x0, y0, 280, 120)
+    Print "a su tamaño: " + gfx_pixel_read(x0 + 10, y0 + 10) + " " + gfx_pixel_read(x0 + 200, y0 + 30)
+    pintar(p, im, yb, x0, y0, 280, 120)
+    Print "escalado: " + gfx_pixel_read(x0 + 10, y0 + 10) + " " + gfx_pixel_read(x0 + 200, y0 + 30)
+    imagenes_liberar(im)
+    W.close
+end

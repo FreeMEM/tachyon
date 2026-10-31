@@ -14,7 +14,7 @@ Main
     Print "importes sin leer: " + css_importes("<!--\n@import url(s.css);\n-->")[0]
     h2 = css_leer("body {\n\tcolor;#000000; font-size: 12px;\n\tmargin: 0px; }", 0)
     s = "body:"
-    for d in h2.reglas[0].declaraciones
+    for d in css_regla_declaraciones(h2.reglas[0])
         s = s + " " + d.propiedad + "=" + d.valor
     end
     Print s

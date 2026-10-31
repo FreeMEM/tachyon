@@ -14,7 +14,7 @@
 # expect-out: tinta true
 # expect-out: woff2 como ttf true
 # expect-out: palo de la L entero: true
-# expect-out: caras 3: mi fuente 700 italic http://ejemplo.com/f/mi.woff2 | otra 400 normal http://ejemplo.com/a/otra.ttf?v=2 | icons-min 400 normal http://ejemplo.com/i/icons.ttf?x
+# expect-out: caras 4: mi fuente 700 italic http://ejemplo.com/f/mi.woff2 | otra 400 normal http://ejemplo.com/a/otra.ttf?v=2 | icons-min 400 normal http://ejemplo.com/i/icons.ttf?x | partida 400 normal http://ejemplo.com/a/latin.woff2
 # expect-out: icono true true 0
 # expect-out: maqueta 36 sin 0
 # expect-out: estirada 54 | apretada 30
@@ -121,6 +121,12 @@ Main
     c = c + " @font-face { font-family: Otra; src: url(otra.ttf?v=2) }"
     # (el EOT de Internet Explorer primero, como los iconos de Xataka: no se sabe leer; el TrueType sí)
     c = c + " @font-face { font-family: icons-min; src: url('/i/icons.eot?x'); src: url('/i/icons.eot?x#iefix') format('embedded-opentype'), url('/i/icons.ttf?x') format('truetype') }"
+    # (partida en trozos por unicode-range, como Google Fonts: solo vale el que toca Latin-1, lo que se dibuja; las tildes
+    # de amigatronics.com no salían con el de latin-ext; tarea 55)
+    c = c + " @font-face { font-family: Partida; src: url(cir.woff2); unicode-range: U+0301, U+0400-045F, U+0490-0491 }"
+    c = c + " @font-face { font-family: Partida; src: url(ext.woff2); unicode-range: U+0100-02BA, U+02BD-02C5, U+1E00-1E9F }"
+    c = c + " @font-face { font-family: Partida; src: url(latin.woff2); unicode-range: U+0000-00FF, U+0131, U+0152-0153 }"
+    c = c + " @font-face { font-family: Partida; src: url(griego.woff2); unicode-range: U+03??; }"
     doc = dom_desde_html("<html><head><style>" + c + "</style></head><body>x</body></html>")
     hojas = estilo_hojas(doc, "http://ejemplo.com/a/b.html")
     caras = estilo_caras(hojas)

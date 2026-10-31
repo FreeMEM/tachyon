@@ -1,8 +1,11 @@
 # Test: una hoja que mete el JavaScript después de la carga se aplica (tarea 42e: el CSS de Didomi en xataka.com, un
 # <style id=didomi-css> en el body, no se aplicaba y su aviso de cookies salía sin estilo, con sus botones ocultos a la
 # vista). Un <style> que entra, uno al que le cambian el texto y uno que sale; un cambio que no toca hojas no las rehace.
+# Y una hoja grande que ya estaba no se lee otra vez: la misma, con sus reglas en su nuevo puesto de la cascada si
+# el JavaScript mete otra delante (tarea 38c2: YouTube leía otra vez su hoja de 3,8 MB y se quedaba sin memoria).
 # memcheck
 # expect-out: antes: block | entra: none | cambia: block 30px | sale: block false | sin hojas: igual true
+# expect-out: grande: 2 italic | delante: 2 misma true | detrás: 3 italic misma true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/documento.dash"
@@ -26,5 +29,23 @@ Main
     js_evaluar(d.js, "b.textContent = 'zz';", "t.js")
     documento_al_dia(d)
     Print s + " | sin hojas: igual " + (d.hojas == hojas)
+    documento_liberar(d)
+
+    relleno = ""
+    for i in (0..299)
+        relleno = relleno + "/* relleno de la hoja grande */ "
+    end
+    h = "<head><style id=g>" + relleno + "#b { z-index: 2; font-style: italic }</style></head><body><div id=b>y</div><script>var x = 1;</script></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 300)
+    b = dom_por_id(d.doc, "b")
+    s = "grande: " + b.estilo["z-index"] + " " + b.estilo["font-style"]
+    grande = d.hojas.lista[1]
+    js_evaluar(d.js, "var c = document.createElement('style'); c.textContent = '#b { z-index: 1 }'; document.head.insertBefore(c, document.head.firstChild);", "t.js")
+    documento_al_dia(d)
+    s = s + " | delante: " + b.estilo["z-index"] + " misma " + (d.hojas.lista[2] == grande)
+    js_evaluar(d.js, "var e = document.createElement('style'); e.textContent = '#b { z-index: 3 }'; document.head.appendChild(e);", "t.js")
+    documento_al_dia(d)
+    Print s + " | detrás: " + b.estilo["z-index"] + " " + b.estilo["font-style"] + " misma " + (d.hojas.lista[2] == grande)
     documento_liberar(d)
 end

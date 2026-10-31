@@ -22050,6 +22050,8 @@ typedef struct JSFunctionDef {
     JSVarDef *vars;
     int var_size; /* allocated size for vars[] */
     int var_count;
+    int *vars_htab; /* AmigaOS: index of vars[] by name, for find_var (NULL: not built yet) */
+    int vars_htab_size; /* a power of 2, more than twice var_count */
     JSVarDef *args;
     int arg_size; /* allocated size for args[] */
     int arg_count; /* number of arguments */
@@ -24026,9 +24028,63 @@ static int find_arg(JSContext *ctx, JSFunctionDef *fd, JSAtom name)
     return -1;
 }
 
+/* AmigaOS (Tachyon, tarea 38c7): find_var looked at every variable of the function, and resolving each name of
+   a function looks for it in the function and in all those around it. A minified script puts thousands of variables
+   in one function (YouTube's main one, 10.8 MB): 56 % of the time of compiling it, 138 s in an emulated 68040. With
+   many variables, an index by name (open addressing; no variable is ever removed, so the entries with one name are
+   all in the run of slots that starts at its hash) */
+#define VARS_HTAB_MIN 32
+
+static uint32_t vars_htab_hash(JSAtom name, int size)
+{
+    uint32_t h = (uint32_t)name * 2654435761u;
+    return (h ^ (h >> 15)) & (size - 1);
+}
+
+static void vars_htab_insert(JSFunctionDef *fd, int idx)
+{
+    uint32_t h = vars_htab_hash(fd->vars[idx].var_name, fd->vars_htab_size);
+    while (fd->vars_htab[h] >= 0)
+        h = (h + 1) & (fd->vars_htab_size - 1);
+    fd->vars_htab[h] = idx;
+}
+
+/* 0, or -1 without memory (then find_var goes on looking at every variable) */
+static int vars_htab_build(JSContext *ctx, JSFunctionDef *fd)
+{
+    int size = 64, i;
+    int *t;
+    while (size < 2 * fd->var_count + 2)
+        size <<= 1;
+    t = js_malloc_rt(ctx->rt, size * sizeof(int));
+    if (!t)
+        return -1;
+    js_free_rt(ctx->rt, fd->vars_htab);
+    fd->vars_htab = t;
+    fd->vars_htab_size = size;
+    memset(t, 0xff, size * sizeof(int));
+    for(i = 0; i < fd->var_count; i++)
+        vars_htab_insert(fd, i);
+    return 0;
+}
+
 static int find_var(JSContext *ctx, JSFunctionDef *fd, JSAtom name)
 {
     int i;
+    if (fd->var_count >= VARS_HTAB_MIN &&
+        (fd->vars_htab || vars_htab_build(ctx, fd) == 0)) {
+        /* the last one with that name, as below */
+        uint32_t h = vars_htab_hash(name, fd->vars_htab_size);
+        int found = -1;
+        while ((i = fd->vars_htab[h]) >= 0) {
+            if (i > found && fd->vars[i].var_name == name && fd->vars[i].scope_level == 0)
+                found = i;
+            h = (h + 1) & (fd->vars_htab_size - 1);
+        }
+        if (found >= 0)
+            return found;
+        return find_arg(ctx, fd, name);
+    }
     for(i = fd->var_count; i-- > 0;) {
         if (fd->vars[i].var_name == name && fd->vars[i].scope_level == 0)
             return i;
@@ -24205,6 +24261,16 @@ static int add_var(JSContext *ctx, JSFunctionDef *fd, JSAtom name)
     memset(vd, 0, sizeof(*vd));
     vd->var_name = JS_DupAtom(ctx, name);
     vd->func_pool_idx = -1;
+    if (fd->vars_htab) {
+        if (2 * fd->var_count + 2 > fd->vars_htab_size) {
+            if (vars_htab_build(ctx, fd) < 0) {
+                js_free_rt(ctx->rt, fd->vars_htab);
+                fd->vars_htab = NULL;
+            }
+        } else {
+            vars_htab_insert(fd, fd->var_count - 1);
+        }
+    }
     return fd->var_count - 1;
 }
 
@@ -32207,6 +32273,7 @@ static void js_free_function_def(JSContext *ctx, JSFunctionDef *fd)
         JS_FreeAtom(ctx, fd->vars[i].var_name);
     }
     js_free(ctx, fd->vars);
+    js_free_rt(ctx->rt, fd->vars_htab);
     for(i = 0; i < fd->arg_count; i++) {
         JS_FreeAtom(ctx, fd->args[i].var_name);
     }
@@ -36291,6 +36358,7 @@ static JSValue js_create_function(JSContext *ctx, JSFunctionDef *fd)
         list_del(&fd->link);
     }
 
+    js_free_rt(ctx->rt, fd->vars_htab);
     js_free(ctx, fd);
     return JS_MKPTR(JS_TAG_FUNCTION_BYTECODE, b);
  fail:

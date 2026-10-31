@@ -1,0 +1,118 @@
+# Latido para buscar cuelgues en el emulador (tarea 38c2): cada N/50 s escribe la memoria libre, el mayor bloque
+# y cómo está la tarea dueña de la ventana cuyo título empieza por T (su estado, su pila guardada y dónde está su
+# código), durante dos horas (la ventana puede cambiar de título: se busca solo al principio). Si el latido para, se paró el Amiga entero; si sigue y la tarea no
+# avanza, las direcciones de su pila dicen dónde está (con m68k-amigaos-nm sobre el ejecutable y sus trozos).
+#
+#   latido "Tachyon" 250
+
+@header "#include <intuition/intuitionbase.h>"
+@header "#include <dos/dosextens.h>"
+
+# La tarea dueña de la ventana cuyo título empieza por t, o 0
+@native(borrow) func tarea_de(t: String) -> Int
+"""
+    struct Screen *s;
+    struct Window *w;
+    LONG r = 0, n = strlen((char *)t);
+    ULONG lock = LockIBase(0);
+    for (s = IntuitionBase->FirstScreen; s && !r; s = s->NextScreen)
+        for (w = s->FirstWindow; w && !r; w = w->NextWindow)
+            if (w->Title && !strncmp((char *)w->Title, (char *)t, n) && w->UserPort) r = (LONG)w->UserPort->mp_SigTask;
+    UnlockIBase(lock);
+    return r;
+"""
+end
+
+# Una línea con lo que se sabe de la tarea t: su estado y, de las 400 palabras de su pila guardada (desde
+# tc_SPReg), las que caen en su primer trozo de código, como distancia a su principio: el contador de programa y las
+# vueltas de las llamadas en curso (m68k-amigaos-nm del ejecutable las nombra)
+@native func tarea_linea(t: Int) -> String
+"""
+    struct Process *pr = (struct Process *)t;
+    struct Task *k = (struct Task *)t;
+    struct CommandLineInterface *cli;
+    static char b[1200];
+    char *q = b;
+    ULONG *p, c0 = 0, c1 = 0;
+    BPTR seg;
+    int i, n = 0;
+    if (k->tc_Node.ln_Type == NT_PROCESS) {
+        cli = (struct CommandLineInterface *)BADDR(pr->pr_CLI);
+        seg = cli && cli->cli_Module ? cli->cli_Module : pr->pr_SegList;
+        if (seg) {
+            ULONG *s = (ULONG *)BADDR(seg);
+            c0 = (ULONG)(s + 1);
+            c1 = (ULONG)s + s[-1] - 4;
+        }
+    }
+    Forbid();
+    p = (ULONG *)k->tc_SPReg;
+    q += sprintf(q, "estado %ld código", (long)k->tc_State);
+    for (i = 0; i < 400 && n < 40; i++) {
+        if (p[i] >= c0 && p[i] < c1 && !(p[i] & 1)) {
+            q += sprintf(q, " %lx", (unsigned long)(p[i] - c0));
+            n++;
+        }
+    }
+    Permit();
+    return (STRPTR)b;
+"""
+end
+
+# Dónde está el código del proceso t: cada trozo (hunk) como inicio-fin
+@native func trozos(t: Int) -> String
+"""
+    struct Process *pr = (struct Process *)t;
+    struct CommandLineInterface *cli;
+    static char b[600];
+    char *q = b;
+    BPTR seg = 0;
+    int n = 0;
+    b[0] = 0;
+    if (pr->pr_Task.tc_Node.ln_Type != NT_PROCESS) return (STRPTR)b;
+    cli = (struct CommandLineInterface *)BADDR(pr->pr_CLI);
+    seg = cli && cli->cli_Module ? cli->cli_Module : pr->pr_SegList;
+    while (seg && n < 30) {
+        ULONG *s = (ULONG *)BADDR(seg);
+        q += sprintf(q, " %08lx-%08lx", (unsigned long)(s + 1), (unsigned long)((char *)s + s[-1] - 4));
+        seg = (BPTR)s[0];
+        n++;
+    }
+    return (STRPTR)b;
+"""
+end
+
+@native(borrow) func esperar(ticks: Int)
+"""
+    Delay(ticks > 0 ? ticks : 1);
+"""
+end
+
+@native func libre(mayor: Bool) -> Int
+"""
+    return (LONG)AvailMem(mayor ? (MEMF_ANY | MEMF_LARGEST) : MEMF_ANY);
+"""
+end
+
+Main
+    titulo = arg(0)
+    cada = Int(arg(1))
+    t = 0
+    vueltas = 0
+    while t == 0 and vueltas < 600
+        esperar(50)
+        t = tarea_de(titulo)
+        vueltas = vueltas + 1
+    end
+    if t == 0
+        Print "latido: no hay ventana " + titulo
+    else
+        Print "latido: trozos" + trozos(t)
+        s = 0
+        while s < 7200
+            Print "latido " + s + " s: libre " + libre(false) / 1024 + " KB, mayor " + libre(true) / 1024 + " KB, " + tarea_linea(t)
+            esperar(cada)
+            s = s + cada / 50
+        end
+    end
+end

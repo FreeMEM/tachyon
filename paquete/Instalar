@@ -29,7 +29,7 @@
     (askdir
         (prompt "¿Dónde instalo Tachyon? Se creará ahí el cajón \"Tachyon\".")
         (help @askdir-help)
-        (default "Work:")))
+        (default (if (exists "Work:" (noreq)) "Work:" "SYS:"))))
 (set @default-dest (tackon #destino "Tachyon"))
 
 ; --- Copiar ---

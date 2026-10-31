@@ -246,6 +246,13 @@ static const JSMallocFunctions _jg_funciones = { _jg_malloc, _jg_free, _jg_reall
 #define _JM_CABECERA 8
 #define _JM_CHARCO (512UL * 1024)
 #define _JM_SOLO (128UL * 1024)
+/* El FreePooled de exec 40 (Kickstart 3.1) da un charco por vacío mirando el long que hay tras su MemHeader, que nadie
+   escribe: si por casualidad vale el tamaño del charco, lo devuelve entero al sistema con sus bloques vivos. Como hace
+   el malloc del runtime de Dash 2.0 (dl_pool_sano): tras cada AllocPooled, ese long del primer charco a 0 */
+static void _jm_sano(APTR pool) {
+    struct Node *h = (struct Node *)((struct MinList *)pool)->mlh_Head;
+    if (h->ln_Succ && h->ln_Type == NT_MEMORY) *(ULONG *)((UBYTE *)h + sizeof(struct MemHeader)) = 0;
+}
 static ULONG _jm_reserva = 0, _jm_desde = 0;
 static int _jm_hay(size_t n) {
     if (_jm_reserva == 0) {
@@ -263,6 +270,7 @@ static void *_jm_malloc(JSMallocState *s, size_t n) {
     if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
     p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
+    _jm_sano((APTR)s->opaque);
     p[0] = n;
     s->malloc_count++;
     s->malloc_size += n + _JM_CABECERA;
@@ -282,6 +290,7 @@ static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
     p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
+    _jm_sano((APTR)s->opaque);
     p[0] = n;
     memcpy((char *)p + _JM_CABECERA, q, antes < n ? antes : n);
     FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, antes + _JM_CABECERA);

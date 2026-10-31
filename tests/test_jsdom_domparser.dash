@@ -1,0 +1,30 @@
+# Test: DOMParser (tarea 55). Un RSS como el de amigatronics.com con parseFromString(texto, "application/xml"): sus
+# <item> con querySelectorAll, el texto de <title> y de <link> (en HTML, <link> no tiene texto), CDATA, entidades,
+# prefijos (atom:link) y documentElement. text/html con el analizador de HTML. Un XML mal formado da <parsererror>.
+# Y XMLSerializer.
+# memcheck
+# expect-out: rss: rss 2 | Uno & dos | https://x.com/1 | <b>dos</b> | atom:link self
+# expect-out: html: 1 hola
+# expect-out: mal: parsererror true
+# expect-out: serializado: <a b="1">c</a>
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+func ev(d: Documento, codigo: String) -> String
+    r = js_evaluar(d.js, codigo, "t.js")
+    if js_error(d.js) != ""
+        Print "JS: " + js_error(d.js)
+    end
+    return r
+end
+
+Main
+    d = documento_html("http://x.com/", "<html><body><p>x</p><script>var z = 1;</script></body></html>")
+    ev(d, "var rss = '<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\\n<channel><title>T</title><atom:link href=\"https://x.com/feed/\" rel=\"self\" />' + '<item><title>Uno &amp; dos</title><link>https://x.com/1</link></item>' + '<item><title><![CDATA[<b>dos</b>]]></title><link>https://x.com/2</link></item></channel></rss>';")
+    Print "rss: " + ev(d, "var x = new DOMParser().parseFromString(rss, 'application/xml'), it = x.querySelectorAll('item'); [x.documentElement.nodeName.toLowerCase() + ' ' + it.length, it[0].querySelector('title').textContent, it[0].querySelector('link').textContent, it[1].querySelector('title').textContent, x.getElementsByTagName('atom:link')[0].nodeName.toLowerCase() + ' ' + x.getElementsByTagName('atom:link')[0].getAttribute('rel')].join(' | ')")
+    Print "html: " + ev(d, "var h = new DOMParser().parseFromString('<!doctype html><html><body><p class=a>hola</p></body></html>', 'text/html'); h.querySelectorAll('p.a').length + ' ' + h.querySelector('p').textContent")
+    Print "mal: " + ev(d, "var m = new DOMParser().parseFromString('<a><b></a>', 'text/xml'); m.documentElement.nodeName.toLowerCase() + ' ' + (m.getElementsByTagName('parsererror').length == 1)")
+    Print "serializado: " + ev(d, "new XMLSerializer().serializeToString(new DOMParser().parseFromString('<a b=\"1\">c</a>', 'application/xml'))")
+    documento_liberar(d)
+end

@@ -10,7 +10,6 @@ HTML, CSS, imágenes, JavaScript (QuickJS) y HTTPS (AmiSSL), con ventana MUI.
 Contenido
 ---------
   Tachyon       el navegador (MUI)
-  visor         visor sin MUI: abre una página en una ventana normal (para probar)
   iconos/       los iconos de la barra de herramientas
   Instalar      el instalador (para el Installer del sistema)
   LEEME         esto
@@ -40,6 +39,9 @@ Necesita
 
 Instalar
 --------
+  Si el navegador del PC guardó el paquete como "tachyon (1).lha", cámbiale antes el
+  nombre a tachyon.lha: LhA toma "(1)" como comodín y dice "Unable to open archive!"
+  (o descomprímelo con lha -Qw x "tachyon (1).lha").
   Doble clic en el icono Instalar (usa el Installer del sistema): pregunta dónde
   dejar el cajón Tachyon, lo copia con sus iconos y avisa si falta algo de lo de
   arriba. A mano: copiar el cajón Tachyon donde se quiera (por ejemplo Work:). Los
@@ -52,7 +54,6 @@ Usar
     Tachyon                          la página de inicio
     Tachyon http://aminet.net/       esa página
     Tachyon http://a/ http://b/      una ventana para cada una (hasta 4)
-    visor pagina.html                el visor sin MUI (teclas: cursores, espacio, Esc)
 
   En la ventana: escribir la dirección y Return; atrás, adelante, recargar, parar;
   el botón Historial despliega la lista de las páginas vistas (doble clic para

@@ -1,0 +1,39 @@
+# Test: un fondo con background-attachment: fixed se mide y se coloca respecto a la vista, no a su caja (tarea 55).
+# El body de amigatronics.com tiene "url(...) fixed" con background-size: cover y la página es larga: escalado al alto
+# de toda la página, la imagen no cabía y el fondo salía negro. Aquí, el ILBM de 8x4 (fila de arriba 11110000) como
+# fondo fixed y cover de un body de 3000 px, pintado en una vista de 200x100: cubre la vista (25 veces), así que en
+# la fila de arriba hay blanco a la izquierda y negro a la derecha (escalado a la página, todo blanco); y desplazada
+# 500 px, igual (fixed). Blanco 2, negro 1.
+# emu-server: http.py 40853
+# memcheck
+# expect-out: arriba: 2 2 | 1 1
+# expect-out: desplazada: 2 2 | 1 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/pintor.dash"
+
+Window W
+    title "Fondo fijo"
+    width 260
+    height 140
+end
+
+Main
+    W.open
+    x0 = W.inner_left
+    y0 = W.inner_top
+    h = "<html><body style='margin: 0; height: 3000px; background: #888 url(cuadro.iff) fixed; background-size: cover'></body></html>"
+    doc = dom_desde_html(h)
+    base = "http://127.0.0.1:40853/pages/prueba.html"
+    css_vista(200, 100)
+    estilo_aplicar(doc, estilo_hojas(doc, base))
+    im = imagenes_nuevas()
+    imagenes_cargar(im, doc, base)
+    p = maquetar(doc, 200)
+    pintar(p, im, 0, x0, y0, 200, 100)
+    Print "arriba: " + gfx_pixel_read(x0 + 10, y0 + 10) + " " + gfx_pixel_read(x0 + 90, y0 + 10) + " | " + gfx_pixel_read(x0 + 110, y0 + 10) + " " + gfx_pixel_read(x0 + 190, y0 + 10)
+    pintar(p, im, 500, x0, y0, 200, 100)
+    Print "desplazada: " + gfx_pixel_read(x0 + 10, y0 + 10) + " " + gfx_pixel_read(x0 + 90, y0 + 10) + " | " + gfx_pixel_read(x0 + 110, y0 + 10) + " " + gfx_pixel_read(x0 + 190, y0 + 10)
+    imagenes_liberar(im)
+    W.close
+end

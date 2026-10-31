@@ -1,0 +1,34 @@
+# Test: append, prepend, before, after, replaceWith, remove e insertAdjacentElement no pasan por los appendChild,
+# insertBefore y removeChild que ponga la página (tarea 38c9). El polyfill de customElements de YouTube envuelve
+# unos y otros con sus reacciones (connectedCallback...): si los primeros llamaban a los segundos, cada movimiento
+# le llegaba dos veces y el buscador de la página de un vídeo se pintaba dos veces. Con los de la página envueltos
+# como hace el polyfill, cada método hace lo suyo sin tocarlos; el MutationObserver sigue viendo cada cambio.
+# memcheck
+# expect-out: llamadas: 0
+# expect-out: árbol: x,a,b,y,c,d,e,f
+# expect-out: mutaciones: 12
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+func ev(d: Documento, codigo: String) -> String
+    r = js_evaluar(d.js, codigo, "t.js")
+    if js_error(d.js) != ""
+        Print "JS: " + js_error(d.js)
+    end
+    return r
+end
+
+Main
+    d = documento_html("http://x.com/", "<html><body><div id=p><i id=m></i><u id=q></u></div><script>var z = 1;</script></body></html>")
+    ev(d, "var n = 0, cambios = 0; var P = Node.prototype, ap = P.appendChild, ib = P.insertBefore, rc = P.removeChild;")
+    ev(d, "P.appendChild = function (c) { n++; return ap.call(this, c); }; P.insertBefore = function (c, r) { n++; return ib.call(this, c, r); }; P.removeChild = function (c) { n++; return rc.call(this, c); };")
+    ev(d, "var p = document.getElementById('p'), m = document.getElementById('m'), q = document.getElementById('q'); function e(t) { var x = document.createElement('s'); x.id = t; return x; }")
+    ev(d, "new MutationObserver(function (rs) { cambios += rs.length; }).observe(p, {childList: true});")
+    ev(d, "p.append(e('e')); p.prepend(e('x')); m.before(e('a')); m.after(e('b')); q.replaceWith(e('c')); document.getElementById('c').insertAdjacentElement('afterend', e('d')); p.lastChild.after(e('f')); m.remove();")
+    ev(d, "document.getElementById('d').after(document.getElementById('e')); p.insertBefore(e('y'), document.getElementById('c'));")
+    Print "llamadas: " + ev(d, "n - 1")
+    Print "árbol: " + ev(d, "Array.prototype.map.call(p.childNodes, function (c) { return c.id; }).join(',')")
+    Print "mutaciones: " + ev(d, "cambios")
+    documento_liberar(d)
+end

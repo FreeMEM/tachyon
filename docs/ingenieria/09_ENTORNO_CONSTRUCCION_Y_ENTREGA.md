@@ -115,7 +115,7 @@ PYTHONPATH=$DASH ./dash ~/Projects/tachyon/src/visor.dash -o visor            # 
 | `tools/gen_entidades.py` | `lib/entidades.dash` | Rara vez |
 | `tools/iconos.py` | `iconos/*.iff` (16x14, 4 colores) | Al cambiar un icono |
 | `tools/iconos_wb.py` | Iconos de Workbench del paquete | En `paquete.sh` |
-| `tools/lha_lh0.py` | `.lha` sin comprimir | En `paquete.sh` (Lhasa solo descomprime) |
+| `tools/lha.py` | `.lha` comprimido con `-lh5-` | En `paquete.sh` (Lhasa solo descomprime) |
 | `docs/ingenieria/herramientas/gen_modulos.py` | [07](07_MODULOS_E_INTERFACES.md) | Al cambiar interfaces |
 | `docs/ingenieria/herramientas/gen_tests.py` | El catálogo de [08](08_PLAN_DE_PRUEBAS.md) | Al añadir tests |
 
@@ -134,12 +134,12 @@ tools/medir_visor.py --maquina rtg --sistema ~/.cache/dash-emu/sys32rtg --progra
 `tools/paquete.sh` deja `build/dashweb.lha`:
 
 1. Compila `libqjs.a` y `libimg.a` si faltan.
-2. Compila `src/dashweb.dash` y `src/visor.dash`.
+2. Compila `src/dashweb.dash` (el visor no va en el paquete).
 3. Hace los iconos de la barra (`tools/iconos.py`) y copia `iconos/` (se cargan de `PROGDIR:iconos/`).
 4. Pasa `paquete/LEEME` y `paquete/Instalar` (guion del Installer) a Latin-1.
 5. Hace los iconos de Workbench (`tools/iconos_wb.py`): el del cajón y los de dentro.
 6. Copia las licencias: dashweb, QuickJS, fdlibm, Hubbub, LibParserUtils, libwebp, nanosvg, MintVID, TJpgDec, stb.
-7. Lo empaqueta sin comprimir (`tools/lha_lh0.py`) y lo comprueba con `lha -l`.
+7. Lo empaqueta comprimido (`tools/lha.py`, `-lh5-`) y lo comprueba con `lha -l`.
 
 Contenido del `.lha`:
 
@@ -147,7 +147,6 @@ Contenido del `.lha`:
 dashweb.info              icono del cajón
 dashweb/
     dashweb, dashweb.info     el navegador
-    visor                     el visor sin MUI
     iconos/                   la barra de herramientas
     LEEME, Instalar           en Latin-1
     Licencias/

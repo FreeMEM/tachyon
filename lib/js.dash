@@ -30,6 +30,10 @@
 # nada). Si salta una excepción, da "" y js_error la cuenta.
 @extern("js") func js_evaluar(js: Int, codigo: String, nombre: String) -> String
 
+# js_evaluar con un código que ya está en UTF-8 (un script de fuera, tal como llegó): sin pasarlo de Latin-1 a UTF-8,
+# así que sin copiarlo (el de YouTube son 10,8 MB; con 128 MB no había otro hueco así; tarea 38c8)
+@extern("js") func js_evaluar_utf8(js: Int, codigo: String, nombre: String) -> String
+
 # Los ms que tardó en compilarse el último código de js_evaluar (el resto, hasta lo que tardó entera, es ejecutarlo)
 @extern("js") func js_ms_compilar() -> Int
 

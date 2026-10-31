@@ -68,6 +68,7 @@ typedef struct _JsMotorS {
     char *error;
     void *extra;                                  /* other modules' data (lib/jsdom.dash) */
     void (*liberar_extra)(struct _JsMotorS *m);   /* called before the context is freed */
+    APTR pool;                                    /* where its memory comes from (_jm_malloc) */
 } _JsMotor;
 
 /* js_gc_siempre: the cycle collector after every script, call and job (to find reference-count bugs) */
@@ -95,6 +96,8 @@ static LONG _js_extra = 0;
 static void _js_empieza(void) { _js_desde = _js_ms(); _js_avisado = 0; _js_extra = 0; }
 /* lo que tardó en compilarse el último script de js_evaluar */
 static LONG _js_compilado_ms = 0;
+/* el código de js_evaluar ya está en UTF-8 (js_evaluar_utf8): va a QuickJS tal cual */
+static int _js_es_utf8 = 0;
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
@@ -235,8 +238,14 @@ static const JSMallocFunctions _jg_funciones = { _jg_malloc, _jg_free, _jg_reall
    reserve: a sixteenth of all the memory, between 512 KB and 6 MB. Without it, YouTube's JavaScript took the last
    19 MB of the RTG machine and the whole Amiga stopped (not even a screen picture could be taken; tarea 38c2): now
    the script gets "out of memory" and the rest goes on. AvailMem is asked every 64 KB asked for (and for every
-   block of 16 KB or more): asking it every time would cost too much */
+   block of 16 KB or more): asking it every time would cost too much.
+   Each engine takes its memory from its own exec pool (puddles of 512 KB; 128 KB or more, a block of its own) and
+   gives it all back with DeletePool. With libnix's malloc its blocks were mixed with the page's in the same 16 KB
+   chunks: after YouTube, 61 MB free but no hole bigger than 5 MB, and the 10.5 MB of its next script did not fit
+   anywhere (tarea 38c8, "Accept all" on 128 MB). */
 #define _JM_CABECERA 8
+#define _JM_CHARCO (512UL * 1024)
+#define _JM_SOLO (128UL * 1024)
 static ULONG _jm_reserva = 0, _jm_desde = 0;
 static int _jm_hay(size_t n) {
     if (_jm_reserva == 0) {
@@ -252,7 +261,7 @@ static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const ch
 static void *_jm_malloc(JSMallocState *s, size_t n) {
     size_t *p;
     if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
-    p = malloc(n + _JM_CABECERA);
+    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     p[0] = n;
     s->malloc_count++;
@@ -263,7 +272,7 @@ static void _jm_free(JSMallocState *s, void *q) {
     if (!q) return;
     s->malloc_count--;
     s->malloc_size -= _jm_tamano(q) + _JM_CABECERA;
-    free((char *)q - _JM_CABECERA);
+    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, _jm_tamano(q) + _JM_CABECERA);
 }
 static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     size_t antes, *p;
@@ -271,9 +280,11 @@ static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     if (!n) { _jm_free(s, q); return NULL; }
     antes = _jm_tamano(q);
     if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
-    p = realloc((char *)q - _JM_CABECERA, n + _JM_CABECERA);
+    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     p[0] = n;
+    memcpy((char *)p + _JM_CABECERA, q, antes < n ? antes : n);
+    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, antes + _JM_CABECERA);
     s->malloc_size += n - antes;
     return (char *)p + _JM_CABECERA;
 }
@@ -500,7 +511,9 @@ LONG js_nuevo(void)
 #ifdef _JS_GUARDAS
     m->rt = JS_NewRuntime2(&_jg_funciones, NULL);
 #else
-    m->rt = JS_NewRuntime2(&_jm_funciones, NULL);
+    m->pool = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+    if (!m->pool) { free(m); return 0; }
+    m->rt = JS_NewRuntime2(&_jm_funciones, m->pool);
 #endif
     if (m->rt) {
         /* the stack the program really has, less 64 KB for the C below QuickJS: 192 KB with the 256 KB of @stack here
@@ -524,6 +537,7 @@ LONG js_nuevo(void)
     }
     if (!m->ctx) {
         if (m->rt) JS_FreeRuntime(m->rt);
+        if (m->pool) DeletePool(m->pool);
         free(m);
         return 0;
     }
@@ -553,7 +567,7 @@ STRPTR js_evaluar(LONG js, STRPTR codigo, STRPTR nombre)
     {
         const unsigned char *p = (const unsigned char *)(codigo ? (const char *)codigo : "");
         while (*p && *p < 0x80) p++;
-        copia = *p != 0;
+        copia = *p != 0 && !_js_es_utf8;
         fuente = copia ? _js_utf8(codigo ? (const char *)codigo : "") : (char *)(codigo ? (const char *)codigo : "");
     }
     if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
@@ -586,6 +600,16 @@ STRPTR js_evaluar(LONG js, STRPTR codigo, STRPTR nombre)
     JS_FreeValue(m->ctx, v);
     r = _dash_str_dup((STRPTR)(texto ? texto : ""), TRUE);
     free(texto);
+    return r;
+}
+/* js_evaluar con un código que ya está en UTF-8 (un script de fuera, tal como llegó): sin pasarlo de Latin-1 a UTF-8,
+   así que sin copiarlo (el de YouTube son 10,8 MB; con 128 MB no había otro hueco así; tarea 38c8) */
+STRPTR js_evaluar_utf8(LONG js, STRPTR codigo, STRPTR nombre)
+{
+    STRPTR r;
+    _js_es_utf8 = 1;
+    r = js_evaluar(js, codigo, nombre);
+    _js_es_utf8 = 0;
     return r;
 }
 LONG js_ms_compilar(void)
@@ -746,6 +770,7 @@ void js_liberar(LONG js)
 #endif
     JS_FreeContext(m->ctx);
     JS_FreeRuntime(m->rt);
+    if (m->pool) DeletePool(m->pool);
     free(m->error);
     free(m);
 }
@@ -1297,7 +1322,10 @@ typedef struct {
 
 static void _jsdom_finalizar(JSRuntime *rt, JSValue val) {
     _Dash_Nodo *n = (_Dash_Nodo *)JS_GetOpaque(val, _jsdom_clase);
-    if (n) _dash_release(n);
+    if (n) {
+        dom_olvidar_toques(n);   /* (sin el ciclo documento -> aviso -> documento) */
+        _dash_release(n);
+    }
 }
 
 static _JsDom *_jsdom_de(JSContext *ctx) { return (_JsDom *)JS_GetContextOpaque(ctx); }

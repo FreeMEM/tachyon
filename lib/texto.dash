@@ -276,11 +276,16 @@ end
 # El texto de un script con su juego de caracteres (UTF-8 si no dice otro): como texto_decodificar, pero lo que no
 # es ASCII queda como escape \uXXXX (utf8_a_js_ascii: así el script va a QuickJS sin copiarlo)
 func texto_decodificar_js(s: String, juego: String) -> String
-    j = str_lower(str_trim(juego))
-    if j == "iso-8859-1" or j == "latin1" or j == "iso8859-1" or j == "us-ascii" or j == "ascii" or j == "windows-1252" or j == "cp1252"
+    if not texto_es_utf8(juego)
         return texto_decodificar(s, juego)
     end
     return utf8_a_js_ascii(s)
+end
+
+# Si un texto con ese juego de caracteres está en UTF-8 (lo que no dice otro)
+func texto_es_utf8(juego: String) -> Bool
+    j = str_lower(str_trim(juego))
+    return not (j == "iso-8859-1" or j == "latin1" or j == "iso8859-1" or j == "us-ascii" or j == "ascii" or j == "windows-1252" or j == "cp1252")
 end
 
 # Código de una entidad con nombre ("amp" -> 38), o -1 si no se conoce

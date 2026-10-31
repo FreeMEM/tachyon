@@ -1,0 +1,30 @@
+# Test: al llegar la página nueva, la de antes suelta su JavaScript y se queda pintada sin él (tarea 38c8: en YouTube,
+# tras "Accept all", la portada vieja seguía con sus 55 MB de JavaScript mientras la nueva ejecutaba los suyos).
+# Después de soltarlo: la memoria vuelve, la página sigue maquetada con lo que el JavaScript le cambió, se maqueta otra
+# vez, el ratón no llama a nada y liberarla luego no suelta nada dos veces.
+# memcheck
+# expect-out: js true | soltado true | libre true | texto hecho | maqueta true | raton false | otra vez true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    antes = mem_total()
+    h = "<body style='margin:0'><div id=d onmouseover='this.title=1'>x</div><script>var a = []; for (var i = 0; i < 20000; i++) a.push({i: i, s: 'texto ' + i}); document.getElementById('d').textContent = 'hecho'; setTimeout(function () { document.body.innerHTML = 'no' }, 0);</script></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 300)
+    con_js = mem_total()
+    s = "js " + (d.js != 0)
+    documento_soltar_js(d)
+    s = s + " | soltado " + (d.js == 0)
+    # (lo que ocupaba el JavaScript ha vuelto casi entero: el array son más de 1 MB)
+    s = s + " | libre " + (mem_total() - con_js > (antes - con_js) / 2)
+    s = s + " | texto " + dom_texto(dom_por_id(d.doc, "d"))
+    n = d.pagina.dibujos.length
+    documento_maquetar(d, 200)
+    s = s + " | maqueta " + (d.pagina.dibujos.length == n)
+    s = s + " | raton " + documento_raton(d, 5, 5, 5)
+    s = s + " | otra vez " + (d.js == 0)
+    Print s
+    documento_liberar(d)
+end

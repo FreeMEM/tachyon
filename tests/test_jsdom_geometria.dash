@@ -1,6 +1,7 @@
 # Test: la geometría de la maqueta en el JavaScript (tarea 37b). getBoundingClientRect con margen, relleno y borde,
 # lo que flex coloca después (justify-content mueve los dibujos ya puestos), un <span> en línea (la unión de lo que
-# dibuja), offsetTop/offsetParent con position: relative, display: none (cero), y lo que se ve: innerWidth,
+# dibuja), offsetTop/offsetParent con position: relative, display: none (cero; y null en body, html y lo fijo: el
+# sticky-sidebar de amigatronics.com subía por offsetParent sin fin; tarea 55), y lo que se ve: innerWidth,
 # innerHeight, scrollY y el desplazamiento restado en getBoundingClientRect. Desplazar desde el JavaScript
 # (tarea 37c): scrollTo, scrollBy, scrollIntoView y scrollTop dejan la petición (jsdom_desplazamiento), scrollY la
 # ve ya, y jsdom_desplazado lanza scroll en document y window. IntersectionObserver (tarea 37e): la primera vez
@@ -8,7 +9,7 @@
 # memcheck
 # expect-out: ninguna 0 0
 # expect-out: a 10 10 114 64 | f 350 50 | ninguna 0 0
-# expect-out: span true true | hijo 7 7 a | oculto 0 0 null
+# expect-out: span true true | hijo 7 7 a | oculto 0 0 null | raíz null null | subir 3
 # expect-out: vista 800 600 30 | -20 | 30 | 800 600
 # expect-out: pedido 200 200 -1
 # expect-out: scrollBy 250 250
@@ -16,7 +17,7 @@
 # expect-out: io a:true:63 o:false:0
 # expect-out: io2 nada
 # expect-out: io3 a:true:22
-# expect-out: sticky 10 10 | 300 | fijo 5
+# expect-out: sticky 10 10 | 300 | fijo 5 null
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/maqueta.dash"
@@ -37,7 +38,7 @@ Main
     p = maquetar(doc, 800)
     jsdom_vista(js, 800, 600, 0, p.alto)
     Print js_evaluar(js, "var a = r('a').split(' '), f = document.getElementById('f').getBoundingClientRect(); 'a ' + a.join(' ') + ' | f ' + f.left + ' ' + f.width + ' | ninguna 0 0'", "t.js")
-    Print js_evaluar(js, "var s = document.getElementById('s').getBoundingClientRect(), b = document.getElementById('b'), o = document.getElementById('o'); 'span ' + (s.width > 0) + ' ' + (s.top > 64) + ' | hijo ' + b.offsetTop + ' ' + b.offsetLeft + ' ' + b.offsetParent.id + ' | oculto ' + o.offsetWidth + ' ' + o.getBoundingClientRect().height + ' ' + o.offsetParent", "t.js")
+    Print js_evaluar(js, "var s = document.getElementById('s').getBoundingClientRect(), b = document.getElementById('b'), o = document.getElementById('o'); 'span ' + (s.width > 0) + ' ' + (s.top > 64) + ' | hijo ' + b.offsetTop + ' ' + b.offsetLeft + ' ' + b.offsetParent.id + ' | oculto ' + o.offsetWidth + ' ' + o.getBoundingClientRect().height + ' ' + o.offsetParent + ' | raíz ' + document.body.offsetParent + ' ' + document.documentElement.offsetParent + ' | subir ' + (function () { for (var n = 0, e = b; e && n < 50; e = e.offsetParent) n++; return n; })()", "t.js")
     jsdom_vista(js, 800, 600, 30, p.alto)
     Print js_evaluar(js, "'vista ' + innerWidth + ' ' + innerHeight + ' ' + scrollY + ' | ' + document.getElementById('a').getBoundingClientRect().top + ' | ' + document.documentElement.scrollTop + ' | ' + document.documentElement.clientWidth + ' ' + document.documentElement.clientHeight", "t.js")
     jsdom_vista(js, 800, 600, 30, 2000)
@@ -65,6 +66,6 @@ Main
     jsdom_preparar(js2, doc2)
     p2 = maquetar(doc2, 800)
     jsdom_vista(js2, 800, 600, 300, p2.alto)
-    Print js_evaluar(js2, "var t = function (id) { return Math.round(document.getElementById(id).getBoundingClientRect().top); }; 'sticky ' + t('s') + ' ' + t('d') + ' | ' + scrollY + ' | fijo ' + t('f')", "t.js")
+    Print js_evaluar(js2, "var t = function (id) { return Math.round(document.getElementById(id).getBoundingClientRect().top); }; 'sticky ' + t('s') + ' ' + t('d') + ' | ' + scrollY + ' | fijo ' + t('f') + ' ' + document.getElementById('f').offsetParent", "t.js")
     js_liberar(js2)
 end

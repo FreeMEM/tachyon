@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
     ap.add_argument("--cajas", metavar="TEXTO", help="dashweb CAJAS=TEXTO: when the page is whole, the boxes and layout style of the elements with TEXTO in their class (or that tag name)")
+    ap.add_argument("--cajas-en", metavar="MS", help="dashweb CAJASEN=MS: with --cajas, also once MS ms after the page started (for a page that never gets whole)")
     ap.add_argument("--dibujos", metavar="Y0-Y1", help="dashweb DIBUJOS=Y0-Y1: when the page is whole, its drawings between those heights")
     ap.add_argument("--versiones", action="store_true", help="dashweb VERSIONES=: the list of versions from tests/servers/http.py "
                     "(/act/releases: a 9.9.0-alfa with a pretend Tachyon.gz) instead of GitHub (task 44)")
@@ -146,6 +147,8 @@ def main():
                 prog_args[0] += " DIBUJOS=" + args.dibujos
             if args.cajas:
                 prog_args[0] += " CAJAS=" + args.cajas
+            if args.cajas_en:
+                prog_args[0] += " CAJASEN=" + args.cajas_en
             if args.poca_memoria:
                 prog_args[0] += " POCAMEMORIA=" + args.poca_memoria
             if args.gc_siempre:

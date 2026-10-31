@@ -359,15 +359,32 @@ func _leer_cuerpo(c: Conexion, r: Respuesta, f: Int)
     if b != nil
         if r.error == ""
             _http_inflar(r, b.buf, b.n)
+            if r.error != ""
+                traza("sin descomprimir: " + b.n / 1024 + " KB, " + http_inflado_tope() / 1024 + " KB reservados al empezar; mayor bloque libre " + memoria_mayor_bloque() / 1024 + " KB")
+            end
         end
         bytes_liberar(b)
     end
 end
 
+# Lo que se reservó al empezar a descomprimir el último cuerpo, y cuántos gzip salieron de una vez en el tamaño que
+# dice su ISIZE (test_http_gzip)
+var _http_inflado_tope: Int = 0
+var _http_directos: Int = 0
+
 # Un cuerpo gzip (RFC 1952) o deflate (zlib, RFC 1950, o sin cabecera) descomprimido con inflate_auto a r.cuerpo;
-# si no se puede, r.error. El destino crece mientras no quepa (-2)
+# si no se puede, r.error. Un gzip lleva su tamaño descomprimido en los 4 últimos bytes (ISIZE): si parece bueno, se
+# reserva eso de una vez. Si no, el destino empieza en n * 4 + 1024 y crece mientras no quepa (-2): para los 10,8 MB del
+# script de YouTube llegaba a pedir 16 MB con los 8 de antes vivos (tarea 38c8). (En dev el texto se descomprime
+# directamente en su sitio; Dash 2.0 no tiene cómo hacer un texto de n bytes y escribir en él, así que aquí es un búfer
+# y su copia al texto.)
 func _http_inflar(r: Respuesta, datos: Int, n: Int)
     max = n * 4 + 1024
+    isize = _http_isize(datos, n)
+    if isize > 0
+        max = isize
+    end
+    _http_inflado_tope = max
     while datos != 0 and n > 0
         dest = buffer_alloc(max)
         if dest == 0
@@ -375,6 +392,9 @@ func _http_inflar(r: Respuesta, datos: Int, n: Int)
         end
         k = inflate_auto(datos, n, dest, max)
         if k >= 0
+            if isize > 0 and k == isize
+                _http_directos = _http_directos + 1
+            end
             r.cuerpo = str_from_buffer(dest, 0, k)
             buffer_free(dest)
             return
@@ -386,6 +406,37 @@ func _http_inflar(r: Respuesta, datos: Int, n: Int)
         max = max * 2
     end
     r.error = tr(406, "could not decompress")
+end
+
+# El ISIZE de un cuerpo gzip (sus 4 últimos bytes, little endian) si parece bueno; 0 si no es gzip o no lo parece (más
+# de 1032 veces lo comprimido no puede ser)
+func _http_isize(p: Int, n: Int) -> Int
+    if p == 0 or n < 18 or buffer_get_byte(p, 0) != 31 or buffer_get_byte(p, 1) != 139 or buffer_get_byte(p, 2) != 8
+        return 0
+    end
+    if buffer_get_byte(p, n - 1) >= 128
+        return 0
+    end
+    t = buffer_get_byte(p, n - 4) | (buffer_get_byte(p, n - 3) << 8) | (buffer_get_byte(p, n - 2) << 16) | (buffer_get_byte(p, n - 1) << 24)
+    if t <= 0 or t / 1032 > n
+        return 0
+    end
+    return t
+end
+
+# Cuántos cuerpos gzip se descomprimieron de una vez en el tamaño de su ISIZE
+func http_inflados_directos() -> Int
+    return _http_directos
+end
+
+# Lo que se reservó al empezar a descomprimir el último cuerpo
+func http_inflado_tope() -> Int
+    return _http_inflado_tope
+end
+
+# El mayor bloque de memoria libre seguida (bytes)
+func memoria_mayor_bloque() -> Int
+    return mem_largest()
 end
 
 # Trozos: tamaño en hexadecimal, datos, salto; un trozo de tamaño 0 termina

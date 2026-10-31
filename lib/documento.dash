@@ -374,7 +374,7 @@ func documento_avanzar(d: Documento) -> Bool
         d.js = js_nuevo()
         _documento_con_js(d)
         jsdom_preparar(d.js, d.doc)
-        jsdom_ejecutar_scripts_con(d.js, d.doc, d.direccion, traidos)
+        jsdom_ejecutar_scripts_con(d.js, d.doc, d.direccion, traidos, d.recursos.scripts)
         d.cambios = jsdom_cambios(d.js)
     end
     _documento_olvidar_tocados(d)
@@ -1474,6 +1474,12 @@ func documento_liberar(d: Documento)
     if d.videos != nil
         videos_liberar(d.videos)
     end
+    documento_soltar_js(d)
+end
+
+# Suelta el JavaScript de la página (sus temporizadores, peticiones y memoria) y la deja como sin scripts: lo que
+# hace un navegador con la de antes en cuanto llega la nueva (en YouTube, 55 MB que si no siguen hasta pintarla)
+func documento_soltar_js(d: Documento)
     if d.js != 0
         jsdom_peticiones_cancelar(d.js)
         jsdom_quitar_hojas(d.doc)

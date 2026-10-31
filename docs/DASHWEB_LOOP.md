@@ -193,6 +193,22 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
+      runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
+      NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
+      todos los píxeles da una imagen sin máscara, opaca. El logo de amigatronics.com (transpa.png, 1600x250, 1 bit, el
+      color 0 verde y transparente) sale como un recuadro verde de 432x68 en la RTG. Arreglo: sin ningún opaco, una
+      máscara vacía (o no pintar nada); con algo opaco y algo claro, como ahora. Lo decodificado está bien (alfa 0:
+      test_imagen_paleta_trns; los tests van en el A1200, sin RTG, y no ven el pintado).
+- [x] D80. **Los bloques pequeños vuelven al sistema** (2026-10-30, tarea 38c8; encargada a las sesiones dashc y
+      freememlang-51, que se reparten el Dash de .worktrees/dashweb y el runtime de dashc). Dash pide todo a un pool de exec (charcos de 4 KB) y los bloques de hasta 128 bytes (nodos,
+      textos cortos, structs) se quedan en sus listas libres para siempre. Tras YouTube en 128 MB, al salir a
+      tachyon:inicio vuelven 84 MB de los 124 del principio y el mayor bloque libre es de 11,8 MB (114 MB al empezar):
+      los charcos que quedan, repartidos, no dejan un hueco seguido para el script de 10,5 MB de la recarga tras
+      "Accept all". Propuesto: (a) un builtin que devuelva las listas libres al pool (FreePooled: los charcos vacíos
+      vuelven a exec), llamado al soltar una página; (b) charcos más grandes (64 KB) para que lo de Dash no se reparta
+      entre los bloques grandes. Y aparte: asignar un texto que es un campo o variable lo copia entero (el script de
+      10,8 MB llegaba a estar cuatro veces); un "mover" (o textos compartidos) ahorraría las copias grandes.
 - [x] D71. **La caché de largos de texto expulsa el texto grande** (2026-10-26, tarea 38c; propuesta a la sesión "dash").
       _dash_str_len guarda el largo de 8 textos de 64 bytes o más y los cambia por turno: al leer la hoja CSS de
       YouTube (3,8 MB, 18 623 reglas), cada cuerpo de regla largo entra y a las 8 reglas sale la hoja, y el corte
@@ -511,6 +527,35 @@ tarea, con el estilo de Dash.
          lib/jsdom.dash los async que llegan tarde.
       b. Cada web: comparar con Chrome y arreglar lo que salga.
 
+- [ ] 55. **amigatronics.com, que se vea bien (usuario, 2026-10-30, por la sesión dashc: "haz que la web de
+      amigatronics.com se vea bien en Tachyon").** Un usuario con PiStorm la usa a diario con IBrowse, donde se ve
+      "bastante bien". WordPress.com (tema con cabecera, menú, cinta de "Últimas 10 publicaciones", tres columnas,
+      calendario, botones de compartir). Con un User-Agent que no es de Chrome llega directa (200, 280 KB); a Chrome le
+      sale antes un "Checking your browser" (403) con JavaScript. Referencia de Chrome a 1572x875:
+      .playwright-mcp/amigatronics_chrome.png. Partes: a. cómo sale ahora en Tachyon (256 y 128 MB); b. comparar con
+      Chrome y arreglar lo que salga. Al acabar, avisar al usuario.
+      Visto (2026-10-30, 256 MB): casi todo negro y sin textos. Hecho: offsetParent null en body, html y lo fijo (el
+      sticky-sidebar subía por offsetParent sin fin hasta que el vigilante cortaba el JavaScript); unicode-range en
+      @font-face (solo el trozo que toca Latin-1: con el de latin-ext no salían las tildes); los fondos fixed medidos
+      y puestos respecto a la vista (con cover en el body, la imagen escalada al alto de la página no cabía: fondo
+      negro); DOMParser y XMLSerializer (la cinta lee su RSS: "No se pudo cargar el feed"; su test aún con 166 objetos
+      vivos en memcheck, por mirar). Pendiente: el logo transparente sale verde (D81, en Dash); el menú se parte en
+      dos líneas; los botones de compartir (fijos a la derecha en Chrome) salen en medio; la franja negra de arriba
+      con los iconos sociales.
+- [ ] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
+      descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
+      IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
+      "(1)" como comodín: "Unable to open archive!" (con -Qw va). Hacer: un .lha comprimido (-lh5-; tools/lha_lh0.py
+      solo escribe -lh0-, y la actualización desde Tachyon debe saber abrirlo) y decirlo en el LEEME y en las notas.
+      Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
+      solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
+
+- [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
+      Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
+      pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
+      llegó, con el pedidor de ficheros, como las descargas de la tarea 47) y "Guardar enlace como..." para el enlace
+      bajo el ratón (con una tecla al pulsarlo, o un menú), que lo baja con el gestor de descargas en vez de abrirlo.
+
 - [x] 49. **tachyon.freemem.space sale en azul en el CoffinOS del usuario (2026-10-24, con la compilación de 48c y
       48e).** Solo el fondo: ni la cabecera, ni los textos, ni las estrellas; "Listo" en la barra, y sigue así tras un
       minuto. En el emulador sale entera (18-25 s) en todas las pruebas: MUI 5 y MUI 3.8, 1024x768 y 1680x1050, 16 y
@@ -568,6 +613,57 @@ tarea, con el estilo de Dash.
           6 MB y no cabe ni una captura de 1680x1050 (se mira con medir_visor --memoria 256).
           En parte (2026-10-27): las hojas sin los scripts traídos y las declaraciones leídas al usarse: "entera" en
           128 MB con 15,5 MB libres. Siguen: los selectores de la hoja (15,8 MB leída) y el JavaScript (54 MB).
+      [~] c8. (usuario, 2026-10-30, en su CoffinOS de Amiberry) Tras "Accept all" la portada se queda en el
+          esqueleto (los recuadros grises de #home-page-skeleton) y sin la barra de arriba.
+          En parte (2026-10-30): era la memoria (con 256 MB sale "Try searching to get started", como en Chrome sin
+          cuenta). Hecho: la página de antes suelta su JavaScript al llegar la nueva, un pool por motor de QuickJS,
+          gzip de una vez a su texto y menos copias del script. Falta en 128 MB: tras la primera portada el mayor
+          bloque libre es de 8-10 MB y el script (10,5 MB) no cabe seguido; con la página vieja soltada entera,
+          igual. Visto (2026-10-30): son las listas libres de Dash (D80); vaciar las cachés globales de estilo y
+          maqueta no cambió nada (probado y quitado).
+          Con D80 (3bdc7be en dashweb: charcos propios de bloques pequeños y mem_trim, que suelta los vacíos): Tachyon
+          llama a mem_trim cada 2 s; los scripts en UTF-8 van a QuickJS tal como llegaron (js_evaluar_utf8, la
+          respuesta en Recursos.scripts), sin la copia a ASCII ni la de guardarlo; y si el mayor bloque libre baja de
+          16 MB al empezar otra página, la de antes se suelta entera. Medido en 128 MB: tras "Accept all" el script
+          ya no se pierde por memoria, pero YouTube sirvió otra variante (base_module_set: 1,2 MB y luego 9,5 MB que
+          pide su JavaScript, tres veces, y no se ejecuta): sigue el esqueleto. Siguiente: ver qué hace con esos
+          9,5 MB (¿XHR + eval? ¿un texto de 9,5 MB en QuickJS, o el doble si no es ASCII?).
+      [ ] c9. La página de un vídeo (visto el 2026-10-30, watch?v=jNQXAC9IVRw, 256 MB: "entera" hacia los 110 s, el
+          script principal 64 s). Partes:
+          [ ] a. El diálogo de cookies sale arriba a la izquierda (en la portada, centrado). Visto: a los 580 s va a
+             medio colocar (top/left puestos, sin centrar) porque los temporizadores tardan 17-119 s, casi todo
+             JavaScript (3 maquetas en el de 119 s): es de velocidad. Con QuickJS y dashweb en -DJS_PERFIL, Tachyon
+             se para a los 37 s de la carga (rc None): el perfil no sirve aquí.
+          [x] b. La barra de arriba sale dos veces (dos buscadores). Visto (CAJASEN a los 300 s): dentro del buscador,
+             el contenido del componente (div.ytSearchboxComponentInputWrapper y lo suyo) está dos veces seguidas en
+             el mismo padre: se pintó dos veces. Sospecha: su connectedCallback otra vez (la barra se mueve en la
+             página de un vídeo) sin disconnectedCallback; en la portada, una vez. Mirarlo con una traza del preludio.
+             Visto con trazas (2026-10-30): yt-searchbox es un envoltorio Wiz de YouTube (kevlar_base: render() en
+             connectedCallback, y disconnectedCallback lo vacía con innerText = ""). El mismo yt-searchbox recibe:
+             pintado, vaciado (4 hijos a 0), vaciado (0 a 0), pintado, pintado: las reacciones llegan dobles
+             (D, D, C, C) al redistribuir ShadyDOM (su __shady_native_removeChild/insertBefore pasan por los envoltorios
+             del polyfill de customElements, webcomponents-all-noPatch 88:106 y 198:376). El MutationObserver del
+             polyfill (yc) solo vive con readyState "loading" (Tachyon lo pasa a "interactive" bien) y isConnected
+             sube hasta document: falta ver de dónde sale la segunda reacción (la segunda redistribución llega desde
+             kd, el vaciado de pintados pendientes de ShadyDOM antes de un dispatchEvent).
+             Causa (2026-10-30, página local con el polyfill de YouTube, igual en Chrome con forcePolyfill y en
+             Tachyon): el polyfill de customElements, sin la opción shadyDomFastWalk, recorre el subárbol con mc,
+             que entra en los hijos del anfitrión (ShadyDOM ya les ha puesto ahí lo de su sombra) y además en
+             __CE_shadowRoot (los hijos lógicos de la sombra): un elemento dentro de una sombra sale dos veces y
+             recibe D, D, C, C. Con customElements de serie, Chrome da D, C (YouTube no carga el polyfill); con
+             window.customElements = {forcePolyfill, shadyDomFastWalk} antes del polyfill, Tachyon también da D, C
+             (no vale para quedarse: una página que mire si hay customElements creería que sí). Arreglo:
+             customElements de serie en el preludio (define, get, whenDefined, upgrade; las reacciones al meter,
+             quitar y cambiar atributos; los creados por el analizador y por createElement). Hecho a la vez:
+             append, prepend, before, after, replaceWith, remove e insertAdjacentElement ya no pasan por los
+             appendChild/insertBefore/removeChild de la página (test_jsdom_sin_doble); no arreglaba esto.
+             Hecho (2026-10-30): customElements de serie en el preludio (test_jsdom_custom). En la página del vídeo
+             (256 MB, a los 600 s): un buscador, y el diálogo de cookies ya centrado (sin el polyfill, todo va más
+             rápido: mirar si c9a sigue).
+          [ ] c. Los títulos de la columna de vídeos recomendados se pisan.
+          [ ] d. "InternalError: interrupted" en mo_apuntar (el MutationObserver del preludio pasa de 120 s).
+          [ ] e. El reproductor: pide los trozos a googlevideo.com (videoplayback, 22 peticiones) para MediaSource;
+             sin MSE no hay vídeo. Mirar qué API pide y si se puede darle un vídeo entero (lo de la tarea 30).
       [ ] c4. Una captura de la portada pintada y comparada con Chrome.
       [~] c7. La velocidad (usuario, 2026-10-27: "Velocidad y luego botón"; el botón es lo que falta de c5). En la
           máquina RTG ancha: primer pintado a los 190 s y "entera" a los 300 s; 158 s eran los scripts, y de ellos
@@ -5075,3 +5171,99 @@ Formato:
 - Compilación puesta en Traspaso.
 - Batería: 114/114 (3407 s).
 
+### 2026-10-30 — Tarea 38c8 (parte): YouTube tras "Accept all" (la memoria de la recarga)
+- El usuario, en su CoffinOS de Amiberry (con el Tachyon de la rama dash2, compilado con dashc): tras "Accept all" la
+  portada se queda en el esqueleto, sin la barra de arriba. En el emulador, dev y dash2 cargan igual (0 errores,
+  "entera" a los 234 y 258 s, el diálogo de cookies). Con 256 MB y "Accept all": YouTube guarda la elección, carga
+  otra vez la portada y dice "Try searching to get started" (como Chrome sin cuenta ni historial; captura enviada).
+  Con 128 MB, lo del usuario: "out of memory" en la recarga.
+- Por qué: la página de antes seguía con sus 55 MB de JavaScript (y sus temporizadores) hasta acabar la nueva; y el
+  script principal, que en la recarga llega en gzip, no se descomprimía ("could not decompress").
+  - Ahora (src/dashweb.dash, lib/documento.dash documento_soltar_js) al llegar la página nueva la de antes suelta su
+    JavaScript y se queda pintada sin él: la recarga empieza con 68-74 MB libres en vez de 10-15.
+    test_documento_soltar_js (nuevo).
+  - lib/http.dash: el gzip reserva lo que dice su ISIZE (antes, 4 veces lo comprimido, y doblando: 16 MB con los 8 de
+    antes vivos para 10,5 MB) y va directamente a un texto de Dash (_dash_str_alloc, stbi_zlib_decode_noheader_buffer):
+    un solo bloque. Si no sale, la traza dice el mayor bloque libre. test_http_gzip: uno de 600 KB, reservado de
+    una vez y directo.
+  - lib/js.dash: cada motor de QuickJS pide su memoria a su propio pool de exec (charcos de 512 KB; de 128 KB arriba,
+    bloque propio) y la devuelve con DeletePool: con el malloc de libnix sus bloques se mezclaban con los de la página
+    (tras la primera portada, 61 MB libres y el mayor bloque de 5 MB; ahora 8-10 MB). Compilar el script principal,
+    lo mismo (54-60 s).
+  - lib/recursos.dash y lib/jsdom.dash: el cuerpo se suelta antes de guardar su texto, y el script traído se ejecuta
+    sin copiarlo a una variable y se quita de los traídos al acabar (Dash copia cada texto que se asigna: el de
+    YouTube estaba hasta cuatro veces). La traza dice cada script con src y su largo.
+- Probado y quitado: soltar entera la página de antes con poca memoria (la memoria libre y el mayor bloque, igual).
+- Queda (c8): en 128 MB el script de la recarga aún no cabe seguido (mayor bloque 8-10 MB de 46-61 libres).
+- Batería: 115/115 (3594 s).
+
+### 2026-10-30 — Tarea 38c8 (parte): qué memoria no vuelve tras YouTube
+- Con medir_visor --latido 10 y un clic en el botón de inicio a los 300 s (máquina RTG ancha, 128 MB): al empezar,
+  124 MB libres y el mayor bloque de 114 MB; tras YouTube, en tachyon:inicio, 84 MB libres y el mayor bloque de
+  11,8 MB. Se quedan unos 40 MB y lo libre está troceado.
+- Probado y quitado (sin cambio medible): vaciar las variables globales del estilo y la maqueta que guardan nodos y
+  reglas del último estilo (_ganadoras_hechas, _partes_hechas, _selectores_leidos...) y, con menos de 48 MB libres,
+  soltar entera la página de antes al llegar la nueva. En los dos casos, la misma memoria libre y el mismo mayor
+  bloque (69 MB y 8 MB en la recarga tras "Accept all").
+- La causa está en Dash: un solo pool de exec con charcos de 4 KB y los bloques de hasta 128 bytes guardados en sus
+  listas libres para siempre. Apuntado como D80 con la propuesta. Encargada después a dashc y freememlang-51 (el
+  usuario: sí hay sesiones con Dash).
+- Compilación de 38c8 (b52ef74) en Traspaso:Tachyon/Tachyon.30oct (la de dash2 sigue como Tachyon).
+
+### 2026-10-30 — Tarea 38 (c9): cómo sale la página de un vídeo
+- watch?v=jNQXAC9IVRw en la máquina RTG ancha con 256 MB: el script principal en 64 s (compilar 53), "scripts hechos"
+  a los 110 s, y el reproductor pide 22 trozos a googlevideo.com (videoplayback). Captura de los 880 s enviada al
+  usuario: el diálogo de cookies arriba a la izquierda, la barra de arriba dos veces, los títulos recomendados
+  pisándose y el reproductor vacío; un "InternalError: interrupted" en mo_apuntar. Apuntado como c9 a-e.
+- c9a: a los 580 s el diálogo va a medio colocar; los temporizadores de la página tardan 17-119 s y en el de 119 s
+  solo hay 3 maquetas (es JavaScript). La memoria libre baja de 139 a 77 MB en 400 s sin llegar a "entera". El
+  perfil de QuickJS (-DJS_PERFIL, en un worktree aparte) para Tachyon a los 37 s: sin datos.
+- c9b: CAJASEN=ms (medir_visor --cajas-en MS) vuelca las cajas a esa hora aunque la página no acabe (desde tic y
+  desde temporizadores: con temporizadores seguidos no hay tic). En la página del vídeo, el contenido del buscador
+  está dos veces en el mismo padre (apuntado en c9b). Sin batería: solo cambia un argumento de depuración.
+- c9b con trazas temporales del preludio (en un worktree aparte; no van al repositorio): el mismo yt-searchbox recibe
+  pintado, vaciado, vaciado, pintado, pintado. Es un envoltorio Wiz (render() al conectarse, innerText = "" al
+  desconectarse) y las reacciones de customElements llegan dobles al redistribuir ShadyDOM. Apuntado en c9b.
+- El loop se para aquí (2026-10-30, ~17:50): D80 espera al usuario (no hay sesión "dash") y lo siguiente de c9 es
+  largo (un test con el polyfill o customElements nativo; la lentitud de los temporizadores, c9a).
+- c9b, la causa: el recorrido del polyfill de customElements (mc) visita dos veces lo que hay dentro de una sombra de
+  ShadyDOM (por el anfitrión y por __CE_shadowRoot). Reproducido con una página local en Chrome con forcePolyfill y en
+  Tachyon; con shadyDomFastWalk sale bien. Arreglo apuntado en c9b: customElements de serie en el preludio.
+- D80 (freememlang-51, df65026 en la rama dashc): mem_puddle y mem_trim. mem_trim devuelve los bloques al pool, no
+  al sistema, y el dash1 de dashc no enlaza Tachyon dev (falta _dash_str_forget, de la rama dashweb): sin medir.
+  Pedido que suelte al sistema los charcos vacíos y que llegue a .worktrees/dashweb.
+- c9b hecho: customElements de serie en el preludio (define, get, getName, whenDefined, upgrade; las reacciones salen
+  de appendChild, insertBefore, removeChild, replaceChild, innerHTML, textContent, setAttribute... y cloneNode, sobre
+  el árbol de verdad; lo de dentro de un <template> no se mejora). YouTube ya no carga el polyfill: un buscador.
+- c8 con D80 (3bdc7be en .worktrees/dashweb): mem_trim cada 2 s, scripts UTF-8 a QuickJS sin copias y la página de
+  antes suelta entera con menos de 16 MB seguidos. En 128 MB tras "Accept all", YouTube dio otra variante
+  (base_module_set) que aún no sale. Las baterías y medir_visor van ahora con flock /run/user/1000/dash-emu-red.lock
+  (acordado con freememlang-51) para no chocar en los puertos.
+- Batería: 117/117 (3754 s), con customElements de serie, lo de D80 y los scripts UTF-8 sin copia (commits de 38c9b
+  y 38c8).
+
+### 2026-10-30 — Tarea 56: el paquete comprimido
+- tools/lha.py en lugar de tools/lha_lh0.py: -lh5- (LZSS de 8 KB y Huffman por bloques, como LHa para UNIX); lo
+  que no encoge va como -lh0-. Lhasa y LHa para UNIX (el de las herramientas del compilador cruzado) lo extraen
+  igual, con su CRC; el ejecutable queda al 51 % (LHa para UNIX, 50 %). El visor ya no va en el paquete y el LEEME
+  avisa de "tachyon (1).lha". Sin probar con el LhA del Amiga (no hay ninguno en el PC).
+
+### 2026-10-31 — Tarea 55 (parte): amigatronics.com
+- offsetParent null en body, html y lo fijo (test_jsdom_geometria); unicode-range en @font-face (test_fuente_web);
+  fondos fixed medidos y puestos respecto a la vista (test_pintor_fondo_fijo: con el pintor de antes, 0 0 | 0 0);
+  DOMParser y XMLSerializer (test_jsdom_domparser) y getElementsByTagName con prefijo (atom:link); un documento
+  soltado olvida sus avisos (dom_olvidar_toques: quitar el <html> de un documento creado dejaba un ciclo documento ->
+  aviso -> documento). D81 (freememlang-51, 3f9493e): el logo transparente ya no sale verde (test_imagen_paleta_trns
+  mira la decodificación; el pintado en la RTG lo mira test_image_clear_rtg de Dash). Visto en la RTG de 256 MB:
+  fondo, tildes, logo y la cinta con los titulares del RSS. Faltan el menú en dos líneas, la cinta montada sobre su
+  etiqueta y los botones de compartir en medio.
+- Batería: 119/120 (4105 s). Falló test_imagen_paleta_trns: su http_a_fichero, tras cargar la página, no trajo el
+  PNG ("decodificada: no"); solo pasa. ¿Una conexión reutilizada que el servidor ya cerró, sin reintento? Por mirar.
+  El test baja ahora el PNG al principio y pasa (dos veces seguidas).
+
+### 2026-10-31 — Publicada la v0.7.5-alfa
+- Con 38c8/c9b (YouTube, memoria con D80), 55 (amigatronics.com, con D81) y 56 (paquete -lh5- de 2 MB, sin visor).
+  Compilada con el Dash de .worktrees/dashweb en 3f9493e (D80 y D81). Batería 119/120 (el fallo, en un test nuevo,
+  arreglado). PR #14; paquete en un worktree limpio de main; release (prerrelease) con tachyon.lha, Tachyon.gz y
+  los nueve catálogos (11 ficheros); las descargas responden (200) y el .lha bajado pasa lha -t. version.json de
+  webs-freemem al día (el servidor reconstruye la web solo).

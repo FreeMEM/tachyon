@@ -72,6 +72,54 @@ func css_regla_declaraciones(r: Regla) -> [Declaracion]
     return r.declaraciones
 end
 
+# Si el unicode-range de un @font-face toca Latin-1 (de la 32 a la 255: lo que se dibuja de una fuente web, ver
+# lib/fuente_web.dash). Google Fonts parte cada fuente en trozos por alfabeto (latin, latin-ext, cyrillic...) con la
+# misma familia y peso: solo vale el "latin" (con el de latin-ext no salían las tildes de amigatronics.com; tarea 55)
+func css_rango_latin1(valor: String) -> Bool
+    for parte in css_partir(valor, 44)
+        p = str_lower(str_trim(parte))
+        if str_starts(p, "u+")
+            p = p[2:]
+        end
+        g = str_find(p, "-")
+        desde = 0
+        hasta = 0
+        if str_find(p, "?") >= 0
+            desde = _css_hex_valor(str_replace(p, "?", "0"))
+            hasta = _css_hex_valor(str_replace(p, "?", "f"))
+        elif g > 0
+            desde = _css_hex_valor(p[0:g])
+            hasta = _css_hex_valor(p[g + 1:])
+        else
+            desde = _css_hex_valor(p)
+            hasta = desde
+        end
+        if desde >= 0 and desde <= 255 and hasta >= 32
+            return true
+        end
+    end
+    return false
+end
+
+# Un número en hexadecimal ("04ff"); -1 si no lo es
+func _css_hex_valor(t: String) -> Int
+    if t == ""
+        return -1
+    end
+    r = 0
+    for i in (0..t.length - 1)
+        c = str_code(t, i)
+        if c >= 48 and c <= 57
+            r = r * 16 + c - 48
+        elif c >= 97 and c <= 102
+            r = r * 16 + c - 87
+        else
+            return -1
+        end
+    end
+    return r
+end
+
 # Un @font-face: la familia (en minúsculas, sin comillas), su src entero, font-weight (100-900) y font-style
 struct CaraFuente
     familia: String
@@ -728,6 +776,9 @@ func _css_cara(hoja: HojaCSS, cuerpo: String)
             end
         elif d.propiedad == "font-style"
             estilo = str_lower(str_trim(d.valor))
+        elif d.propiedad == "unicode-range" and not css_rango_latin1(d.valor)
+            # (un trozo sin nada de Latin-1, lo único que se dibuja de una fuente web: cirílico, griego, latin-ext...)
+            return
         end
     end
     if familia == "" or src == ""

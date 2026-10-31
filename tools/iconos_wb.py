@@ -5,7 +5,7 @@ gris, negro, blanco, azul), que lee cualquier Workbench de 3.0 a 3.2.
     python3 tools/iconos_wb.py DIR        # escribe en DIR los .info del paquete (tools/paquete.sh lo usa)
 
 En DIR deja: Tachyon.info (el cajón, para dejarlo junto al cajón Tachyon/) y, en DIR/Tachyon/, Tachyon.info (el
-navegador), visor.info, LEEME.info (se abre con MultiView) e Instalar.info (el guion del Installer del sistema)."""
+navegador), LEEME.info (se abre con MultiView) e Instalar.info (el guion del Installer del sistema)."""
 
 import struct
 import sys
@@ -117,16 +117,6 @@ def navegador():
     return l
 
 
-def visor():
-    l = Lienzo(36, 22)
-    l.rect(2, 2, 33, 20, BLANCO)
-    l.marco(2, 2, 33, 20, NEGRO)
-    l.rect(3, 3, 32, 5, AZUL)
-    for y in (8, 11, 14, 17):
-        l.linea(6, y, 28, y, NEGRO)
-    return l
-
-
 def documento():
     l = Lienzo(30, 22)
     l.rect(4, 1, 25, 20, BLANCO)
@@ -190,7 +180,6 @@ def main():
     (dest / "Tachyon").mkdir(parents=True, exist_ok=True)
     (dest / "Tachyon.info").write_bytes(info(cajon(), WBDRAWER))
     (dest / "Tachyon" / "Tachyon.info").write_bytes(info(navegador(), WBTOOL, pila=65536))
-    (dest / "Tachyon" / "visor.info").write_bytes(info(visor(), WBTOOL, pila=65536))
     (dest / "Tachyon" / "LEEME.info").write_bytes(info(documento(), WBPROJECT, herramienta="SYS:Utilities/MultiView"))
     (dest / "Tachyon" / "Instalar.info").write_bytes(
         info(instalador(), WBPROJECT, herramienta="Installer",

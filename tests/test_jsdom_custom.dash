@@ -1,0 +1,38 @@
+# Test: customElements de serie (tarea 38c9b): define mejora los que ya hay, createElement y new dan el elemento
+# hecho, las reacciones (connectedCallback, disconnectedCallback, attributeChangedCallback) llegan una vez por cambio,
+# lo de dentro de un <template> no se mejora, y whenDefined, get, getName y upgrade. Con él, YouTube no carga el
+# polyfill de customElements, que con ShadyDOM recorría dos veces lo de dentro de una sombra.
+# memcheck
+# expect-out: ya: C1 hola | 1 true true false
+# expect-out: nuevos: k C1 | D1 C1 | D1 | C1
+# expect-out: atributos: A:t:null:1 A:t:1:2 A:t:2:null A:t:null:x
+# expect-out: innerHTML: x-a C11 dentro sin template 0 | D11
+# expect-out: registro: true x-a undefined null SyntaxError NotSupportedError
+# expect-out: espera: x-b true 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+func ev(d: Documento, codigo: String) -> String
+    r = js_evaluar(d.js, codigo, "t.js")
+    if js_error(d.js) != ""
+        Print "JS: " + js_error(d.js)
+    end
+    return r
+end
+
+Main
+    d = documento_html("http://x.com/", "<html><body><div id=p><x-a id=ya t=1>hola</x-a></div><template id=tp><x-a></x-a></template><script>var z = 1;</script></body></html>")
+    ev(d, "var log = [], n = 0; function L(s) { log.push(s); } function out() { var r = log.join(' '); log = []; return r; }")
+    ev(d, "class XA extends HTMLElement { constructor() { super(); this.k = ++n; } connectedCallback() { L('C' + this.k); } disconnectedCallback() { L('D' + this.k); } attributeChangedCallback(a, v, w) { L('A:' + a + ':' + v + ':' + w); } static get observedAttributes() { return ['t']; } }")
+    # (el de antes del define tiene t=1: su attributeChanged sale al mejorarlo; se limpia el registro)
+    ev(d, "customElements.define('x-a', XA); var ya = document.getElementById('ya'); log = log.filter(function (s) { return s[0] != 'A'; });")
+    Print "ya: " + ev(d, "out() + ' ' + ya.textContent + ' | ' + ya.k + ' ' + (ya instanceof XA) + ' ' + (ya instanceof HTMLElement) + ' ' + (document.body instanceof XA)")
+    Print "nuevos: " + ev(d, "var p = document.getElementById('p'); var a = document.createElement('x-a'), b = new XA(); var r = (a.k == 2 && b.k == 3 && b.localName == 'x-a' ? 'k' : 'mal'); n = 0; a.k = 1; p.appendChild(a); r += ' ' + out(); document.body.appendChild(a); r += ' | ' + out(); a.remove(); r += ' | ' + out(); p.append(a); r + ' | ' + out()")
+    Print "atributos: " + ev(d, "a.setAttribute('t', '1'); a.setAttribute('T', '2'); a.setAttribute('u', '9'); a.removeAttribute('t'); a.removeAttribute('t'); b.setAttribute('t', 'x'); out()")
+    Print "innerHTML: " + ev(d, "n = 10; var c = document.createElement('div'); c.innerHTML = '<x-a>dentro</x-a>'; var x = c.firstChild, r = ''; p.appendChild(c); r = x.localName + ' ' + out() + ' ' + x.textContent; var t = document.getElementById('tp').content.firstChild; r += ' ' + (t.k === undefined ? 'sin template' : 'mal') + ' ' + document.querySelectorAll('#tp x-a').length; c.innerHTML = ''; r + ' | ' + out()")
+    Print "registro: " + ev(d, "var e1 = '', e2 = ''; try { customElements.define('nombre', class extends HTMLElement {}); } catch (e) { e1 = e.name; } try { customElements.define('x-a', class extends HTMLElement {}); } catch (e) { e2 = e.name; } (customElements.get('x-a') === XA) + ' ' + customElements.getName(XA) + ' ' + customElements.get('x-z') + ' ' + customElements.getName(function () {}) + ' ' + e1 + ' ' + e2")
+    ev(d, "var espera = ''; customElements.whenDefined('x-b').then(function (c) { espera = c.nombre + ' ' + (c === customElements.get('x-b')); }); var q = document.createElement('x-b'); p.appendChild(q); class XB extends HTMLElement { constructor() { super(); this.v = 1; } } XB.nombre = 'x-b'; customElements.define('x-b', XB);")
+    Print "espera: " + ev(d, "espera + ' ' + q.v")
+    documento_liberar(d)
+end

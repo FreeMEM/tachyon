@@ -1699,11 +1699,11 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (con la fecha del día en que se cambia la versión: van juntas)
-const DASHWEB_VERSION = "0.7.4-alfa"
+const DASHWEB_VERSION = "0.7.5-alfa"
 
 @native(borrow) func texto_version(v: String) -> String
 """
-    static const char __attribute__((used)) ver[] = "$VER: Tachyon 0.7.4-alfa (25.10.2026)";
+    static const char __attribute__((used)) ver[] = "$VER: Tachyon 0.7.5-alfa (31.10.2026)";
     static char b[160];
     sprintf(b, "\033c\033bTachyon %s\033n\n\033c", (char *)v);
     return (STRPTR)b;

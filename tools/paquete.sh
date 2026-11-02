@@ -5,12 +5,12 @@
 # comprimir, IBrowse cortaba la descarga de 6,9 MB hacia los 3,3 MB; el visor, solo para pruebas, no va); y
 # build/Tachyon.gz, el ejecutable solo con gzip, que va también en cada versión publicada: con él se actualiza Tachyon
 # desde sí mismo (lib/actualizar.dash, tarea 44; no sabe abrir .lha). Necesita el toolchain y Dash (DASH, por
-# defecto ~/Projects/FreeMEMLang/.worktrees/dashweb) y el SDK de MUI de Dash; `lha` (Lhasa) para comprobarlo.
+# defecto ~/Projects/FreeMEMLang) y el SDK de MUI de Dash; `lha` (Lhasa) para comprobarlo.
 #
 #   tools/paquete.sh
 set -e
 R=$(cd "$(dirname "$0")/.." && pwd)
-DASH=${DASH:-$HOME/Projects/FreeMEMLang/.worktrees/dashweb}
+DASH=${DASH:-$HOME/Projects/FreeMEMLang}
 B=$R/build/paquete
 rm -rf "$B"
 mkdir -p "$B/Tachyon/Licencias"

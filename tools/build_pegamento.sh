@@ -4,10 +4,10 @@
 # @link. Antes, build/dash_tipos.h con dashc --cabecera: los structs de Dash tal como los coloca dashc, la API del
 # runtime (dl_*) y las funciones @export de los .dash que llama este C. Para 68020 + FPU, como libqjs y libimg.
 #
-#   DASH=~/Projects/FreeMEMLang/.worktrees/dashc tools/build_pegamento.sh
+#   tools/build_pegamento.sh            (DASH: la carpeta de Dash, por defecto ~/Projects/FreeMEMLang)
 set -e
 R=$(cd "$(dirname "$0")/.." && pwd)
-DASH=${DASH:-$HOME/Projects/FreeMEMLang/.worktrees/dashc}
+DASH=${DASH:-$HOME/Projects/FreeMEMLang}
 GCC=${GCC:-/opt/amiga/bin/m68k-amigaos-gcc}
 B=$R/build/pegamento-lib
 mkdir -p "$B"

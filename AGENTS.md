@@ -14,9 +14,14 @@ Plan, reglas y bitácora: `docs/DASHWEB_LOOP.md` (sesiones largas por tandas, ra
 ## Dash
 
 dashweb existe para hacer crecer Dash: **lo que le falte a Dash se añade a Dash** (tareas `D<n>` del plan),
-sin rodeos con `@native`. Se trabaja en el worktree `~/Projects/FreeMEMLang/.worktrees/dashweb` (rama `dashweb`, sale
-de `main`; `$DASH` por defecto; ahí trabaja la sesión "dash" y aquí solo se usa para compilar). Del resto de
-`~/Projects/FreeMEMLang` no se toca nada. Sintaxis de Dash en una página: `~/Projects/FreeMEMLang/docs/SINTAXIS.md`.
+sin rodeos con `@native`. Desde la 0.8 (2026-11-02, usuario) Tachyon se compila con Dash 2.0: `./dash` de
+`~/Projects/FreeMEMLang` (rama `main`, `$DASH` por defecto) genera el hunk del Amiga directamente (dashc), sin C. El
+C que queda (QuickJS, DOM, lienzo, HTML5) está en `src_c/tachyon.c` (`libpegamento.a`, con `@extern`/`@export`).
+
+Dash mantiene dos líneas y las dos siguen vivas: dashc (directo a hunk) y dash1, el compilador en Python que pasa por
+C (`./dash --gcc`). **Un builtin nuevo va a las dos**, con su test en las dos. Aquí solo se usa para compilar: los
+cambios de Dash los hacen sus sesiones (regla 3 del plan). Sintaxis de Dash en una página:
+`~/Projects/FreeMEMLang/docs/SINTAXIS.md`.
 
 ## Comandos
 

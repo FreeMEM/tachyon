@@ -93,7 +93,7 @@ and the licenses). Requirements on the Amiga: AmigaOS 3.x, 68020 or better, MUI 
 
 ## Testing
 
-It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and Dash in `~/Projects/FreeMEMLang/.worktrees/dashweb`
+It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and Dash 2.0 in `~/Projects/FreeMEMLang`
 (or the `DASH` variable). The emulator variables are Dash's (Dash's `docs/INSTALACION.md`).
 
 ```bash

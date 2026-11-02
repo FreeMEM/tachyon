@@ -40,9 +40,11 @@ Dos fases:
    encargo lleva el porqué, cómo reproducirlo, lo que se propone y que avise con el commit. Mientras, el loop
    sigue con otra subtarea que no dependa de eso. Al recibir el aviso, el loop compila dashweb con ese Dash y
    lo apunta en la bitácora.
-   - La sesión "dash" trabaja en el worktree `~/Projects/FreeMEMLang/.worktrees/dashweb` (sus ramas salen de `main` de
-     FreeMEM/dash). El loop **no toca ese worktree** (ni `~/Projects/FreeMEMLang`): solo lo usa para compilar
-     (`DASH` por defecto). Para probar un cambio de Dash antes de que esté hecho, una copia en el scratchpad.
+   - Desde la 0.8 (2026-11-02, usuario) se compila con `./dash` de `~/Projects/FreeMEMLang`, rama `main` (`DASH` por
+     defecto): Dash 2.0, directo a hunk (dashc). Dash mantiene también dash1, el compilador en Python que pasa por C
+     (`./dash --gcc`): **un builtin nuevo se pide para los dos**, con su test en los dos. El loop **no toca
+     `~/Projects/FreeMEMLang`**: solo lo usa para compilar. Para probar un cambio de Dash antes de que esté hecho, una
+     copia en el scratchpad. El worktree `.worktrees/dashweb` (rama `dashweb`) ya no se usa.
    - Emulador y puertos de pruebas: antes de una batería o una medida larga, avisa a "dash" para no pisaros.
 4. **Base.** `python3 tests/run.py` (cuando exista) antes de empezar. Anota si cambia respecto a la última entrada.
 5. **Tarea.** Coge la primera subtarea sin hacer de la 37 (después, la primera tarea `[ ]` de la fase abierta). Si
@@ -113,7 +115,7 @@ Acordado el 2026-10-15 por mensaje entre sesiones (escribirle con SendMessage si
 
 ## Tareas
 
-### Dash: lo que dashweb necesita (rama `dashweb`, regla 3)
+### Dash: lo que dashweb necesita (regla 3; desde la 0.8, en `main` de Dash, para dashc y dash1)
 
 Se hacen cuando una tarea de dashweb las pide ("necesita D<n>"). Los nombres concretos se deciden en cada
 tarea, con el estilo de Dash.
@@ -542,7 +544,7 @@ tarea, con el estilo de Dash.
       vivos en memcheck, por mirar). Pendiente: el logo transparente sale verde (D81, en Dash); el menú se parte en
       dos líneas; los botones de compartir (fijos a la derecha en Chrome) salen en medio; la franja negra de arriba
       con los iconos sociales.
-- [ ] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
+- [x] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
       descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
       IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
       "(1)" como comodín: "Unable to open archive!" (con -Qw va). Hacer: un .lha comprimido (-lh5-; tools/lha_lh0.py
@@ -5267,3 +5269,26 @@ Formato:
   arreglado). PR #14; paquete en un worktree limpio de main; release (prerrelease) con tachyon.lha, Tachyon.gz y
   los nueve catálogos (11 ficheros); las descargas responden (200) y el .lha bajado pasa lha -t. version.json de
   webs-freemem al día (el servidor reconstruye la web solo).
+
+### 2026-11-01/02 — Publicadas la v0.8.0-alfa y la v0.8.1-alfa (Dash 2.0)
+- Hechas en la rama dash2 (worktree .worktrees/dash2-08): Tachyon compilado con Dash 2.0 (dashc, directo a hunk).
+  Casi todo el C de los .dash pasó a builtins de Dash (red de fondo, gzip, imágenes, fuentes web, horas,
+  actualizar y descargas); lo que queda (QuickJS, DOM, lienzo, HTML5) está en src_c/tachyon.c (libpegamento.a, con
+  tools/build_pegamento.sh y build/dash_tipos.h de dashc --cabecera) con @extern y @export. Fusionada dev hasta la
+  0.7.5-alfa. El pool de cada motor de QuickJS, a salvo del FreePooled de Kickstart 3.1.
+- v0.8.0-alfa (2026-11-01), retirada a las pocas horas: en Amiberry 8.2.2 con JIT el emulador entero se cerraba al
+  cargar una página (un DBcc con condición tras zlib; el fallo es del JIT). v0.8.1-alfa (2026-11-02): las librerías
+  de C y el runtime con -fno-branch-count-reg. Queda un dbne en js_bigint_divrem de QuickJS (solo al dividir BigInt).
+  El instalador propone Work: si lo hay y, si no, SYS:.
+- Después, Dash por defecto: ~/Projects/FreeMEMLang, rama main (Dash 2.0.1), no los worktrees dashc y dashweb.
+
+### 2026-11-02 — dash2 a dev y a main; se trabaja con Dash 2.0
+- El usuario: se fusiona en main y se trabaja con el Dash que compila a hunk. Dash mantiene sus dos líneas (dashc y
+  dash1 por C con --gcc): un builtin nuevo va a las dos. dev avanza hasta dash2-08 (41cd38b, sin conflictos: dev
+  estaba dentro); reglas (3), AGENTS.md, README y docs/COMO_SE_CONSTRUYE.md, con Dash en ~/Projects/FreeMEMLang.
+- Con --gcc: test_url y test_http_gzip compilan; el navegador entero no enlaza. libpegamento.a usa el runtime de dashc
+  (dl_str_forget, dl_str_temp, dl_arr_length, dl_arr_get, dl_retain, dl_release, db_time_ms) y sus tipos
+  (dash_tipos.h de dashc --cabecera). Pendiente de que el usuario diga si Tachyon debe compilar también por --gcc.
+- La rama dashweb de Dash tiene cuatro commits sin copia exacta en main (0dae43b catálogos, 9142671 D71, 3bdc7be D80,
+  3f9493e D81); D71, D80 y D81 están en main con otros commits. Avisado al usuario.
+- Quedan los worktrees .worktrees/dash2 y .worktrees/dash2-08 y las ramas dash2-unicode y dash2-08-respaldo.

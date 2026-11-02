@@ -195,6 +195,15 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
+      "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
+      a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
+      llama al runtime de dashc. Por `./dash --gcc` el navegador no enlaza: faltan dl_str_forget, dl_str_temp,
+      dl_arr_length, dl_arr_get, dl_retain, dl_release y db_time_ms (los dos tests pequeños probados sí compilan).
+      Propuesta: dash1 da la misma API que dashc a un C de @link (las dl_* de dash_tipos.h y los builtins como
+      db_nombre) y `./dash --gcc --cabecera fichero.h prog.dash` escribe la cabecera con los structs tal como los
+      coloca dash1, las constantes y los prototipos de @export. Así el mismo tachyon.c vale para las dos líneas,
+      compilado aparte para cada una. Prueba: `DASH_LINEA=gcc python3 tests/run.py` en Tachyon (tarea 58).
 - [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
       runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
       NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
@@ -551,6 +560,13 @@ tarea, con el estilo de Dash.
       solo escribe -lh0-, y la actualización desde Tachyon debe saber abrirlo) y decirlo en el LEEME y en las notas.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
+
+- [ ] 58. **Tachyon por las dos líneas de Dash (usuario, 2026-11-02).** Se puede compilar directo a hunk (dashc, lo
+      de siempre desde la 0.8) o por C con `./dash --gcc` (dash1): la segunda es el camino para portar a PPC. Hacer:
+      a. tests/run.py y tools/build_pegamento.sh con `DASH_LINEA=gcc` (cabecera de dash1, libpegamento aparte en
+         build/pegamento-lib-gcc, y `--gcc` a ./dash); tools/paquete.sh igual. Necesita D82.
+      b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
+      c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
 - [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en

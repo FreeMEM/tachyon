@@ -5307,4 +5307,5 @@ Formato:
   (dash_tipos.h de dashc --cabecera). Pendiente de que el usuario diga si Tachyon debe compilar también por --gcc.
 - La rama dashweb de Dash tiene cuatro commits sin copia exacta en main (0dae43b catálogos, 9142671 D71, 3bdc7be D80,
   3f9493e D81); D71, D80 y D81 están en main con otros commits. Avisado al usuario.
-- Quedan los worktrees .worktrees/dash2 y .worktrees/dash2-08 y las ramas dash2-unicode y dash2-08-respaldo.
+- Borrados (usuario) los worktrees dash2 y dash2-08 y las ramas dash2, dash2-08, dash2-unicode y dash2-08-respaldo,
+  también las de GitHub: todo estaba ya en dev.

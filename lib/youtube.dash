@@ -34,16 +34,16 @@ struct YouTube
     error: String = ""
 end
 
-@native(borrow) func youtube_id(direccion: String) -> String
-"""
-    return (STRPTR)dwv_youtube_id((const char *)direccion);
-"""
+# (Dash 2.0: del C de dashweb_video.h, en la librería que enlaza video.dash)
+@extern("dashweb_video.h") func dwv_youtube_id(url: String) -> String
+@extern("dashweb_video.h") func dwv_youtube_mp4(texto: String) -> String
+
+func youtube_id(direccion: String) -> String
+    return dwv_youtube_id(direccion)
 end
 
-@native(borrow) func youtube_mp4_de(texto: String) -> String
-"""
-    return (STRPTR)dwv_youtube_mp4((const char *)texto);
-"""
+func youtube_mp4_de(texto: String) -> String
+    return dwv_youtube_mp4(texto)
 end
 
 func youtube_es(direccion: String) -> Bool

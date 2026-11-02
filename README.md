@@ -11,7 +11,7 @@ It is also Dash's testbed: a large, demanding program that forces the language, 
 performance to grow.
 
 **Download:** test release
-[v0.7.5-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.5-alfa) (`tachyon.lha`). It is an alpha:
+[v0.8.1-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.8.1-alfa) (`tachyon.lha`). It is an alpha:
 it may freeze on some pages. If something goes wrong, *Project → Send debug report...* sends what Tachyon
 noted down (you see it all first) and gives you a code to put in the
 [issue](https://github.com/FreeMEM/tachyon/issues).
@@ -93,7 +93,7 @@ and the licenses). Requirements on the Amiga: AmigaOS 3.x, 68020 or better, MUI 
 
 ## Testing
 
-It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and Dash in `~/Projects/FreeMEMLang/.worktrees/dashweb`
+It needs the Dash toolchain (`m68k-amigaos-gcc` in `/opt/amiga`) and Dash 2.0 in `~/Projects/FreeMEMLang`
 (or the `DASH` variable). The emulator variables are Dash's (Dash's `docs/INSTALACION.md`).
 
 ```bash

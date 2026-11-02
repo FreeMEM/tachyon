@@ -11,7 +11,7 @@ Es también el banco de pruebas de Dash: un programa grande y exigente que oblig
 lenguaje, sus librerías y su rendimiento.
 
 **Descarga:** versión de prueba
-[v0.7.5-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.7.5-alfa) (`tachyon.lha`). Es una alfa:
+[v0.8.1-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.8.1-alfa) (`tachyon.lha`). Es una alfa:
 puede pararse en algunas páginas. Si algo va mal, *Proyecto → Enviar informe de depuración...* manda lo que
 Tachyon ha apuntado (lo ves entero antes) y te da un código para ponerlo en la
 [incidencia](https://github.com/FreeMEM/tachyon/issues).
@@ -93,7 +93,7 @@ HTTPS, AmiSSL 5.
 
 ## Probar
 
-Necesita el toolchain de Dash (`m68k-amigaos-gcc` en `/opt/amiga`) y Dash en `~/Projects/FreeMEMLang/.worktrees/dashweb`
+Necesita el toolchain de Dash (`m68k-amigaos-gcc` en `/opt/amiga`) y Dash 2.0 en `~/Projects/FreeMEMLang`
 (o la variable `DASH`). Las variables del emulador son las de Dash (`docs/INSTALACION.md` de Dash).
 
 ```bash

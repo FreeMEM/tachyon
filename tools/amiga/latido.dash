@@ -4,6 +4,9 @@
 # avanza, las direcciones de su pila dicen dónde está (con m68k-amigaos-nm sobre el ejecutable y sus trozos).
 #
 #   latido "Tachyon" 250
+#
+# Lee exec por dentro (la pila guardada de otra tarea, sus trozos de código): es C, así que se compila con el
+# Dash 1.x (./dash1 de FreeMEMLang), no con Dash 2.0.
 
 @header "#include <intuition/intuitionbase.h>"
 @header "#include <dos/dosextens.h>"

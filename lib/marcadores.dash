@@ -155,12 +155,8 @@ end
 
 const HISTORIAL_MAX = 300
 
-@native func historial_ahora() -> Int
-"""
-    struct DateStamp d;
-    DateStamp(&d);
-    return d.ds_Days * 1440 + d.ds_Minute;
-"""
+func historial_ahora() -> Int
+    return (time_unix() - 252460800) / 60      # (los minutos desde 1978: DateStamp)
 end
 
 # Apunta una página vista (la misma que la última: solo su hora y su título)

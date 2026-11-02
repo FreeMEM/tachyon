@@ -434,27 +434,8 @@ end
 # acaba (una página que no termina de llegar), no se pierde en el búfer de AmigaDOS
 # Las teclas modificadoras pulsadas ahora (PeekQualifier de input.device: IEQUALIFIER_*): Mayúsculas o Amiga con un
 # clic en un enlace lo abren en una pestaña nueva (tarea 46). input.device se abre la primera vez y queda abierto
-@header "#include <devices/input.h>"
-@header "#include <devices/inputevent.h>"
-@header "#include <proto/input.h>"
-@native func modificadoras() -> Int
-"""
-    static struct IOStdReq *io = NULL;
-    static int abierto = 0;
-    if (!abierto) {
-        struct MsgPort *mp = CreateMsgPort();
-        abierto = -1;
-        if (mp) {
-            io = (struct IOStdReq *)CreateIORequest(mp, sizeof(struct IOStdReq));
-            if (io && !OpenDevice((STRPTR)"input.device", 0, (struct IORequest *)io, 0)) abierto = 1;
-        }
-    }
-    if (abierto != 1) return 0;
-    {
-        struct Device *InputBase = io->io_Device;
-        return (LONG)PeekQualifier();
-    }
-"""
+func modificadoras() -> Int
+    return input_qualifiers()
 end
 
 func con_mayusculas_o_amiga() -> Bool
@@ -467,27 +448,19 @@ end
 # con precisión simple (FPCR 0x40): todo el JavaScript contaba con 24 bits (0.1 + 0.2 = 0.30000001192092896,
 # Date.now() a saltos de 131 s) y React tiraba la página al hidratar (tarea 49). Un 68040 o 68060 de verdad también
 # respeta esa precisión
-@native func fpu_precision_extendida()
-"""
-    ULONG v;
-    if (!(SysBase->AttnFlags & (AFF_68881 | AFF_68882 | AFF_FPU40))) return;
-    __asm__ volatile ("fmove.l %%fpcr,%0" : "=d"(v));
-    v &= ~0xC0UL;
-    __asm__ volatile ("fmove.l %0,%%fpcr" : : "d"(v));
-"""
+func fpu_precision_extendida()
+    # (Dash 2.0: lo hace el runtime de --fpu al arrancar)
 end
 
-@native func vaciar_salida()
-"""
-    Flush(Output());
-"""
+func vaciar_salida()
+    console_flush()
 end
 
 # El cursor al campo de la dirección (Amiga-L)
-@native func activar(ventana: Int, objeto: Int)
-"""
-    if (ventana && objeto) SetAttrs((Object *)ventana, MUIA_Window_ActiveObject, (IPTR)objeto, TAG_DONE);
-"""
+func activar(ventana: Int, objeto: Int)
+    if ventana != 0 and objeto != 0
+        mui_set_active(ventana, objeto)
+    end
 end
 
 # La barra de estado: un texto largo ensancharía la ventana entera (MUI le da el ancho de su texto)
@@ -1698,38 +1671,27 @@ func desplazar(w: Ventana, n: Int)
 end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
-# la cadena $VER del ejecutable (con la fecha del día en que se cambia la versión: van juntas)
-const DASHWEB_VERSION = "0.7.5-alfa"
+# la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
+const DASHWEB_VERSION = "0.8.1-alfa"
+@version "Tachyon 0.8.1-alfa"
 
-@native(borrow) func texto_version(v: String) -> String
-"""
-    static const char __attribute__((used)) ver[] = "$VER: Tachyon 0.7.5-alfa (31.10.2026)";
-    static char b[160];
-    sprintf(b, "\033c\033bTachyon %s\033n\n\033c", (char *)v);
-    return (STRPTR)b;
-"""
+func texto_version(v: String) -> String
+    esc = str_char(27)
+    return esc + "c" + esc + "bTachyon " + v + esc + "n\n" + esc + "c"
 end
 
 # La fecha y la hora en que se compiló ("Oct 24 2026", "02:26:47"), para Acerca de
-@native(borrow) func compilado_fecha() -> String
-"""
-    return (STRPTR)__DATE__;
-"""
+func compilado_fecha() -> String
+    return build_date()
 end
 
-@native(borrow) func compilado_hora() -> String
-"""
-    return (STRPTR)__TIME__;
-"""
+func compilado_hora() -> String
+    return build_time()
 end
 
 # Corre la ventana (las del mismo .dashui salen en el mismo sitio)
-@native func mover_ventana(win: Int, dx: Int, dy: Int)
-"""
-    struct Window *w = NULL;
-    GetAttr(MUIA_Window_Window, (Object *)win, (ULONG *)&w);
-    if (w) MoveWindow(w, dx, dy);
-"""
+func mover_ventana(win: Int, dx: Int, dy: Int)
+    mui_window_move(win, dx, dy)
 end
 
 # Una ventana nueva con esa dirección ("" = la página de inicio); nil si ya hay MAX_VENTANAS

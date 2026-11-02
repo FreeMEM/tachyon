@@ -11,19 +11,24 @@ const ID_TIC = 10
 
 const FICHERO_PREFS = "PROGDIR:bajador.prefs"   # junto al programa: servidor y ruta, una por línea
 
-# Cuenta las palabras de un texto acabado en 0. Corre en otro proceso: solo C, nada de Dash dentro
-@native func contar_palabras(datos: Int) -> Int
-"""
-    const unsigned char *p = (const unsigned char *)datos;
-    long n = 0;
-    int dentro = 0;
-    while (*p) {
-        if (*p <= ' ') dentro = 0;
-        else if (!dentro) { dentro = 1; n++; }
-        p++;
-    }
-    return n;
-"""
+# Cuenta las palabras de un texto acabado en 0. Corre en otro proceso a la vez que el programa: solo enteros y
+# búferes, sin textos ni listas de Dash (dashc lo comprueba al compilar)
+func contar_palabras(datos: Int) -> Int
+    n = 0
+    dentro = false
+    i = 0
+    c = buffer_get_byte(datos, 0)
+    while c != 0
+        if c <= 32
+            dentro = false
+        elif not dentro
+            dentro = true
+            n = n + 1
+        end
+        i = i + 1
+        c = buffer_get_byte(datos, i)
+    end
+    return n
 end
 
 # Lo que hace falta mientras cuenta: el proceso y la memoria que lee

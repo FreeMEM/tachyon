@@ -28,18 +28,6 @@ import "texto.dash"
 import "traza.dash"
 import "cookies.dash"
 
-@link "../build/img-lib/libimg.a"
-
-@c
-"""
-extern char *stbi_zlib_decode_malloc_guesssize_headerflag(const char *buffer, int len, int initial_size, int *outlen, int parse_header);
-extern int stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const char *ibuffer, int ilen);
-static LONG _http_inflado = 0;
-static LONG _http_inflado_tope = 0;   /* lo que se reservó al empezar (test_http_gzip) */
-static LONG _http_directos = 0;       /* los descomprimidos directamente a su texto (test_http_gzip) */
-"""
-end
-
 const HTTP_MAX_REDIRECCIONES = 5
 const HTTP_AGENTE = "Tachyon/0.7 (AmigaOS)"
 
@@ -370,121 +358,85 @@ func _leer_cuerpo(c: Conexion, r: Respuesta, f: Int)
     end
     if b != nil
         if r.error == ""
-            # gzip con su tamaño: directamente al texto, sin bloque intermedio ni copia (un solo hueco de 10,5 MB
-            # para el script de YouTube; con dos no cabía en 128 MB tras otra página, tarea 38c8)
-            r.cuerpo = _http_inflar_texto(b.buf, b.n)
-        end
-        if r.error == "" and r.cuerpo == nil
-            p = _http_inflar(b.buf, b.n)
-            if p == 0
-                r.error = tr(406, "could not decompress")
+            _http_inflar(r, b.buf, b.n)
+            if r.error != ""
                 traza("sin descomprimir: " + b.n / 1024 + " KB, " + http_inflado_tope() / 1024 + " KB reservados al empezar; mayor bloque libre " + memoria_mayor_bloque() / 1024 + " KB")
-            else
-                r.cuerpo = str_from_buffer(p, 0, _http_inflados())
-                _http_soltar_inflado(p)
             end
         end
         bytes_liberar(b)
     end
 end
 
-# Un cuerpo gzip (RFC 1952) o deflate (zlib, RFC 1950, o sin cabecera) descomprimido con el inflate de
-# stb_image: un bloque de malloc (_http_soltar_inflado) con _http_inflados() bytes; 0 si no se puede
-@native(borrow) func _http_inflar(datos: Int, n: Int) -> Int
-"""
-    const UBYTE *p = (const UBYTE *)datos;
-    LONG i;
-    int largo = 0;
-    char *r = NULL;
-    UBYTE fl;
-    ULONG tope;
-    _http_inflado = 0;
-    if (!p || n <= 0) return 0;
-    if (n >= 18 && p[0] == 0x1f && p[1] == 0x8b && p[2] == 8) {
-        fl = p[3];
-        i = 10;
-        if (fl & 4) i += 2 + (p[10] | (p[11] << 8));
-        if (fl & 8) { while (i < n && p[i]) i++; i++; }
-        if (fl & 16) { while (i < n && p[i]) i++; i++; }
-        if (fl & 2) i += 2;
-        if (i >= n) return 0;
-        /* el tamaño descomprimido va en los 4 últimos bytes (ISIZE): se reserva de una vez. Si no, el bloque se
-           dobla hasta que cabe y para 10,8 MB (el script de YouTube) llega a pedir 16 MB con los 8 de antes vivos */
-        tope = p[n - 4] | (p[n - 3] << 8) | (p[n - 2] << 16) | ((ULONG)p[n - 1] << 24);
-        if (tope == 0 || tope / 1032 > (ULONG)n) tope = n * 4 + 1024;
-        _http_inflado_tope = tope;
-        r = stbi_zlib_decode_malloc_guesssize_headerflag((const char *)p + i, n - i, tope, &largo, 0);
-    } else {
-        _http_inflado_tope = n * 4 + 1024;
-        r = stbi_zlib_decode_malloc_guesssize_headerflag((const char *)p, n, n * 4 + 1024, &largo, 1);
-        if (!r) r = stbi_zlib_decode_malloc_guesssize_headerflag((const char *)p, n, n * 4 + 1024, &largo, 0);
-    }
-    if (r) _http_inflado = largo;
-    return (LONG)r;
-"""
+# Lo que se reservó al empezar a descomprimir el último cuerpo, y cuántos gzip salieron de una vez en el tamaño que
+# dice su ISIZE (test_http_gzip)
+var _http_inflado_tope: Int = 0
+var _http_directos: Int = 0
+
+# Un cuerpo gzip (RFC 1952) o deflate (zlib, RFC 1950, o sin cabecera) descomprimido con inflate_auto a r.cuerpo;
+# si no se puede, r.error. Un gzip lleva su tamaño descomprimido en los 4 últimos bytes (ISIZE): si parece bueno, se
+# reserva eso de una vez. Si no, el destino empieza en n * 4 + 1024 y crece mientras no quepa (-2): para los 10,8 MB del
+# script de YouTube llegaba a pedir 16 MB con los 8 de antes vivos (tarea 38c8). (En dev el texto se descomprime
+# directamente en su sitio; Dash 2.0 no tiene cómo hacer un texto de n bytes y escribir en él, así que aquí es un búfer
+# y su copia al texto.)
+func _http_inflar(r: Respuesta, datos: Int, n: Int)
+    max = n * 4 + 1024
+    isize = _http_isize(datos, n)
+    if isize > 0
+        max = isize
+    end
+    _http_inflado_tope = max
+    while datos != 0 and n > 0
+        dest = buffer_alloc(max)
+        if dest == 0
+            break
+        end
+        k = inflate_auto(datos, n, dest, max)
+        if k >= 0
+            if isize > 0 and k == isize
+                _http_directos = _http_directos + 1
+            end
+            r.cuerpo = str_from_buffer(dest, 0, k)
+            buffer_free(dest)
+            return
+        end
+        buffer_free(dest)
+        if k != -2
+            break
+        end
+        max = max * 2
+    end
+    r.error = tr(406, "could not decompress")
 end
 
-# Un cuerpo gzip cuyo ISIZE parece bueno, descomprimido en un texto de ese largo; nil si no lo es o no sale entero
-@native(borrow) func _http_inflar_texto(datos: Int, n: Int) -> String
-"""
-    const UBYTE *p = (const UBYTE *)datos;
-    LONG i;
-    int largo;
-    ULONG tope;
-    UBYTE fl;
-    STRPTR t;
-    if (!p || n < 18 || p[0] != 0x1f || p[1] != 0x8b || p[2] != 8) return NULL;
-    fl = p[3];
-    i = 10;
-    if (fl & 4) i += 2 + (p[10] | (p[11] << 8));
-    if (fl & 8) { while (i < n && p[i]) i++; i++; }
-    if (fl & 16) { while (i < n && p[i]) i++; i++; }
-    if (fl & 2) i += 2;
-    if (i >= n - 8) return NULL;
-    tope = p[n - 4] | (p[n - 3] << 8) | (p[n - 2] << 16) | ((ULONG)p[n - 1] << 24);
-    if (tope == 0 || tope / 1032 > (ULONG)n) return NULL;
-    _http_inflado_tope = tope;
-    t = _dash_str_alloc(tope, TRUE);
-    if (!t) return NULL;
-    largo = stbi_zlib_decode_noheader_buffer((char *)t, (int)tope, (const char *)p + i, (int)(n - i));
-    if (largo != (int)tope) return NULL;
-    t[tope] = 0;
-    _http_directos++;
-    return t;
-"""
+# El ISIZE de un cuerpo gzip (sus 4 últimos bytes, little endian) si parece bueno; 0 si no es gzip o no lo parece (más
+# de 1032 veces lo comprimido no puede ser)
+func _http_isize(p: Int, n: Int) -> Int
+    if p == 0 or n < 18 or buffer_get_byte(p, 0) != 31 or buffer_get_byte(p, 1) != 139 or buffer_get_byte(p, 2) != 8
+        return 0
+    end
+    if buffer_get_byte(p, n - 1) >= 128
+        return 0
+    end
+    t = buffer_get_byte(p, n - 4) | (buffer_get_byte(p, n - 3) << 8) | (buffer_get_byte(p, n - 2) << 16) | (buffer_get_byte(p, n - 1) << 24)
+    if t <= 0 or t / 1032 > n
+        return 0
+    end
+    return t
 end
 
-@native(borrow) func _http_inflados() -> Int
-"""
-    return _http_inflado;
-"""
-end
-
-# Cuántos cuerpos gzip se descomprimieron directamente a su texto
-@native(borrow) func http_inflados_directos() -> Int
-"""
-    return _http_directos;
-"""
+# Cuántos cuerpos gzip se descomprimieron de una vez en el tamaño de su ISIZE
+func http_inflados_directos() -> Int
+    return _http_directos
 end
 
 # Lo que se reservó al empezar a descomprimir el último cuerpo
-@native(borrow) func http_inflado_tope() -> Int
-"""
-    return _http_inflado_tope;
-"""
+func http_inflado_tope() -> Int
+    return _http_inflado_tope
 end
 
 # El mayor bloque de memoria libre seguida (bytes)
-@native(borrow) func memoria_mayor_bloque() -> Int
-"""
-    return (LONG)AvailMem(MEMF_ANY | MEMF_LARGEST);
-"""
-end
-
-@native(borrow) func _http_soltar_inflado(p: Int)
-"""
-    free((void *)p);
-"""
+func memoria_mayor_bloque() -> Int
+    return mem_largest()
 end
 
 # Trozos: tamaño en hexadecimal, datos, salto; un trozo de tamaño 0 termina

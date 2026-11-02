@@ -14,10 +14,8 @@
 import "../lib/recursos.dash"
 import "../lib/jsdom.dash"
 
-@native(borrow) func esperar(ticks: Int)
-"""
-    Delay(ticks);
-"""
+func esperar(ticks: Int)
+    time_delay(ticks)
 end
 
 Main

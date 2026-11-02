@@ -13,8 +13,6 @@
 import "js.dash"
 import "idioma.dash"
 
-@header "#include <exec/execbase.h>"
-
 const INFORME_DIRECCION = "https://tachyon.freemem.space/informe"
 
 # Una dirección sin lo que puede llevar datos de quien la abre: usuario y contraseña, lo que va tras "?" y tras "#"
@@ -44,27 +42,44 @@ func informe_sin_parametros(direccion: String) -> String
 end
 
 # El sistema: Kickstart, Workbench, CPU y FPU, MUI, gráficos, red, AmiSSL y la memoria
-@native(borrow) func _informe_sistema() -> String
-"""
-    static char b[700];
-    struct Library *l;
-    UWORD f = SysBase->AttnFlags;
-    const char *cpu = (f & 0x80) ? "68060" : (f & AFF_68040) ? "68040" : (f & AFF_68030) ? "68030" : (f & AFF_68020) ? "68020" : (f & AFF_68010) ? "68010" : "68000";
-    const char *fpu = (f & AFF_FPU40) ? ((f & 0x80) ? "68060" : "68040") : (f & AFF_68882) ? "68882" : (f & AFF_68881) ? "68881" : "no";
-    char wb[24] = "?", mui[24] = "no", rtg[40] = "no", red[24] = "no", ssl[24] = "no";
-    if ((l = OpenLibrary((CONST_STRPTR)"version.library", 0))) { sprintf(wb, "%d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    if ((l = OpenLibrary((CONST_STRPTR)"muimaster.library", 0))) { sprintf(mui, "%d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    if ((l = OpenLibrary((CONST_STRPTR)"Picasso96API.library", 0))) { sprintf(rtg, "Picasso96 %d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    else if ((l = OpenLibrary((CONST_STRPTR)"cybergraphics.library", 0))) { sprintf(rtg, "CyberGraphX %d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    if ((l = OpenLibrary((CONST_STRPTR)"bsdsocket.library", 0))) { sprintf(red, "%d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    if ((l = OpenLibrary((CONST_STRPTR)"amisslmaster.library", 0))) { sprintf(ssl, "%d.%d", l->lib_Version, l->lib_Revision); CloseLibrary(l); }
-    sprintf(b, "System: exec %d.%d, Workbench %s%s\nCPU: %s, FPU %s\nMUI: %s\nGraphics card: %s\nbsdsocket.library: %s\nAmiSSL: %s\n"
-               "Memory: chip %lu KB free, fast %lu KB free, largest block %lu KB",
-            SysBase->LibNode.lib_Version, SysBase->LibNode.lib_Revision, wb,
-            FindResident((CONST_STRPTR)"MorphOS") ? " (MorphOS)" : "", cpu, fpu, mui, rtg, red, ssl,
-            AvailMem(MEMF_CHIP) / 1024, AvailMem(MEMF_FAST) / 1024, AvailMem(MEMF_ANY | MEMF_LARGEST) / 1024);
-    return (STRPTR)b;
-"""
+func _informe_sistema() -> String
+    cpu = cpu_model()
+    f = fpu_model()
+    fpu = "no"
+    if f != 0
+        fpu = "" + f
+    end
+    morphos = ""
+    if resident_version("MorphOS") >= 0
+        morphos = " (MorphOS)"
+    end
+    rtg = _informe_lib("Picasso96API.library")
+    if rtg == "no"
+        rtg = _informe_lib("cybergraphics.library")
+        if rtg != "no"
+            rtg = "CyberGraphX " + rtg
+        end
+    else
+        rtg = "Picasso96 " + rtg
+    end
+    wb = _informe_lib("version.library")
+    if wb == "no"
+        wb = "?"
+    end
+    return "System: exec " + _informe_lib("exec.library") + ", Workbench " + wb + morphos + "\nCPU: " + cpu + ", FPU " + fpu +
+           "\nMUI: " + _informe_lib("muimaster.library") + "\nGraphics card: " + rtg + "\nbsdsocket.library: " +
+           _informe_lib("bsdsocket.library") + "\nAmiSSL: " + _informe_lib("amisslmaster.library") + "\nMemory: chip " +
+           mem_chip_free() / 1024 + " KB free, fast " + mem_fast_free() / 1024 + " KB free, largest block " +
+           mem_largest() / 1024 + " KB"
+end
+
+# "versión.revisión" de una librería, "no" si no está
+func _informe_lib(nombre: String) -> String
+    v = library_version(nombre)
+    if v < 0
+        return "no"
+    end
+    return "" + v + "." + library_revision(nombre)
 end
 
 # El informe entero: Tachyon, el sistema, el idioma, la última página y el registro

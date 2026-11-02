@@ -2,7 +2,11 @@
 # tras "Accept all", la portada vieja seguía con sus 55 MB de JavaScript mientras la nueva ejecutaba los suyos).
 # Después de soltarlo: la memoria vuelve, la página sigue maquetada con lo que el JavaScript le cambió, se maqueta otra
 # vez, el ratón no llama a nada y liberarla luego no suelta nada dos veces.
+# Con 64 MB, como test_video: compilado con Dash 2.0 el programa ocupa más y en los 8 MB del A1200 de pruebas el
+# array del script se queda sin memoria (con 64 MB sale igual que con Dash 1.x).
 # memcheck
+# emu-config: cpu = 68030
+# emu-config: zorro_iii_memory = 65536
 # expect-out: js true | soltado true | libre true | texto hecho | maqueta true | raton false | otra vez true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 

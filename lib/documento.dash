@@ -77,17 +77,8 @@ var _documento_por_js_fin: Int = 0
 var _documento_por_js_ms: Int = 0
 var _documento_por_js_seguidas: Int = 0
 
-@c
-"""
-static int _documento_por_js_c(_Dash_Nodo *doc, _Dash_Nodo *n) { return documento_maquetar_por_js(doc, n) ? 1 : 0; }
-"""
-end
 
-@native func _documento_enganchar()
-"""
-    jsdom_al_pedir_caja = _documento_por_js_c;
-"""
-end
+@extern("documento") func _documento_enganchar()
 
 func _documento_con_js(d: Documento)
     _documento_enganchar()
@@ -121,7 +112,7 @@ func _documento_hojas_al_js(d: Documento)
     end
 end
 
-func documento_maquetar_por_js(doc: Nodo, n: Nodo) -> Bool
+@export func documento_maquetar_por_js(doc: Nodo, n: Nodo) -> Bool
     for d in _documentos_js
         if d.doc == doc
             if d.pagina == nil or d.ancho <= 0 or d.js == 0 or jsdom_cambios(d.js) == d.cambios

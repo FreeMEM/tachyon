@@ -13,123 +13,106 @@
 @link "../build/video-lib/libvideo.a"
 # MintVID pide 320 KB de pila (su mr_decode: Stack 320000)
 @stack 400000
-@header "#include <dashweb_video.h>"
+# (Dash 2.0: las funciones de C de dashweb_video.h, con @extern)
+@extern("dashweb_video.h") func dwv_abrir(fichero: String) -> Int
+@extern("dashweb_video.h") func dwv_abrir_bajando(datos: Int, listos: Int, total: Int) -> Int
+@extern("dashweb_video.h") func dwv_bajado(v: Int, datos: Int, listos: Int)
+@extern("dashweb_video.h") func dwv_bajado_fichero(v: Int, fichero: String)
+@extern("dashweb_video.h") func dwv_ancho(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_alto(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_fps_mil(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_codecs(v: Int) -> String
+@extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_ms(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_rapido(v: Int, modo: Int) -> Bool
+@extern("dashweb_video.h") func dwv_cerrar(v: Int)
+@extern("dashweb_video.h") func dwv_reloj(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_servicio(v: Int)
+@extern("dashweb_video.h") func dwv_pausa(v: Int, pausa: Bool)
+@extern("dashweb_video.h") func dwv_con_sonido(v: Int) -> Bool
 
-@native(borrow) func video_abrir(fichero: String) -> Int
-"""
-    return dwv_abrir((const char *)fichero);
-"""
+
+func video_abrir(fichero: String) -> Int
+    return dwv_abrir(fichero)
 end
 
 # Un vídeo que aún se baja (lib/http.dash, http_parcial): los listos primeros bytes de total están en datos.
 # 0 si aún no se puede abrir (el índice del MP4 no ha llegado): probar luego con más
-@native func video_abrir_bajando(datos: Int, listos: Int, total: Int) -> Int
-"""
-    return dwv_abrir_bajando((const unsigned char *)datos, listos, total);
-"""
+func video_abrir_bajando(datos: Int, listos: Int, total: Int) -> Int
+    return dwv_abrir_bajando(datos, listos, total)
 end
 
 # Lo que ya ha llegado y dónde está (el búfer de la carga se mueve al crecer: después de cada http_avanzar)
-@native func video_bajado(v: Int, datos: Int, listos: Int)
-"""
-    dwv_bajado(v, (const unsigned char *)datos, listos);
-"""
+func video_bajado(v: Int, datos: Int, listos: Int)
+    dwv_bajado(v, datos, listos)
 end
 
 # Ya ha llegado entero y está en fichero (la memoria de la carga se ha liberado)
-@native(borrow) func video_bajado_fichero(v: Int, fichero: String)
-"""
-    dwv_bajado_fichero(v, (const char *)fichero);
-"""
+func video_bajado_fichero(v: Int, fichero: String)
+    dwv_bajado_fichero(v, fichero)
 end
 
-@native func video_ancho(v: Int) -> Int
-"""
-    return dwv_ancho(v);
-"""
+func video_ancho(v: Int) -> Int
+    return dwv_ancho(v)
 end
 
-@native func video_alto(v: Int) -> Int
-"""
-    return dwv_alto(v);
-"""
+func video_alto(v: Int) -> Int
+    return dwv_alto(v)
 end
 
 # Imágenes por segundo x 1000 (0 si el fichero no lo dice)
-@native func video_fps_mil(v: Int) -> Int
-"""
-    return dwv_fps_mil(v);
-"""
+func video_fps_mil(v: Int) -> Int
+    return dwv_fps_mil(v)
 end
 
-@native(borrow) func video_codecs(v: Int) -> String
-"""
-    return (STRPTR)dwv_codecs(v);
-"""
+func video_codecs(v: Int) -> String
+    return dwv_codecs(v)
 end
 
 # 1: hay una imagen nueva; 0: se acabó; -1: error; 2: la siguiente aún no ha llegado (se baja): esperar
-@native func video_siguiente(v: Int) -> Int
-"""
-    return dwv_siguiente(v);
-"""
+func video_siguiente(v: Int) -> Int
+    return dwv_siguiente(v)
 end
 
 # La imagen: RGB24, video_paso(v) bytes por fila (vale hasta el siguiente video_siguiente)
-@native func video_rgb(v: Int) -> Int
-"""
-    return (LONG)dwv_rgb(v);
-"""
+func video_rgb(v: Int) -> Int
+    return dwv_rgb(v)
 end
 
-@native func video_paso(v: Int) -> Int
-"""
-    return dwv_paso(v);
-"""
+func video_paso(v: Int) -> Int
+    return dwv_paso(v)
 end
 
 # Su instante en ms (-1 si no se sabe)
-@native func video_ms(v: Int) -> Int
-"""
-    return dwv_ms(v);
-"""
+func video_ms(v: Int) -> Int
+    return dwv_ms(v)
 end
 
 # H.264: 0 calidad, 1 equilibrado, 2 rápido, 3 turbo (una de cada dos), 4 turbo+ (solo las clave)
-@native func video_rapido(v: Int, modo: Int) -> Bool
-"""
-    return dwv_rapido(v, modo) ? TRUE : FALSE;
-"""
+func video_rapido(v: Int, modo: Int) -> Bool
+    return dwv_rapido(v, modo)
 end
 
-@native func video_cerrar(v: Int)
-"""
-    dwv_cerrar(v);
-"""
+func video_cerrar(v: Int)
+    dwv_cerrar(v)
 end
 
 # Lo que ya ha sonado, en ms: el reloj que manda cuando el vídeo tiene sonido; -1 si no tiene o aún no empezó
-@native func video_reloj(v: Int) -> Int
-"""
-    return dwv_reloj(v);
-"""
+func video_reloj(v: Int) -> Int
+    return dwv_reloj(v)
 end
 
 # Atender la salida de sonido (llenar los búferes de Paula): a menudo mientras suena
-@native func video_servicio(v: Int)
-"""
-    dwv_servicio(v);
-"""
+func video_servicio(v: Int)
+    dwv_servicio(v)
 end
 
-@native func video_pausa(v: Int, pausa: Bool)
-"""
-    dwv_pausa(v, pausa ? 1 : 0);
-"""
+func video_pausa(v: Int, pausa: Bool)
+    dwv_pausa(v, pausa)
 end
 
-@native func video_con_sonido(v: Int) -> Bool
-"""
-    return dwv_con_sonido(v) ? TRUE : FALSE;
-"""
+func video_con_sonido(v: Int) -> Bool
+    return dwv_con_sonido(v)
 end

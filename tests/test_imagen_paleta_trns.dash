@@ -18,12 +18,6 @@ Window W
     height 140
 end
 
-@native(borrow) func esperar(ticks: Int)
-"""
-    Delay(ticks);
-"""
-end
-
 Main
     # (primero, con la conexión recién abierta: en la batería, después de cargar la página, una vez no llegó)
     # lo decodificado, reducido a lo que se dibuja en amigatronics.com (432x68: a un tercio), aquí y en otro proceso
@@ -31,7 +25,7 @@ Main
     Print "decodificada: " + imagen_probar("T:paleta_trns.png", 432, 68, 10, 10)
     d = imagen_empezar("T:paleta_trns.png", 432, 68)
     while not imagen_lista(d)
-        esperar(1)
+        time_delay(1)
     end
     Print "en otro proceso: " + imagen_acabar_probar(d, 10, 10)
     file_delete("T:paleta_trns.png")

@@ -16,7 +16,7 @@ M=$R/third_party/mintvid
 B=$R/build/video-lib
 rm -rf "$B"
 mkdir -p "$B/o"
-CF="-noixemul -O2 -std=c99 -m68020-60 -m68881 -fomit-frame-pointer -fno-strict-aliasing -fwrapv
+CF="-noixemul -O2 -fno-branch-count-reg -std=c99 -m68020-60 -m68881 -fomit-frame-pointer -fno-strict-aliasing -fwrapv
     -DAMIGA_M68K -DMR_HAVE_H264 -DMR_M68K_ASM=1 -DMR_PL_MPEG_SKIP_AUDIO_TIME=1
     -I$M/libavc_port -I$M/libavc/common -I$M/libavc/decoder -include $M/libavc_port/compat.h -I$M/core -I$M/audio -I$M/amiga
     -w"

@@ -256,7 +256,7 @@ Está en el repo de Dash, `editor/vscode/` (extensión `dash-mui-editor`). Da:
 Necesita Node.js (solo para empaquetarlo).
 
 ```bash
-cd ~/Projects/FreeMEMLang/.worktrees/dashweb/editor/vscode     # o el editor/vscode de tu copia de Dash
+cd ~/Projects/FreeMEMLang/editor/vscode     # o el editor/vscode de tu copia de Dash
 npm install          # herramientas de desarrollo, en node_modules/ de esa carpeta
 npm test             # gramática, modelo, vista y comandos, sin VS Code
 npm run package      # deja dash-mui-editor-0.1.0.vsix
@@ -271,7 +271,7 @@ En los ajustes de usuario (`settings.json`):
 
 ```json
 {
-    "dash.path": "/home/tu_usuario/Projects/FreeMEMLang/.worktrees/dashweb",
+    "dash.path": "/home/tu_usuario/Projects/FreeMEMLang",
     "dash.emulator.kickstart": "/ruta/a/kick31_a1200.rom",
     "dash.emulator.system": "/home/tu_usuario/.cache/dash-emu/sys31muisslweb",
     "dash.emulator.muiSystem": "/home/tu_usuario/.cache/dash-emu/sys31mui"

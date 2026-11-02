@@ -161,7 +161,7 @@ end
 # Un documento que se suelta deja sus avisos: un hijo quitado del propio documento (removeChild(documentElement), lo que
 # hace el DOMParser de XML de lib/jsdom_preludio.js) deja un aviso cuyo nodo es el documento, y el documento no se
 # liberaba nunca (tarea 55)
-func dom_olvidar_toques(n: Nodo)
+@export func dom_olvidar_toques(n: Nodo)
     if n.tipo == DOM_DOCUMENTO
         var nada: [Toque] = nil
         n.toques = nada

@@ -26,7 +26,7 @@ fi
 GCC=${GCC:-/opt/amiga/bin/m68k-amigaos-gcc}
 Q=$R/third_party/quickjs
 B=$R/build/qjs-$V; mkdir -p "$B"
-CF="-noixemul -O2 -fomit-frame-pointer -fbbb=abcfhilmnpsz0 -fno-isolate-erroneous-paths-dereference
+CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpsz0 -fno-isolate-erroneous-paths-dereference
     -fno-delete-null-pointer-checks -fwrapv -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\" -I$Q/amiga -I$Q $*"
 for f in quickjs libregexp libunicode cutils dtoa; do
   $GCC $CF -c "$Q/$f.c" -o "$B/$f.o"
@@ -37,15 +37,15 @@ case " $* " in
   *-m68881*|*-m68882*) ;;
   *) SF=$DASH/runtime/softfloat
      [ -f "$SF/fp-bit.c" ] || { echo "Dash's runtime/softfloat not found: set DASH=<path to FreeMEM/dash>" >&2; exit 2; }
-     $GCC -O2 -fomit-frame-pointer -I$SF/stub -I$SF -c "$SF/fp-bit.c" -o "$B/softdouble.o"
-     $GCC -O2 -fomit-frame-pointer -DFLOAT -I$SF/stub -I$SF -c "$SF/fp-bit.c" -o "$B/softsingle.o"
+     $GCC -O2 -fno-branch-count-reg -fomit-frame-pointer -I$SF/stub -I$SF -c "$SF/fp-bit.c" -o "$B/softdouble.o"
+     $GCC -O2 -fno-branch-count-reg -fomit-frame-pointer -DFLOAT -I$SF/stub -I$SF -c "$SF/fp-bit.c" -o "$B/softsingle.o"
      SOFT="$B/softdouble.o $B/softsingle.o" ;;
 esac
 if [ "$V" = lib ]; then
   F=$R/third_party/fdlibm
   mkdir -p "$B/fdlibm"
   for c in "$F"/*.c; do
-    $GCC -noixemul -O2 -fomit-frame-pointer $* -I"$F" -c "$c" -o "$B/fdlibm/$(basename "$c" .c).o"
+    $GCC -noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer $* -I"$F" -c "$c" -o "$B/fdlibm/$(basename "$c" .c).o"
   done
   rm -f "$B/libqjs.a"
   ${AR:-/opt/amiga/bin/m68k-amigaos-ar} rcs "$B/libqjs.a" "$B/quickjs.o" "$B/libregexp.o" "$B/libunicode.o" \

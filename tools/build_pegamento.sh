@@ -13,7 +13,7 @@ B=$R/build/pegamento-lib
 mkdir -p "$B"
 "$DASH/dashc/dashc" --cabecera "$R/build/dash_tipos.h" "$R/src/dashweb.dash"
 H=$R/third_party/hubbub
-CF="-noixemul -O2 -fomit-frame-pointer -fbbb=abcfhilmnpz0 -fno-delete-null-pointer-checks -m68020 -m68881
+CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpz0 -fno-delete-null-pointer-checks -m68020 -m68881
     -ffunction-sections -fdata-sections -I$R/build -I$R/third_party/quickjs -I$R/third_party/quickjs/amiga
     -I$H/libhubbub/include -I$H/libparserutils/include"
 $GCC $CF -c "$R/src_c/tachyon.c" -o "$B/tachyon.o"

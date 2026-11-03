@@ -7,6 +7,7 @@
 # setter del prototipo de los nodos sobre algo que no es un nodo (el prototipo de una clase) deja una propiedad.
 # Range: selectNodeContents y extractContents, createContextualFragment, el texto de un trozo de texto.
 # memcheck
+# emu-config: zorro_iii_memory = 65536
 # expect-out: al momento: 0
 # expect-out: childList: +li(ul) | +b,i(ul) | +em(ul)<b | -em(ul) | -#3,b,#3+span(p) | +span(span)
 # expect-out: atributos: class null>a | class a>b | data-x null>1 | data-x 1>null | id l>uno

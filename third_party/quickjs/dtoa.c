@@ -1632,6 +1632,6 @@ double js_atod(const char *str, const char **pnext, int radix, int flags,
     dtoa_free(tmp0);
     return dval;
  fail:
-    dval = NAN;
+    dval = JS_NAN_DOUBLE;
     goto done1;
 }

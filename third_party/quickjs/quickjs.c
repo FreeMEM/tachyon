@@ -3718,7 +3718,7 @@ static JSValue JS_AtomIsNumericIndex1(JSContext *ctx, JSAtom atom)
     case JS_ATOM_minus_Infinity:
         return __JS_NewFloat64(ctx, -INFINITY);
     case JS_ATOM_NaN:
-        return __JS_NewFloat64(ctx, NAN);
+        return __JS_NewFloat64(ctx, JS_NAN_DOUBLE);
     default:
         break;
     }
@@ -13190,7 +13190,7 @@ static __exception int __JS_ToFloat64Free(JSContext *ctx, double *pres,
     *pres = d;
     return 0;
  fail:
-    *pres = JS_FLOAT64_NAN;
+    *pres = JS_NAN_DOUBLE;
     return -1;
 }
 
@@ -14704,7 +14704,7 @@ static double js_pow(double a, double b)
 {
     if (unlikely(!isfinite(b)) && fabs(a) == 1) {
         /* not compatible with IEEE 754 */
-        return JS_FLOAT64_NAN;
+        return JS_NAN_DOUBLE;
     } else {
         return pow(a, b);
     }
@@ -23428,7 +23428,7 @@ static int json_parse_number(JSParseState *s, const uint8_t **pp)
                     d = -d;
                 goto done;
             } else if (strstart((const char *)p, "NaN", (const char **)&p)) {
-                d = NAN;
+                d = JS_NAN_DOUBLE;
                 goto done;
             } else if (*p != '.') {
                 goto unexpected_token;
@@ -47203,7 +47203,7 @@ static double sum_precise_get_result(SumPreciseState *s)
         case SUM_PRECISE_STATE_MINUS_INFINITY:
             return -INFINITY;
         case SUM_PRECISE_STATE_NAN:
-            return NAN;
+            return JS_NAN_DOUBLE;
         }
     }
 
@@ -49617,7 +49617,7 @@ static JSValue json_parse_value(JSParseState *s, JSONParseRecord *pr)
         } else if (s->token.u.ident.atom == JS_ATOM_NaN && s->ext_json) {
             /* Note: json5 identifier handling is ambiguous e.g. is 
                '{ NaN: 1 }' a valid JSON5 production ? */ 
-            val = JS_NewFloat64(s->ctx, NAN);
+            val = JS_NewFloat64(s->ctx, JS_NAN_DOUBLE);
         } else if (s->token.u.ident.atom == JS_ATOM_Infinity && s->ext_json) {
             val = JS_NewFloat64(s->ctx, INFINITY);
         } else {
@@ -51923,7 +51923,7 @@ static uint32_t map_hash_key(JSValueConst key, int hash_bits)
         d = JS_VALUE_GET_FLOAT64(key);
         /* normalize the NaN */
         if (isnan(d))
-            d = JS_FLOAT64_NAN;
+            d = JS_NAN_DOUBLE;
     hash_float64:
         h = map_hash64(float64_as_uint64(d) ^ JS_TAG_FLOAT64, hash_bits);
         break;
@@ -55120,7 +55120,7 @@ static double time_clip(double t) {
     if (t >= -8.64e15 && t <= 8.64e15)
         return trunc(t) + 0.0;  /* convert -0 to +0 */
     else
-        return NAN;
+        return JS_NAN_DOUBLE;
 }
 
 /* The spec mandates the use of 'double' and it specifies the order
@@ -55140,7 +55140,7 @@ static double set_date_fields(double fields[minimum_length(7)], int is_local) {
     if (mn < 0)
         mn += 12;
     if (ym < -271821 || ym > 275760)
-        return NAN;
+        return JS_NAN_DOUBLE;
 
     yi = ym;
     mi = mn;
@@ -55172,7 +55172,7 @@ static double set_date_fields(double fields[minimum_length(7)], int is_local) {
     /* emulate 21.4.1.16 MakeDate ( day, time ) */
     tv = (temp = day * 86400000) + time;   /* prevent generation of FMA */
     if (!isfinite(tv))
-        return NAN;
+        return JS_NAN_DOUBLE;
 
     /* adjust for local time and clip */
     if (is_local) {
@@ -55189,7 +55189,7 @@ static double set_date_fields_checked(double fields[minimum_length(7)], int is_l
     for(i = 0; i < 7; i++) {
         a = fields[i];
         if (!isfinite(a))
-            return NAN;
+            return JS_NAN_DOUBLE;
         fields[i] = trunc(a);
         if (i == 0 && fields[0] >= 0 && fields[0] < 100)
             fields[0] += 1900;
@@ -55226,7 +55226,7 @@ static JSValue set_date_field(JSContext *ctx, JSValueConst this_val,
     int res, first_field, end_field, is_local, i, n, res1;
     double d, a;
 
-    d = NAN;
+    d = JS_NAN_DOUBLE;
     first_field = (magic >> 8) & 0x0F;
     end_field = (magic >> 4) & 0x0F;
     is_local = magic & 0x0F;

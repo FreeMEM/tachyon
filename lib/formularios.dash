@@ -1,6 +1,6 @@
 # Formularios: lo que hace un clic en un control (marcar, elegir, dar el foco, enviar), una tecla en
-# un campo de texto, y los datos de un formulario para enviarlo por GET. Los valores viven en los
-# atributos del nodo (value, checked, selected), como los ve el JavaScript con getAttribute.
+# un campo de texto, y los datos de un formulario para enviarlo por GET. Los valores viven en el nodo (Nodo.valor y
+# Nodo.marcado: dom_valor_campo y dom_marcado); los atributos value, checked y selected son los de partida.
 #
 #   r = formulario_clic(n)                     # FORM_NADA, FORM_CAMBIO (repintar), FORM_FOCO, FORM_ENVIAR
 #   r = formulario_tecla(campo, caracter, raw) # FORM_CAMBIO o FORM_ENVIAR (Return)
@@ -79,20 +79,11 @@ func formulario_clic(n: Nodo) -> Int
         return FORM_FOCO
     end
     if n.nombre == "input" and t == "checkbox"
-        if dom_tiene_atributo(n, "checked")
-            _form_quitar(n, "checked")
-        else
-            _form_poner(n, "checked", "")
-        end
+        formulario_marcar(n, not dom_marcado(n))
         return FORM_CAMBIO
     end
     if n.nombre == "input" and t == "radio"
-        nombre = dom_atributo(n, "name")
-        raiz = formulario_de(n)
-        if raiz != nil and nombre != ""
-            _form_desmarcar(raiz, nombre)
-        end
-        _form_poner(n, "checked", "")
+        formulario_marcar(n, true)
         return FORM_CAMBIO
     end
     if n.nombre == "select"
@@ -112,9 +103,8 @@ func formulario_clic(n: Nodo) -> Int
             if opciones[i] == actual
                 siguiente = (i + 1) % opciones.length
             end
-            _form_quitar(opciones[i], "selected")
         end
-        _form_poner(opciones[siguiente], "selected", "")
+        formulario_marcar(opciones[siguiente], true)
         return FORM_CAMBIO
     end
     if _form_es_boton_envio(n)
@@ -123,12 +113,58 @@ func formulario_clic(n: Nodo) -> Int
     return FORM_NADA
 end
 
-func _form_desmarcar(n: Nodo, nombre: String)
-    if n.tipo == DOM_ELEMENTO and n.nombre == "input" and str_lower(dom_atributo(n, "type")) == "radio" and dom_atributo(n, "name") == nombre
-        _form_quitar(n, "checked")
+# Marca o desmarca n (checked de un input, selected de un option). Un radio marcado desmarca los de su grupo (el mismo
+# name en el mismo <form>, o en el mismo árbol si no hay form); un option elegido, los otros de su <select> si no es
+# multiple
+func formulario_marcar(n: Nodo, si: Bool)
+    if si
+        n.marcado = 1
+    else
+        n.marcado = 2
+    end
+    dom_tocar(n)
+    if not si
+        return
+    end
+    if n.nombre == "input" and str_lower(dom_atributo(n, "type")) == "radio" and dom_atributo(n, "name") != ""
+        form = formulario_de(n)
+        raiz = form
+        if raiz == nil
+            raiz = n
+            while raiz.padre != nil
+                raiz = raiz.padre
+            end
+        end
+        _form_desmarcar(raiz, n, dom_atributo(n, "name"), form)
+    elif n.nombre == "option"
+        s = n.padre
+        if s != nil and s.nombre == "optgroup"
+            s = s.padre
+        end
+        if s != nil and s.nombre == "select" and not dom_tiene_atributo(s, "multiple")
+            _form_otras_opciones(s, n)
+        end
+    end
+end
+
+func _form_desmarcar(n: Nodo, menos: Nodo, nombre: String, form: Nodo)
+    if n != menos and n.tipo == DOM_ELEMENTO and n.nombre == "input" and str_lower(dom_atributo(n, "type")) == "radio" and dom_atributo(n, "name") == nombre and formulario_de(n) == form and dom_marcado(n)
+        n.marcado = 2
+        dom_tocar(n)
     end
     for h in n.hijos
-        _form_desmarcar(h, nombre)
+        _form_desmarcar(h, menos, nombre, form)
+    end
+end
+
+func _form_otras_opciones(n: Nodo, menos: Nodo)
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO and h.nombre == "option" and h != menos and dom_marcado(h)
+            h.marcado = 2
+            dom_tocar(h)
+        elif h.tipo == DOM_ELEMENTO and h.nombre == "optgroup"
+            _form_otras_opciones(h, menos)
+        end
     end
 end
 
@@ -147,7 +183,7 @@ func formulario_valor(n: Nodo) -> String
         end
         return str_trim(dom_texto(o))
     end
-    return dom_atributo(n, "value")
+    return dom_valor_campo(n)
 end
 
 func formulario_poner_valor(n: Nodo, v: String)
@@ -170,15 +206,20 @@ func formulario_poner_valor(n: Nodo, v: String)
                     ov = dom_atributo(o, "value")
                 end
                 if ov == v
-                    _form_poner(o, "selected", "")
+                    formulario_marcar(o, true)
                 else
-                    _form_quitar(o, "selected")
+                    formulario_marcar(o, false)
                 end
             end
         end
         return
     end
-    _form_poner(n, "value", v)
+    if dom_campo_modo_valor(n)
+        n.valor = v
+        dom_tocar(n)
+    else
+        _form_poner(n, "value", v)
+    end
 end
 
 # Una tecla en un campo de texto: caracter (mui_canvas_char) y su código raw. Return envía (en un
@@ -234,7 +275,7 @@ func _form_recoger(n: Nodo, enviado_por: Nodo, partes: [String])
         t = str_lower(dom_atributo(n, "type"))
         if n.nombre == "input"
             if t == "checkbox" or t == "radio"
-                if dom_tiene_atributo(n, "checked")
+                if dom_marcado(n)
                     v = "on"
                     if dom_tiene_atributo(n, "value")
                         v = dom_atributo(n, "value")
@@ -246,7 +287,7 @@ func _form_recoger(n: Nodo, enviado_por: Nodo, partes: [String])
                     partes.push(url_codificar(nombre) + "=" + url_codificar(formulario_etiqueta(n)))
                 end
             else
-                partes.push(url_codificar(nombre) + "=" + url_codificar(dom_atributo(n, "value")))
+                partes.push(url_codificar(nombre) + "=" + url_codificar(dom_valor_campo(n)))
             end
         elif n.nombre == "button"
             if n == enviado_por

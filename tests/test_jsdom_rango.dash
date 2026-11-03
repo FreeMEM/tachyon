@@ -1,0 +1,56 @@
+# Test: Range y NodeIterator como dice DOM (tarea 41c, Acid3 1, 2, 8, 9, 12 y 13), y lo pequeño: splitText,
+# initUIEvent, meta.httpEquiv y un set* de Date sin argumentos. Antes Range solo valía dentro de un contenedor (no se
+# movía con los cambios) y el NodeIterator movía la referencia antes de llamar al filtro.
+# memcheck
+# expect-out: iterador: excepción 1 | html
+# expect-out: quitando: B 1 2 3 4 3 2 1
+# expect-out: puntos: true 0 2 true | doc 1
+# expect-out: toString: Hello Wonderful KittyHow are you? | ful Kitty
+# expect-out: extract: 2 H1 EM ful true P 0 | queda Hello Wonder
+# expect-out: insertNode: 3 12 ABCDE 345 false true
+# expect-out: borrado: true BODY 0 0
+# expect-out: otros: 6 boxes NaN
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var d = document.implementation.createHTMLDocument(''); var veces = 0;"
+    c = c + "var it = d.createNodeIterator(d.documentElement, 0xFFFFFFFF, function (n) { veces++; if (veces == 1) throw 'x'; return true; });"
+    c = c + "var e = ''; try { it.nextNode(); } catch (x) { e = 'excepción ' + veces; } 'iterador: ' + e + ' | ' + it.nextNode().localName"
+    Print js_evaluar(js, c, "t.js")
+    c = "var b = d.body, t = []; for (var k = 1; k <= 4; k++) t[k] = b.appendChild(d.createElement('t' + k)); var lista = []; var paso = 0;"
+    c = c + "var i = d.createNodeIterator(b, 0xFFFFFFFF, function (n) { paso++; if (paso == 4) b.removeChild(t[4]); if (paso == 6) { b.removeChild(t[4]); return 2; } if (paso == 8) b.removeChild(t[2]); return 1; });"
+    c = c + "function nom(n) { return n === b ? 'B' : n.localName.slice(1); }"
+    c = c + "lista.push(nom(i.nextNode()), nom(i.nextNode()), nom(i.nextNode()), nom(i.nextNode())); b.appendChild(t[4]); lista.push(nom(i.nextNode()));"
+    c = c + "lista.push(nom(i.previousNode()), nom(i.previousNode()), nom(i.previousNode())); 'quitando: ' + lista.join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var d2 = document.implementation.createHTMLDocument(''); var root = d2.documentElement; while (root.firstChild) root.removeChild(root.firstChild);"
+    c = c + "var e1 = root.appendChild(d2.createElement('e')), e2 = root.appendChild(d2.createElement('e')), e3 = root.appendChild(d2.createElement('e'));"
+    c = c + "var r = d2.createRange(); r.setStart(e2, 0); r.setEnd(e3, 0); r.setEnd(e1, 0); var s = 'puntos: ' + r.collapsed + ' ' + r.startOffset;"
+    c = c + "r.setStartBefore(e3); s += ' ' + r.startOffset + ' ' + (r.startContainer === root); r.setEndAfter(root); s + ' | doc ' + r.endOffset"
+    Print js_evaluar(js, c, "t.js")
+    c = "var d3 = document.implementation.createHTMLDocument(''); var h1 = d3.createElement('h1'); var t1 = h1.appendChild(d3.createTextNode('Hello '));"
+    c = c + "var em = h1.appendChild(d3.createElement('em')); var t2 = em.appendChild(d3.createTextNode('Wonderful')); var t3 = h1.appendChild(d3.createTextNode(' Kitty'));"
+    c = c + "d3.body.appendChild(h1); var p = d3.body.appendChild(d3.createElement('p')); p.appendChild(d3.createTextNode('How are you?'));"
+    c = c + "var r3 = d3.createRange(); r3.selectNodeContents(d3); var s = 'toString: ' + r3.toString(); r3.setStart(t2, 6); r3.setEnd(p, 0); s + ' | ' + r3.toString()"
+    Print js_evaluar(js, c, "t.js")
+    c = "var f = r3.extractContents(); var h = f.childNodes[0]; 'extract: ' + f.childNodes.length + ' ' + h.tagName + ' ' + h.childNodes[0].tagName + ' ' + h.childNodes[0].firstChild.data"
+    c = c + " + ' ' + (h.childNodes[1] === t3) + ' ' + f.childNodes[1].tagName + ' ' + f.childNodes[1].childNodes.length + ' | queda ' + h1.textContent"
+    Print js_evaluar(js, c, "t.js")
+    c = "var q = d3.createElement('p'); var u1 = q.appendChild(d3.createTextNode('12345')); var u2 = q.appendChild(d3.createTextNode('ABCDE')); d3.body.appendChild(q);"
+    c = c + "var r4 = d3.createRange(); r4.setStart(u1, 2); r4.setEnd(u1, 3); r4.insertNode(q.lastChild);"
+    c = c + "'insertNode: ' + q.childNodes.length + ' ' + q.childNodes[0].data + ' ' + q.childNodes[1].data + ' ' + q.childNodes[2].data + ' ' + r4.collapsed + ' ' + /^ABCDE/.test(r4.toString())"
+    Print js_evaluar(js, c, "t.js")
+    c = "var r5 = d3.createRange(); r5.setEnd(d3.body, 1); r5.setStart(d3.body.firstChild.firstChild, 2); d3.body.removeChild(d3.body.firstChild);"
+    c = c + "'borrado: ' + r5.collapsed + ' ' + r5.startContainer.tagName + ' ' + r5.startOffset + ' ' + r5.endOffset"
+    Print js_evaluar(js, c, "t.js")
+    c = "var ev = document.createEvent('UIEvents'); ev.initUIEvent('x', true, false, null, 6); var m = document.createElement('meta'); m.setAttribute('http-equiv', 'boxes');"
+    c = c + "var dt = new Date(); dt.setMilliseconds(); 'otros: ' + ev.detail + ' ' + m.httpEquiv + ' ' + dt.getDay()"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

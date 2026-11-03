@@ -166,6 +166,16 @@ end
     dom_apuntar(n, TOQUE_ATRIBUTO, "value", "", v)
 end
 
+# checked (input) y selected (option): el estado, no el atributo (tarea 41c)
+@export func jsdom_marcado(n: Nodo) -> Bool
+    return dom_marcado(n)
+end
+
+@export func jsdom_marcar(n: Nodo, si: Bool)
+    formulario_marcar(n, si)
+    dom_apuntar(n, TOQUE_ATRIBUTO, "checked", "", "")
+end
+
 @export func jsdom_crear(nombre: String) -> Nodo
     return dom_nodo(DOM_ELEMENTO, str_lower(nombre), "")
 end
@@ -359,6 +369,9 @@ end
     for a in n.atributos
         c.atributos.push(Atributo(a.nombre, a.valor))
     end
+    # (con su value y su checked, como en un navegador)
+    c.valor = n.valor
+    c.marcado = n.marcado
     if profundo
         for h in n.hijos
             dom_agregar(c, jsdom_clonar(h, true))

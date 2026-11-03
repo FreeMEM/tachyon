@@ -379,7 +379,7 @@ func _control_pintar(d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1: Int, y1: I
     _rect_recortado(x, y, 1, h, x0, y0, x1, y1, borde)
     _rect_recortado(x + w - 1, y, 1, h, x0, y0, x1, y1, borde)
     if tipo == "checkbox" or tipo == "radio"
-        if dom_tiene_atributo(n, "checked")
+        if dom_marcado(n)
             _rect_recortado(x + 3, y + 3, w - 6, h - 6, x0, y0, x1, y1, _lapiz(0))
         end
         return
@@ -415,7 +415,7 @@ func _control_pintar(d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1: Int, y1: I
             texto = texto[:texto.length - 1]
         end
     else
-        texto = dom_atributo(n, "value")
+        texto = dom_valor_campo(n)
         if tipo == "password"
             oculto = ""
             for i in (1..texto.length)
@@ -459,7 +459,7 @@ func _campo_propio_pintar(d: Dibujo, n: Nodo, tipo: String, x: Int, y: Int, w: I
     if ty < y0 or ty + font_height() - 1 > y1
         return
     end
-    texto = dom_atributo(n, "value")
+    texto = dom_valor_campo(n)
     if n.nombre == "select"
         # un desplegable que dibuja la página (DuckDuckGo): la opción elegida, cortada por detrás; la flecha es de la
         # página (appearance: none)

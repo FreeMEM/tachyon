@@ -1,0 +1,39 @@
+# Test: el estado de los controles de formulario (tarea 41c, Acid3 52 a 58): value de un input de texto y checked no
+# tocan el atributo (que es el de partida, defaultValue/defaultChecked); los radios del mismo grupo se desmarcan; un
+# clon lleva el estado; form.elements por name y form.length; select.add y defaultSelected. Antes value y checked
+# escribían el atributo y no había ni form.length ni select.add.
+# memcheck
+# expect-out: value: test false | attr | envío q=test
+# expect-out: checkbox: true false | movido true
+# expect-out: radios: true false | false true | 2 true
+# expect-out: elements: 3 3 true true
+# expect-out: select: 1 1 | defaultSelected 1
+# expect-out: :checked true false
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><form id=f action=x><input name=q value=attr></form><div id=d></div></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var i = document.querySelector('input'); i.value = 'test';"
+    c = c + "'value: ' + i.value + ' ' + (i.getAttribute('value') == 'test') + ' | ' + i.defaultValue"
+    Print js_evaluar(js, c, "t.js") + " | envío " + formulario_datos(dom_buscar(doc, "form"), nil)
+    c = "var c = document.createElement('input'); c.type = 'checkbox'; c.checked = true; document.getElementById('d').appendChild(c);"
+    c = c + "var s = 'checkbox: ' + c.checked + ' ' + c.hasAttribute('checked'); document.body.appendChild(c); s + ' | movido ' + c.checked"
+    Print js_evaluar(js, c, "t.js")
+    c = "var f = document.getElementById('f'); var r1 = document.createElement('input'); r1.type = 'radio'; r1.name = 'g'; f.appendChild(r1);"
+    c = c + "var r2 = r1.cloneNode(true); f.appendChild(r2); r1.checked = true; var s = 'radios: ' + r1.checked + ' ' + r2.checked;"
+    c = c + "r2.checked = true; s += ' | ' + r1.checked + ' ' + r2.checked; var r3 = r2.cloneNode(); s + ' | ' + f.elements.g.length + ' ' + r3.checked"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "'elements: ' + f.elements.length + ' ' + f.length + ' ' + (f.elements.q === i) + ' ' + (f.elements !== f)", "t.js")
+    c = "var sel = document.createElement('select'); var o = document.createElement('option'); sel.add(o, null);"
+    c = c + "var s = 'select: ' + sel.options.length + ' ' + sel.childNodes.length;"
+    c = c + "var s2 = document.createElement('select'); var a = document.createElement('option'), b = document.createElement('option'); b.defaultSelected = true;"
+    c = c + "s2.appendChild(a); s2.appendChild(b); s2.appendChild(document.createElement('option')); s + ' | defaultSelected ' + s2.selectedIndex"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "':checked ' + r2.matches(':checked') + ' ' + r1.matches(':checked')", "t.js")
+    js_liberar(js)
+end

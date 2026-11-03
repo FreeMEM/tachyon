@@ -25,7 +25,7 @@ func traer(c: Carga) -> Respuesta
 end
 
 func marcado(n: Nodo) -> String
-    if dom_tiene_atributo(n, "checked")
+    if dom_marcado(n)
         return "[x]"
     end
     return "[]"
@@ -62,7 +62,7 @@ Main
         end
     end
     lee = js_evaluar(js, "[document.querySelector('input[name=campo]').value, document.querySelector('select').value, document.querySelector('input[type=checkbox]').checked].join(' ')", "x")
-    Print "js: [" + dom_atributo(entradas[1], "value") + "] [" + formulario_valor(dom_buscar(doc, "select")) + "] " + marcado(entradas[0]) + " [" + str_replace(js_evaluar(js, "document.querySelector('textarea').value", "x"), "\n", "|") + "] [" + lee + "]"
+    Print "js: [" + formulario_valor(entradas[1]) + "] [" + formulario_valor(dom_buscar(doc, "select")) + "] " + marcado(entradas[0]) + " [" + str_replace(js_evaluar(js, "document.querySelector('textarea').value", "x"), "\n", "|") + "] [" + lee + "]"
     Print "onsubmit: " + jsdom_evento(js, campo, "submit")
     js_evaluar(js, "f.submit()", "x")
     enviado = jsdom_envio(js)

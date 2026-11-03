@@ -1535,13 +1535,12 @@ static JSValue _jsdom_set_value(JSContext *ctx, JSValueConst this_val, JSValueCo
 
 static JSValue _jsdom_checked(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
-    return JS_NewBool(ctx, jsdom_tiene_atributo(n, (STRPTR)"checked"));
+    return JS_NewBool(ctx, jsdom_marcado(n));
 }
 
 static JSValue _jsdom_set_checked(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     _JSDOM_ESTE_PONER("checked");
-    if (JS_ToBool(ctx, v)) jsdom_poner_atributo(n, (STRPTR)"checked", (STRPTR)"");
-    else jsdom_quitar_atributo(n, (STRPTR)"checked");
+    jsdom_marcar(n, JS_ToBool(ctx, v) ? 1 : 0);
     _jsdom_tocado(ctx, n);
     return JS_UNDEFINED;
 }

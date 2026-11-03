@@ -4161,7 +4161,7 @@ func formulario_opcion(n: Nodo) -> Nodo
     var primera: Nodo = nil
     for o in n.hijos
         if o.tipo == DOM_ELEMENTO and o.nombre == "option"
-            if dom_tiene_atributo(o, "selected")
+            if dom_marcado(o)
                 return o
             end
             if primera == nil

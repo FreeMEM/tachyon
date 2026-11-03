@@ -5388,3 +5388,31 @@ Formato:
 - Lo siguiente: el estado de los formularios (value y checked que no tocan el atributo, radios, form.elements con
   nombres, select.add, defaultSelected: 43, 52-58), Range de verdad (08, 09, 12, 13), NodeIterator y TreeWalker (01, 02,
   04, 05), document.open/write en un documento aparte (71, 72), el doctype (18), y SVG DOM (75-77).
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 80/100
+- El estado de los controles vive en el nodo (lib/dom.dash, al final de Nodo: valor y marcado; dom_valor_campo,
+  dom_marcado; lib/formularios.dash formulario_marcar): value de un input donde se escribe y checked/selected ya no
+  escriben el atributo, que es el de partida (defaultValue, defaultChecked, defaultSelected). Un radio marcado desmarca
+  los de su grupo (mismo name y mismo form), un option elegido los otros del select; el clon lleva el estado. Lo leen
+  la maqueta, el pintor, :checked y el envío. En el JavaScript: option.selected, form.elements por name (con varios,
+  una lista con value), form.length, select.add/remove/item/length.
+- NodeIterator como dice DOM: el filtro se llama antes de mover la referencia; al quitar un nodo con la referencia (o el
+  candidato del recorrido, como en Chrome) dentro, ésta pasa al de al lado. Range entera: puntos comparados en el
+  árbol, toString, extract/clone/deleteContents, insertNode con splitText, surroundContents, compareBoundaryPoints,
+  comparePoint, isPointInRange, intersectsNode, y las vivas se mueven al meter, quitar o partir. Text.splitText.
+- initUIEvent e initMouseEvent, meta.httpEquiv, y un set* de Date sin argumentos deja NaN.
+- QuickJS: el gcc de m68k-amigaos escribe la constante NaN como Infinity ("fmove.s #0x7f800000"; también
+  __builtin_nan). new Date(NaN).getTime() daba Infinity. Ahora los NaN de QuickJS en tiempo de ejecución salen de
+  memoria (cutils.h JS_NAN_DOUBLE, volatile). Pendiente: setMilliseconds(NaN) aún deja la fecha en 1970 (el preludio
+  lo evita sin argumentos con setTime(NaN)). Cualquier otro C del Amiga con NAN tiene el mismo problema.
+- Aviso: el preludio creció unos 40 KB y en la máquina de 8 MB de los tests no cabía en tres (test_idioma,
+  test_jsdom_mutaciones, test_maqueta_epoca: "JS: sin memoria"); van con zorro_iii_memory = 65536, como otros tres. Un
+  Amiga de 8 MB puede quedarse sin memoria en páginas con JavaScript.
+- Tests: test_jsdom_formularios_estado, test_jsdom_rango; test_formularios y test_formularios_post leen el estado.
+  Batería entera antes de Range: 122/127 (los 5, arreglados así); después, js (28), formularios (3), estilo (15) y los
+  6 que dieron timeout con otras sesiones usando el emulador, uno a uno.
+- Quedan 20: pre-wrap tras quitar el último (00), TreeWalker y el árbol de la página (04, 05), doctype (18), clon de la
+  tabla escrita con document.write (29), clases con \r \f y U+2003 (33), :empty con un elemento con espacio de nombres
+  (38), :checked (43), media queries en el iframe (46), cursor no válido (47), clic en submit que envía (54),
+  surrogates (68), document.open/write en el iframe (71, 72), SVG DOM (75-77), script en XHTML (80), data: escapado
+  (97) y 98.

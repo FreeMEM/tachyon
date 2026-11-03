@@ -17,7 +17,7 @@ import "../lib/formularios.dash"
 import "../lib/estilo.dash"
 
 func marcado(n: Nodo) -> String
-    if dom_tiene_atributo(n, "checked")
+    if dom_marcado(n)
         return "[x]"
     end
     return "[]"
@@ -50,9 +50,9 @@ Main
     for c in ["H", "o", "l", "a", " ", "ñ"]
         formulario_tecla(q, c, 0)
     end
-    antes = dom_atributo(q, "value")
+    antes = formulario_valor(q)
     formulario_tecla(q, "", 0x41)
-    Print "q = [" + antes + "] tras retroceso [" + dom_atributo(q, "value") + "]"
+    Print "q = [" + antes + "] tras retroceso [" + formulario_valor(q) + "]"
     Print "return: " + formulario_tecla(q, "", 0x44)
     form = formulario_de(q)
     var inputs: [Nodo] = []

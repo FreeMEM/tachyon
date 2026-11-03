@@ -195,7 +195,7 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
+- [x] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
       "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
       a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
       llama al runtime de dashc. Por `./dash --gcc` el navegador no enlaza: faltan dl_str_forget, dl_str_temp,
@@ -205,6 +205,9 @@ tarea, con el estilo de Dash.
       coloca dash1, las constantes y los prototipos de @export. Así el mismo tachyon.c vale para las dos líneas,
       compilado aparte para cada una. Prueba: `DASH_LINEA=gcc python3 tests/run.py` en Tachyon (tarea 58).
       La coge freememlang-47 (la sesión dash) al cerrar la optimización del compilador directo; avisará con el commit.
+      Hecha (freememlang-47, f533b12 en main de Dash, PR #81): `./dash --gcc` da las dl_* y los db_* que pide el C de
+      @link, y `./dash --gcc --cabecera build/dash_tipos_gcc.h src/dashweb.dash` escribe la cabecera del camino por C
+      (los mismos nombres; un Bool ocupa 2 bytes: tachyon.c se compila aparte para cada línea). Sin arrancar aún.
 - [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
       runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
       NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
@@ -5338,3 +5341,7 @@ Formato:
 - Queda de 55 (apuntado en la tarea): el widget del traductor de Google, los glifos de la fuente de los botones,
   los emoji y un ::before flotante dentro de un inline-block.
 - Batería: 122/122 (2864 s).
+- Arreglado después (lo vio freememlang-47 al compilar por --gcc): imgs_js iba en medio de Documento y las cuatro
+  llamadas Documento(...) por orden desplazaban los campos de detrás (js, cambios, pagina...). Ahora va al final.
+  Desde 4787ec0 de Dash (PR #82) los dos compiladores dan error si un constructor deja fuera un campo obligatorio.
+  Tests de documento: 8/8.

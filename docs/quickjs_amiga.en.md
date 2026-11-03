@@ -55,6 +55,11 @@ In `third_party/quickjs/quickjs.c` (second commit of the repo, to see the diff):
 `third_party/quickjs/amiga/qjsamiga.c` is a test launcher: it runs the given `.js` files and measures time
 (EClock from `timer.device`) and memory. It asks for 256 KB of stack.
 
+8. `JS_NAN_DOUBLE` (`cutils.h`, task 41c): the m68k-amigaos gcc emits a NaN constant (`NAN`, `__builtin_nan`) as
+   `fmove.s #0x7f800000`, which is Infinity; `new Date(NaN).getTime()` returned Infinity. The NaNs QuickJS produces at
+   run time now come from a `volatile` double in memory. Data tables with `NAN` are fine. Pending:
+   `setMilliseconds(NaN)` leaves the date at 1970.
+
 ## Problems found
 
 - The ROM's double-precision maths libraries (`mathieeedoubbas`, the ones libnix's `-lm` uses) give

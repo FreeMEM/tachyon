@@ -16,6 +16,7 @@
 import "js.dash"
 import "estilo.dash"
 import "formularios.dash"
+import "html5.dash"
 import "jsdom_preludio.dash"
 import "lienzo.dash"
 import "traza.dash"
@@ -471,8 +472,46 @@ end
 end
 
 # document.implementation.createHTMLDocument(): un documento aparte, vacío
+# (con "aparte": su getComputedStyle calcula el estilo con sus propias hojas, _jsdom_estilo_aparte)
 @export func jsdom_documento_nuevo(titulo: String) -> Nodo
-    return dom_desde_html("<html><head><title>" + titulo + "</title></head><body></body></html>")
+    d = dom_desde_html("<html><head><title>" + titulo + "</title></head><body></body></html>")
+    d.atributos.push(Atributo("aparte", "1"))
+    return d
+end
+
+# El documento de un <iframe> u <object> con el HTML que trajo (tarea 41c), con las reglas de HTML5 como una página
+@export func jsdom_documento_html(html: String) -> Nodo
+    d = dom_desde_html5(html)
+    d.atributos.push(Atributo("aparte", "1"))
+    return d
+end
+
+# El estilo de un documento aparte (el de un <iframe> u <object>, el de createHTMLDocument), que no tiene hojas
+# apuntadas ni maqueta: se calcula entero con sus <style> cuando cambió algo o aún no se calculó. Acid3 mete en el
+# documento de su iframe un <style> con cada selector y mira el z-index de lo de dentro (tarea 41c).
+func _jsdom_estilo_aparte(n: Nodo)
+    doc = n
+    while doc.padre != nil
+        doc = doc.padre
+    end
+    if doc.tipo != DOM_DOCUMENTO or dom_atributo(doc, "aparte") != "1"
+        return
+    end
+    var raiz: Nodo = nil
+    for h in doc.hijos
+        if h.tipo == DOM_ELEMENTO
+            raiz = h
+            break
+        end
+    end
+    if raiz == nil or (raiz.estilo != nil and (doc.toques == nil or doc.toques.length == 0))
+        return
+    end
+    var traidas: {String: String} = {}
+    hojas = estilo_hojas_con(doc, "", traidas)
+    estilo_aplicar(doc, hojas)
+    var nada: [Toque] = nil
+    doc.toques = nada
 end
 
 # outerHTML
@@ -487,12 +526,13 @@ end
 # getComputedStyle: lo calculado por lib/estilo.dash; si el elemento es nuevo (sin estilo aún),
 # display según la etiqueta
 @export func jsdom_estilo_calculado(n: Nodo, propiedad: String) -> String
+    _jsdom_estilo_aparte(n)
     e = n.estilo
     fresco = _jsdom_estilo_fresco(n)
     if fresco != nil
         e = fresco
     end
-    if e.has(propiedad)
+    if e != nil and e.has(propiedad)
         return e[propiedad]
     end
     if propiedad == "display" and n.tipo == DOM_ELEMENTO

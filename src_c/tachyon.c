@@ -1742,7 +1742,11 @@ static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_v
 
 static JSValue _jsdom_ownerDocument(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
+    _Dash_Nodo *p = n;
     if (n->tipo == DOM_DOCUMENTO) return JS_NULL;
+    /* (el de un <iframe> o de createHTMLDocument si está en uno; tarea 41c) */
+    while (p->padre) p = p->padre;
+    if (p->tipo == DOM_DOCUMENTO) return _jsdom_objeto(ctx, p);
     return _jsdom_objeto(ctx, _jsdom_de(ctx)->doc);
 }
 
@@ -1963,6 +1967,16 @@ static JSValue _jsdom_documento_nuevo(JSContext *ctx, JSValueConst this_val, int
     JSValue v;
     if (!t) return JS_EXCEPTION;
     v = _jsdom_objeto(ctx, jsdom_documento_nuevo((STRPTR)t));
+    _jsdom_soltar(t);
+    return v;
+}
+
+/* __dashweb_documento_html(html): el documento de un <iframe> u <object> con lo que trajo (tarea 41c) */
+static JSValue _jsdom_documento_html(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *t = argc > 0 && !JS_IsUndefined(argv[0]) ? _js_texto(ctx, argv[0]) : strdup("");
+    JSValue v;
+    if (!t) return JS_EXCEPTION;
+    v = _jsdom_objeto(ctx, jsdom_documento_html((STRPTR)t));
     _jsdom_soltar(t);
     return v;
 }
@@ -2309,6 +2323,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_nuevo", JS_NewCFunction(m->ctx, _jsdom_documento_nuevo, "__dashweb_documento_nuevo", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_html", JS_NewCFunction(m->ctx, _jsdom_documento_html, "__dashweb_documento_html", 1));
     _jsdom_lienzo_clase(m->ctx);
     JS_SetPropertyStr(m->ctx, global, "__dashweb_lienzo", JS_NewCFunction(m->ctx, _jsdom_lienzo, "__dashweb_lienzo", 4));
     JS_FreeValue(m->ctx, global);

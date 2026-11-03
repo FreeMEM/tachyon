@@ -1,0 +1,38 @@
+# Test: DOMException y las comprobaciones del DOM (tarea 41c, Acid3, pruebas 19 a 26): meter un nodo donde no cabe da
+# HierarchyRequestError (3), un nombre mal hecho en createElement InvalidCharacterError (5), uno con prefijo mal puesto
+# en createElementNS NamespaceError (14); los errores son DOMException con sus constantes. Antes no fallaba nada.
+# memcheck
+# expect-out: jerarquía: 3 3 true DOMException
+# expect-out: nombres: 5 5 5 5 5 5 | nulo 5 null
+# expect-out: ns: prefix:localname prefix localname http://ns.example.com/ | 14 14 14 14 14 ok
+# expect-out: doctype: 14 15 | documento: 9 9 root
+# expect-out: insertBefore: 8 | documento con dos: 3
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head><title>t</title></head><body><p id=a>hola</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "function codigo(f) { try { f(); return 'nada'; } catch (e) { return e.code; } }", "t.js")
+    c = "var e; try { document.body.appendChild(document.documentElement); } catch (x) { e = x; }"
+    c = c + "'jerarquía: ' + e.code + ' ' + e.HIERARCHY_REQUEST_ERR + ' ' + (e instanceof DOMException) + ' ' + e.constructor.name"
+    Print js_evaluar(js, c, "t.js")
+    c = "'nombres: ' + ['<div>', '0div', 'di v', 'di<v', '-div', '.div'].map(function (n) { return codigo(function () { document.createElement(n); }); }).join(' ')"
+    c = c + " + ' | nulo ' + codigo(function () { document.createElement('form\\0div'); }) + ' ' + document.getElementById('a\\0b')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var el = document.createElementNS('http://ns.example.com/', 'prefix:localname'); 'ns: ' + el.tagName + ' ' + el.prefix + ' ' + el.localName + ' ' + el.namespaceURI + ' | '"
+    c = c + " + [[':div', null], [':div', 'http://example.com/'], ['d:iv', null], ['xml:test', 'http://example.com/'], ['x:test', 'http://www.w3.org/2000/xmlns/']].map(function (p) { return codigo(function () { document.createElementNS(p[1], p[0]); }); }).join(' ')"
+    c = c + " + ' ' + (document.createElementNS('http://www.w3.org/2000/xmlns/', 'xmlns:test') ? 'ok' : 'no')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var x; try { document.implementation.createDocumentType('a:', '', ''); } catch (z) { x = z; }"
+    c = c + "var d = document.implementation.createDocument(null, null, null); var e1 = d.createElement('test'); d.appendChild(d.createElement('root')); d.documentElement.appendChild(e1);"
+    c = c + "'doctype: ' + x.code + ' ' + x.INVALID_ACCESS_ERR + ' | documento: ' + e1.parentNode.ownerDocument.nodeType + ' ' + d.nodeType + ' ' + d.documentElement.localName"
+    Print js_evaluar(js, c, "t.js")
+    c = "'insertBefore: ' + codigo(function () { document.body.insertBefore(document.createElement('i'), document.createElement('b')); })"
+    c = c + " + ' | documento con dos: ' + codigo(function () { d.appendChild(d.createElement('otro')); })"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

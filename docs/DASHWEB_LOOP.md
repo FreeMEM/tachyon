@@ -5364,3 +5364,27 @@ Formato:
   formularios (49-58: tBodies, controles, radio, defaultSelected); white-space: pre-wrap calculado (00); httpEquiv
   (62); surrogates sueltos (68); los data: de <script src> vacíos (97); setMilliseconds() sin argumentos (86); dos
   "timeout" de red (69, 80) y "not a function" (08, 26, 30, 51, 57, 98).
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 66/100
+- Con /loop (usuario: "activa el loop para que no te detengas").
+- <iframe>, <object> y <frame> tienen documento (lib/jsdom_preludio.js): contentDocument, contentWindow (una ventana
+  pequeña con getComputedStyle), getSVGDocument y object.data. Se trae su src (data) al entrar en el documento o al
+  cambiar la dirección, y al acabar sale load en el elemento. El HTML va a un documento nuevo con el analizador de HTML5
+  (__dashweb_documento_html, jsdom_documento_html); XML y SVG con el de DOMParser; texto en un <pre>. Los marcos de la
+  página se cargan antes del load de la ventana. No se pintan.
+- Un documento aparte (atributo "aparte": el de un marco o de createHTMLDocument) calcula su getComputedStyle con sus
+  propios <style>: estilo entero cuando cambió algo (lib/jsdom.dash _jsdom_estilo_aparte). ownerDocument da el documento
+  de arriba si el nodo está en uno.
+- DOMException con sus constantes y code; createElement y createElementNS comprueban el nombre (InvalidCharacterError,
+  NamespaceError) y createElementNS con otro espacio de nombres guarda tagName, prefix y localName. appendChild,
+  insertBefore y replaceChild dan HierarchyRequestError y NotFoundError. getElementById con \0 da null.
+  createDocumentType y createDocument.
+- El API de tablas: caption, tHead, tFoot, tBodies, rows, create*/delete*, insertRow/deleteRow, rowIndex,
+  sectionRowIndex, cells, insertCell/deleteCell, cellIndex.
+- Selectores (lib/estilo.dash): la raíz no es :first-child ni de las de posición, :empty no cuenta comentarios ni textos
+  vacíos, y :lang().
+- Tests: test_jsdom_iframe (servidor 40863), test_jsdom_excepciones, test_jsdom_tablas, test_estilo_pseudo_acid3.
+  Pasan jsdom (14/14), estilo (15/15) y css (5/5); la batería entera no se ha pasado.
+- Lo siguiente: el estado de los formularios (value y checked que no tocan el atributo, radios, form.elements con
+  nombres, select.add, defaultSelected: 43, 52-58), Range de verdad (08, 09, 12, 13), NodeIterator y TreeWalker (01, 02,
+  04, 05), document.open/write en un documento aparte (71, 72), el doctype (18), y SVG DOM (75-77).

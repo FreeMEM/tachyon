@@ -1,0 +1,22 @@
+# Test: pseudoclases de Acid3 (tarea 41c, pruebas 34, 35 y 38): la raíz no es :first-child (no tiene un elemento por
+# padre), :empty no cuenta comentarios ni textos vacíos, y :lang(en) vale para lang="en-GB" y lo de dentro, no para
+# lang="english".
+# expect-out: raíz: false false true
+# expect-out: empty: true true false
+# expect-out: lang: false true true false
+# memcheck
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><p id=a><!--c--></p><p id=b></p><p id=c> </p><div id=d lang=english></div><div id=e lang=en-GB><span id=f></span></div><div id=g lang=fr></div></body></html>")
+    html = dom_buscar(doc, "html")
+    Print "raíz: " + (jsdom_cumple(html, ":first-child")) + " " + (jsdom_cumple(html, ":only-child")) + " " + (jsdom_cumple(html, ":root"))
+    b = dom_buscar(doc, "body")
+    a = b.hijos[0]
+    a.hijos.push(dom_nodo(DOM_TEXTO, "", ""))
+    Print "empty: " + (jsdom_cumple(a, ":empty")) + " " + (jsdom_cumple(b.hijos[1], ":empty")) + " " + (jsdom_cumple(b.hijos[2], ":empty"))
+    Print "lang: " + (jsdom_cumple(b.hijos[3], ":lang(en)")) + " " + (jsdom_cumple(b.hijos[4], ":lang(en)")) + " " + (jsdom_cumple(b.hijos[4].hijos[0], ":lang(en)")) + " " + (jsdom_cumple(b.hijos[5], ":lang(en)"))
+end

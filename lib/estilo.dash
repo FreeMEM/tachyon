@@ -534,6 +534,12 @@ func _selectores_de(lista: String) -> [Selector]
 end
 
 func _cumple_pseudo(n: Nodo, p: String) -> Bool
+    # (las de la posición entre hermanos, solo con un elemento por padre: la raíz no es :first-child; Acid3, tarea 41c)
+    if str_ends(p, "-child") or str_ends(p, "-of-type") or str_starts(p, "nth-")
+        if n.padre == nil or n.padre.tipo != DOM_ELEMENTO
+            return false
+        end
+    end
     if p == "hover"
         return n.raton
     elif p == "scope"
@@ -553,7 +559,28 @@ func _cumple_pseudo(n: Nodo, p: String) -> Bool
     elif p == "root"
         return n.padre != nil and n.padre.tipo == DOM_DOCUMENTO
     elif p == "empty"
-        return n.hijos.length == 0
+        # (los comentarios y los textos vacíos no cuentan)
+        for h in n.hijos
+            if h.tipo == DOM_ELEMENTO or (h.tipo == DOM_TEXTO and h.texto.length > 0)
+                return false
+            end
+        end
+        return true
+    elif str_starts(p, "lang(")
+        # el lang del elemento o del primero de arriba que lo tenga: igual, o con "-" detrás
+        quiere = str_lower(str_trim(p[5:p.length - 1]))
+        if str_starts(quiere, "\"") or str_starts(quiere, "'")
+            quiere = quiere[1:quiere.length - 1]
+        end
+        a = n
+        while a != nil and a.tipo == DOM_ELEMENTO
+            if dom_tiene_atributo(a, "lang")
+                l = str_lower(dom_atributo(a, "lang"))
+                return l == quiere or str_starts(l, quiere + "-")
+            end
+            a = a.padre
+        end
+        return false
     elif p == "checked"
         return (n.nombre == "input" and dom_tiene_atributo(n, "checked")) or (n.nombre == "option" and dom_tiene_atributo(n, "selected"))
     elif p == "disabled"
@@ -701,7 +728,7 @@ func css_pseudo_conocida(p: String) -> Bool
     if p == "checked" or p == "disabled" or p == "enabled" or p == "first-of-type" or p == "last-of-type" or p == "only-of-type"
         return true
     end
-    if str_starts(p, "nth-child(") or str_starts(p, "nth-last-child(") or str_starts(p, "nth-of-type(") or str_starts(p, "nth-last-of-type(")
+    if str_starts(p, "nth-child(") or str_starts(p, "nth-last-child(") or str_starts(p, "nth-of-type(") or str_starts(p, "nth-last-of-type(") or str_starts(p, "lang(")
         return true
     end
     if str_starts(p, "is(") or str_starts(p, "where(") or str_starts(p, "matches(") or str_starts(p, "-webkit-any(") or str_starts(p, "-moz-any(") or str_starts(p, "has(")

@@ -1226,6 +1226,12 @@ func temporizadores(w: Ventana)
     memoria_recortar()
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
+        # (load espera a las imágenes, como en un navegador: el JavaScript sabe cuántas faltan)
+        faltan = imagenes_pendientes(w.actual.im)
+        if faltan != w.actual.imgs_js
+            w.actual.imgs_js = faltan
+            js_evaluar(w.actual.js, "__dashweb_imgs = " + faltan, "dashweb")
+        end
         espera = jsdom_temporizadores(w.actual.js)
         w.actual.desde = w.desde
         w.actual.alto_vista = mui_height(w.v.pagina)

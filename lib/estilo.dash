@@ -2885,7 +2885,23 @@ func _calcular(ganadoras: {String: Candidata}, padre: {String: String}, padre_va
                     continue
                 end
             end
-            e[p] = v
+            # unset: lo heredado si se hereda (ya puesto arriba) y si no, su valor inicial; initial, su valor inicial
+            # (sin la propiedad; display, inline). Antes iban tal cual y "top: unset" medía 0: el botón del modo oscuro
+            # de amigatronics.com (position: fixed; bottom: 32px; top: unset) salía arriba en vez de abajo
+            vl = str_lower(str_trim(v))
+            if p == "display" and (vl == "unset" or vl == "initial")
+                e[p] = "inline"
+            elif vl == "unset"
+                if not _se_hereda(p) and e.has(p)
+                    e.remove(p)
+                end
+            elif vl == "initial"
+                if e.has(p)
+                    e.remove(p)
+                end
+            else
+                e[p] = v
+            end
         end
     end
     if ganadoras.has("font-size") or tam_atajo != ""

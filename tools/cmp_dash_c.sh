@@ -1,6 +1,6 @@
 #!/bin/sh
 # tools/cmp_dash_c.sh REV_A REV_B|WORK : generated C of every test and example, compiler at REV_A vs REV_B (WORK = working tree)
-D=$HOME/Projects/FreeMEMLang/.worktrees/dashweb
+D=$HOME/Projects/FreeMEMLang
 W=$(mktemp -d "${TMPDIR:-/tmp}/cmpc.XXXX")
 for side in A B; do
   rev=$1; [ $side = B ] && rev=$2

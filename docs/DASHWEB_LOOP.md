@@ -204,6 +204,7 @@ tarea, con el estilo de Dash.
       db_nombre) y `./dash --gcc --cabecera fichero.h prog.dash` escribe la cabecera con los structs tal como los
       coloca dash1, las constantes y los prototipos de @export. Así el mismo tachyon.c vale para las dos líneas,
       compilado aparte para cada una. Prueba: `DASH_LINEA=gcc python3 tests/run.py` en Tachyon (tarea 58).
+      La coge freememlang-47 (la sesión dash) al cerrar la optimización del compilador directo; avisará con el commit.
 - [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
       runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
       NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
@@ -553,6 +554,12 @@ tarea, con el estilo de Dash.
       vivos en memcheck, por mirar). Pendiente: el logo transparente sale verde (D81, en Dash); el menú se parte en
       dos líneas; los botones de compartir (fijos a la derecha en Chrome) salen en medio; la franja negra de arriba
       con los iconos sociales.
+      Hecho (2026-11-03; ver la bitácora): el menú en una línea, los botones de compartir a la derecha, el botón del
+      modo oscuro abajo, la cinta bajo el menú y los iconos sociales. Quedan: el widget del traductor de Google
+      (error de JavaScript en google-translate.min.js; en Chrome, un desplegable "Seleccionar idioma"); los glifos de
+      los botones de compartir (su fuente SSM Font Awesome: salen cuadrados); el emoji de la cinta y del botón del
+      modo oscuro ("?"); y un ::before flotante a la derecha dentro de un inline-block, que se coloca contra el borde
+      del bloque de fuera y no dentro de su caja (la lista de compartir mediría 59 en vez de 30 con esa forma).
 - [x] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
       descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
       IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
@@ -5309,3 +5316,25 @@ Formato:
   3f9493e D81); D71, D80 y D81 están en main con otros commits. Avisado al usuario.
 - Borrados (usuario) los worktrees dash2 y dash2-08 y las ramas dash2, dash2-08, dash2-unicode y dash2-08-respaldo,
   también las de GitHub: todo estaba ya en dev.
+
+### 2026-11-03 — Tarea 55 (parte): amigatronics.com, cabecera, menú y botones
+- Con Dash 2.0 (main de ~/Projects/FreeMEMLang). tools/medir_visor.py y tools/cmp_dash_c.sh usaban aún
+  .worktrees/dashweb, y medir_visor compilaba desde la carpeta de Dash: ahora ~/Projects/FreeMEMLang y desde Tachyon.
+- Visto en la RTG ancha de 256 MB y arreglado:
+  - lib/estilo.dash: unset (lo heredado o el valor inicial) e initial (el inicial) ya no van tal cual: "top: unset"
+    medía 0 y el botón del modo oscuro (fixed, bottom: 32px) salía arriba.
+  - lib/maqueta.dash, _sangrias: un hijo de un flex o un grid va como bloque aunque diga inline; el <a> con padding
+    de cada <li> flex del menú medía su texto sin el relleno y "The Podcast" se partía en dos líneas.
+  - lib/maqueta.dash, _ancho_flotante_medir: lo de un flotante a la derecha se mide aparte (su ancho; sumado a lo
+    demás si está a su lado en la misma altura). Medida a lo ancho, la pestaña flotante se iba al borde y la lista
+    fija de botones de compartir medía 801 en vez de 30.
+  - lib/maqueta.dash: un <svg> en la línea lleva relleno, borde y fondo como una <img>, y el fondo y el borde de las
+    dos, redondos con border-radius: los iconos sociales (fondo blanco, 50 %) no se veían.
+  - lib/jsdom_preludio.js: load espera a las imágenes (dashweb pone __dashweb_imgs con las que faltan; como mucho
+    60 s) y a las peticiones que ya iban (4 s): la cinta de noticias pone su addEventListener('load') tras un await
+    fetch y se quedaba arriba del todo.
+  - Tests nuevos: test_maqueta_menu_wp (menú, fijo con top: unset, lista de botones, icono redondo) y
+    test_jsdom_load_peticion (load con una imagen por traer).
+- Queda de 55 (apuntado en la tarea): el widget del traductor de Google, los glifos de la fuente de los botones,
+  los emoji y un ::before flotante dentro de un inline-block.
+- Batería: 122/122 (2864 s).

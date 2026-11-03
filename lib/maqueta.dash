@@ -2788,14 +2788,40 @@ func _sangrias(n: Nodo, tope: Nodo)
     _sangria_der = 0
     p = n
     while p != nil and p != tope and (_sangria_corte == nil or p != _sangria_corte)
-        # (un flotante o un absoluto es un bloque aunque diga display: inline: el <span> flotante de Acid2)
-        if p.tipo == DOM_ELEMENTO and (_val(p.estilo, "display", "inline") != "inline" or _val(p.estilo, "float", "none") != "none" or _fuera_del_flujo(p))
+        # (un flotante o un absoluto es un bloque aunque diga display: inline: el <span> flotante de Acid2; y un hijo de
+        # un flex o un grid también: el <a> con padding de cada <li> flex del menú de amigatronics.com medía su texto
+        # sin el relleno y "The Podcast" se partía en dos líneas; tarea 55)
+        if p.tipo == DOM_ELEMENTO and (_val(p.estilo, "display", "inline") != "inline" or _val(p.estilo, "float", "none") != "none" or _fuera_del_flujo(p) or _en_flex_o_grid(p))
             e = p.estilo
             _sangria_izq = _sangria_izq + _px(e, "margin-left", 0) + _borde(e, "left") + _px(e, "padding-left", 0)
             _sangria_der = _sangria_der + _px(e, "margin-right", 0) + _borde(e, "right") + _px(e, "padding-right", 0)
         end
         p = p.padre
     end
+end
+
+# El flotante a la derecha más de fuera en el que está n, dentro de h (h no cuenta; se para en el corte de _sangrias,
+# como _bajo_absoluto); nil si no está en ninguno
+func _flotante_der(n: Nodo, h: Nodo) -> Nodo
+    var f: Nodo = nil
+    c = n
+    while c != nil and c != h and (_sangria_corte == nil or c != _sangria_corte)
+        if c.tipo == DOM_ELEMENTO and c.estilo != nil and _val(c.estilo, "float", "none") == "right"
+            f = c
+        end
+        c = c.padre
+    end
+    return f
+end
+
+# n es un elemento de un flex o un grid (su padre lo es): va como bloque aunque su estilo diga inline
+func _en_flex_o_grid(n: Nodo) -> Bool
+    p = n.padre
+    if p == nil or p.tipo != DOM_ELEMENTO or p.estilo == nil
+        return false
+    end
+    d = _val(p.estilo, "display", "inline")
+    return d == "flex" or d == "inline-flex" or d == "grid" or d == "inline-grid"
 end
 
 # h está entre los hijos de p (no es una caja anónima de la maqueta, que tiene padre pero no está en sus hijos)
@@ -2867,6 +2893,19 @@ func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
     izquierda = ancho
     var ultimo_nodo: Nodo = nil
     ultimo_fuera = false
+    var ultimo_flot: Nodo = nil
+    # lo de un flotante a la derecha se mide aparte (medido a lo ancho, se va al borde y lo de en medio, centrado,
+    # quedaba lejos: la lista de botones de compartir de amigatronics.com medía 801 en vez de 30; tarea 55): cada uno,
+    # su ancho y sus alturas; y las alturas de lo demás (juntas las que se tocan), para saber si comparten línea
+    var fl_nodo: [Nodo] = []
+    var fl_x0: [Int] = []
+    var fl_x1: [Int] = []
+    var fl_y0: [Int] = []
+    var fl_y1: [Int] = []
+    var no_y0: [Int] = []
+    var no_y1: [Int] = []
+    var no_x0: [Int] = []
+    var no_x1: [Int] = []
     i = antes
     while i < m.pagina.dibujos.length
         d = m.pagina.dibujos[i]
@@ -2884,8 +2923,12 @@ func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
             if d.nodo != ultimo_nodo
                 ultimo_nodo = d.nodo
                 ultimo_fuera = _bajo_absoluto(d.nodo, h)
+                ultimo_flot = _flotante_der(d.nodo, h)
             end
             cuenta = not ultimo_fuera
+        else
+            ultimo_nodo = nil
+            ultimo_flot = nil
         end
         if cuenta
             # (lo recortado por un overflow, solo hasta su recorte: lo que desborda no ensancha)
@@ -2909,16 +2952,92 @@ func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
                 dx0 = dx0 - _sangria_izq
                 dx1 = dx1 + _sangria_der
             end
-            if dx1 > dx0
+            if dx1 > dx0 and ultimo_flot != nil
+                k = fl_nodo.length - 1
+                while k >= 0 and fl_nodo[k] != ultimo_flot
+                    k = k - 1
+                end
+                if k < 0
+                    fl_nodo.push(ultimo_flot)
+                    fl_x0.push(dx0)
+                    fl_x1.push(dx1)
+                    fl_y0.push(d.y)
+                    fl_y1.push(d.y + d.alto)
+                else
+                    if dx0 < fl_x0[k]
+                        fl_x0[k] = dx0
+                    end
+                    if dx1 > fl_x1[k]
+                        fl_x1[k] = dx1
+                    end
+                    if d.y < fl_y0[k]
+                        fl_y0[k] = d.y
+                    end
+                    if d.y + d.alto > fl_y1[k]
+                        fl_y1[k] = d.y + d.alto
+                    end
+                end
+            elif dx1 > dx0
                 if dx1 > derecha
                     derecha = dx1
                 end
                 if dx0 < izquierda
                     izquierda = dx0
                 end
+                u = no_y0.length - 1
+                if u >= 0 and d.y <= no_y1[u] and d.y + d.alto >= no_y0[u]
+                    if d.y < no_y0[u]
+                        no_y0[u] = d.y
+                    end
+                    if d.y + d.alto > no_y1[u]
+                        no_y1[u] = d.y + d.alto
+                    end
+                    if dx0 < no_x0[u]
+                        no_x0[u] = dx0
+                    end
+                    if dx1 > no_x1[u]
+                        no_x1[u] = dx1
+                    end
+                else
+                    no_y0.push(d.y)
+                    no_y1.push(d.y + d.alto)
+                    no_x0.push(dx0)
+                    no_x1.push(dx1)
+                end
             end
         end
         i = i + 1
+    end
+    # cada flotante a la derecha: su ancho, y si comparte altura con lo demás y está a su lado, sumado a ello (van en la
+    # misma línea; lo que lo tapa es de fuera de él, como la medida guardada de su padre)
+    resto = derecha - izquierda
+    if derecha <= izquierda
+        resto = 0
+    end
+    j = 0
+    while j < fl_nodo.length
+        fw = fl_x1[j] - fl_x0[j]
+        junto = false
+        u = 0
+        while u < no_y0.length and not junto
+            if no_y0[u] < fl_y1[j] and no_y1[u] > fl_y0[j] and (no_x1[u] <= fl_x0[j] + 2 or no_x0[u] >= fl_x1[j] - 2)
+                junto = true
+            end
+            u = u + 1
+        end
+        if junto
+            fw = fw + resto
+        end
+        if fw > resto
+            # (para que lleno salga de derecha - izquierda)
+            derecha = izquierda + fw
+            if resto == 0
+                izquierda = 0
+                derecha = fw
+            end
+            resto = fw
+        end
+        j = j + 1
     end
     _sangria_corte = corte_antes
     while m.pagina.dibujos.length > antes
@@ -3738,6 +3857,19 @@ func _piezas(m: Maquetador, n: Nodo, e_padre: {String: String}, piezas: [Pieza],
             elif _midiendo == 0 and m.ancho_linea > 0
                 sw = m.ancho_linea
                 sh = sw * Int(vb[3]) / Int(vb[2])
+            end
+        end
+        # (con relleno, borde o fondo, como una <img>: los iconos sociales de amigatronics.com son <svg> con padding,
+        # fondo blanco y border-radius 50 %; no se veían; tarea 55)
+        # (con box-sizing: border-box, el width y el height del CSS ya los llevan)
+        mc = _img_marco(e, m.ancho_linea)
+        if mc != nil
+            caja_b = _val(e, "box-sizing", "content-box") == "border-box"
+            if not (caja_b and _val(e, "width", "auto") != "auto")
+                sw = sw + mc[1] + mc[3] + mc[5] + mc[7]
+            end
+            if not (caja_b and _val(e, "height", "auto") != "auto")
+                sh = sh + mc[0] + mc[2] + mc[4] + mc[6]
             end
         end
         img = Pieza(dom_atributo(n, "data-dashweb-svg"), sw, sh, sh, 0, 0, 0, false, enlace, m.blanco, false, true)
@@ -4708,14 +4840,25 @@ func _poner_linea(m: Maquetador, linea: [Pieza], x: Int, y: Int, ancho: Int, e: 
             iw = p.ancho
             ih = p.alto
             var mc: [Int] = nil
-            if p.nodo != nil and p.nodo.tipo == DOM_ELEMENTO and dom_es_imagen(p.nodo)
+            if p.nodo != nil and p.nodo.tipo == DOM_ELEMENTO and (dom_es_imagen(p.nodo) or p.nodo.nombre == "svg")
                 mc = _img_marco(p.nodo.estilo, ancho)
             end
             if mc != nil
-                # su fondo, su imagen de fondo (en el relleno) y sus bordes; la imagen, dentro
+                # su fondo (redondo con border-radius), su imagen de fondo (en el relleno) y sus bordes; la imagen, dentro
                 ne = p.nodo.estilo
                 if ne.has("background-color") and css_alfa(ne["background-color"]) > 0
                     fd = _dibujo(D_RECT, cx, iy, p.ancho, p.alto, css_color_opaco(ne["background-color"]))
+                    if _redonda(ne, p.ancho, p.alto)
+                        fd.tipo = D_ELIPSE
+                        fd.estilo = 0
+                    else
+                        rd = _radios(ne, p.ancho, p.alto)
+                        if rd != 0
+                            fd.tipo = D_REDONDO
+                            fd.radio = rd
+                            fd.estilo = 0
+                        end
+                    end
                     fd.nodo = p.nodo
                     m.pagina.dibujos.push(fd)
                 end
@@ -4725,7 +4868,24 @@ func _poner_linea(m: Maquetador, linea: [Pieza], x: Int, y: Int, ancho: Int, e: 
                     ff.nodo = p.nodo
                     m.pagina.dibujos.push(ff)
                 end
-                _bordes(m, ne, cx, iy, p.ancho, p.alto, mc[0], mc[1], mc[2], mc[3])
+                # (redondo, como el borde de un bloque: un rectángulo alrededor del círculo no se ve en un navegador)
+                redonda = _redonda(ne, p.ancho, p.alto)
+                rds = _radios(ne, p.ancho, p.alto)
+                b0 = mc[0]
+                if (redonda or rds != 0) and _borde_invisible(ne)
+                    b0 = 0
+                elif (redonda or rds != 0) and b0 > 0 and b0 == mc[1] and b0 == mc[2] and b0 == mc[3]
+                    bd = _dibujo(D_ELIPSE, cx, iy, p.ancho, p.alto, _color_borde(ne, "top"))
+                    if not redonda
+                        bd.tipo = D_REDONDO
+                        bd.radio = rds
+                    end
+                    bd.estilo = b0
+                    bd.nodo = p.nodo
+                    m.pagina.dibujos.push(bd)
+                else
+                    _bordes(m, ne, cx, iy, p.ancho, p.alto, mc[0], mc[1], mc[2], mc[3])
+                end
                 ix = cx + mc[3] + mc[7]
                 iy = iy + mc[0] + mc[4]
                 iw = p.ancho - mc[1] - mc[3] - mc[5] - mc[7]

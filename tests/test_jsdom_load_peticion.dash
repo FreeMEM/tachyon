@@ -1,0 +1,48 @@
+# Test: load espera a las imágenes, como en un navegador (tarea 55; __dashweb_imgs lo pone dashweb con las que faltan).
+# La barra de noticias de amigatronics.com hace await fetch y después addEventListener('load') para ponerse bajo la
+# cabecera: con una imagen por traer, load no sale aunque el fetch ya acabó; con 0, sale y la barra baja. Antes load
+# salía nada más acabar los scripts y la barra se quedaba arriba del todo.
+# emu-server: http.py 40862
+# memcheck
+# expect-out: con una imagen: load 0
+# expect-out: barra tras la cabecera: masthead | load 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+# unos cuantos tics de los temporizadores (load se mira cada 50 ms)
+func pasos(js: Int)
+    i = 0
+    while i < 15
+        jsdom_temporizadores(js)
+        time_delay(5)
+        i = i + 1
+    end
+end
+
+Main
+    h = "<html><body><div id=barra>noticias</div><div id=page><header id=masthead>cabecera</header><main>texto</main></div>"
+    h = h + "<script>var cargas = 0; window.addEventListener('load', function () { cargas++; });"
+    h = h + "(async function () { var bar = document.getElementById('barra'); var r = await fetch('prueba.html'); await r.text();"
+    h = h + "window.addEventListener('load', function () { var c = document.querySelector('header, #masthead'); if (c && bar) c.insertAdjacentElement('afterend', bar); }); })();"
+    h = h + "</script></body></html>"
+    doc = dom_desde_html5(h)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40862/pages/x.html'); __dashweb_imgs = 1", "t.js")
+    jsdom_ejecutar_scripts(js, doc, "http://127.0.0.1:40862/pages/x.html")
+    vueltas = 0
+    while vueltas < 3000 and jsdom_peticiones_pendientes(js) > 0
+        jsdom_peticiones_avanzar(js)
+        jsdom_temporizadores(js)
+        time_delay(1)
+        vueltas = vueltas + 1
+    end
+    pasos(js)
+    Print js_evaluar(js, "'con una imagen: load ' + cargas", "t.js")
+    js_evaluar(js, "__dashweb_imgs = 0", "t.js")
+    pasos(js)
+    Print js_evaluar(js, "'barra tras la cabecera: ' + (document.getElementById('barra').previousElementSibling || {id: 'nada'}).id + ' | load ' + cargas", "t.js")
+    js_liberar(js)
+end

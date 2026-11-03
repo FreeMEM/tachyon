@@ -7,7 +7,7 @@ a page in the visor and prints the times it reports (load, html, style, layout, 
     tools/medir_visor.py --pagina otra.html --captura visor.png
     tools/medir_visor.py --sistema ~/.cache/dash-emu/sys31web     # with fonts (tools/emu_sys_fuentes.sh)
 
-Needs $DASH_KICKSTART and $DASH_EMU_SYS, like tests/run.py; Dash is $DASH (default the worktree).
+Needs $DASH_KICKSTART and $DASH_EMU_SYS, like tests/run.py; Dash is $DASH (default ~/Projects/FreeMEMLang).
 """
 import argparse
 import atexit
@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang" / ".worktrees" / "dashweb"))
+DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang"))
 PORT = 40861
 MAQUINAS = {
     "a1200": "fpu = 68882\n",    # (dashweb va con --fpu, como en tools/paquete.sh y los tests)
@@ -116,7 +116,7 @@ def main():
         if args.perfil:
             env["DASH_PROFILE"] = "1"
         r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--memcheck"] if args.memcheck else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
-                           cwd=DASH, env=env, capture_output=True, text=True)
+                           cwd=ROOT, env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("compile failed:\n" + r.stdout + r.stderr)
         size = exe.stat().st_size

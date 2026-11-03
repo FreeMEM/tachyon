@@ -1,0 +1,82 @@
+# Test: lo de amigatronics.com (tarea 55). El menú del tema Pressbook: una lista flex con flex-wrap y cada <li> también
+# flex con flex-wrap, y su enlace con width: 100%; cada <li> mide lo que su texto en una línea (antes "The Podcast" o
+# "Submit News" se partían en dos líneas aunque sobraba sitio). Y un botón fijo con bottom y "top: unset" (el del modo
+# oscuro): abajo, no arriba (unset en una propiedad que no se hereda es su valor inicial, auto).
+# memcheck
+# expect-out: menú en una línea: true
+# expect-out: fijo abajo: true
+# expect-out: botones: v1 30 v2 30
+# expect-out: icono: elipse 34x34
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/maqueta.dash"
+
+Main
+    h = "<html><body style='margin:0'><nav><ul style='display:flex;flex-wrap:wrap;list-style:none;margin:0;padding:0'>"
+    for t in ["Home", "The Podcast", "Team", "Resources", "Content Guide", "Submit News"]
+        h = h + "<li style='display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center'>"
+        h = h + "<a style='flex-basis:auto;width:100%;padding:.7em .8em;background:red' href=x>" + t + "</a></li>"
+    end
+    h = h + "</ul></nav>"
+    h = h + "<button id=oscuro style='position:fixed;width:44px;height:44px;bottom:32px;left:32px;right:unset;top:unset'>x</button>"
+    h = h + "</body></html>"
+    doc = dom_desde_html(h)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    estilo_vh = 400
+    p = maquetar(doc, 900)
+    # los fondos de los enlaces: todos a la misma altura y del mismo alto (una línea)
+    y = -1
+    alto = -1
+    una = true
+    n = 0
+    boton_y = -1
+    for d in p.dibujos
+        if d.tipo == D_RECT and d.nodo != nil and d.nodo.nombre == "a"
+            n = n + 1
+            if y < 0
+                y = d.y
+                alto = d.alto
+            elif d.y != y or d.alto != alto
+                una = false
+            end
+        end
+        if d.nodo != nil and dom_atributo(d.nodo, "id") == "oscuro" and boton_y < 0
+            boton_y = d.y
+        end
+    end
+    Print "menú en una línea: " + (una and n == 6)
+    # (324, o 325 con el borde del botón; antes, arriba: 0)
+    Print "fijo abajo: " + (boton_y >= 400 - 32 - 44 and boton_y <= 400 - 32 - 44 + 2)
+    # los botones de compartir (share-social-media): una lista fija a la derecha (right: 0) que mide lo que su
+    # contenido, 30 px; antes, 801 en la página. v1: solo los iconos; v2: con la pestaña flotante (un enlace flex).
+    # Falta (tarea 55): con el "más" (un inline-block con un ::before flotante a la derecha) mide 59, porque ese ::before
+    # se coloca contra el borde del <li> y no dentro de su enlace
+    hoja = "<style>ul{position:fixed;top:28%;right:0;padding:0;margin:0;list-style:none;display:block;clear:both}"
+    hoja = hoja + "li{padding:0;text-align:center}i{display:inline-block;width:30px;height:30px;line-height:30px;font-size:18px;background:blue}"
+    hoja = hoja + ".t{display:inline-block;margin:0;float:right}.t a{display:flex;justify-content:center;height:21px;width:21px;font-size:18px}"
+    hoja = hoja + ".t a::before{content:'x';display:flex}</style>"
+    iconos = "<li><i></i></li><li><i></i></li>"
+    res = "botones:"
+    for v in ["v1", "v2"]
+        dentro = iconos
+        if v != "v1"
+            dentro = dentro + "<li class=t><a href=x></a></li>"
+        end
+        d2 = dom_desde_html("<html><head>" + hoja + "</head><body style='margin:0'><ul id=u>" + dentro + "</ul></body></html>")
+        estilo_aplicar(d2, estilo_hojas(d2, "prueba.html"))
+        maquetar(d2, 900)
+        res = res + " " + v + " " + dom_por_id(d2, "u").caja_w
+    end
+    Print res
+    # un icono social: <svg> de 26 con padding 4px, fondo blanco y border-radius 50 % (el círculo blanco no salía)
+    d3 = dom_desde_html("<html><body style='margin:0;background:#000'><a href=x><svg width=26 height=26 viewBox='0 0 24 24' style='padding:4px;background:#fff;border-radius:50%'><path d='M2 2h20v20H2z'/></svg></a></body></html>")
+    estilo_aplicar(d3, estilo_hojas(d3, "prueba.html"))
+    p3 = maquetar(d3, 300)
+    ic = "icono: nada"
+    for d in p3.dibujos
+        if d.tipo == D_ELIPSE and d.nodo != nil and d.nodo.nombre == "svg"
+            ic = "icono: elipse " + d.ancho + "x" + d.alto
+        end
+    end
+    Print ic
+end

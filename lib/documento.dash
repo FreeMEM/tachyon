@@ -25,6 +25,7 @@ struct Documento
     doc: Nodo
     hojas: Hojas
     im: Imagenes
+    imgs_js: Int = -1          # las imágenes por traer que sabe el JavaScript (__dashweb_imgs: load espera a 0)
     js: Int              # el motor de JavaScript, 0 si la página no tiene <script>
     cambios: Int         # jsdom_cambios la última vez que se maquetó
     pagina: Pagina       # nil hasta documento_maquetar

@@ -63,6 +63,10 @@ def main():
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
     ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
                     "(e.g. file:///DH0/p1, to try file: addresses)")
+    ap.add_argument("--js", metavar="EXPR", help="dashweb JS=EXPR: evaluated in the page at --js-en ms, to the output")
+    ap.add_argument("--js-en", metavar="MS", help="when to evaluate --js (ms after the page started)")
+    ap.add_argument("--depurar", action="store_true", help="build with ./dash --debug and keep the program in --guardar "
+                    "(dashc --debug-info turns the latido's code offsets into lines)")
     ap.add_argument("--local", action="store_true",
                     help="the page from the emulated disk, without network: FS-UAE's bsdsocket.library makes the "
                          "emulated CPU many times slower (measure the A1200 like this)")
@@ -117,11 +121,14 @@ def main():
         env = dict(os.environ, DASH_TEST_AUTOCLOSE=str(args.segundos))
         if args.perfil:
             env["DASH_PROFILE"] = "1"
-        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--memcheck"] if args.memcheck else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
+        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--memcheck"] if args.memcheck else []) + (["--debug"] if args.depurar else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
                            cwd=ROOT, env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("compile failed:\n" + r.stdout + r.stderr)
         size = exe.stat().st_size
+        if args.depurar and args.guardar:
+            Path(args.guardar).mkdir(parents=True, exist_ok=True)
+            shutil.copy(exe, Path(args.guardar) / "programa")
         modo = ["tls-lento"] if args.tls_lento else ["tls"] if args.tls else []
         server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -151,6 +158,9 @@ def main():
                 prog_args[0] += " CAJAS=" + args.cajas
             if args.cajas_en:
                 prog_args[0] += " CAJASEN=" + args.cajas_en
+            if args.js:
+                from urllib.parse import quote
+                prog_args[0] += " JS=" + quote(args.js, safe="") + " JSEN=" + (args.js_en or "0")
             if args.poca_memoria:
                 prog_args[0] += " POCAMEMORIA=" + args.poca_memoria
             if args.gc_siempre:

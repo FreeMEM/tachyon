@@ -33,7 +33,7 @@ end
     var sels: [Selector] = []
     for t in css_partir(texto, 44)
         if str_trim(t) != ""
-            sels.push(css_selector(str_trim(t)))
+            sels.push(css_selector(t))
         end
     end
     for h in raiz.hijos
@@ -442,7 +442,7 @@ end
         if str_trim(t) == ""
             return false
         end
-        sel = css_selector(str_trim(t))
+        sel = css_selector(t)
         if sel == nil or not estilo_puede_cumplirse(sel)
             return false
         end
@@ -454,7 +454,7 @@ end
 # matches(): ¿n cumple alguno de los selectores?
 @export func jsdom_cumple(n: Nodo, texto: String) -> Bool
     for t in css_partir(texto, 44)
-        sel = css_selector(str_trim(t))
+        sel = css_selector(t)
         if sel != nil and estilo_cumple(n, sel)
             return true
         end

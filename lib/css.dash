@@ -285,6 +285,26 @@ func _css_nombre(c: Int) -> Bool
     return (c >= 97 and c <= 122) or (c >= 65 and c <= 90) or (c >= 48 and c <= 57) or c == 45 or c == 95 or c >= 160 or c == 92
 end
 
+# Sin los blancos de los lados, salvo uno escapado al final ("#\ ": el id es un espacio, en Acid3)
+func _css_recortar(texto: String) -> String
+    s = str_trim(texto)
+    if str_ends(s, "\\") and s.length < texto.length
+        barras = 0
+        k = s.length - 1
+        while k >= 0 and str_code(s, k) == 92
+            barras = barras + 1
+            k = k - 1
+        end
+        if barras % 2 == 1
+            p = str_find(texto, s) + s.length
+            if p < texto.length
+                s = s + texto[p:p + 1]
+            end
+        end
+    end
+    return s
+end
+
 # Dónde acaba el nombre que empieza en i: letras, cifras, "-", "_", Latin-1 alto y escapes (CSS Syntax 3:
 # "\" y un carácter, o "\" y de 1 a 6 cifras hex con un espacio detrás que no cuenta)
 func _css_fin_nombre(s: String, i: Int) -> Int
@@ -306,6 +326,10 @@ func _css_fin_nombre(s: String, i: Int) -> Int
                 j = k
             end
         elif c != 92 and _css_nombre(c)
+            j = j + 1
+        elif c == 92
+            # una "\" al final (CSS Syntax 3: un escape sin nada detrás) va en el nombre; antes no avanzaba y quien
+            # llama daba vueltas sin fin (el selector "#\ " de Acid3, recortado a "#\")
             j = j + 1
         else
             return j
@@ -366,7 +390,7 @@ end
 
 # Un selector completo (sin comas); nil si no se entiende
 func css_selector(texto: String) -> Selector
-    s = str_trim(texto)
+    s = _css_recortar(texto)
     n = s.length
     var partes: [SelParte] = []
     actual = _sel_simple_vacio()

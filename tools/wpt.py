@@ -20,7 +20,7 @@ import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang" / ".worktrees" / "dashweb"))
+DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang"))
 WPT = Path(os.environ.get("WPT", Path.home() / ".cache" / "dashweb" / "wpt"))
 PUERTO = 40880
 sys.path.insert(0, str(DASH / "tools"))

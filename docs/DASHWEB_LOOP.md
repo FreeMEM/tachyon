@@ -5345,3 +5345,22 @@ Formato:
   llamadas Documento(...) por orden desplazaban los campos de detrás (js, cambios, pagina...). Ahora va al final.
   Desde 4787ec0 de Dash (PR #82) los dos compiladores dan error si un constructor deja fuera un campo obligatorio.
   Tests de documento: 8/8.
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 37/100
+- El usuario: "ya superaste las pruebas ACID pero quedan las gordas, las que pasan Chrome". Acid2 sí; Acid3 nunca se
+  había medido. En acid3.acidtests.org Tachyon se quedaba en blanco: tras los scripts, la lectura del CSS daba vueltas
+  sin fin con "#\ { ... }" (un id que es un espacio escapado). El selector se recortaba a "#\" y _css_fin_nombre no
+  avanzaba sobre una "\" final. Ahora la "\" final va en el nombre y el recorte deja un blanco escapado
+  (lib/css.dash _css_recortar; jsdom ya no recorta antes de css_selector). test_css_escapes, con los dos casos.
+- Acid3 en tests/pages/acid3 (la página y sus ficheros; como Acid2) y servida en /acid3/ por tests/servers/http.py
+  con los tipos de acid3.acidtests.org. Para medirla: tools/medir_visor.py --pagina /acid3/ --js EXPR --js-en MS
+  (dashweb JS= y JSEN=: un setTimeout en la página que escribe la expresión con console.log). Y --depurar: compila con
+  --debug y guarda el programa (dashc --debug-info pasa las posiciones del latido a líneas). wpt.py, bench_js.py y
+  traza.py, con el Dash de main.
+- Nota: 37/100 en la máquina RTG ancha. Los fallos, por grupos: unos 30 por contentDocument de <iframe>/<object>
+  (getTestDocument: "cannot read property 'documentElement' of undefined"; también los de SVG, 74-79); DOM:
+  DocumentType.nodeType (18), las constantes de DOMException (19, 25), getElementById con \0 (20), tagName de
+  createElementNS con prefijo (21), createElement('<div>') sin excepción (22, 23), NodeIterator/TreeWalker (04, 05);
+  formularios (49-58: tBodies, controles, radio, defaultSelected); white-space: pre-wrap calculado (00); httpEquiv
+  (62); surrogates sueltos (68); los data: de <script src> vacíos (97); setMilliseconds() sin argumentos (86); dos
+  "timeout" de red (69, 80) y "not a function" (08, 26, 30, 51, 57, 98).

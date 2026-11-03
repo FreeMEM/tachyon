@@ -61,6 +61,8 @@ def main():
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
+    ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
+                    "(e.g. file:///DH0/p1, to try file: addresses)")
     ap.add_argument("--local", action="store_true",
                     help="the page from the emulated disk, without network: FS-UAE's bsdsocket.library makes the "
                          "emulated CPU many times slower (measure the A1200 like this)")
@@ -159,7 +161,7 @@ def main():
             if args.local:
                 # the page goes to the disk as a second "program" (DH0:p1; running it just fails)
                 programs.append(str(ROOT / "tests" / "pages" / args.pagina))
-                prog_args = ["DH0:p1", ""]
+                prog_args = [args.direccion or "DH0:p1", ""]
                 red = ""
             fondo = []
             if args.acciones:

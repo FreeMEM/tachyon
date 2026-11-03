@@ -5443,3 +5443,17 @@ Formato:
   en una copia; tools/build_pegamento.sh con DASH_LINEA=gcc (cabecera de ./dash --gcc --cabecera; la librería en la
   misma ruta del @link, con build/pegamento-lib/linea), tests/run.py con DASH_LINEA=gcc y medir_visor --gcc. Aún sin
   arrancarlo en el emulador. Lo de file:/// lo descarta el usuario.
+
+### 2026-11-04 — Tarea 58 (parte): Tachyon por C arranca y hace lo mismo
+- Compilado con ./dash --gcc --fpu (medir_visor --gcc) en la máquina RTG ancha: Acid3 da 90/100 como el directo, la
+  página entera en unos 3 s en los dos, y las capturas son iguales píxel a píxel.
+- Batería entera con DASH_LINEA=gcc: 63/131, y los 68 que fallan solo por la línea de memcheck (el resto de la salida,
+  igual). Dos tipos, del camino por C según parece (avisada la sesión de Dash): strings temporales (dl_str_temp) que el
+  C devuelve a Dash y no se sueltan (1-8 por test), y los nodos que el C retiene para QuickJS (dl_retain/dl_release)
+  vivos al acabar (76-94 objetos en los tests con JavaScript).
+- Enlace por C: libpegamento.a es un solo objeto y un test sin todos los módulos pedía QuickJS, Hubbub o
+  documento_maquetar_por_js; y libimg.a (con Hubbub) iba antes que libpegamento.a. tests/run.py, en la línea gcc,
+  enlaza con -Wl,--gc-sections -Wl,--start-group (pedido a Dash que lo haga él por --gcc). La primera pasada, sin eso:
+  52/131.
+- Falta: paquete.sh por C, y medir_visor --gcc con el mismo enlace (el navegador entero sí enlaza: lleva todos los
+  módulos).

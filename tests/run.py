@@ -59,6 +59,11 @@ def compile_test(src: Path, memcheck: bool):
     # the compiler comes from $DASH, build/ is ours (imports: relative to the test file)
     env = dict(os.environ, PYTHONPATH=str(DASH) + os.pathsep + os.environ.get("PYTHONPATH", ""))
     extra = " ".join(directives(src, "cflags"))
+    if LINEA == "gcc":
+        # (mientras Dash no lo haga al enlazar por --gcc: libpegamento.a es un solo objeto y, sin quitar lo que no se usa,
+        # un test sin js.dash o documento.dash pedía QuickJS o documento_maquetar_por_js; y las librerías van en grupo
+        # porque libimg.a, con Hubbub, va antes que libpegamento.a. El camino directo ya solo toma lo que se usa)
+        extra = ("-Wl,--gc-sections -Wl,--start-group " + extra).strip()
     if extra:
         env["DASH_CFLAGS"] = (env.get("DASH_CFLAGS", "") + " " + extra).strip()
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT, env=env)

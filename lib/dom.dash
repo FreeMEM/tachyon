@@ -16,6 +16,14 @@ const DOM_TEXTO = 3
 const DOM_COMENTARIO = 8
 const DOM_DOCUMENTO = 9
 const DOM_FRAGMENTO = 11       # document.createDocumentFragment(): al añadirlo pasan sus hijos
+const DOM_TIPO_DOC = 10        # el doctype: su nombre, y publicId y systemId en sus atributos (tarea 41c; no se pinta)
+
+func dom_tipo_doc(nombre: String, publico: String, sistema: String) -> Nodo
+    n = dom_nodo(DOM_TIPO_DOC, nombre, "")
+    n.atributos.push(Atributo("publicid", publico))
+    n.atributos.push(Atributo("systemid", sistema))
+    return n
+end
 
 # lib/maqueta.dash: lo que dio maquetar un elemento al medir (_bloque_de con _midiendo): con la misma clave en la
 # misma maqueta no se maqueta otra vez, se ponen dos dibujos que lo resumen (_medida_poner)

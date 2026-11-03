@@ -8,7 +8,7 @@
 # expect-out: p: <p>uno</p><p>dos</p>
 # expect-out: entidades: a...b -> c & d
 # expect-out: html head body: html head body | id=x clase=y z
-# expect-out: doctype: html
+# expect-out: doctype: html | nodo 10 html
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/html5.dash"
@@ -40,6 +40,9 @@ Main
     d = dom_desde_html5("<!DOCTYPE html><title>t</title><div id=x class='y z'>a</div>")
     nombres = ""
     for h in d.hijos
+        if h.tipo != DOM_ELEMENTO
+            continue
+        end
         nombres = nombres + h.nombre
         for k in h.hijos
             nombres = nombres + " " + k.nombre
@@ -47,5 +50,5 @@ Main
     end
     div = dom_buscar(d, "div")
     Print "html head body: " + nombres + " | id=" + dom_atributo(div, "id") + " clase=" + dom_atributo(div, "class")
-    Print "doctype: " + d.texto
+    Print "doctype: " + d.texto + " | nodo " + d.hijos[0].tipo + " " + d.hijos[0].nombre
 end

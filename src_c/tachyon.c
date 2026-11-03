@@ -1453,6 +1453,7 @@ static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
     JSValue v;
     _JSDOM_ESTE;
+    if (n->tipo == 10) return _jsdom_cadena(ctx, n->nombre);   /* (un doctype: su nombre) */
     if (n->tipo != DOM_ELEMENTO)
         return JS_NewString(ctx, n->tipo == DOM_TEXTO ? "#text" : n->tipo == DOM_COMENTARIO ? "#comment"
                                  : n->tipo == DOM_FRAGMENTO ? "#document-fragment" : "#document");
@@ -1970,6 +1971,17 @@ static JSValue _jsdom_documento_nuevo(JSContext *ctx, JSValueConst this_val, int
     return v;
 }
 
+/* __dashweb_tipo_doc(nombre, publicId, systemId): document.implementation.createDocumentType (tarea 41c) */
+static JSValue _jsdom_tipo_doc(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *a = _jsdom_arg(ctx, argc, argv, 0), *b = _jsdom_arg(ctx, argc, argv, 1), *c = _jsdom_arg(ctx, argc, argv, 2);
+    JSValue v = JS_EXCEPTION;
+    if (a && b && c) v = _jsdom_objeto(ctx, jsdom_crear_tipo_doc((STRPTR)a, (STRPTR)b, (STRPTR)c));
+    if (a) _jsdom_soltar(a);
+    if (b) _jsdom_soltar(b);
+    if (c) _jsdom_soltar(c);
+    return v;
+}
+
 /* __dashweb_documento_html(html): el documento de un <iframe> u <object> con lo que trajo (tarea 41c) */
 static JSValue _jsdom_documento_html(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char *t = argc > 0 && !JS_IsUndefined(argv[0]) ? _js_texto(ctx, argv[0]) : strdup("");
@@ -2322,6 +2334,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_nuevo", JS_NewCFunction(m->ctx, _jsdom_documento_nuevo, "__dashweb_documento_nuevo", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_tipo_doc", JS_NewCFunction(m->ctx, _jsdom_tipo_doc, "__dashweb_tipo_doc", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_html", JS_NewCFunction(m->ctx, _jsdom_documento_html, "__dashweb_documento_html", 1));
     _jsdom_lienzo_clase(m->ctx);
     JS_SetPropertyStr(m->ctx, global, "__dashweb_lienzo", JS_NewCFunction(m->ctx, _jsdom_lienzo, "__dashweb_lienzo", 4));
@@ -2581,6 +2594,20 @@ static hubbub_error _h5_doctype(void *ctx, const hubbub_doctype *d, void **r) {
     LONG id = _h5_nuevo(h, 10);
     if (!id) return HUBBUB_NOMEM;
     if (!h->doctype && d->name.len) h->doctype = _h5_copia(d->name.ptr, d->name.len, FALSE);
+    /* (el nodo: su nombre, y publicId y systemId en el texto separados por \n; tarea 41c) */
+    _H5N(h, id)->nombre = _h5_copia(d->name.ptr, d->name.len, FALSE);
+    {
+        size_t lp = d->public_missing ? 0 : d->public_id.len, ls = d->system_missing ? 0 : d->system_id.len;
+        char *t = (char *)malloc(lp + ls + 2);
+        if (t) {
+            if (lp) memcpy(t, d->public_id.ptr, lp);
+            t[lp] = '\n';
+            if (ls) memcpy(t + lp + 1, d->system_id.ptr, ls);
+            t[lp + 1 + ls] = 0;
+        }
+        _H5N(h, id)->texto = t;
+        if (!t || !_H5N(h, id)->nombre) h->mal = TRUE;
+    }
     *r = (void *)id;
     return HUBBUB_OK;
 }

@@ -5416,3 +5416,30 @@ Formato:
   (38), :checked (43), media queries en el iframe (46), cursor no válido (47), clic en submit que envía (54),
   surrogates (68), document.open/write en el iframe (71, 72), SVG DOM (75-77), script en XHTML (80), data: escapado
   (97) y 98.
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 90/100
+- click() hace lo del control (checkbox y radio cambian antes del clic y vuelven si se cancela; input y change; un
+  botón de envío lanza submit y, si nadie lo cancela, form.submit()); un control desactivado no hace nada. :checked solo
+  en checkbox, radio y option.
+- Un valor que no es de los de una propiedad de palabras clave (white-space, position, float, clear, visibility,
+  cursor, text-transform...) no vale y la declaración se ignora (lib/css.dash css_valor_valido). getComputedStyle da
+  cursor, white-space, text-transform y visibility iniciales.
+- Un texto que sale de un elemento avisa como uno que entra (TOQUE_CONTENIDO "#texto"): :empty se recalcula.
+- document.write, mientras carga la página, escribe justo detrás de su <script> (antes, al final del body: el <map> de
+  Acid3 quedaba el último). innerHTML se lee con HTML5 (dentro de tablas y select, con el lector sencillo).
+- Media queries: color, min-color, max-color y monochrome (8 bits, 0 de monocromo). El documento de un marco usa como
+  ventana la caja del marco (atributo "vista" del documento, que pone su getComputedStyle).
+- El doctype es un nodo (DOM_TIPO_DOC, 10): Hubbub lo da con publicId y systemId; document.doctype, firstChild,
+  createDocumentType (nodo de verdad) y createDocument con él; open, write y close en un documento aparte; title de
+  cada documento. document.forms y links por nombre (links lleva los <area>).
+- Aviso: tres tests más ("sin memoria" en 8 MB: test_jsdom_scripts, test_jsdom_sin_doble, test_navegar_js) van con
+  zorro_iii_memory = 65536; ya son seis.
+- Tests nuevos: test_css_valores_validos, test_css_media_color, test_jsdom_doctype; test_html5 mira el nodo doctype.
+  Batería entera 130/131 (test_html5, ajustado y pasado aparte).
+- Quedan 10: clon de la tabla sin el blanco (29), clases con \r \f y U+2003 (33), media queries en el iframe (46,
+  medido sin la ventana del marco), surrogates (68), estilos de <style> que cambian en el iframe e img.height (72), SVG
+  DOM (75-77), script en XHTML (80), data: escapado (97).
+- Tarea 58 empezada (usuario, por la sesión freememlang): Tachyon compila y enlaza por C (./dash --gcc --fpu, 3,8 MB)
+  en una copia; tools/build_pegamento.sh con DASH_LINEA=gcc (cabecera de ./dash --gcc --cabecera; la librería en la
+  misma ruta del @link, con build/pegamento-lib/linea), tests/run.py con DASH_LINEA=gcc y medir_visor --gcc. Aún sin
+  arrancarlo en el emulador. Lo de file:/// lo descarta el usuario.

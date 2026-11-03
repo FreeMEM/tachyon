@@ -37,6 +37,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang"))
+# tarea 58: DASH_LINEA=gcc compila por el camino de C (./dash --gcc), con su build/pegamento-lib
+LINEA = os.environ.get("DASH_LINEA", "dashc")
 BUILD = ROOT / "build" / "tests"
 EMU_BASE = "fpu = 68882\n"          # the tests are built with --fpu (68020 + 68881)
 
@@ -48,7 +50,7 @@ def directives(src: Path, key: str):
 
 def compile_test(src: Path, memcheck: bool):
     exe = BUILD / src.stem
-    cmd = [sys.executable, str(DASH / "dash"), "--fpu", str(src), "-o", str(exe)]
+    cmd = [sys.executable, str(DASH / "dash"), "--fpu"] + (["--gcc"] if LINEA == "gcc" else []) + [str(src), "-o", str(exe)]
     if memcheck or any(l.strip() == "# memcheck" for l in src.read_text().splitlines()):
         cmd.append("--memcheck")
     for f in directives(src, "dash-flags"):
@@ -101,11 +103,13 @@ def build_pegamento_lib() -> bool:
     lib = ROOT / "build" / "pegamento-lib" / "libpegamento.a"
     sources = list((ROOT / "src_c").glob("*.c")) + list((ROOT / "lib").glob("*.dash")) + \
         list((ROOT / "src").glob("*.dash")) + [ROOT / "tools" / "build_pegamento.sh", DASH / "dashc" / "dashc"]
-    if lib.exists() and lib.stat().st_mtime >= max(f.stat().st_mtime for f in sources if f.exists()):
+    hecha = lib.parent / "linea"
+    if lib.exists() and hecha.exists() and hecha.read_text().strip() == LINEA and \
+            lib.stat().st_mtime >= max(f.stat().st_mtime for f in sources if f.exists()):
         return True
-    print("building build/pegamento-lib/libpegamento.a (tools/build_pegamento.sh)...", flush=True)
+    print(f"building build/pegamento-lib/libpegamento.a for {LINEA} (tools/build_pegamento.sh)...", flush=True)
     r = subprocess.run([str(ROOT / "tools" / "build_pegamento.sh")], capture_output=True, text=True,
-                       env=dict(os.environ, DASH=str(DASH)))
+                       env=dict(os.environ, DASH=str(DASH), DASH_LINEA=LINEA))
     if r.returncode != 0:
         print("tools/build_pegamento.sh failed:\n" + r.stdout + r.stderr, file=sys.stderr)
     return r.returncode == 0

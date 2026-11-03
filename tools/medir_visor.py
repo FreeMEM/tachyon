@@ -70,6 +70,8 @@ def main():
     ap.add_argument("--local", action="store_true",
                     help="the page from the emulated disk, without network: FS-UAE's bsdsocket.library makes the "
                          "emulated CPU many times slower (measure the A1200 like this)")
+    ap.add_argument("--gcc", action="store_true", help="build by the C path (./dash --gcc; tarea 58): needs the C-path "
+                    "build/pegamento-lib (tools/build_pegamento.sh with DASH_LINEA=gcc)")
     ap.add_argument("--memcheck", action="store_true", help="build with ./dash --memcheck (memory errors to the output)")
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
@@ -116,12 +118,20 @@ def main():
         catalogo = destino / "Tachyon.catalog"
         atexit.register(lambda: catalogo.unlink(missing_ok=True))   # (las demás pruebas, en el idioma de siempre)
 
+    # (build/pegamento-lib, de la línea que toca: dashc, o gcc con --gcc; tarea 58)
+    linea = "gcc" if args.gcc else "dashc"
+    hecha = ROOT / "build" / "pegamento-lib" / "linea"
+    if not hecha.exists() or hecha.read_text().strip() != linea:
+        r = subprocess.run([str(ROOT / "tools" / "build_pegamento.sh")], capture_output=True, text=True,
+                           env=dict(os.environ, DASH=str(DASH), DASH_LINEA=linea))
+        if r.returncode != 0:
+            sys.exit("tools/build_pegamento.sh failed:\n" + r.stdout + r.stderr)
     with tempfile.TemporaryDirectory(prefix="visor_") as tmp:
         exe = Path(tmp) / "visor"
         env = dict(os.environ, DASH_TEST_AUTOCLOSE=str(args.segundos))
         if args.perfil:
             env["DASH_PROFILE"] = "1"
-        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--memcheck"] if args.memcheck else []) + (["--debug"] if args.depurar else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
+        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--gcc"] if args.gcc else []) + (["--memcheck"] if args.memcheck else []) + (["--debug"] if args.depurar else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
                            cwd=ROOT, env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("compile failed:\n" + r.stdout + r.stderr)

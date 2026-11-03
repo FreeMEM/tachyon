@@ -245,6 +245,8 @@ func _jsdom_html_nodo(n: Nodo) -> String
         return _jsdom_escapar(n.texto, false)
     elif n.tipo == DOM_COMENTARIO
         return "<!--" + n.texto + "-->"
+    elif n.tipo == DOM_TIPO_DOC
+        return "<!DOCTYPE " + n.nombre + ">"
     elif n.tipo != DOM_ELEMENTO
         return ""
     end
@@ -488,6 +490,11 @@ end
 
 @export func jsdom_crear_comentario(t: String) -> Nodo
     return dom_nodo(DOM_COMENTARIO, "", t)
+end
+
+# document.implementation.createDocumentType()
+@export func jsdom_crear_tipo_doc(nombre: String, publico: String, sistema: String) -> Nodo
+    return dom_tipo_doc(nombre, publico, sistema)
 end
 
 @export func jsdom_crear_fragmento() -> Nodo

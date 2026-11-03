@@ -265,12 +265,60 @@ func css_declaraciones(texto: String) -> [Declaracion]
                 importante = true
                 valor = str_trim(valor[:q])
             end
-            if propiedad != "" and valor != ""
+            if propiedad != "" and valor != "" and css_valor_valido(propiedad, valor)
                 r.push(Declaracion(propiedad, valor, importante))
             end
         end
     end
     return r
+end
+
+# Las propiedades de palabras clave: un valor que no es de los suyos no vale y la declaración se ignora (la de antes
+# sigue), como en un navegador. Acid3 0 ("white-space: pre-wrap; white-space: x-bogus") y 47 (cursor: bogus). Con
+# var() o un prefijo -x- no se mira.
+const CSS_CLAVES = "white-space=normal pre nowrap pre-wrap pre-line break-spaces|position=static relative absolute fixed sticky|float=left right none inline-start inline-end|clear=none left right both inline-start inline-end|visibility=visible hidden collapse|cursor=auto default none context-menu help pointer progress wait cell crosshair text vertical-text alias copy move no-drop not-allowed grab grabbing all-scroll col-resize row-resize n-resize e-resize s-resize w-resize ne-resize nw-resize se-resize sw-resize ew-resize ns-resize nesw-resize nwse-resize zoom-in zoom-out|text-transform=none capitalize uppercase lowercase full-width full-size-kana|box-sizing=content-box border-box|table-layout=auto fixed|border-collapse=separate collapse|empty-cells=show hide|caption-side=top bottom|direction=ltr rtl|unicode-bidi=normal embed isolate bidi-override isolate-override plaintext"
+
+var _css_claves: {String: {String: Bool}} = nil
+
+func css_valor_valido(propiedad: String, valor: String) -> Bool
+    if _css_claves == nil
+        var d: {String: {String: Bool}} = {}
+        for par in str_split(CSS_CLAVES, "|")
+            q = str_find(par, "=")
+            var vs: {String: Bool} = {}
+            for v in str_split(par[q + 1:], " ")
+                vs[v] = true
+            end
+            d[par[:q]] = vs
+        end
+        _css_claves = d
+    end
+    if not _css_claves.has(propiedad)
+        return true
+    end
+    v = str_lower(str_trim(valor))
+    if v == "inherit" or v == "initial" or v == "unset" or v == "revert" or v == "revert-layer" or str_find(v, "var(") >= 0 or str_starts(v, "-")
+        return true
+    end
+    vs = _css_claves[propiedad]
+    if propiedad == "cursor"
+        # (url(...) [x y], ... y una palabra al final)
+        partes = css_partir(v, 44)
+        v = str_trim(partes[partes.length - 1])
+        if str_starts(v, "-")
+            return true
+        end
+        return vs.has(v)
+    end
+    if propiedad == "text-transform"
+        for t in str_split(v, " ")
+            if t != "" and not vs.has(t)
+                return false
+            end
+        end
+        return true
+    end
+    return vs.has(v)
 end
 
 func _sel_simple_vacio() -> SelSimple
@@ -1076,6 +1124,19 @@ func _css_media_rasgo(c: String) -> Bool
         return css_alto <= _css_media_px(valor)
     elif rasgo == "orientation"
         return (valor == "landscape") == (css_ancho >= css_alto)
+    elif rasgo == "color" or rasgo == "min-color" or rasgo == "max-color" or rasgo == "monochrome" or rasgo == "min-monochrome" or rasgo == "max-monochrome"
+        # 8 bits por componente de color, 0 de monocromo (Acid3 46)
+        tiene = 8
+        if str_ends(rasgo, "monochrome")
+            tiene = 0
+        end
+        quiere = Int(valor)
+        if str_starts(rasgo, "min-")
+            return tiene >= quiere
+        elif str_starts(rasgo, "max-")
+            return tiene <= quiere
+        end
+        return tiene == quiere
     elif rasgo == "prefers-color-scheme"
         return valor == "light"
     elif rasgo == "prefers-reduced-motion"

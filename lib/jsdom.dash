@@ -199,6 +199,9 @@ end
                 dom_apuntar_salida(padre, hijo)
                 dom_apuntar(dom_hermano_elemento(hijo, false), TOQUE_VECINO, "", "", "")
                 dom_apuntar(dom_hermano_elemento(hijo, true), TOQUE_VECINO, "", "", "")
+            else
+                # (un texto que sale cambia lo de dentro del padre, como uno que entra: :empty; Acid3 38)
+                dom_apuntar(padre, TOQUE_CONTENIDO, "#texto", "", "")
             end
             var nadie: Nodo = nil
             hijo.padre = nadie
@@ -269,7 +272,14 @@ end
     solo_texto = _jsdom_sin_elementos(n)
     _jsdom_vaciar(n)
     dom_apuntar(n, TOQUE_CONTENIDO, _jsdom_marca_texto(solo_texto), "", "")
-    trozo = dom_desde_html("<body>" + html)
+    # (con las reglas de HTML5, como una página: <table><tr> lleva su <tbody>, Acid3 29; dentro de una tabla o un
+    # select, donde el contexto cambia las reglas, con el lector sencillo)
+    var trozo: Nodo = nil
+    if n.nombre == "table" or n.nombre == "thead" or n.nombre == "tbody" or n.nombre == "tfoot" or n.nombre == "tr" or n.nombre == "colgroup" or n.nombre == "select" or n.nombre == "optgroup" or n.nombre == "html" or n.nombre == "head" or n.nombre == "template"
+        trozo = dom_desde_html("<body>" + html)
+    else
+        trozo = dom_desde_html5("<body>" + html)
+    end
     cuerpo = dom_buscar(trozo, "body")
     if cuerpo == nil
         return
@@ -520,9 +530,17 @@ func _jsdom_estilo_aparte(n: Nodo)
     if raiz == nil or (raiz.estilo != nil and (doc.toques == nil or doc.toques.length == 0))
         return
     end
+    # (con la ventana del marco: su ancho y alto, que pone el JavaScript en "vista"; para @media, vw y vh)
+    aw = css_vista_ancho()
+    ah = css_alto_vista()
+    vista = str_split(dom_atributo(doc, "vista"), " ")
+    if vista.length == 2
+        css_vista(Int(vista[0]), Int(vista[1]))
+    end
     var traidas: {String: String} = {}
     hojas = estilo_hojas_con(doc, "", traidas)
     estilo_aplicar(doc, hojas)
+    css_vista(aw, ah)
     var nada: [Toque] = nil
     doc.toques = nada
 end
@@ -686,7 +704,7 @@ func _jsdom_estilo_fresco(n: Nodo) -> {String: String}
     _jsdom_fresco_cuantos = doc.toques.length
     return _jsdom_fresco
 end
-const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s"
+const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s cursor=auto white-space=normal text-transform=none visibility=visible"
 
 # === XMLHttpRequest y fetch (tarea 37e2) ===
 # Las peticiones del JavaScript de cada motor van sin esperar (lib/http.dash); jsdom_peticiones_avanzar, en cada

@@ -4,6 +4,7 @@
 # nada. document.title y los defaultValue/defaultChecked de un <input> se pueden poner (React los pone al montar).
 # emu-server: http.py 40863
 # memcheck
+# emu-config: zorro_iii_memory = 65536
 # expect-out: en línea: 5
 # expect-out: con src: veces 1 actual yo onload 1 | movido: veces 1
 # expect-out: no existe: error | json: nada

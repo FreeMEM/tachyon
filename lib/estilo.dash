@@ -582,7 +582,11 @@ func _cumple_pseudo(n: Nodo, p: String) -> Bool
         end
         return false
     elif p == "checked"
-        return (n.nombre == "input" or n.nombre == "option") and dom_marcado(n)
+        if n.nombre == "input"
+            t = str_lower(dom_atributo(n, "type"))
+            return (t == "checkbox" or t == "radio") and dom_marcado(n)
+        end
+        return n.nombre == "option" and dom_marcado(n)
     elif p == "disabled"
         return _se_desactiva(n.nombre) and dom_tiene_atributo(n, "disabled")
     elif p == "enabled"

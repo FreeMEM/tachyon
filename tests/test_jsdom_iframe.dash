@@ -6,6 +6,7 @@
 # expect-out: html: cargado 1 | title true | body BODY
 # expect-out: estilo: 3 0 auto
 # expect-out: otra vez: 7
+# expect-out: :empty al quitar un texto: 0 1
 # expect-out: svg: cargas 2 | text 1 | mismo true true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
@@ -46,6 +47,10 @@ Main
     c = c + "var v = d.defaultView; 'estilo: ' + v.getComputedStyle(p, '').zIndex + ' ' + v.getComputedStyle(q, '').zIndex + ' ' + getComputedStyle(document.body).zIndex"
     Print js_evaluar(js, c, "t.js")
     Print js_evaluar(js, "st.firstChild.data = 'p { z-index: 7 }'; 'otra vez: ' + d.defaultView.getComputedStyle(q, '').zIndex", "t.js")
+    c = "var e = document.implementation.createHTMLDocument(''); var se = e.createElement('style'); se.textContent = 'p { z-index: 0 } :empty { z-index: 1 }'; e.head.appendChild(se);"
+    c = c + "var pe = e.body.appendChild(e.createElement('p')); pe.appendChild(e.createComment('c')); pe.appendChild(e.createTextNode('x')); var a1 = getComputedStyle(pe).zIndex;"
+    c = c + "pe.removeChild(pe.lastChild); ':empty al quitar un texto: ' + a1 + ' ' + getComputedStyle(pe).zIndex"
+    Print js_evaluar(js, c, "t.js")
     c = "var k = document.createElement('p'); var f = document.createElement('iframe'); f.onload = function () { cargas++; }; f.src = '/acid3/svg.xml'; k.appendChild(f);"
     c = c + "var o = document.createElement('object'); o.onload = function () { cargas++; }; o.data = '/acid3/svg.xml'; k.appendChild(o); document.body.appendChild(k); cargas = 0;"
     js_evaluar(js, c, "t.js")

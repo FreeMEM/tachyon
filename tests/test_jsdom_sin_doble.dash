@@ -4,6 +4,7 @@
 # le llegaba dos veces y el buscador de la página de un vídeo se pintaba dos veces. Con los de la página envueltos
 # como hace el polyfill, cada método hace lo suyo sin tocarlos; el MutationObserver sigue viendo cada cambio.
 # memcheck
+# emu-config: zorro_iii_memory = 65536
 # expect-out: llamadas: 0
 # expect-out: árbol: x,a,b,y,c,d,e,f
 # expect-out: mutaciones: 12

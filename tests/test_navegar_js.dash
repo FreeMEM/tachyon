@@ -3,6 +3,7 @@
 # a la página, y location.href sigue diciendo la de la página; <meta http-equiv="refresh"> con dirección (entre
 # comillas, en mayúsculas), sin ella (la misma, si espera un segundo o más) y la de dentro de un <noscript>.
 # memcheck
+# emu-config: zorro_iii_memory = 65536
 # expect-out: replace: http://x.com/dash 1 | href: http://x.com/a/b?q=1
 # expect-out: assign: http://x.com/a/c | href =: http://y.com/ | window.location =: http://x.com/a/w
 # expect-out: refresh: 3 http://x.com/z | 0 http://dd.com/ | sin dirección: 30 http://x.com/a/b?q=1 | []

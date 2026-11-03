@@ -1,0 +1,19 @@
+# Test: los rasgos color y monochrome de las media queries (tarea 41c, Acid3 46): 8 bits de color y 0 de monocromo;
+# un rasgo que no se conoce no vale, y una consulta mal escrita ("all and color") tampoco. Antes min-color no valía.
+# expect-out: a true b false c true d false e false g false h true i true j true k true
+# expect-out: p false q false u false v true w true x true
+# expect-out: vista 0: y1 false y4 true | 100: y1 true y4 false
+import "../lib/css.dash"
+
+func ver(nombre: String, q: String) -> String
+    return nombre + " " + css_media_vale(q)
+end
+
+Main
+    Print ver("a", "all and (min-color: 0)") + " " + ver("b", "not all and (min-color: 0)") + " " + ver("c", "only all and (min-color: 0)") + " " + ver("d", "(bogus)") + " " + ver("e", "all and (bogus)") + " " + ver("g", "only all and (bogus)") + " " + ver("h", "(bogus), all") + " " + ver("i", "all and (bogus), all") + " " + ver("j", "not all and (bogus), all") + " " + ver("k", "only all and (bogus), all")
+    Print ver("p", "all and color") + " " + ver("q", "all and min-color: 0") + " " + ver("u", "(max-color: 0) and (max-monochrome: 0)") + " " + ver("v", "(min-color: 1), (min-monochrome: 1)") + " " + ver("w", "all and (min-color: 0) and (min-monochrome: 0)") + " " + ver("x", "not all and (min-color: 1), not all and (min-monochrome: 1)")
+    css_vista(0, 0)
+    a = ver("y1", "all and (min-height: 1em) and (min-width: 1em)") + " " + ver("y4", "all and (max-height: 1em) and (max-width: 1em)")
+    css_vista(100, 100)
+    Print "vista 0: " + a + " | 100: " + ver("y1", "all and (min-height: 1em) and (min-width: 1em)") + " " + ver("y4", "all and (max-height: 1em) and (max-width: 1em)")
+end

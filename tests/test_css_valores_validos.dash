@@ -1,0 +1,17 @@
+# Test: un valor que no es de los de una propiedad de palabras clave no vale y la declaración se ignora (tarea 41c,
+# Acid3 0 y 47): "white-space: pre-wrap; white-space: x-bogus" se queda en pre-wrap, "cursor: bogus" no cuenta. Con
+# var(), un prefijo -x- o inherit sí vale. Antes ganaba siempre la última.
+# expect-out: white-space: 1 pre-wrap
+# expect-out: cursor: 0 | 1 pointer | 1 grab
+# expect-out: otros: true true true false true false
+import "../lib/css.dash"
+
+Main
+    d = css_declaraciones("white-space: pre-wrap; white-space: x-bogus")
+    Print "white-space: " + d.length + " " + d[0].valor
+    a = css_declaraciones("cursor: bogus")
+    b = css_declaraciones("cursor: url(x.cur) 2 2, pointer")
+    c = css_declaraciones("cursor: GRAB")
+    Print "cursor: " + a.length + " | " + b.length + " pointer | " + c.length + " grab"
+    Print "otros: " + css_valor_valido("position", "var(--p)") + " " + css_valor_valido("position", "-webkit-sticky") + " " + css_valor_valido("float", "inherit") + " " + css_valor_valido("float", "middle") + " " + css_valor_valido("text-transform", "uppercase full-width") + " " + css_valor_valido("visibility", "0")
+end

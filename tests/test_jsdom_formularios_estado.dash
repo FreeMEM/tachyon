@@ -9,6 +9,7 @@
 # expect-out: elements: 3 3 true true
 # expect-out: select: 1 1 | defaultSelected 1
 # expect-out: :checked true false
+# expect-out: click: true change 1 | cancelado false | radio true false | desactivado false | envío 1 false
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -35,5 +36,11 @@ Main
     c = c + "s2.appendChild(a); s2.appendChild(b); s2.appendChild(document.createElement('option')); s + ' | defaultSelected ' + s2.selectedIndex"
     Print js_evaluar(js, c, "t.js")
     Print js_evaluar(js, "':checked ' + r2.matches(':checked') + ' ' + r1.matches(':checked')", "t.js")
+    c = "var k = document.createElement('input'); k.type = 'checkbox'; document.body.appendChild(k); var cambios = 0; k.addEventListener('change', function () { cambios++; }); k.click();"
+    c = c + "var s = 'click: ' + k.checked + ' change ' + cambios; var k2 = document.createElement('input'); k2.type = 'checkbox'; k2.onclick = function (e) { e.preventDefault(); }; k2.click();"
+    c = c + "s += ' | cancelado ' + k2.checked; r1.click(); s += ' | radio ' + r1.checked + ' ' + r2.checked; var k3 = document.createElement('input'); k3.type = 'checkbox'; k3.disabled = true; k3.click();"
+    c = c + "s += ' | desactivado ' + k3.checked; var envios = 0; f.onsubmit = function (e) { envios++; e.preventDefault(); }; var b = document.createElement('input'); b.type = 'submit'; f.appendChild(b); b.click();"
+    c = c + "s + ' | envío ' + envios + ' ' + !!window.__dashweb_envio"
+    Print js_evaluar(js, c, "t.js")
     js_liberar(js)
 end

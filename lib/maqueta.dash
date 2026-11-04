@@ -1227,9 +1227,25 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
     # padre sin posicionar, salía bajo la cabecera; tarea 42g). Al medir y en las maquetas de un momento (flex, grid,
     # celdas, inline-block: luego se mueven), como antes, respecto a esta caja.
     es_caja = _midiendo > 0 or _abs_temporal > 0 or _caja_de_absolutos(n)
+    # (la caja: la de relleno de este; en <html> sin posicionar, el bloque contenedor inicial, que empieza en el origen
+    # de la página y mide la ventana, CSS 2.1 10.1: el map::after absoluto de Acid3 salía corrido el margen de <html>)
+    ox = x + ml + bl
+    oy = y + mt + bt
+    ow = interior + pl + pr
+    oh = pt + alto + pb
+    opl = pl
+    opt = pt
+    if n.nombre == "html" and _midiendo == 0 and _abs_temporal == 0 and _val(e, "position", "static") == "static"
+        opl = ox + pl
+        opt = oy + pt
+        ox = 0
+        oy = 0
+        ow = m.pagina.ancho
+        oh = css_alto_vista()
+    end
     for h in _absolutos_de(n)
         if es_caja or _val(h.estilo, "position", "absolute") == "fixed"
-            _absoluto(m, h, x + ml + bl, y + mt + bt, interior + pl + pr, pt + alto + pb, pl, pt)
+            _absoluto(m, h, ox, oy, ow, oh, opl, opt)
         else
             _abs_pend.push(h)
             _abs_px.push(x + ml + bl + pl)
@@ -1239,7 +1255,7 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
     if es_caja and _abs_pend.length > pend_inicio
         k = pend_inicio
         while k < _abs_pend.length
-            _absoluto(m, _abs_pend[k], x + ml + bl, y + mt + bt, interior + pl + pr, pt + alto + pb, _abs_px[k] - (x + ml + bl), _abs_py[k] - (y + mt + bt))
+            _absoluto(m, _abs_pend[k], ox, oy, ow, oh, _abs_px[k] - ox, _abs_py[k] - oy)
             k = k + 1
         end
         while _abs_pend.length > pend_inicio
@@ -3795,6 +3811,11 @@ func _absolutos_en(n: Nodo, r: [Nodo])
 end
 
 func _piezas(m: Maquetador, n: Nodo, e_padre: {String: String}, piezas: [Pieza], enlace: String)
+    # (lo de dentro de un <iframe> no se pinta nunca, ni texto ni elementos: los checkbox que la prueba 55 de Acid3
+    # mete en un iframe salían junto a las instrucciones)
+    if n.padre != nil and n.padre.tipo == DOM_ELEMENTO and n.padre.nombre == "iframe"
+        return
+    end
     if n.tipo == DOM_TEXTO
         _palabras_texto(m, n.texto, e_padre, piezas, enlace, n.padre, n)
         return

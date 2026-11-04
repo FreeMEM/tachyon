@@ -5457,6 +5457,9 @@ Formato:
   52/131.
 - Falta: paquete.sh por C, y medir_visor --gcc con el mismo enlace (el navegador entero sí enlaza: lleva todos los
   módulos).
+- 2026-11-04: con Dash main tras el PR #104 (lo que se pasa al C de @link ya no se escapa, y sus librerías van en grupo
+  y con --gc-sections por --gcc), la batería entera por C pasa 140/140, memcheck incluido. tests/run.py ya no pone
+  DASH_CFLAGS. Falta paquete.sh por C.
 
 ### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
 - getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).

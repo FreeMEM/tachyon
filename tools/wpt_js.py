@@ -70,6 +70,7 @@ def main():
     ap.add_argument("maximo", nargs="?", type=int, default=40)
     ap.add_argument("--desde", type=int, default=0)
     ap.add_argument("--guardar", action="store_true")
+    ap.add_argument("--salida", action="store_true", help="también lo demás que escribe el emulador (para ver un cuelgue)")
     ap.add_argument("--maquina", default="rtg", choices=sorted(MAQUINAS))
     a = ap.parse_args()
     todas = pruebas(a.carpeta)
@@ -110,6 +111,8 @@ def main():
         srv.shutdown()
         if exe.exists():
             exe.unlink()
+    if a.salida:
+        print((out.output or "")[-4000:])
     lineas = [l for l in (out.output or "").replace("\r", "").splitlines() if l.startswith("WPT ")]
     ficheros = [l for l in lineas if l.startswith("WPT FILE ")]
     pasan = total = 0

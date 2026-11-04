@@ -4,6 +4,7 @@
 # memcheck
 # expect-out: clases: 6 true true | id: true
 # expect-out: surrogate suelto: text 4
+# expect-out: getElementsByClassName fuera de Latin-1: 0
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -18,5 +19,6 @@ Main
     c = c + "'clases: ' + p.className.split(/[ \\t\\n\\r\\f]+/).length + ' ' + p.matches('.a.b.c.d.e.f\\\\2003g\\\\3000h') + ' ' + !p.matches('.g') + ' | id: ' + (document.querySelector('#x\\\\2003y') === q)"
     Print js_evaluar(js, c, "t.js")
     Print js_evaluar(js, "var e = document.createElement('input'); e.value = String.fromCharCode(0xd863) + 'text'; 'surrogate suelto: ' + e.value + ' ' + e.value.length", "t.js")
+    Print js_evaluar(js, "'getElementsByClassName fuera de Latin-1: ' + document.getElementsByClassName('\\u212a').length", "t.js")
     js_liberar(js)
 end

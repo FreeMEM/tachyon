@@ -34,7 +34,12 @@ end
     var sels: [Selector] = []
     for t in css_partir(texto, 44)
         if str_trim(t) != ""
-            sels.push(css_selector(t))
+            # (uno que no se entiende no casa con nada: getElementsByClassName("\u212a") llega como ".?" y era un
+            # selector nil que tiraba el programa; WPT dom/nodes/getElementsByClassName-14)
+            sel = css_selector(t)
+            if sel != nil
+                sels.push(sel)
+            end
         end
     end
     for h in raiz.hijos

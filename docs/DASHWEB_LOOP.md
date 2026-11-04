@@ -5492,6 +5492,10 @@ Formato:
   JS_WriteObject sin sitio). QuickJS guarda el texto de cada función para toString(), también el de las de dentro, y
   va en el bytecode: el preludio se compila ahora sin él (JS_STRIP_SOURCE en js_evaluar_guardado). Sus funciones
   dicen [native code], como las de un navegador. Batería entera 140/140.
+- Cierre de la tanda: dom/nodes 9140 → 10470/12653 (83 %). compareDocumentPosition entre árboles sueltos (desconectados
+  con el bit de "depende de la implementación", el orden fijo por árbol) y createHTMLDocument con su <!DOCTYPE html>
+  delante, como en los navegadores (createDocument y los XML lo quitan). test_jsdom_rango: el <html> de un documento
+  nuevo es ya el segundo hijo (endOffset 2). jsdom 22/22. La batería entera no se ha vuelto a pasar tras esto.
 
 ### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
 - getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).

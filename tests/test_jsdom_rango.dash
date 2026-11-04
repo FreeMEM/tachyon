@@ -4,7 +4,7 @@
 # memcheck
 # expect-out: iterador: excepción 1 | html
 # expect-out: quitando: B 1 2 3 4 3 2 1
-# expect-out: puntos: true 0 2 true | doc 1
+# expect-out: puntos: true 0 2 true | doc 2
 # expect-out: toString: Hello Wonderful KittyHow are you? | ful Kitty
 # expect-out: extract: 2 H1 EM ful true P 0 | queda Hello Wonder
 # expect-out: insertNode: 3 12 ABCDE 345 false true

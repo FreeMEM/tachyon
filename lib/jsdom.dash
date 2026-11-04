@@ -522,6 +522,10 @@ end
 @export func jsdom_documento_nuevo(titulo: String) -> Nodo
     d = dom_desde_html("<html><head><title>" + titulo + "</title></head><body></body></html>")
     d.atributos.push(Atributo("aparte", "1"))
+    # (con su <!DOCTYPE html> delante, como dice DOM)
+    t = dom_tipo_doc("html", "", "")
+    t.padre = d
+    d.hijos.insert(0, t)
     return d
 end
 

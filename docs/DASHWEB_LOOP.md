@@ -5553,3 +5553,11 @@ Formato:
   - #linktest debería verse blanco (:visited: la dirección la ha cargado el iframe);
   - unos 3 px del cuadrado rojo del fondo del <body> asoman junto al map::after (la posición en % del fondo);
   - la "X" de map::after con la fuente AcidAhemTest (font.ttf) es un cuadrado entero.
+
+### 2026-11-04 — Publicada la v0.9.0-alfa
+- Usuario: "se puede publicar, saca la release". Versión 0.9.0-alfa (72e6df7), PR #20 de dev a main (db1df96),
+  etiqueta v0.9.0-alfa y pre-release https://github.com/FreeMEM/tachyon/releases/tag/v0.9.0-alfa con tachyon.lha,
+  Tachyon.gz (SHA-256 f5a2f092...f993, comprobado tras subirlo) y los nueve catálogos; Dash 331db05 (2.3.1).
+- Sin pasar la batería entera tras los dos últimos commits (parada a los 15 min al cerrar el día; jsdom 22/22) ni
+  webs reales en el emulador: lo prueba el usuario en su CoffinOS, actualizando desde la 0.8.1 (dev de 8e72640 en
+  Traspaso:Tachyon/Tachyon, que dice 0.8.1-alfa; el de antes, Tachyon.081).

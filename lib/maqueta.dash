@@ -4013,6 +4013,12 @@ func _pieza_caja(m: Maquetador, n: Nodo, piezas: [Pieza], enlace: String)
     while m.pagina.dibujos.length > antes
         m.pagina.dibujos.pop()
     end
+    # vertical-align con una longitud (px, em de su letra): la caja sube eso sobre la línea base (las cajas en escalera
+    # de Acid3, con vertical-align: 2em; tarea 41c)
+    va = _val(n.estilo, "vertical-align", "baseline")
+    if va != "" and (str_ends(va, "px") or str_ends(va, "em")) and (str_code(va, 0) == 45 or (str_code(va, 0) >= 48 and str_code(va, 0) <= 57) or str_code(va, 0) == 46)
+        base = base + estilo_px(va, estilo_px(_val(n.estilo, "font-size", "16px"), 0, 0), 0)
+    end
     pz = Pieza("", w, h, base, 0, 0, 0, false, enlace, blanco, false, false)
     pz.caja = n
     pz.nodo = n

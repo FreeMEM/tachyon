@@ -8,6 +8,7 @@
 # expect-out: constructores: x 8 11
 # expect-out: igual: true false | normalize: 1 ab | replace: b c
 # expect-out: instrucción: 7 xml-stylesheet a b | 5 | comentario c | 5 | xml: DIV
+# expect-out: eventos: pasivo false | init false | sin iniciar 11 | onclick null | true true 3 | cdata 4 9
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -32,6 +33,11 @@ Main
     c = "var pi = document.createProcessingInstruction('xml-stylesheet', 'a b'); var e = ''; try { document.createProcessingInstruction('x', '?>'); } catch (x) { e = x.code; }"
     c = c + "var x = document.implementation.createDocument(null, 'r', null);"
     c = c + "'instrucción: ' + pi.nodeType + ' ' + pi.target + ' ' + pi.data + ' | ' + e + ' | comentario ' + document.createComment('c').textContent + ' | ' + (pi instanceof CharacterData ? 5 : 0) + ' | xml: ' + x.createElement('DIV').localName"
+    Print js_evaluar(js, c, "t.js")
+    c = "var t = document.createElement('div'); t.addEventListener('x', function (e) { e.preventDefault(); }, {passive: true}); var ev = new Event('x', {cancelable: true}); t.dispatchEvent(ev);"
+    c = c + "var e2 = new Event('y', {cancelable: true}); e2.preventDefault(); e2.initEvent('y', true, true); var e3 = document.createEvent('Event'), cod = 0; try { t.dispatchEvent(e3); } catch (x) { cod = x.code; }"
+    c = c + "var m = new MouseEvent('click', {ctrlKey: true, detail: 3}); var xd = document.implementation.createDocument(null, 'r', null); var cd = 0; try { document.createCDATASection('a'); } catch (x) { cd = x.code; }"
+    c = c + "'eventos: pasivo ' + ev.defaultPrevented + ' | init ' + e2.defaultPrevented + ' | sin iniciar ' + cod + ' | onclick ' + t.onclick + ' | ' + m.ctrlKey + ' ' + (m instanceof UIEvent) + ' ' + m.detail + ' | cdata ' + xd.createCDATASection('a').nodeType + ' ' + cd"
     Print js_evaluar(js, c, "t.js")
     js_liberar(js)
 end

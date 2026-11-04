@@ -5482,6 +5482,16 @@ Formato:
   pasan; en la batería fallaron, de nuevo, al final del grupo).
 - Lo que queda en dom/nodes, por grupos: las codificaciones de documentos que no son UTF-8 (characterSet, unos 300),
   los atributos con espacio de nombres (setAttributeNS/getAttributeNS: case.html), ids y clases fuera de Latin-1.
+- Las demás carpetas de dom (primera medida → ahora): events 217/618 → 370/618, ranges 132/209 (24 ficheros ni
+  arrancaban: faltaba createCDATASection) → 36624/44020, traversal 42/53, collections 8/55, lists 123/189.
+- Eventos: oyentes pasivos (y por omisión los de touchstart/touchmove/wheel en la ventana), initEvent reinicia, un
+  evento sin inicializar (de createEvent) o que ya se despacha da InvalidStateError, returnValue y cancelBubble, los
+  on* de HTML a null (sin los táctiles: 'ontouchstart' in window decide "móvil" en muchas webs), y las clases de
+  eventos con su herencia (MouseEvent es un UIEvent) y los campos de su diccionario. createCDATASection.
+- Aviso y arreglo: el preludio (245 KB) ya no cabía al compilarlo en el A1200 de 8 MB de los tests ("sin memoria":
+  JS_WriteObject sin sitio). QuickJS guarda el texto de cada función para toString(), también el de las de dentro, y
+  va en el bytecode: el preludio se compila ahora sin él (JS_STRIP_SOURCE en js_evaluar_guardado). Sus funciones
+  dicen [native code], como las de un navegador. Batería entera 140/140.
 
 ### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
 - getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).

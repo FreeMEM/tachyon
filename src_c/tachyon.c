@@ -662,9 +662,17 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
         char *fuente = _js_utf8(t);
         uint8_t *b;
         size_t largo;
-        if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+        if (!fuente) { m->error = strdup("sin memoria (texto del guardado)"); return (STRPTR)""; }
         _js_empieza();
-        f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+        /* sin el texto de sus funciones (el de toString): QuickJS guarda el de cada una, también el de las de dentro,
+           y va en el bytecode; con el preludio de 245 KB ya no cabía en un A1200 de 8 MB (tarea 41d). Sus funciones
+           dicen [native code], como las de un navegador */
+        {
+            int quitar = JS_GetStripInfo(m->rt);
+            JS_SetStripInfo(m->rt, quitar | JS_STRIP_SOURCE);
+            f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+            JS_SetStripInfo(m->rt, quitar);
+        }
         free(fuente);
         if (JS_IsException(f)) {
             m->error = _js_excepcion(m->ctx);
@@ -697,7 +705,11 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
             }
             js_free(m->ctx, b);
         }
-        if (!bc) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+        if (!bc) {
+            m->error = b ? NULL : _js_excepcion(m->ctx);
+            if (!m->error) m->error = strdup("sin memoria (bytecode del guardado)");
+            return (STRPTR)"";
+        }
     }
     _js_empieza();
     f = JS_ReadObject(m->ctx, bc, bc_largo, JS_READ_OBJ_BYTECODE);

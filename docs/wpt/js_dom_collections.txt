@@ -1,0 +1,61 @@
+WPT TOTAL dom/collections: 8/55 subpruebas en 11 de 11 ficheros
+
+WPT FILE dom/collections/HTMLCollection-as-prototype.html 0/2 OK
+WPT FILE dom/collections/HTMLCollection-delete.html 0/4 OK
+WPT FILE dom/collections/HTMLCollection-detached-root-gc.html 0/5 OK
+WPT FILE dom/collections/HTMLCollection-empty-name.html 0/7 OK
+WPT FILE dom/collections/HTMLCollection-iterator.html 3/6 OK
+WPT FILE dom/collections/HTMLCollection-live-item-removal.html 0/2 OK
+WPT FILE dom/collections/HTMLCollection-own-props.html 0/8 OK
+WPT FILE dom/collections/HTMLCollection-supported-property-indices.html 0/7 OK
+WPT FILE dom/collections/HTMLCollection-supported-property-names.html 0/6 OK
+WPT FILE dom/collections/domstringmap-supported-property-names.html 5/5 OK
+WPT FILE dom/collections/namednodemap-supported-property-names.html 0/3 OK
+
+WPT SUB FAIL dom/collections/HTMLCollection-as-prototype.html | HTMLCollection as a prototype should not allow getting .length on the base object | assert_throws_js: function "function() { obj.length; }" did not throw
+WPT SUB FAIL dom/collections/HTMLCollection-as-prototype.html | HTMLCollection as a prototype and setting own properties | assert_equals: expected (object) Element node <p id="named"></p> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-delete.html | Loose id | assert_equals: after expected (object) Element node <i id="foo"></i> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-delete.html | Strict id | assert_equals: before expected (object) Element node <i id="foo"></i> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-delete.html | Loose name | assert_equals: before expected (object) Element node <i id="foo"></i> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-delete.html | Strict name | assert_equals: before expected (object) Element node <i id="foo"></i> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-detached-root-gc.html | getElementsByTagName() | assert_equals: collection is still live expected 3 but got 2
+WPT SUB FAIL dom/collections/HTMLCollection-detached-root-gc.html | getElementsByTagNameNS() | assert_equals: collection is still live expected 3 but got 2
+WPT SUB FAIL dom/collections/HTMLCollection-detached-root-gc.html | getElementsByClassName() | assert_equals: collection is still live expected 4 but got 3
+WPT SUB FAIL dom/collections/HTMLCollection-detached-root-gc.html | getElementsByTagName() rooted at a descendant | assert_equals: collection is still live expected 4 but got 3
+WPT SUB FAIL dom/collections/HTMLCollection-detached-root-gc.html | children | assert_equals: collection is still live expected 4 but got 3
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Document.getElementsByTagName | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Element.getElementsByTagName | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Document.getElementsByTagNameNS | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Element.getElementsByTagNameNS | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Document.getElementsByClassName | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Element.getElementsByClassName | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-empty-name.html | Empty string as a name for Element.children | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-iterator.html | HTMLCollection does not have iterable's values method. | assert_false: expected false got true
+WPT SUB FAIL dom/collections/HTMLCollection-iterator.html | HTMLCollection does not have iterable's entries method. | assert_false: expected false got true
+WPT SUB FAIL dom/collections/HTMLCollection-iterator.html | HTMLCollection does not have iterable's forEach method. | assert_false: expected false got true
+WPT SUB FAIL dom/collections/HTMLCollection-live-item-removal.html | getElementsByClassName collection should update live when removing item(0) | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-live-item-removal.html | document.body.getElementsByClassName collection should update live when removing item(0) | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting non-array index while named property exists (loose) | assert_equals: expected (object) Element node <a id="named"></a> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting non-array index while named property exists (strict) | assert_equals: expected (object) Element node <b id="named"></b> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting non-array index while named property doesn't exist (loose) | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting non-array index while named property doesn't exist (strict) | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting array index while indexed property exists (loose) | assert_equals: expected (object) Element node <q></q> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting array index while indexed property exists (strict) | assert_equals: expected (object) Element node <s></s> but got (undefined) undefined
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting array index while indexed property doesn't exist (loose) | assert_equals: expected (undefined) undefined but got (string) "foo"
+WPT SUB FAIL dom/collections/HTMLCollection-own-props.html | Setting array index while indexed property doesn't exist (strict) | assert_throws_js: function "function() { c[0] = "foo"; }" did not throw
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Handling of property names that look like negative integers | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Handling of property names that look like small nonnegative integers | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Handling of property names that look like integers around 2^31 | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Handling of property names that look like integers around 2^32 | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Trying to set an expando that would shadow an already-existing indexed property | assert_false: expected false got true
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Trying to set an expando with an indexed property name past the end of the list | assert_equals: expected (undefined) undefined but got (number) 5
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-indices.html | Trying to delete an indexed property name should never work | assert_false: expected false got true
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Object.getOwnPropertyNames on HTMLCollection | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "6", "7", "some-id", "some-name", "another-id", "another-name"] length 12, go
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Object.getOwnPropertyNames on HTMLCollection with non-HTML namespace | assert_array_equals: lengths differ, expected array ["0"] length 1, got ["0", "length"] length 2
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Object.getOwnPropertyNames on HTMLCollection with expando object | assert_array_equals: lengths differ, expected array ["0", "someProperty"] length 2, got ["0", "length", "someProperty"] length 3
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Trying to set an expando that would shadow an already-existing named property | cannot read property 'value' of undefined
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Trying to set an expando that shadows a named property that gets added later | not a function
+WPT SUB FAIL dom/collections/HTMLCollection-supported-property-names.html | Trying to set a non-configurable expando that shadows a named property that gets added later | not a function
+WPT SUB FAIL dom/collections/namednodemap-supported-property-names.html | Object.getOwnPropertyNames on NamedNodeMap | assert_array_equals: lengths differ, expected array ["0", "1", "id", "class"] length 4, got ["length"] length 1
+WPT SUB FAIL dom/collections/namednodemap-supported-property-names.html | Object.getOwnPropertyNames on NamedNodeMap of input | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "id", "type", "value", "width"] length 8, got ["length"] length 1
+WPT SUB FAIL dom/collections/namednodemap-supported-property-names.html | Object.getOwnPropertyNames on NamedNodeMap after attribute removal | assert_array_equals: lengths differ, expected array ["0", "1", "2", "id", "type", "value"] length 6, got ["length"] length 1

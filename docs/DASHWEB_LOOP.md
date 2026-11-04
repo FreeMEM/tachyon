@@ -5503,3 +5503,14 @@ Formato:
 - Falta del dibujo: la escalera de las cajas (vertical-align: 2em de cada una), la posición de "100/100", el enlace de
   #linktest que debería verse blanco (:visited), los cuadrados rojos de la derecha y los tres cuadros negros junto a
   las instrucciones (los <object>).
+- Después: vertical-align con longitud en los inline-block (la escalera, ya como en la referencia); lo absoluto sin
+  antepasado posicionado va respecto al bloque contenedor inicial (origen de la página, tamaño de la ventana), no a la
+  caja de <html> (#linktest y map::after en su sitio); nada de dentro de un <iframe> se pinta (los tres cuadros negros
+  eran los checkbox que la prueba 55 mete en un iframe). Tests: test_maqueta_vertical_align,
+  test_maqueta_absoluto_inicial, test_maqueta_iframe_dentro; maqueta 33/33.
+- Queda del dibujo de Acid3 (para otra tanda; la nota ya es 100/100):
+  - el <span> float: right de #instructions va a la línea de debajo y sin su margin-right: -20px; un flotante que
+    aparece a mitad de línea debería subir a esa línea (CSS 2.1 9.5.1). Por eso se ve el cuadrado rojo de su fondo;
+  - #linktest debería verse blanco (:visited: la dirección la ha cargado el iframe);
+  - unos 3 px del cuadrado rojo del fondo del <body> asoman junto al map::after (la posición en % del fondo);
+  - la "X" de map::after con la fuente AcidAhemTest (font.ttf) es un cuadrado entero.

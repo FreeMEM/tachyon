@@ -16,6 +16,7 @@ const DOM_TEXTO = 3
 const DOM_COMENTARIO = 8
 const DOM_DOCUMENTO = 9
 const DOM_FRAGMENTO = 11       # document.createDocumentFragment(): al añadirlo pasan sus hijos
+const DOM_INSTRUCCION = 7      # <?destino datos?>: el destino en nombre, los datos en texto (tarea 41d; no se pinta)
 const DOM_TIPO_DOC = 10        # el doctype: su nombre, y publicId y systemId en sus atributos (tarea 41c; no se pinta)
 
 func dom_tipo_doc(nombre: String, publico: String, sistema: String) -> Nodo

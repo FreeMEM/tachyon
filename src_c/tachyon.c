@@ -1457,7 +1457,7 @@ static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
     JSValue v;
     _JSDOM_ESTE;
-    if (n->tipo == 10) return _jsdom_cadena(ctx, n->nombre);   /* (un doctype: su nombre) */
+    if (n->tipo == 10 || n->tipo == 7) return _jsdom_cadena(ctx, n->nombre);   /* (un doctype o una instrucción: su nombre) */
     if (n->tipo != DOM_ELEMENTO)
         return JS_NewString(ctx, n->tipo == DOM_TEXTO ? "#text" : n->tipo == DOM_COMENTARIO ? "#comment"
                                  : n->tipo == DOM_FRAGMENTO ? "#document-fragment" : "#document");
@@ -1776,13 +1776,13 @@ static JSValue _jsdom_outerHTML(JSContext *ctx, JSValueConst this_val) {
 /* nodeValue / data: the text of a text or comment node (null for the others) */
 static JSValue _jsdom_nodeValue(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
-    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO) return JS_NULL;
+    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_NULL;
     return _jsdom_cadena(ctx, n->texto);
 }
 
 static JSValue _jsdom_set_nodeValue(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     _JSDOM_ESTE_PONER("nodeValue");
-    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO) return JS_UNDEFINED;
+    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_UNDEFINED;
     return _jsdom_set_textContent(ctx, this_val, v);
 }
 
@@ -1986,6 +1986,16 @@ static JSValue _jsdom_documento_nuevo(JSContext *ctx, JSValueConst this_val, int
     if (!t) return JS_EXCEPTION;
     v = _jsdom_objeto(ctx, jsdom_documento_nuevo((STRPTR)t));
     _jsdom_soltar(t);
+    return v;
+}
+
+/* __dashweb_instruccion(destino, datos): document.createProcessingInstruction (tarea 41d) */
+static JSValue _jsdom_instruccion(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *a = _jsdom_arg(ctx, argc, argv, 0), *b = _jsdom_arg(ctx, argc, argv, 1);
+    JSValue v = JS_EXCEPTION;
+    if (a && b) v = _jsdom_objeto(ctx, jsdom_crear_instruccion((STRPTR)a, (STRPTR)b));
+    if (a) _jsdom_soltar(a);
+    if (b) _jsdom_soltar(b);
     return v;
 }
 
@@ -2352,6 +2362,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_nuevo", JS_NewCFunction(m->ctx, _jsdom_documento_nuevo, "__dashweb_documento_nuevo", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_instruccion", JS_NewCFunction(m->ctx, _jsdom_instruccion, "__dashweb_instruccion", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_tipo_doc", JS_NewCFunction(m->ctx, _jsdom_tipo_doc, "__dashweb_tipo_doc", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_html", JS_NewCFunction(m->ctx, _jsdom_documento_html, "__dashweb_documento_html", 1));
     _jsdom_lienzo_clase(m->ctx);

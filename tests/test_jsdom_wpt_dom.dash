@@ -7,6 +7,7 @@
 # expect-out: createEvent: NotSupportedError true
 # expect-out: constructores: x 8 11
 # expect-out: igual: true false | normalize: 1 ab | replace: b c
+# expect-out: instrucción: 7 xml-stylesheet a b | 5 | comentario c | 5 | xml: DIV
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -27,6 +28,10 @@ Main
     c = c + "var p = document.createElement('p'); p.appendChild(document.createTextNode('a')); p.appendChild(document.createTextNode('')); p.appendChild(document.createTextNode('b')); p.normalize();"
     c = c + "var d = document.createElement('i'); d.className = 'a b a c'; d.classList.replace('a', 'b');"
     c = c + "'igual: ' + s1 + ' ' + a.isEqualNode(b) + ' | normalize: ' + p.childNodes.length + ' ' + p.firstChild.data + ' | replace: ' + d.className"
+    Print js_evaluar(js, c, "t.js")
+    c = "var pi = document.createProcessingInstruction('xml-stylesheet', 'a b'); var e = ''; try { document.createProcessingInstruction('x', '?>'); } catch (x) { e = x.code; }"
+    c = c + "var x = document.implementation.createDocument(null, 'r', null);"
+    c = c + "'instrucción: ' + pi.nodeType + ' ' + pi.target + ' ' + pi.data + ' | ' + e + ' | comentario ' + document.createComment('c').textContent + ' | ' + (pi instanceof CharacterData ? 5 : 0) + ' | xml: ' + x.createElement('DIV').localName"
     Print js_evaluar(js, c, "t.js")
     js_liberar(js)
 end

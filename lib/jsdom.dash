@@ -73,12 +73,16 @@ func _jsdom_buscar(n: Nodo, sels: [Selector], todos: Bool, r: [Nodo]) -> Bool
 end
 
 @export func jsdom_texto(n: Nodo) -> String
+    # (el de un comentario o una instrucción, sus datos: DOM)
+    if n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION
+        return n.texto
+    end
     return dom_texto(n)
 end
 
 # textContent = t: los hijos se cambian por un texto
 @export func jsdom_poner_texto(n: Nodo, t: String)
-    if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO
+    if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION
         n.texto = t
         # su elemento cambia de contenido (un reloj de React: sin estilo entero, y si no cambia de forma, sin maqueta;
         # lo medido en él y en los de fuera ya no vale: tarea 37e6)
@@ -252,6 +256,8 @@ func _jsdom_html_nodo(n: Nodo) -> String
         return "<!--" + n.texto + "-->"
     elif n.tipo == DOM_TIPO_DOC
         return "<!DOCTYPE " + n.nombre + ">"
+    elif n.tipo == DOM_INSTRUCCION
+        return "<?" + n.nombre + " " + n.texto + ">"
     elif n.tipo != DOM_ELEMENTO
         return ""
     end
@@ -495,6 +501,11 @@ end
 
 @export func jsdom_crear_comentario(t: String) -> Nodo
     return dom_nodo(DOM_COMENTARIO, "", t)
+end
+
+# document.createProcessingInstruction()
+@export func jsdom_crear_instruccion(destino: String, datos: String) -> Nodo
+    return dom_nodo(DOM_INSTRUCCION, destino, datos)
 end
 
 # document.implementation.createDocumentType()

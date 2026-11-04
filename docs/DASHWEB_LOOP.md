@@ -5461,6 +5461,28 @@ Formato:
   y con --gc-sections por --gcc), la batería entera por C pasa 140/140, memcheck incluido. tests/run.py ya no pone
   DASH_CFLAGS. Falta paquete.sh por C.
 
+### 2026-11-04 — Tarea 41d: WPT de JavaScript (testharness.js), dom/nodes 49 % → 76 %
+- Corredor: tools/wpt_js.py (con un resources/testharnessreport.js propio que deja el resultado en __dashweb_wpt) y
+  tools/wpt_testharness.dash (cada página con su JavaScript hasta que testharness acaba o pasan 20 s). Resumen en
+  docs/wpt/js_<carpeta>.txt. WPT en ~/.cache/dashweb/wpt (sparse: resources, common, dom/nodes).
+- dom/nodes: 4286/8686 (205 de 246 ficheros: getElementsByClassName-14 tiraba el programa) → 6828/9001 (los 246).
+- Arreglos: un selector que no se entiende ya no tira el programa (jsdom_selector); classList según DOM (DOMTokenList,
+  validación, sin repetidos, mismo objeto) y relList; la ventana de un marco hereda de la de la página;
+  CharacterData (substringData, appendData, insertData, deleteData, replaceData), replaceChildren,
+  getElementsByTagNameNS, lookupNamespaceURI/lookupPrefix/isDefaultNamespace, XMLDocument; selectores mal formados
+  ("#", ".5cm", "div ++ p", "div >") dan DOMException SyntaxError, y getElementsByClassName escapa cifras y
+  símbolos; createEvent solo con los nombres de DOM; new Text/Comment/DocumentFragment/Document; isSameNode,
+  isEqualNode, normalize; ownerDocument de lo hecho por otro documento; about:blank, location null y contentType en
+  los documentos aparte (createElement en XML guarda las mayúsculas); Attr de createAttribute; prefix null;
+  instrucciones de procesamiento (DOM_INSTRUCCION, 7) y textContent de comentarios e instrucciones.
+- QuickJS: dos infinitos iguales por sus bits (js_deq): la FPU emulada de FS-UAE daba Infinity === Infinity falso y
+  testharness fallaba con cada 0 ("expected 0 but got 0").
+- Aviso: el selector más estricto también vale para las hojas: "#1a" o ".5cm" ya no casan (como en Chrome).
+- Tests: test_jsdom_wpt_dom, test_js_infinitos, test_jsdom_clases_unicode. Batería entera 137/140 (los 3, uno a uno,
+  pasan; en la batería fallaron, de nuevo, al final del grupo).
+- Lo que queda en dom/nodes, por grupos: las codificaciones de documentos que no son UTF-8 (characterSet, unos 300),
+  los atributos con espacio de nombres (setAttributeNS/getAttributeNS: case.html), ids y clases fuera de Latin-1.
+
 ### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
 - getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).
 - document.styleSheets y style.sheet/link.sheet: ownerNode, href, cssRules vivas (del texto del <style> cada vez),

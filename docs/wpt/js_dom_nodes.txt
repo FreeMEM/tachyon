@@ -1,12 +1,12 @@
-WPT TOTAL dom/nodes: 6585/8989 subpruebas en 246 de 246 ficheros
+WPT TOTAL dom/nodes: 6828/9001 subpruebas en 246 de 246 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
-WPT FILE dom/nodes/CharacterData-appendChild.html 4/9 OK
+WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
 WPT FILE dom/nodes/CharacterData-appendData.html 12/14 OK
 WPT FILE dom/nodes/CharacterData-data.html 0/16 OK
 WPT FILE dom/nodes/CharacterData-deleteData.html 16/18 OK
 WPT FILE dom/nodes/CharacterData-insertData.html 16/18 OK
-WPT FILE dom/nodes/CharacterData-remove.html 0/0 ERROR TypeError: not a function
+WPT FILE dom/nodes/CharacterData-remove.html 12/12 OK
 WPT FILE dom/nodes/CharacterData-replaceData.html 32/34 OK
 WPT FILE dom/nodes/CharacterData-substringData.html 26/28 OK
 WPT FILE dom/nodes/CharacterData-surrogates.html 0/8 OK
@@ -15,7 +15,7 @@ WPT FILE dom/nodes/ChildNode-before.html 39/45 OK
 WPT FILE dom/nodes/ChildNode-replaceWith.html 24/33 OK
 WPT FILE dom/nodes/Comment-constructor.html 11/16 OK
 WPT FILE dom/nodes/DOMImplementation-createDocument-no-browsing-context.html 0/5 OK
-WPT FILE dom/nodes/DOMImplementation-createDocument.html 178/434 OK
+WPT FILE dom/nodes/DOMImplementation-createDocument.html 272/434 OK
 WPT FILE dom/nodes/DOMImplementation-createDocumentType.html 3/82 OK
 WPT FILE dom/nodes/DOMImplementation-createHTMLDocument-with-saved-implementation.html 1/1 OK
 WPT FILE dom/nodes/DOMImplementation-createHTMLDocument.html 4/13 OK
@@ -28,11 +28,11 @@ WPT FILE dom/nodes/Document-constructor.html 3/5 OK
 WPT FILE dom/nodes/Document-createAttribute.html 22/36 OK
 WPT FILE dom/nodes/Document-createCDATASection.html 0/1 TIMEOUT 
 WPT FILE dom/nodes/Document-createComment.html 0/6 OK
-WPT FILE dom/nodes/Document-createElement-namespace.html 21/51 TIMEOUT 
-WPT FILE dom/nodes/Document-createElement.html 54/147 OK
+WPT FILE dom/nodes/Document-createElement-namespace.html 35/51 TIMEOUT 
+WPT FILE dom/nodes/Document-createElement.html 115/147 OK
 WPT FILE dom/nodes/Document-createElementNS.html 487/596 OK
 WPT FILE dom/nodes/Document-createEvent.https.html 228/279 OK
-WPT FILE dom/nodes/Document-createProcessingInstruction.html 1/12 OK
+WPT FILE dom/nodes/Document-createProcessingInstruction.html 10/12 OK
 WPT FILE dom/nodes/Document-createTextNode.html 0/6 OK
 WPT FILE dom/nodes/Document-createTreeWalker.html 4/5 OK
 WPT FILE dom/nodes/Document-doctype.html 2/2 OK
@@ -111,11 +111,11 @@ WPT FILE dom/nodes/Node-cloneNode.html 124/135 OK
 WPT FILE dom/nodes/Node-compareDocumentPosition.html 0/0 ERROR TypeError: not a function
 WPT FILE dom/nodes/Node-constants.html 4/8 OK
 WPT FILE dom/nodes/Node-contains.html 0/0 ERROR TypeError: not a function
-WPT FILE dom/nodes/Node-insertBefore.html 20/40 OK
+WPT FILE dom/nodes/Node-insertBefore.html 22/40 OK
 WPT FILE dom/nodes/Node-isConnected-shadow-dom.html 0/2 OK
 WPT FILE dom/nodes/Node-isConnected.html 1/2 OK
-WPT FILE dom/nodes/Node-isEqualNode.html 6/9 OK
-WPT FILE dom/nodes/Node-isSameNode.html 7/9 OK
+WPT FILE dom/nodes/Node-isEqualNode.html 7/9 OK
+WPT FILE dom/nodes/Node-isSameNode.html 8/9 OK
 WPT FILE dom/nodes/Node-lookupNamespaceURI.html 65/75 OK
 WPT FILE dom/nodes/Node-mutation-adoptNode.html 1/2 OK
 WPT FILE dom/nodes/Node-nodeName.html 5/6 OK
@@ -127,7 +127,7 @@ WPT FILE dom/nodes/Node-parentNode.html 5/5 OK
 WPT FILE dom/nodes/Node-properties.html 0/0 ERROR TypeError: not a function
 WPT FILE dom/nodes/Node-removeChild.html 0/28 OK
 WPT FILE dom/nodes/Node-replaceChild.html 12/29 OK
-WPT FILE dom/nodes/Node-textContent.html 22/81 OK
+WPT FILE dom/nodes/Node-textContent.html 47/81 OK
 WPT FILE dom/nodes/NodeList-Iterable.html 7/8 OK
 WPT FILE dom/nodes/NodeList-static-length-getter-tampered-1.html 0/1 TIMEOUT 
 WPT FILE dom/nodes/NodeList-static-length-getter-tampered-2.html 0/1 TIMEOUT 
@@ -229,14 +229,14 @@ WPT FILE dom/nodes/getElementsByClassName-whitespace-class-names.html 1/26 OK
 WPT FILE dom/nodes/insert-adjacent.html 8/14 OK
 WPT FILE dom/nodes/name-validation.html 0/5 OK
 WPT FILE dom/nodes/namespaced-attribute-mutations.html 8/24 OK
-WPT FILE dom/nodes/node-creation-realm.html 8/13 OK
+WPT FILE dom/nodes/node-creation-realm.html 9/13 OK
 WPT FILE dom/nodes/node-realm-adoption-after-frame-removal.html 3/3 OK
 WPT FILE dom/nodes/node-realm-mixed-across-adoption.html 3/4 OK
 WPT FILE dom/nodes/node-realm-preserved-across-adoption.html 5/5 OK
 WPT FILE dom/nodes/node-realm-preserved-across-frameless-adoption.html 4/4 OK
 WPT FILE dom/nodes/post-connection-steps-shadow-tree.html 0/1 OK
 WPT FILE dom/nodes/prepend-on-Document.html 2/5 OK
-WPT FILE dom/nodes/processing-instruction-attributes.html 14/140 OK
+WPT FILE dom/nodes/processing-instruction-attributes.html 28/140 OK
 WPT FILE dom/nodes/query-target-in-load-event.html 0/1 TIMEOUT 
 WPT FILE dom/nodes/querySelector-empty-id.html 0/1 OK
 WPT FILE dom/nodes/querySelector-id-nth-child.html 1/2 OK
@@ -244,7 +244,7 @@ WPT FILE dom/nodes/querySelector-mixed-case.html 0/1 OK
 WPT FILE dom/nodes/remove-and-adopt-thcrash.html 0/1 OK
 WPT FILE dom/nodes/remove-next-sibling-during-replace-with.html 0/1 OK
 WPT FILE dom/nodes/remove-unscopable.html 0/6 OK
-WPT FILE dom/nodes/rootNode.html 0/5 OK
+WPT FILE dom/nodes/rootNode.html 4/5 OK
 WPT FILE dom/nodes/svg-template-querySelector.html 3/3 OK
 
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix present (HTML) | not a function
@@ -253,11 +253,6 @@ WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix present (SVG) | not a func
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix absent (SVG) | not a function
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix present (MathML) | not a function
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix absent (MathML) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendChild.html | Text.appendChild(ProcessingInstruction) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendChild.html | Comment.appendChild(ProcessingInstruction) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendChild.html | ProcessingInstruction.appendChild(Text) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendChild.html | ProcessingInstruction.appendChild(Comment) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendChild.html | ProcessingInstruction.appendChild(ProcessingInstruction) | not a function
 WPT SUB FAIL dom/nodes/CharacterData-appendData.html | Text.appendData(non-ASCII) | assert_equals: expected (number) 25 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/CharacterData-appendData.html | Comment.appendData(non-ASCII) | assert_equals: expected (number) 25 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data initial value | assert_equals: expected (number) 4 but got (undefined) undefined
@@ -336,17 +331,11 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html | createHTMLDocument: proxied event handlers on body are null without a window | assert_equals: onafterprint should be null because there is no window expected (object) null but got (string) "1 + 2"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html | createHTMLDocument: iframe should not load in a document without a browsing context | assert_equals: contentWindow should be null before setting src expected null but got object "[object global]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,undefined,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,undefined,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"?foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"?foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"?foo",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"?foo",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for null,"?foo",null | InvalidCharacterError
@@ -372,41 +361,27 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,":",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,undefined,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","fo<o",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f:o:o",null,null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f:o:o",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","f:o:o",null | NamespaceError
@@ -419,16 +394,12 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","?:a",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","?:a",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","?:a",null | InvalidCharacterError
@@ -436,157 +407,87 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:a?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:a?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a?:a",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a?:a",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","test:xmlns",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","test:xmlns",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:h0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:h0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:test",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:test",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","l_:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","l_:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns:_0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:_0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns:a0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:a0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns0:test",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns0:test",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a.b:c",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a.b:c",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a-b:c",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a-b:c",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XMLNS",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XML:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XML:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XMLNS:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","prefix::local",null,null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xml:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","xmlns",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","xmlns:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,false,function "function TypeError() { [native code] }" | assert_throws_js: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" did not throw
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,null,undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,undefined,undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"",undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"",undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE html>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE html> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE bar>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE bar> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE baz>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE baz> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE quz>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE quz> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo",DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo",null,DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo",null,DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo","bar",DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo","bar",DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/1999/xhtml","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1999/xhtml","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/svg","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/svg","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/1998/Math/MathML","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1998/Math/MathML","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"html",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"html",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"svg",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"svg",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"math",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"math",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE html -//W3C//DTD XHTML 1.0 Transitional//EN http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE svg -//W3C//DTD SVG 1.1//EN http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE math -//W3C//DTD MathML 2.0//EN http://www.w3.org/Math/DTD/mathml2/mathml2.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
@@ -1026,7 +927,7 @@ WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replac
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (inputEncoding) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (charset) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): interfaces | assert_false: Should not be an XMLDocument expected false got true
-WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): metadata | assert_equals: expected "DIV" but got "div"
+WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): metadata | assert_equals: expected function "function () { if (new.target && F.__construir) return F.__construir(new.target, arguments); throw new TypeError('Illegal const
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("invalid^Name") | The localName provided ('invalid^Name') contains an invalid character.
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("invalid^Name") | The localName provided ('invalid^Name') contains an invalid character.
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("\\") | The localName provided ('\') contains an invalid character.
@@ -1042,34 +943,20 @@ WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttrib
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
 WPT SUB NOTRUN dom/nodes/Document-createCDATASection.html | document.createCDATASection must throw in HTML documents | 
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("\v") | assert_equals: textContent expected "\v" but got ""
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a -- b") | assert_equals: textContent expected "a -- b" but got ""
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a-") | assert_equals: textContent expected "a-" but got ""
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("-b") | assert_equals: textContent expected "-b" but got ""
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(null) | assert_equals: textContent expected "null" but got ""
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(undefined) | assert_equals: textContent expected "undefined" but got ""
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created SVG document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created MathML document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document by DOMParser ('text/xml') | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document by DOMParser ('application/xml') | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created SVG document by DOMParser ('image/svg+xml') | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("\v") | assert_equals: expected (number) 1 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a -- b") | assert_equals: expected (number) 6 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a-") | assert_equals: expected (number) 2 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("-b") | assert_equals: expected (number) 2 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(null) | assert_equals: expected (number) 4 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(undefined) | assert_equals: expected (number) 9 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in empty.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in empty.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in minimal_html.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in minimal_html.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in svg.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in svg.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in mathml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in mathml.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_xhtml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_xhtml.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_svg.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_svg.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_mathml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_mathml.svg | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.html | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.xhtml | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.xml | Test timed out
@@ -1078,75 +965,14 @@ WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created elemen
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xhtml | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xml | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.svg | Test timed out
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(undefined) in XML document | assert_equals: tagName expected "undefined" but got "UNDEFINED"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(undefined) in XHTML document | assert_equals: tagName expected "undefined" but got "UNDEFINED"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(null) in XML document | assert_equals: tagName expected "null" but got "NULL"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(null) in XHTML document | assert_equals: tagName expected "null" but got "NULL"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo") in XML document | assert_equals: tagName expected "foo" but got "FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo") in XHTML document | assert_equals: tagName expected "foo" but got "FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f1oo") in XML document | assert_equals: tagName expected "f1oo" but got "F1OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f1oo") in XHTML document | assert_equals: tagName expected "f1oo" but got "F1OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo1") in XML document | assert_equals: tagName expected "foo1" but got "FOO1"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo1") in XHTML document | assert_equals: tagName expected "foo1" but got "FOO1"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in HTML document | assert_equals: localName expected "f?" but got "f?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in XML document | assert_equals: localName expected "f?" but got "f?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in XHTML document | assert_equals: localName expected "f?" but got "f?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in HTML document | assert_equals: localName expected "foo?" but got "foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in XML document | assert_equals: localName expected "foo?" but got "foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in XHTML document | assert_equals: localName expected "foo?" but got "foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":") in XML document | assert_equals: namespaceURI expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":foo") in XML document | assert_equals: tagName expected ":foo" but got ":FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":foo") in XHTML document | assert_equals: tagName expected ":foo" but got ":FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:oo") in XML document | assert_equals: tagName expected "f:oo" but got "F:OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:oo") in XHTML document | assert_equals: tagName expected "f:oo" but got "F:OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:") in XML document | assert_equals: tagName expected "foo:" but got "FOO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:") in XHTML document | assert_equals: tagName expected "foo:" but got "FOO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:o:o") in XML document | assert_equals: tagName expected "f:o:o" but got "F:O:O"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:o:o") in XHTML document | assert_equals: tagName expected "f:o:o" but got "F:O:O"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo") in XML document | assert_equals: tagName expected "f::oo" but got "F::OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo") in XHTML document | assert_equals: tagName expected "f::oo" but got "F::OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo:") in XML document | assert_equals: tagName expected "f::oo:" but got "F::OO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo:") in XHTML document | assert_equals: tagName expected "f::oo:" but got "F::OO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:0") in XML document | assert_equals: tagName expected "foo:0" but got "FOO:0"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:0") in XHTML document | assert_equals: tagName expected "foo:0" but got "FOO:0"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:_") in XML document | assert_equals: tagName expected "foo:_" but got "FOO:_"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:_") in XHTML document | assert_equals: tagName expected "foo:_" but got "FOO:_"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:?") in HTML document | assert_equals: localName expected "foo:?" but got "foo:?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:?") in XML document | assert_equals: localName expected "foo:?" but got "foo:?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:?") in XHTML document | assert_equals: localName expected "foo:?" but got "foo:?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:foo?") in HTML document | assert_equals: localName expected "foo:foo?" but got "foo:foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:foo?") in XML document | assert_equals: localName expected "foo:foo?" but got "foo:foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:foo?") in XHTML document | assert_equals: localName expected "foo:foo?" but got "foo:foo?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in HTML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in XML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in XHTML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml") in XML document | assert_equals: tagName expected "xml" but got "XML"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml") in XHTML document | assert_equals: tagName expected "xml" but got "XML"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns") in XML document | assert_equals: tagName expected "xmlns" but got "XMLNS"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns") in XHTML document | assert_equals: tagName expected "xmlns" but got "XMLNS"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo") in XML document | assert_equals: tagName expected "xmlfoo" but got "XMLFOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo") in XHTML document | assert_equals: tagName expected "xmlfoo" but got "XMLFOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml:foo") in XML document | assert_equals: tagName expected "xml:foo" but got "XML:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml:foo") in XHTML document | assert_equals: tagName expected "xml:foo" but got "XML:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns:foo") in XML document | assert_equals: tagName expected "xmlns:foo" but got "XMLNS:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns:foo") in XHTML document | assert_equals: tagName expected "xmlns:foo" but got "XMLNS:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo:bar") in XML document | assert_equals: tagName expected "xmlfoo:bar" but got "XMLFOO:BAR"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo:bar") in XHTML document | assert_equals: tagName expected "xmlfoo:bar" but got "XMLFOO:BAR"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("svg") in XML document | assert_equals: tagName expected "svg" but got "SVG"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("svg") in XHTML document | assert_equals: tagName expected "svg" but got "SVG"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("math") in XML document | assert_equals: tagName expected "math" but got "MATH"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("math") in XHTML document | assert_equals: tagName expected "math" but got "MATH"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("FOO") in XML document | assert_equals: localName expected "FOO" but got "foo"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("FOO") in XHTML document | assert_equals: localName expected "FOO" but got "foo"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("mar?") in HTML document | assert_equals: localName expected "mar?" but got "mar?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("mar?") in XML document | assert_equals: localName expected "mar?" but got "mar?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("mar?") in XHTML document | assert_equals: localName expected "mar?" but got "mar?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in HTML document | assert_equals: localName expected "?nput" but got "?nput"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in XML document | assert_equals: localName expected "?nput" but got "?nput"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in XHTML document | assert_equals: localName expected "?nput" but got "?nput"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in HTML document | assert_equals: localName expected "?nput" but got "?nput"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in XML document | assert_equals: localName expected "?nput" but got "?nput"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?nput") in XHTML document | assert_equals: localName expected "?nput" but got "?nput"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?foo") in HTML document | The tag name provided ('?foo') is not a valid name.
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?foo") in XML document | The tag name provided ('?foo') is not a valid name.
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?foo") in XHTML document | The tag name provided ('?foo') is not a valid name.
@@ -1331,17 +1157,8 @@ WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | toucheve
 WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | createEvent('touchevent') should be initialized correctly. | 'expose legacy touch event APIs'
 WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | TOUCHEVENT should be an alias for TouchEvent. | 'expose legacy touch event APIs'
 WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | createEvent('TOUCHEVENT') should be initialized correctly. | 'expose legacy touch event APIs'
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "A" and data "?>". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "·A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "×A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "A×" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "\\A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "\f" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target 0 and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "0" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" threw object "TypeError: not a function" that is
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should get a ProcessingInstruction for target "xml:fail" and data "x". | not a function
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should get a ProcessingInstruction for target "A·A" and data "x". | not a function
-WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should get a ProcessingInstruction for target "a0" and data "x". | not a function
+WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "×A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
+WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "A×" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
 WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("\v") | assert_equals: expected (number) 1 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("a -- b") | assert_equals: expected (number) 6 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("a-") | assert_equals: expected (number) 2 but got (undefined) undefined
@@ -1609,7 +1426,7 @@ WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(frameset) | assert_tr
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(param) | assert_true: HTMLParamElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(unknown) | assert_true: original instanceof function () { if (new.target && F.__construir) return F.__construir(new.target, arguments); throw new TypeError('Illegal constr
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElementNS non-HTML | assert_equals: nodeName expected "foo:div" but got "DIV"
-WPT SUB FAIL dom/nodes/Node-cloneNode.html | createProcessingInstruction | not a function
+WPT SUB FAIL dom/nodes/Node-cloneNode.html | createProcessingInstruction | assert_equals: data expected (undefined) undefined but got (string) "data"
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttribute | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttributeNS | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | implementation.createDocument | assert_equals: charset equality expected (undefined) undefined but got (string) "UTF-8"
@@ -1625,8 +1442,6 @@ WPT SUB FAIL dom/nodes/Node-insertBefore.html | If node is a doctype and parent 
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | If node is a doctype and parent is a document with another doctype, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc, doctype)" did not throw
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | If node is a doctype and parent is a document with an element, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc, doctype)" did not throw
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | Calling insertBefore with second argument missing, or other than Node, null, or undefined, must throw TypeError. | assert_throws_js: function "function() { document.body.insertBefore(document.createTextNode("child")) }" did not throw
-WPT SUB FAIL dom/nodes/Node-insertBefore.html | Calling insertBefore with a non-Node first argument on a leaf node ProcessingInstruction must throw TypeError. | not a function
-WPT SUB FAIL dom/nodes/Node-insertBefore.html | Calling insertBefore an a leaf node ProcessingInstruction must throw HIERARCHY_REQUEST_ERR. | not a function
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | If the context node is a document, inserting a DocumentFragment that contains a text node or too many elements should throw a HierarchyRequestError. | assert_throws_dom: function "function() { doc.insertBefore(df, doc.firstChild); }" did not throw
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | If the context node is a document, inserting a DocumentFragment with an element if there already is an element child should throw a HierarchyRequestError. | assert_array_equals: lengths differ, expected array [null, Element node <html><head><title>title</title></head><body></body></html>, Comment node <!--foo-->] le
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | If the context node is a document and a doctype is following the reference child, inserting a DocumentFragment with an element should throw a HierarchyRequestEr | assert_array_equals: lengths differ, expected array [Comment node <!--foo-->, null] length 2, got [Comment node <!--foo-->] length 1
@@ -1641,9 +1456,7 @@ WPT SUB FAIL dom/nodes/Node-isConnected-shadow-dom.html | Node.isConnected in a 
 WPT SUB FAIL dom/nodes/Node-isConnected-shadow-dom.html | Node.isConnected in a open shadow tree | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/Node-isConnected.html | Test with iframes | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/Node-isEqualNode.html | elements should be compared on attribute namespace, local name, and value | assert_false: attribute with different namespace expected false got true
-WPT SUB FAIL dom/nodes/Node-isEqualNode.html | processing instructions should be compared on target and data | not a function
 WPT SUB FAIL dom/nodes/Node-isEqualNode.html | documents should not be compared based on properties | assert_true: default HTML documents, created different ways expected true got false
-WPT SUB FAIL dom/nodes/Node-isSameNode.html | processing instructions should be compared on reference | not a function
 WPT SUB FAIL dom/nodes/Node-isSameNode.html | attributes should be compared on reference | not a function
 WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | DocumentFragment should have null namespace, prefix "xml" | assert_equals: expected (object) null but got (string) "http://www.w3.org/XML/1998/namespace"
 WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | DocumentFragment should have null namespace, prefix "xmlns" | assert_equals: expected (object) null but got (string) "http://www.w3.org/2000/xmlns/"
@@ -1659,7 +1472,7 @@ WPT SUB FAIL dom/nodes/Node-mutation-adoptNode.html | Adopting an element into a
 WPT SUB FAIL dom/nodes/Node-nodeName.html | For Element nodes, nodeName should return the same as tagName. | assert_equals: expected "svg" but got "SVG"
 WPT SUB FAIL dom/nodes/Node-nodeValue.html | Text.nodeValue | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-nodeValue.html | Comment.nodeValue | assert_equals: expected "" but got "null"
-WPT SUB FAIL dom/nodes/Node-nodeValue.html | ProcessingInstruction.nodeValue | not a function
+WPT SUB FAIL dom/nodes/Node-nodeValue.html | ProcessingInstruction.nodeValue | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-normalize-2.html | normalize should move range's end boundary point into t1 | assert_equals: expected "Hello" but got "Hello, world"
 WPT SUB FAIL dom/nodes/Node-normalize-2.html | normalize should move range's start boundary point into t1 | assert_equals: expected "world" but got ""
 WPT SUB FAIL dom/nodes/Node-normalize.html | Empty text nodes separated by a non-empty text node | assert_array_equals: expected property 0 to be Text node "a" but got Text node "a" (expected array [Text node "a"] got [Text node "a"])
@@ -1714,13 +1527,6 @@ WPT SUB FAIL dom/nodes/Node-replaceChild.html | If the context node is a documen
 WPT SUB FAIL dom/nodes/Node-replaceChild.html | Replacing the document element with a DocumentFragment containing a single element should work. | assert_array_equals: lengths differ, expected array [null, Element node <a></a>] length 2, got [Element node <a></a>] length 1
 WPT SUB FAIL dom/nodes/Node-replaceChild.html | Replacing the document element with a DocumentFragment containing a single element and comments should work. | assert_array_equals: lengths differ, expected array [null, Comment node <!--a-->, Element node <b></b>, Comment node <!--c-->] length 4, got [Comment node <!--a
 WPT SUB FAIL dom/nodes/Node-replaceChild.html | Replacing the document element with a single element should work. | assert_array_equals: lengths differ, expected array [null, Element node <a></a>] length 2, got [Element node <a></a>] length 1
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | For an empty ProcessingInstruction, textContent should be the empty string | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | For a ProcessingInstruction with data, textContent should be that data | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | For a Comment with data, textContent should be that data | assert_equals: expected "abc" but got ""
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by parser, textContent should be null | assert_equals: expected (object) null but got (string) "\nNode.textContent\n\n\n\n\n// XXX mutation observers?\n// XXX Range gravitation?\n\nvar documents, doct
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by createDocument, textContent should be null | assert_equals: expected (object) null but got (string) ""
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by createHTMLDocument, textContent should be null | assert_equals: expected (object) null but got (string) "title"
@@ -1728,46 +1534,28 @@ WPT SUB FAIL dom/nodes/Node-textContent.html | For DocumentType created by parse
 WPT SUB FAIL dom/nodes/Node-textContent.html | For DocumentType created by script, textContent should be null | assert_equals: expected (object) null but got (string) ""
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element without children set to null | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element with empty text node as child set to null | assert_equals: expected "" but got "null"
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to null | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to null | not a function
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to null | assert_equals: expected "" but got "null"
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to null | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment without children set to null | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with empty text node as child set to null | assert_equals: expected "" but got "null"
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to null | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to null | not a function
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to null | assert_equals: expected "" but got "null"
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to null | assert_equals: expected "" but got "null"
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element without children set to undefined | assert_equals: expected "" but got "undefined"
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element with empty text node as child set to undefined | assert_equals: expected "" but got "undefined"
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to undefined | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to undefined | not a function
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to undefined | assert_equals: expected "" but got "undefined"
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to undefined | assert_equals: expected "" but got "undefined"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment without children set to undefined | assert_equals: expected "" but got "undefined"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with empty text node as child set to undefined | assert_equals: expected "" but got "undefined"
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to undefined | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to undefined | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to "" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to "" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to "" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to "" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to 42 | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to 42 | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to 42 | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to 42 | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to "abc" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to "abc" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to "abc" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to "abc" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to "<b>xyz</b>" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to "<b>xyz</b>" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to "<b>xyz</b>" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to "<b>xyz</b>" | not a function
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to undefined | assert_equals: expected "" but got "undefined"
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to undefined | assert_equals: expected "" but got "undefined"
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element without children set to "d\0e" | assert_equals: expected "d\0e" but got "d"
 WPT SUB FAIL dom/nodes/Node-textContent.html | Element with empty text node as child set to "d\0e" | assert_equals: expected "d\0e" but got "d"
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to "d\0e" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to "d\0e" | not a function
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with children set to "d\0e" | assert_equals: expected "d\0e" but got "d"
+WPT SUB FAIL dom/nodes/Node-textContent.html | Element with descendants set to "d\0e" | assert_equals: expected "d\0e" but got "d"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment without children set to "d\0e" | assert_equals: expected "d\0e" but got "d"
 WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with empty text node as child set to "d\0e" | assert_equals: expected "d\0e" but got "d"
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to "d\0e" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to "d\0e" | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | For a ProcessingInstruction, textContent should set the data | not a function
-WPT SUB FAIL dom/nodes/Node-textContent.html | For a Comment, textContent should set the data | assert_equals: expected "def" but got ""
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with children set to "d\0e" | assert_equals: expected "d\0e" but got "d"
+WPT SUB FAIL dom/nodes/Node-textContent.html | DocumentFragment with descendants set to "d\0e" | assert_equals: expected "d\0e" but got "d"
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by parser, setting textContent should do nothing | assert_equals: expected (object) null but got (string) "a"
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by createDocument, setting textContent should do nothing | assert_equals: expected (object) null but got (string) "a"
 WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by createHTMLDocument, setting textContent should do nothing | assert_equals: expected (object) null but got (string) "a"
@@ -2498,7 +2286,6 @@ WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced src at
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced type attribute does not change an input's state | assert_equals: expected "text" but got "file"
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced selected attribute does not change an option's selectedness | assert_equals: expected -1 but got 0
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced size attribute does not reset a select | assert_equals: expected -1 but got 0
-WPT SUB FAIL dom/nodes/node-creation-realm.html | Document.createProcessingInstruction() creates a node in the target document's realm | cannot read property 'apply' of undefined
 WPT SUB FAIL dom/nodes/node-creation-realm.html | Document.createCDATASection() creates a node in the target document's realm | cannot read property 'call' of undefined
 WPT SUB FAIL dom/nodes/node-creation-realm.html | DOMImplementation.createDocumentType() creates a node in the associated document's realm | cannot read property 'prototype' of undefined
 WPT SUB FAIL dom/nodes/node-creation-realm.html | DOMImplementation.createDocument() creates the document in the target realm | cannot read property 'prototype' of undefined
@@ -2509,41 +2296,34 @@ WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.append() with only on
 WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.prepend() with text as an argument, on a Document having no child. | assert_throws_dom: function "function() { parent.prepend('text'); }" did not throw
 WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.prepend() with two elements as the argument, on a Document having no child. | assert_throws_dom: function "function() { parent.prepend(x, y); }" did not throw
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction in main parser | assert_equals: expected (undefined) undefined but got (number) 8
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing rejects unquoted attributes from html-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from html-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "html-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: $ (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: _ (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: $foo (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: _bar (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: a$b (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: a_b (source: html-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): ABC and abc | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): abC and abc | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): x123A and x123a | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from html-dom | not a function
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from html-dom | assert_true: expected true got false
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "html-dom") | assert_equals: expected "attr=\"=\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "html-dom") | assert_equals: expected "attr=\"axx&quot;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "html-dom") | assert_equals: expected "attr=\"axx&gt;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "html-dom") | assert_equals: expected "attr=\"some&lt;&gt;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "html-dom") | assert_equals: expected "attr=\"'&quot;&quot;'\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "html-dom") | assert_equals: expected "attr=\"aa&quot;aa&quot;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): ABC and abc | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): abC and abc | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): x123A and x123a | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-parser | assert_equals: expected (undefined) undefined but got (number) 8
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from html-parser | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-parser | assert_equals: expected (undefined) undefined but got (number) 8
@@ -2553,59 +2333,52 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute 
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "html-parser") | assert_equals: expected "attr=\"some&lt;&gt;\"" but got "?target ?"
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "html-parser") | assert_equals: expected "attr=\"'&quot;&quot;'\"" but got "?target ?"
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "html-parser") | assert_equals: expected "attr=\"aa&quot;aa&quot;\"" but got "?target ?"
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | not a function
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: html-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): x123A and x123a | assert_false: expected false got true
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing rejects unquoted attributes from xml-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from xml-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-dom | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "xml-dom") | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: $ (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: _ (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: $foo (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: _bar (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: a$b (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Valid attribute name: a_b (source: xml-dom) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): ABC and abc | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): abC and abc | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): x123A and x123a | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-dom | not a function
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from xml-dom | assert_true: expected true got false
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "xml-dom") | assert_equals: expected "attr=\"=\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "xml-dom") | assert_equals: expected "attr=\"axx&quot;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "xml-dom") | assert_equals: expected "attr=\"axx&gt;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "xml-dom") | assert_equals: expected "attr=\"some&lt;&gt;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "xml-dom") | assert_equals: expected "attr=\"'&quot;&quot;'\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "xml-dom") | assert_equals: expected "attr=\"aa&quot;aa&quot;\"" but got ""
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-dom) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): ABC and abc | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): abC and abc | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): x123A and x123a | assert_false: expected false got true
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-parser | assert_equals: expected (undefined) undefined but got (number) 1
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from xml-parser | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-parser | assert_equals: expected (undefined) undefined but got (number) 1
@@ -2615,21 +2388,21 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute 
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "some<>" (source: "xml-parser") | assert_equals: expected (string) "attr=\"some&lt;&gt;\"" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "'""'" (source: "xml-parser") | assert_equals: expected (string) "attr=\"'&quot;&quot;'\"" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "aa"aa"" (source: "xml-parser") | assert_equals: expected (string) "attr=\"aa&quot;aa&quot;\"" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | not a function
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: = (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: a= (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: =x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: b> (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: > (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: >x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: /x/ (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: / (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x/ (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribute name: x (source: xml-parser) | assert_throws_dom: function "() => { pi.setAttribute(name, "value"); }" did not throw
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): x123A and x123a | assert_false: expected false got true
@@ -2647,7 +2420,3 @@ WPT SUB FAIL dom/nodes/remove-unscopable.html | remove() should be unscopable | 
 WPT SUB FAIL dom/nodes/remove-unscopable.html | prepend() should be unscopable | cannot read property of undefined
 WPT SUB FAIL dom/nodes/remove-unscopable.html | append() should be unscopable | cannot read property of undefined
 WPT SUB FAIL dom/nodes/rootNode.html | getRootNode() must return context object's shadow-including root if options's composed is true, and context object's root otherwise | assert_equals: getRootNode() must return context object's shadow-including root if options's composed is true expected Document node with 2 children but got Doc
-WPT SUB FAIL dom/nodes/rootNode.html | getRootNode() must return the context object when it does not have any parent | not a function
-WPT SUB FAIL dom/nodes/rootNode.html | getRootNode() must return the parent node of the context object when the context object has a single ancestor not in a document | not a function
-WPT SUB FAIL dom/nodes/rootNode.html | getRootNode() must return the document when a node is in document | not a function
-WPT SUB FAIL dom/nodes/rootNode.html | getRootNode() must return a document fragment when a node is in the fragment | not a function

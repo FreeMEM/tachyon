@@ -516,7 +516,9 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     cuerpo = dom_buscar(html, "body")
     _orden_arbol = 0
     _numerar(html)
-    for raiz in [html, cuerpo]
+    # (el lienzo lleva el fondo de <html>; solo si no tiene, el de <body>: CSS 2.1 14.2. Antes el de <body> pisaba al de
+    # <html> y el plateado de Acid3 salía blanco)
+    for raiz in [cuerpo, html]
         if raiz != nil and raiz.estilo.has("background-color") and css_color(raiz.estilo["background-color"]) >= 0
             p.fondo = css_color(raiz.estilo["background-color"])
         end
@@ -4247,6 +4249,11 @@ end
 
 # Palabras de un texto con el estilo de su elemento
 func _palabras_texto(m: Maquetador, texto_dom: String, e: {String: String}, piezas: [Pieza], enlace: String, elemento: Nodo, nodo_texto: Nodo)
+    # (lo de dentro de un <iframe> no se pinta nunca: es el texto de reserva de los navegadores sin marcos; el "FAIL" de
+    # los iframes de Acid3, tarea 41c)
+    if elemento != nil and elemento.nombre == "iframe"
+        return
+    end
     tam = estilo_px(e["font-size"], 0, 0)
     texto = texto_dom
     transformar = ""
@@ -4276,6 +4283,11 @@ func _palabras_texto(m: Maquetador, texto_dom: String, e: {String: String}, piez
     color = css_color(e["color"])
     if color < 0
         color = 0
+        # (transparente: el texto ocupa su sitio y no se pinta; -2 en la pieza, velado al dibujarla. Acid3 pone un
+        # "FAIL" con color: transparent)
+        if css_alfa(e["color"]) == 0
+            color = -2
+        end
     end
     # el subrayado: su color (text-decoration-color, o en el atajo), su grueso y su distancia; el de un antepasado en
     # línea vale también para lo de dentro (CSS: se propaga; un <a> con un <span> dentro), con su color
@@ -4923,6 +4935,10 @@ func _poner_linea(m: Maquetador, linea: [Pieza], x: Int, y: Int, ancho: Int, e: 
                 end
             end
             actual = _dibujo(D_TEXTO, cx, y + base - p.base + uno, p.ancho, p.alto, p.color)
+            if p.color == -2
+                actual.color = 0
+                actual.velado = true
+            end
             actual.texto = p.texto
             actual.fuente = p.fuente
             actual.estilo = p.estilo
@@ -4931,7 +4947,7 @@ func _poner_linea(m: Maquetador, linea: [Pieza], x: Int, y: Int, ancho: Int, e: 
             actual.espaciado = p.espaciado
             m.pagina.dibujos.push(actual)
         end
-        if p.tachado
+        if p.tachado and p.color != -2
             m.pagina.dibujos.push(_dibujo(D_LINEA, cx, y + base - p.base + uno + p.alto / 2, p.ancho, 1, p.color))
         end
         if p.sub_color >= 0 and p.texto != "" and p.ancho > 0

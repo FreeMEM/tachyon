@@ -5486,3 +5486,20 @@ Formato:
   <html> que no sale. Es lo siguiente.
 - Batería entera 122/135: los 13 que fallan, timeout seguidos al final, y pasan uno a uno. Aviso: tres baterías
   seguidas acaban así; a mirar si es el emulador compartido o algo que se acumula en tests/run.py.
+
+### 2026-11-04 — Tarea 41c: el dibujo de Acid3 se acerca a la referencia
+- "! important" con blancos entre ! e important (lib/css.dash): las cajas de Acid3 llevaban un borde de 2em rojo.
+- Colores no válidos se ignoran en color y background-color (hsl/hsla con comas sin %, rgb con % mezclados, #
+  de largo raro, -x- que no es -webkit- ni -moz-): el "FAIL" con color: hsla(0, 0, 0, 1) era transparente.
+- Texto con color transparente: ocupa su sitio y no se pinta (pieza con color -2, dibujo velado).
+- El texto de dentro de un <iframe> no se pinta (lib/maqueta.dash _palabras_texto).
+- El lienzo lleva el fondo de <html> antes que el de <body> (CSS 2.1 14.2): el plateado de Acid3.
+- Una hoja que llega con un tipo que no es text/css se ignora (lib/recursos.dash): el empty.css de Acid3 es HTML y
+  ponía el <h1> en rojo.
+- tests/run.py: los tests de una misma configuración van en una sesión del emulador con 45 s por test (eran 20): los
+  últimos del grupo daban TIMEOUT en cada batería entera. Era eso, no el emulador compartido.
+- Tests: test_maqueta_iframe_dentro (iframe, transparente, lienzo), test_css_valores_validos (colores, ! important).
+  Batería entera 126/136, los 10 que fallan con el TIMEOUT de arriba, pasan uno a uno. Acid3 sigue en 100/100.
+- Falta del dibujo: la escalera de las cajas (vertical-align: 2em de cada una), la posición de "100/100", el enlace de
+  #linktest que debería verse blanco (:visited), los cuadrados rojos de la derecha y los tres cuadros negros junto a
+  las instrucciones (los <object>).

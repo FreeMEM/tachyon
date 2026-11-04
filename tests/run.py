@@ -202,7 +202,9 @@ def main():
         if servers:
             time.sleep(1)       # let them listen
         try:
-            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 20 * len(group),
+            # (los de una misma configuración van en una sola sesión del emulador: 45 s por test; con 20, al crecer los de
+            # JavaScript, los últimos del grupo se quedaban sin tiempo y daban TIMEOUT en cada batería entera)
+            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 45 * len(group),
                                 kickstart=os.environ.get("DASH_KICKSTART"), extra_config=cfg, system=system or None)
         except RuntimeError as e:
             for src, _, _ in group:

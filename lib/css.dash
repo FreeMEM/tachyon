@@ -264,6 +264,16 @@ func css_declaraciones(texto: String) -> [Declaracion]
             if q >= 0
                 importante = true
                 valor = str_trim(valor[:q])
+            else
+                # (con blancos entre ! e important también vale: "1px solid ! important" de Acid3)
+                q = valor.length - 1
+                while q >= 0 and str_code(valor, q) != 33
+                    q = q - 1
+                end
+                if q >= 0 and str_lower(str_trim(valor[q + 1:])) == "important"
+                    importante = true
+                    valor = str_trim(valor[:q])
+                end
             end
             if propiedad != "" and valor != "" and css_valor_valido(propiedad, valor)
                 r.push(Declaracion(propiedad, valor, importante))
@@ -293,6 +303,9 @@ func css_valor_valido(propiedad: String, valor: String) -> Bool
         end
         _css_claves = d
     end
+    if propiedad == "color" or propiedad == "background-color"
+        return _css_color_valido(str_lower(str_trim(valor)))
+    end
     if not _css_claves.has(propiedad)
         return true
     end
@@ -319,6 +332,60 @@ func css_valor_valido(propiedad: String, valor: String) -> Bool
         return true
     end
     return vs.has(v)
+end
+
+# Un color que se puede leer (Acid3: "color: hsla(0, 0, 0, 1)" sin % y "color: -acid3-bogus" no valen y se queda el
+# de antes). Lo que no se sabe mirar aquí (un nombre, otras funciones) vale; lib/colores.dash lo lee después
+func _css_color_valido(v: String) -> Bool
+    if v == "" or str_find(v, "var(") >= 0 or v == "inherit" or v == "initial" or v == "unset" or v == "revert"
+        return v != ""
+    end
+    if str_starts(v, "#")
+        h = v[1:]
+        if h.length != 3 and h.length != 4 and h.length != 6 and h.length != 8
+            return false
+        end
+        i = 0
+        while i < h.length
+            if not _css_hex(str_code(h, i))
+                return false
+            end
+            i = i + 1
+        end
+        return true
+    end
+    if str_starts(v, "-")
+        return str_starts(v, "-webkit-") or str_starts(v, "-moz-")
+    end
+    p = str_find(v, "(")
+    if p > 0
+        f = str_trim(v[:p])
+        dentro = v[p + 1:]
+        if str_ends(dentro, ")")
+            dentro = dentro[:dentro.length - 1]
+        end
+        if str_find(dentro, ",") >= 0 and (f == "hsl" or f == "hsla" or f == "rgb" or f == "rgba")
+            args = css_partir(dentro, 44)
+            if args.length != 3 and args.length != 4
+                return false
+            end
+            if f == "hsl" or f == "hsla"
+                # (con comas, la saturación y la luminosidad van en %)
+                return str_ends(str_trim(args[1]), "%") and str_ends(str_trim(args[2]), "%")
+            end
+            # (rgb con comas: los tres en % o ninguno)
+            pc = 0
+            k = 0
+            while k < 3
+                if str_ends(str_trim(args[k]), "%")
+                    pc = pc + 1
+                end
+                k = k + 1
+            end
+            return pc == 0 or pc == 3
+        end
+    end
+    return true
 end
 
 func _sel_simple_vacio() -> SelSimple

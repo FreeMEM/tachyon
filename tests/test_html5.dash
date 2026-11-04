@@ -9,6 +9,7 @@
 # expect-out: entidades: a...b -> c & d
 # expect-out: html head body: html head body | id=x clase=y z
 # expect-out: doctype: html | nodo 10 html
+# expect-out: </tbody> en una celda: tbody,#3
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/html5.dash"
@@ -51,4 +52,15 @@ Main
     div = dom_buscar(d, "div")
     Print "html head body: " + nombres + " | id=" + dom_atributo(div, "id") + " clase=" + dom_atributo(div, "class")
     Print "doctype: " + d.texto + " | nodo " + d.hijos[0].tipo + " " + d.hijos[0].nombre
+    # (Acid3 29: </tbody> dentro de una celda cierra la celda, la fila y el tbody; el blanco va a la tabla)
+    tb = dom_buscar(dom_desde_html5("<body><table><tr><td><p></tbody> </table>"), "table")
+    r = ""
+    for h in tb.hijos
+        if h.tipo == DOM_ELEMENTO
+            r = r + h.nombre + ","
+        else
+            r = r + "#" + h.tipo
+        end
+    end
+    Print "</tbody> en una celda: " + r
 end

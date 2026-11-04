@@ -75,7 +75,7 @@ def compile_test(src: Path, memcheck: bool):
 def build_img_lib() -> bool:
     """build/img-lib/libimg.a (lib/imagen_dec.dash links it) when it is missing or older than its sources"""
     lib = ROOT / "build" / "img-lib" / "libimg.a"
-    sources = [f for d in ("tjpgd", "stb", "libwebp", "nanosvg") for f in (ROOT / "third_party" / d).rglob("*.[ch]")]
+    sources = [f for d in ("tjpgd", "stb", "libwebp", "nanosvg", "hubbub") for f in (ROOT / "third_party" / d).rglob("*.[ch]")]
     sources.append(ROOT / "tools" / "build_img.sh")
     if lib.exists() and lib.stat().st_mtime >= max(f.stat().st_mtime for f in sources):
         return True

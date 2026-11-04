@@ -5474,3 +5474,15 @@ Formato:
   compartido y pasan uno a uno.
 - Quedan 2: el clon de una tabla escrita con document.write pierde el blanco de después de </tbody> (29), y los
   surrogates sueltos (68: el DOM es Latin-1).
+
+### 2026-11-04 — Tarea 41c: Acid3 100/100 (la nota; el dibujo, aún no)
+- Hubbub (third_party/hubbub/libhubbub/src/treebuilder/in_row.c): </tbody>, </tfoot> y </thead> dentro de una fila
+  cierran la fila y se vuelven a procesar, como dice HTML5 (iba a "in table", que los ignoraba, y el blanco de detrás
+  acababa en la fila). tests/run.py rehace libimg.a cuando cambia Hubbub.
+- Un surrogate suelto que llega del JavaScript se quita al pasar a Latin-1 (de lo que permite Unicode).
+- Nota 100/100 en la máquina RTG ancha (la prueba 26 tarda 7,4 s). Pero el dibujo no es el de reference.html: los
+  marcos rojos de 2em de las cajas ("! important" con espacio no se lee), el "FAIL" grande (color hsla(0, 0, 0, 1) no
+  válido que se aplica: era transparente), el "FAIL" de dentro de los <iframe> que se pinta, el fondo plateado de
+  <html> que no sale. Es lo siguiente.
+- Batería entera 122/135: los 13 que fallan, timeout seguidos al final, y pasan uno a uno. Aviso: tres baterías
+  seguidas acaban así; a mirar si es el emulador compartido o algo que se acumula en tests/run.py.

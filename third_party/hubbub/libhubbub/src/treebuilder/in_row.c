@@ -145,6 +145,13 @@ hubbub_error handle_in_row(hubbub_treebuilder *treebuilder,
 			(void) act_as_if_end_tag_tr(treebuilder);
 		} else if (type == TABLE) {
 			err = act_as_if_end_tag_tr(treebuilder);
+		} else if (type == TBODY || type == TFOOT || type == THEAD) {
+			/* (Tachyon, tarea 41c: lo que dice HTML5 y faltaba; Acid3 29.
+			 * Con esa sección abierta, se cierra la fila y se vuelve a
+			 * procesar; si no, se ignora. Antes iba a "in table", que la
+			 * ignoraba, y un blanco de después acababa en la fila) */
+			if (element_in_scope(treebuilder, type, true))
+				err = act_as_if_end_tag_tr(treebuilder);
 		} else if (type == BODY || type == CAPTION || type == COL ||
 				type == COLGROUP || type == HTML ||
 				type == TD || type == TH) {

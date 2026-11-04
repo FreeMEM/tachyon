@@ -3,6 +3,7 @@
 # espacio al llegar al DOM (en Latin-1) y partía la clase.
 # memcheck
 # expect-out: clases: 6 true true | id: true
+# expect-out: surrogate suelto: text 4
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -16,5 +17,6 @@ Main
     c = c + "var q = document.createElement('i'); q.setAttribute('id', 'x\\u2003y'); document.body.appendChild(q);"
     c = c + "'clases: ' + p.className.split(/[ \\t\\n\\r\\f]+/).length + ' ' + p.matches('.a.b.c.d.e.f\\\\2003g\\\\3000h') + ' ' + !p.matches('.g') + ' | id: ' + (document.querySelector('#x\\\\2003y') === q)"
     Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "var e = document.createElement('input'); e.value = String.fromCharCode(0xd863) + 'text'; 'surrogate suelto: ' + e.value + ' ' + e.value.length", "t.js")
     js_liberar(js)
 end

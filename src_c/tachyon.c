@@ -333,6 +333,8 @@ static char *_js_utf8(const char *s) {
    in place): "EUR" for the euro, straight quotes, "-", "..."; "?" for the rest */
 static int _js_sin_parecidos = 0;   /* (1: todo lo que no cabe, "?": class e id; ver _jsdom_setAttribute) */
 static const char *_js_parecido(unsigned long c) {
+    /* (un surrogate suelto, que QuickJS da en WTF-8, se quita: es de lo que permite Unicode; Acid3 68) */
+    if (c >= 0xD800 && c <= 0xDFFF) return "";
     if (_js_sin_parecidos) return "?";
     switch (c) {
     case 8216: case 8217: case 8218: case 8242: return "'";

@@ -1734,14 +1734,22 @@ static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_v
     _JSDOM_ESTE;
     s = _jsdom_arg(ctx, argc, argv, 0);
     if (!s) return JS_EXCEPTION;
-    sel = (char *)malloc(strlen(s) * 2 + 2);
+    sel = (char *)malloc(strlen(s) * 6 + 2);
     if (!sel) { _jsdom_soltar(s); return JS_EXCEPTION; }
-    /* "a b" -> ".a.b" */
+    /* "a b" -> ".a.b"; una cifra al principio (o tras un "-"), escapada: ".\35 cm" (un selector no empieza por cifra) */
     for (p = s, q = sel; *p; ) {
         while (*p && (unsigned char)*p <= 32) p++;
         if (!*p) break;
         *q++ = '.';
-        while (*p && (unsigned char)*p > 32) *q++ = *p++;
+        if (*p == '-') *q++ = *p++;
+        if (*p >= '0' && *p <= '9') { *q++ = '\\'; *q++ = '3'; *q++ = *p++; *q++ = ' '; }
+        while (*p && (unsigned char)*p > 32) {
+            unsigned char c = (unsigned char)*p;
+            /* (lo que no va en un nombre de CSS, escapado: getElementsByClassName("a.b") es la clase "a.b") */
+            if (!(c >= 0x80 || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-'))
+                *q++ = '\\';
+            *q++ = *p++;
+        }
     }
     *q = 0;
     l = sel[0] ? jsdom_selector(n, (STRPTR)sel, TRUE) : NULL;

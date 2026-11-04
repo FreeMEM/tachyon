@@ -526,6 +526,11 @@ func css_selector(texto: String) -> Selector
                 vacio = true
                 pendiente = CSS_DESCENDIENTE
             end
+            # (un combinador sin nada antes, o dos seguidos, no vale: "div ++ p", "> p"; WPT dom/nodes)
+            if (c == 62 or c == 43 or c == 126) and vacio and (partes.length == 0 or (pendiente != CSS_DESCENDIENTE and pendiente != 0))
+                var mal: Selector = nil
+                return mal
+            end
             if c == 62
                 pendiente = CSS_HIJO
             elif c == 43
@@ -540,6 +545,16 @@ func css_selector(texto: String) -> Selector
             i = i + 1
         elif c == 35 or c == 46
             j = _css_fin_nombre(s, i + 1)
+            # (sin nombre, o uno que empieza por cifra o por "-" y cifra, no vale: "#", ".", ".5cm", "#1a")
+            if j == i + 1
+                var sin: Selector = nil
+                return sin
+            end
+            c1 = str_code(s, i + 1)
+            if ((c1 >= 48 and c1 <= 57) or (c1 == 45 and j > i + 2 and str_code(s, i + 2) >= 48 and str_code(s, i + 2) <= 57))
+                var cifra: Selector = nil
+                return cifra
+            end
             nombre = css_desescapar(s[i + 1:j])
             if c == 35
                 actual.id = nombre
@@ -623,6 +638,10 @@ func css_selector(texto: String) -> Selector
     end
     if not vacio
         partes.push(SelParte(actual, combinador))
+    elif pendiente != CSS_DESCENDIENTE and pendiente != 0
+        # (un combinador al final: "div >")
+        var colgado: Selector = nil
+        return colgado
     end
     if partes.length == 0
         var nada2: Selector = nil

@@ -60,6 +60,10 @@ In `third_party/quickjs/quickjs.c` (second commit of the repo, to see the diff):
    run time now come from a `volatile` double in memory. Data tables with `NAN` are fine. Pending:
    `setMilliseconds(NaN)` leaves the date at 1970.
 
+9. `js_deq` (`quickjs.c`, task 41d): for the same reason as 7, `Infinity === Infinity` was false in the emulator;
+   equality and `<=`/`>=` of two doubles compare the bits when both are infinite. WPT's testharness.js tells 0 from
+   -0 with `1/x === 1/y`, and every comparison with 0 failed ("expected 0 but got 0").
+
 ## Problems found
 
 - The ROM's double-precision maths libraries (`mathieeedoubbas`, the ones libnix's `-lm` uses) give

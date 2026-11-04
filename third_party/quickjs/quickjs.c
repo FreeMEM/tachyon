@@ -15600,6 +15600,20 @@ static int js_compare_bigint(JSContext *ctx, OPCodeEnum op,
     return res;
 }
 
+/* AmigaOS (Tachyon, tarea 41d): la FPU emulada de FS-UAE da Infinity == Infinity falso (cambio 7 de
+   docs/quickjs_amiga.md): dos infinitos iguales lo son por sus bits. En una FPU de verdad, == basta. */
+static inline BOOL js_deq(double a, double b)
+{
+    union { double d; uint64_t u; } x, y;
+    if (a == b)
+        return TRUE;
+    if (!isinf(a) || !isinf(b))
+        return FALSE;
+    x.d = a;
+    y.d = b;
+    return x.u == y.u;
+}
+
 static no_inline int js_relational_slow(JSContext *ctx, JSValue *sp,
                                         OPCodeEnum op)
 {
@@ -15713,14 +15727,14 @@ static no_inline int js_relational_slow(JSContext *ctx, JSValue *sp,
                 res = (d1 < d2); /* if NaN return false */
                 break;
             case OP_lte:
-                res = (d1 <= d2); /* if NaN return false */
+                res = (d1 <= d2) || js_deq(d1, d2); /* if NaN return false */
                 break;
             case OP_gt:
                 res = (d1 > d2); /* if NaN return false */
                 break;
             default:
             case OP_gte:
-                res = (d1 >= d2); /* if NaN return false */
+                res = (d1 >= d2) || js_deq(d1, d2); /* if NaN return false */
                 break;
             }
         }
@@ -15771,7 +15785,7 @@ static no_inline __exception int js_eq_slow(JSContext *ctx, JSValue *sp,
             } else {
                 d2 = JS_VALUE_GET_INT(op2);
             }
-            res = (d1 == d2);
+            res = js_deq(d1, d2);
         } else {
             res = js_compare_bigint(ctx, OP_eq, op1, op2);
         }
@@ -15982,14 +15996,14 @@ static BOOL js_strict_eq2(JSContext *ctx, JSValue op1, JSValue op2,
             if (isnan(d1) || isnan(d2)) {
                 res = isnan(d1) == isnan(d2);
             } else if (eq_mode == JS_EQ_SAME_VALUE_ZERO) {
-                res = (d1 == d2); /* +0 == -0 */
+                res = js_deq(d1, d2); /* +0 == -0 */
             } else {
                 u1.d = d1;
                 u2.d = d2;
                 res = (u1.u64 == u2.u64); /* +0 != -0 */
             }
         } else {
-            res = (d1 == d2); /* if NaN return false and +0 == -0 */
+            res = js_deq(d1, d2); /* if NaN return false and +0 == -0 */
         }
         goto done_no_free;
     case JS_TAG_SHORT_BIG_INT:

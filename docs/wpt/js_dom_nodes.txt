@@ -1,4 +1,4 @@
-WPT TOTAL dom/nodes: 6393/8989 subpruebas en 246 de 246 ficheros
+WPT TOTAL dom/nodes: 6585/8989 subpruebas en 246 de 246 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 4/9 OK
@@ -18,19 +18,19 @@ WPT FILE dom/nodes/DOMImplementation-createDocument-no-browsing-context.html 0/5
 WPT FILE dom/nodes/DOMImplementation-createDocument.html 178/434 OK
 WPT FILE dom/nodes/DOMImplementation-createDocumentType.html 3/82 OK
 WPT FILE dom/nodes/DOMImplementation-createHTMLDocument-with-saved-implementation.html 1/1 OK
-WPT FILE dom/nodes/DOMImplementation-createHTMLDocument.html 2/13 OK
+WPT FILE dom/nodes/DOMImplementation-createHTMLDocument.html 4/13 OK
 WPT FILE dom/nodes/DOMImplementation-hasFeature.html 137/137 OK
 WPT FILE dom/nodes/Document-URL.html 0/1 OK
 WPT FILE dom/nodes/Document-adoptNode.html 1/7 OK
 WPT FILE dom/nodes/Document-characterSet-normalization-1.html 0/0 sin acabar
 WPT FILE dom/nodes/Document-characterSet-normalization-2.html 0/339 OK
 WPT FILE dom/nodes/Document-constructor.html 3/5 OK
-WPT FILE dom/nodes/Document-createAttribute.html 0/36 OK
+WPT FILE dom/nodes/Document-createAttribute.html 22/36 OK
 WPT FILE dom/nodes/Document-createCDATASection.html 0/1 TIMEOUT 
 WPT FILE dom/nodes/Document-createComment.html 0/6 OK
-WPT FILE dom/nodes/Document-createElement-namespace.html 20/51 TIMEOUT 
-WPT FILE dom/nodes/Document-createElement.html 30/147 OK
-WPT FILE dom/nodes/Document-createElementNS.html 346/596 OK
+WPT FILE dom/nodes/Document-createElement-namespace.html 21/51 TIMEOUT 
+WPT FILE dom/nodes/Document-createElement.html 54/147 OK
+WPT FILE dom/nodes/Document-createElementNS.html 487/596 OK
 WPT FILE dom/nodes/Document-createEvent.https.html 228/279 OK
 WPT FILE dom/nodes/Document-createProcessingInstruction.html 1/12 OK
 WPT FILE dom/nodes/Document-createTextNode.html 0/6 OK
@@ -117,7 +117,7 @@ WPT FILE dom/nodes/Node-isConnected.html 1/2 OK
 WPT FILE dom/nodes/Node-isEqualNode.html 6/9 OK
 WPT FILE dom/nodes/Node-isSameNode.html 7/9 OK
 WPT FILE dom/nodes/Node-lookupNamespaceURI.html 65/75 OK
-WPT FILE dom/nodes/Node-mutation-adoptNode.html 0/2 OK
+WPT FILE dom/nodes/Node-mutation-adoptNode.html 1/2 OK
 WPT FILE dom/nodes/Node-nodeName.html 5/6 OK
 WPT FILE dom/nodes/Node-nodeValue.html 4/7 OK
 WPT FILE dom/nodes/Node-normalize-2.html 0/2 OK
@@ -229,7 +229,7 @@ WPT FILE dom/nodes/getElementsByClassName-whitespace-class-names.html 1/26 OK
 WPT FILE dom/nodes/insert-adjacent.html 8/14 OK
 WPT FILE dom/nodes/name-validation.html 0/5 OK
 WPT FILE dom/nodes/namespaced-attribute-mutations.html 8/24 OK
-WPT FILE dom/nodes/node-creation-realm.html 7/13 OK
+WPT FILE dom/nodes/node-creation-realm.html 8/13 OK
 WPT FILE dom/nodes/node-realm-adoption-after-frame-removal.html 3/3 OK
 WPT FILE dom/nodes/node-realm-mixed-across-adoption.html 3/4 OK
 WPT FILE dom/nodes/node-realm-preserved-across-adoption.html 5/5 OK
@@ -336,17 +336,17 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html | createHTMLDocument: proxied event handlers on body are null without a window | assert_equals: onafterprint should be null because there is no window expected (object) null but got (string) "1 + 2"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument-no-browsing-context.html | createHTMLDocument: iframe should not load in a document without a browsing context | assert_equals: contentWindow should be null before setting src expected null but got object "[object global]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,undefined,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,undefined,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,undefined,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"?foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"?foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"?foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"?foo",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"?foo",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for null,"?foo",null | InvalidCharacterError
@@ -372,41 +372,41 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,":",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,undefined,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","fo<o",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f:oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","f:o:o",null,null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","f:o:o",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","f:o:o",null | NamespaceError
@@ -419,16 +419,16 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:_",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","?:a",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","?:a",null,null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","?:a",null | InvalidCharacterError
@@ -436,157 +436,157 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument te
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a:a?",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:a?",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a:a?",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a?:a",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a?:a",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a?:a",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","test:xmlns",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","test:xmlns",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","test:xmlns",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:_",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:h0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:h0",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:h0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","_:test",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:test",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","_:test",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","l_:_",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","l_:_",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","l_:_",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns:_0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:_0",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:_0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns:a0",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:a0",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns:a0",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","ns0:test",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns0:test",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","ns0:test",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a.b:c",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a.b:c",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a.b:c",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","a-b:c",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a-b:c",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","a-b:c",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XMLNS",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XML:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XML:foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XML:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","XMLNS:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS:foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","XMLNS:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo:bar",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","prefix::local",null,null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: characterSet aliases for "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f:oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo:bar",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f:oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xml:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml:foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xml:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","xmlns",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","xmlns:foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns:foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","xmlns:foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","f1oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f1oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f1oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo1",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo1",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","foo1",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:",":foo",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","f:oo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f:oo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","f:oo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","foo:",null,"INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" threw object "NamespaceError: NamespaceEr
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xml",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xml",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xml",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xmlfoo",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","xmlfoo:bar",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo:bar",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","xmlfoo:bar",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,false,function "function TypeError() { [native code] }" | assert_throws_js: function "function() { document.implementation.createDocument(namespace, qualifiedName, doctype) }" did not throw
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,null,undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,undefined | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,null,undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,undefined,undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,undefined | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,undefined,undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: undefined,"",undefined,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"",undefined | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for undefined,"",undefined | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://example.com/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://example.com/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/XML/1998/namespace","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/XML/1998/namespace","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/xmlns/","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/xmlns/","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:",null,null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:",null,null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:",null,null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo:","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo:","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE foo> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE html>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE html> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE html> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE bar>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE bar> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE bar> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE baz>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE baz> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE baz> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,null,DocumentType node <!DOCTYPE quz>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE quz> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,null,DocumentType node <!DOCTYPE quz> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"foo",DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",DocumentType node <!DOCTYPE foo> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"foo",DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo",null,DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo",null,DocumentType node <!DOCTYPE foo> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo",null,DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "foo","bar",DocumentType node <!DOCTYPE foo>,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo","bar",DocumentType node <!DOCTYPE foo> | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "foo","bar",DocumentType node <!DOCTYPE foo> | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/1999/xhtml","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1999/xhtml","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1999/xhtml","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/2000/svg","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/svg","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/2000/svg","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: "http://www.w3.org/1998/Math/MathML","",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1998/Math/MathML","",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for "http://www.w3.org/1998/Math/MathML","",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"html",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"html",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"html",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"svg",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"svg",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"svg",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"math",null,null | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"math",null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createDocument.html"
+WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: metadata for null,"math",null | assert_equals: expected "DIV" but got "div"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE html -//W3C//DTD XHTML 1.0 Transitional//EN http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE svg -//W3C//DTD SVG 1.1//EN http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/DOMImplementation-createDocument.html | createDocument test: null,"",DocumentType node <!DOCTYPE math -//W3C//DTD MathML 2.0//EN http://www.w3.org/Math/DTD/mathml2/mathml2.dtd> | assert_equals: expected object "[object Object]" but got object "[object Object]"
@@ -679,15 +679,13 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDoc
 WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDocument test 6: "foo\f\fbar baz","foo\f\fbar baz","foo bar baz" | assert_equals: Document should have two child nodes expected 2 but got 1
 WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDocument test 7: "foo\r\rbar baz","foo\r\rbar baz","foo bar baz" | assert_equals: Document should have two child nodes expected 2 but got 1
 WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | Missing title argument | assert_equals: Document should have two child nodes expected 2 but got 1
-WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDocument(): metadata | assert_equals: expected (string) "about:blank" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDocument(): document location getter is null | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/DOMImplementation-createHTMLDocument.html"
 WPT SUB FAIL dom/nodes/Document-URL.html | Document.URL with redirect | assert_equals: expected "http://127.0.0.1:40881/common/blank.html" but got "/common/redirect.py?location=/common/blank.html"
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element called 'x<' should work. | assert_equals: expected Document node with 0 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element called ':good:times:' should work. | assert_equals: expected Document node with 0 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting a Document should throw. | assert_throws_dom: function "function() { document.adoptNode(doc) }" did not throw
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element should adopt its Attr nodes. | assert_equals: expected (object) Document node with 1 child but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-adoptNode.html | Inserting an Element into another document should adopt its Attr nodes. | assert_equals: Attr node must be adopted when its element is inserted into another document expected (object) Document node with 1 child but got (undefined) und
-WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element should adopt its namespaced attributes. | assert_equals: Attr node created after adoption must belong to the new document expected (object) Document node with 1 child but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-adoptNode.html | Inserting an Element into another document should adopt its Attr nodes. | assert_equals: Attr node must be adopted when its element is inserted into another document expected Document node with 1 child but got Document node with 1 chi
+WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element should adopt its namespaced attributes. | assert_equals: expected Document node with 1 child but got Document node with 1 child
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (characterSet) | assert_equals: expected "KOI8-R" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (inputEncoding) | assert_equals: expected "KOI8-R" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (charset) | assert_equals: expected "KOI8-R" but got "UTF-8"
@@ -1028,43 +1026,21 @@ WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replac
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (inputEncoding) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (charset) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): interfaces | assert_false: Should not be an XMLDocument expected false got true
-WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): metadata | assert_equals: expected null but got object "http://127.0.0.1:40881/dom/nodes/Document-constructor.html"
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("") should throw | assert_throws_dom: function "function() { document.createAttribute(name, "test"); }" did not throw
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("") should throw | assert_throws_dom: function "function() { xml_document.createAttribute(name, "test"); }" did not throw
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("x") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("x") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("X") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("X") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute(":") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute(":") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("a:0") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("a:0") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("invalid^Name") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("invalid^Name") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("\\") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("\\") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("'") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("'") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("\"") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("\"") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("0") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("0") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("0:a") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("0:a") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute(":a") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute(":a") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("x:y:x") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("x:y:x") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("~") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("~") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("title") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("title") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("TITLE") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("TITLE") | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute(null) | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute(null) | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute(undefined) | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute(undefined) | assert_equals: nodeValue expected (string) "" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): metadata | assert_equals: expected "DIV" but got "div"
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("invalid^Name") | The localName provided ('invalid^Name') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("invalid^Name") | The localName provided ('invalid^Name') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("\\") | The localName provided ('\') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("\\") | The localName provided ('\') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("'") | The localName provided (''') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("'") | The localName provided (''') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("\"") | The localName provided ('"') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("\"") | The localName provided ('"') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("0") | The localName provided ('0') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("0") | The localName provided ('0') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("0:a") | The localName provided ('0:a') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("0:a") | The localName provided ('0:a') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
+WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
 WPT SUB NOTRUN dom/nodes/Document-createCDATASection.html | document.createCDATASection must throw in HTML documents | 
 WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("\v") | assert_equals: textContent expected "\v" but got ""
 WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a -- b") | assert_equals: textContent expected "a -- b" but got ""
@@ -1073,8 +1049,7 @@ WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("-b") | asser
 WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(null) | assert_equals: textContent expected "null" but got ""
 WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(undefined) | assert_equals: textContent expected "undefined" but got ""
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XHTML document | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xhtml+xml" but got "application/xml"
-WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created SVG document | assert_equals: Wrong MIME type returned from doc.contentType expected "image/svg+xml" but got "application/xml"
+WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created SVG document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created MathML document | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document by DOMParser ('text/xml') | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in created XML document by DOMParser ('application/xml') | assert_equals: expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
@@ -1103,19 +1078,14 @@ WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created elemen
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xhtml | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xml | Test timed out
 WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.svg | Test timed out
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(undefined) in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(undefined) in XML document | assert_equals: tagName expected "undefined" but got "UNDEFINED"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(undefined) in XHTML document | assert_equals: tagName expected "undefined" but got "UNDEFINED"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(null) in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(null) in XML document | assert_equals: tagName expected "null" but got "NULL"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(null) in XHTML document | assert_equals: tagName expected "null" but got "NULL"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo") in XML document | assert_equals: tagName expected "foo" but got "FOO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo") in XHTML document | assert_equals: tagName expected "foo" but got "FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f1oo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f1oo") in XML document | assert_equals: tagName expected "f1oo" but got "F1OO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f1oo") in XHTML document | assert_equals: tagName expected "f1oo" but got "F1OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo1") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo1") in XML document | assert_equals: tagName expected "foo1" but got "FOO1"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo1") in XHTML document | assert_equals: tagName expected "foo1" but got "FOO1"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in HTML document | assert_equals: localName expected "f?" but got "f?"
@@ -1124,31 +1094,21 @@ WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in XHTM
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in HTML document | assert_equals: localName expected "foo?" but got "foo?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in XML document | assert_equals: localName expected "foo?" but got "foo?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in XHTML document | assert_equals: localName expected "foo?" but got "foo?"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":") in XML document | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":") in XHTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":foo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":") in XML document | assert_equals: namespaceURI expected (object) null but got (string) "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":foo") in XML document | assert_equals: tagName expected ":foo" but got ":FOO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement(":foo") in XHTML document | assert_equals: tagName expected ":foo" but got ":FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:oo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:oo") in XML document | assert_equals: tagName expected "f:oo" but got "F:OO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:oo") in XHTML document | assert_equals: tagName expected "f:oo" but got "F:OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:") in XML document | assert_equals: tagName expected "foo:" but got "FOO:"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:") in XHTML document | assert_equals: tagName expected "foo:" but got "FOO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:o:o") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:o:o") in XML document | assert_equals: tagName expected "f:o:o" but got "F:O:O"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f:o:o") in XHTML document | assert_equals: tagName expected "f:o:o" but got "F:O:O"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo") in XML document | assert_equals: tagName expected "f::oo" but got "F::OO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo") in XHTML document | assert_equals: tagName expected "f::oo" but got "F::OO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo:") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo:") in XML document | assert_equals: tagName expected "f::oo:" but got "F::OO:"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f::oo:") in XHTML document | assert_equals: tagName expected "f::oo:" but got "F::OO:"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:0") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:0") in XML document | assert_equals: tagName expected "foo:0" but got "FOO:0"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:0") in XHTML document | assert_equals: tagName expected "foo:0" but got "FOO:0"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:_") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:_") in XML document | assert_equals: tagName expected "foo:_" but got "FOO:_"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:_") in XHTML document | assert_equals: tagName expected "foo:_" but got "FOO:_"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:?") in HTML document | assert_equals: localName expected "foo:?" but got "foo:?"
@@ -1160,31 +1120,22 @@ WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:foo?") i
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in HTML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in XML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?:foo") in XHTML document | assert_equals: localName expected "foo?:foo" but got "foo?:foo"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml") in XML document | assert_equals: tagName expected "xml" but got "XML"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml") in XHTML document | assert_equals: tagName expected "xml" but got "XML"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns") in XML document | assert_equals: tagName expected "xmlns" but got "XMLNS"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns") in XHTML document | assert_equals: tagName expected "xmlns" but got "XMLNS"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo") in XML document | assert_equals: tagName expected "xmlfoo" but got "XMLFOO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo") in XHTML document | assert_equals: tagName expected "xmlfoo" but got "XMLFOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml:foo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml:foo") in XML document | assert_equals: tagName expected "xml:foo" but got "XML:FOO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xml:foo") in XHTML document | assert_equals: tagName expected "xml:foo" but got "XML:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns:foo") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns:foo") in XML document | assert_equals: tagName expected "xmlns:foo" but got "XMLNS:FOO"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlns:foo") in XHTML document | assert_equals: tagName expected "xmlns:foo" but got "XMLNS:FOO"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo:bar") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo:bar") in XML document | assert_equals: tagName expected "xmlfoo:bar" but got "XMLFOO:BAR"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("xmlfoo:bar") in XHTML document | assert_equals: tagName expected "xmlfoo:bar" but got "XMLFOO:BAR"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("svg") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("svg") in XML document | assert_equals: tagName expected "svg" but got "SVG"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("svg") in XHTML document | assert_equals: tagName expected "svg" but got "SVG"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("math") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("math") in XML document | assert_equals: tagName expected "math" but got "MATH"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("math") in XHTML document | assert_equals: tagName expected "math" but got "MATH"
-WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("FOO") in HTML document | assert_equals: prefix expected (object) null but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("FOO") in XML document | assert_equals: localName expected "FOO" but got "foo"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("FOO") in XHTML document | assert_equals: localName expected "FOO" but got "foo"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("mar?") in HTML document | assert_equals: localName expected "mar?" but got "mar?"
@@ -1220,18 +1171,6 @@ WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f<oo") in XH
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?") in HTML document | The tag name provided ('?') is not a valid name.
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?") in XML document | The tag name provided ('?') is not a valid name.
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("?") in XHTML document | The tag name provided ('?') is not a valid name.
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,undefined,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,undefined,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"?foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"?foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: null,"?foo",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"?foo",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"?foo",null | InvalidCharacterError
@@ -1262,52 +1201,24 @@ WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in X
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: null,":","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,":","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,":","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: null,"xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: null,"xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,undefined,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,undefined,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: undefined,":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: undefined,"foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: undefined,"xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: undefined,"xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","fo<o",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","fo<o",null | InvalidCharacterError
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","f:o:o",null | NamespaceError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","f:o:o",null | NamespaceError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","f:o:o",null | NamespaceError
@@ -1323,148 +1234,47 @@ WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in X
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","0:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","0:a",null | InvalidCharacterError
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a:?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a:?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a:?",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a:?",null | InvalidCharacterError
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a:?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a:?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","?:a",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","?:a",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","?:a",null | InvalidCharacterError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","?:a",null | InvalidCharacterError
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a:a?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a:a?",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a?:a",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a?:a",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","test:xmlns",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","test:xmlns",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","_:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","_:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","_:h0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","_:h0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","_:test",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","_:test",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","l_:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","l_:_",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","ns:_0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","ns:_0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","ns:a0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","ns:a0",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","ns0:test",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","ns0:test",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a.b:c",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a.b:c",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","a-b:c",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","a-b:c",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","XMLNS",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","XMLNS",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","XML:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","XML:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","XMLNS:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","XMLNS:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/","prefix::local",null | NamespaceError
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/","prefix::local",null | NamespaceError
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://www.w3.org/XML/1998/namespace",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://www.w3.org/XML/1998/namespace","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","xml:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","xml:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://www.w3.org/2000/xmlns/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/2000/xmlns/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/2000/xmlns/",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "http://www.w3.org/2000/xmlns/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/2000/xmlns/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/2000/xmlns/","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/2000/xmlns/","xmlns",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/2000/xmlns/","xmlns",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/2000/xmlns/","xmlns:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/2000/xmlns/","xmlns:foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","foo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","f1oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","foo1",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "foo:",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:",":foo","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","f:oo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","xml",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","xmlfoo",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","xmlfoo:bar",null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://example.com/",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://example.com/",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "/",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "/",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "http://www.w3.org/XML/1998/namespace",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "http://www.w3.org/XML/1998/namespace",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:",null,null | assert_equals: expected Document node with 1 child but got Document node with 2 children
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case HTML element without a prefix | assert_equals: expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case HTML element with a prefix | assert_equals: expected (string) "html" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case HTML element with a prefix | assert_equals: expected (string) "html" but got (object) null
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case non-HTML element without a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case non-HTML element with a prefix | assert_false: Should not be an HTMLElement expected false got true
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element without a prefix | assert_equals: expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element with a prefix | assert_equals: expected (string) "html" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element without a prefix | assert_equals: expected "SPAN" but got "span"
+WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element with a prefix | assert_equals: expected (string) "html" but got (object) null
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case non-HTML element without a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case non-HTML element with a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | null namespace | assert_false: Should not be an HTMLElement expected false got true
@@ -1845,7 +1655,6 @@ WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | Disconnected Attr has no n
 WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | Disconnected Attr has no namespace URI matching "xmlns" | not a function
 WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | Connected Attr has namespace URI matching "xml" | not a function
 WPT SUB FAIL dom/nodes/Node-lookupNamespaceURI.html | Connected Attr no namespace URI matching "xmlns" | not a function
-WPT SUB FAIL dom/nodes/Node-mutation-adoptNode.html | simple append of foreign div with text | assert_equals: expected Document node with 1 child but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Node-mutation-adoptNode.html | Adopting an element into a different document update's the element's owner doc as well as the owner docs of it's attributes | assert_equals: expected (object) Document node with 2 children but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-nodeName.html | For Element nodes, nodeName should return the same as tagName. | assert_equals: expected "svg" but got "SVG"
 WPT SUB FAIL dom/nodes/Node-nodeValue.html | Text.nodeValue | assert_equals: expected "" but got "null"
@@ -1878,13 +1687,13 @@ WPT SUB FAIL dom/nodes/Node-removeChild.html | Calling removeChild on a text fro
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached comment from a frame document to removeChild should not affect it. | cannot read property 'document' of undefined
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a non-detached comment from a frame document to removeChild should not affect it. | cannot read property 'document' of undefined
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Calling removeChild on a comment from a frame document with no children should throw NOT_FOUND_ERR. | cannot read property 'document' of undefined
-WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached element from a synthetic document to removeChild should not affect it. | assert_equals: expected Document node with 1 child but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached element from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a non-detached element from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Calling removeChild on a element from a synthetic document with no children should throw NOT_FOUND_ERR. | assert_throws_dom: function "function() { s.removeChild(doc) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMException NOT_
-WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached text from a synthetic document to removeChild should not affect it. | assert_equals: expected Document node with 1 child but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached text from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a non-detached text from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Calling removeChild on a text from a synthetic document with no children should throw NOT_FOUND_ERR. | assert_throws_dom: function "function() { s.removeChild(doc) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMException NOT_
-WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached comment from a synthetic document to removeChild should not affect it. | assert_equals: expected Document node with 1 child but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a detached comment from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a non-detached comment from a synthetic document to removeChild should not affect it. | assert_throws_dom: function "function() { document.body.removeChild(s) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMExce
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Calling removeChild on a comment from a synthetic document with no children should throw NOT_FOUND_ERR. | assert_throws_dom: function "function() { s.removeChild(doc) }" threw object "RangeError: removeChild: not a child of this node" that is not a DOMException NOT_
 WPT SUB FAIL dom/nodes/Node-removeChild.html | Passing a value that is not a Node reference to removeChild should throw TypeError. | assert_throws_js: function "function() { document.body.removeChild(null) }" threw object "RangeError: removeChild: not a child of this node" ("RangeError") expe
@@ -2340,8 +2149,8 @@ WPT SUB FAIL dom/nodes/append-on-Document.html | Document.append() with two elem
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() on an adopted built-in host: shadow root uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() on an adopted custom element host: shadow root uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() invoked via another realm's method uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
-WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should add and remove fields from `attributes` | assert_equals: expected object "[object Object]" but got object "[object Object]"
-WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should not interfere with existing method names | assert_equals: expected object "[object Object]" but got object "[object Object]"
+WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should add and remove fields from `attributes` | assert_equals: expected Node object of unknown type but got object "[object Object]"
+WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should not interfere with existing method names | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (toggleAttribute) | assert_throws_dom: toggleAttribute("", true) function "function() { el.toggleAttribute(invalid_names[i], true) }" did not throw
 WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should lowercase its name argument (upper case attribute) | not a function
 WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should lowercase its name argument (mixed case attribute) | not a function
@@ -2389,11 +2198,11 @@ WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode doesn't have case-inse
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode doesn't have case-insensitivity even with an HTMLElement 2 | not a function
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode doesn't have case-insensitivity even with an HTMLElement 3 | not a function
 WPT SUB FAIL dom/nodes/attributes.html | Basic functionality of setAttributeNodeNS | not a function
-WPT SUB FAIL dom/nodes/attributes.html | If attr's element is neither null nor element, throw an InUseAttributeError. | assert_equals: expected (object) Element node <div foo=""></div> but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | Replacing an attr by itself | assert_equals: expected object "[object Object]" but got object "[object Object]"
+WPT SUB FAIL dom/nodes/attributes.html | If attr's element is neither null nor element, throw an InUseAttributeError. | assert_equals: expected Element node <div foo=""></div> but got null
+WPT SUB FAIL dom/nodes/attributes.html | Replacing an attr by itself | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | Basic functionality of removeAttributeNode | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode on bound attribute should throw InUseAttributeError | assert_throws_dom: function "function(){el2.setAttributeNode(attrNode)}" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode, if it fires mutation events, should fire one with the new node when resetting an existing attribute (outer shell) | assert_equals: Must return the old attr node from a setAttributeNode call expected object "[object Object]" but got object "[object Object]"
+WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode, if it fires mutation events, should fire one with the new node when resetting an existing attribute (outer shell) | assert_equals: Must return the old attr node from a setAttributeNode call expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | getAttributeNames tests | assert_equals: expected 4 but got 2
 WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with basic attributes | assert_array_equals: lengths differ, expected array ["0", "1"] length 2, got [] length 0
 WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with non-namespaced attribute before same-name namespaced one | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got [] length 0
@@ -2417,154 +2226,154 @@ WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ä | assert_array_equals
 WPT SUB FAIL dom/nodes/case.html | createElement Ä | assert_equals: expected "Ä" but got "ä"
 WPT SUB FAIL dom/nodes/case.html | setAttribute Ä | assert_equals: expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Ä | assert_array_equals: lengths differ, expected array [Element node <Ä></Ä>] length 1, got [Element node <ä></ä>, Element node <Ä></Ä>] length 2
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,abc | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ä | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,abc | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ä | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: prefix expected (string) "ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: expected (string) "test" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
@@ -2670,7 +2479,7 @@ WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid syntax for insertAdjacentT
 WPT SUB FAIL dom/nodes/insert-adjacent.html | insertAdjacentText should return null | not a node
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElement. | assert_unreached: document.createElement should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" Inv
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElementNS and createDocument. | assert_unreached: document.createElementNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" c
-WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttribute, toggleAttribute, and createAttribute. | assert_throws_dom: element.setAttribute should throw an error for: code points: [], string: "" function "() => element.setAttribute(invalidAttributeName, 'value
+WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttribute, toggleAttribute, and createAttribute. | assert_unreached: document.createAttribute should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" I
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttributeNS and createAttributeNS. | assert_unreached: document.createAttributeNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?"
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createDocumentType. | assert_unreached: createDocumentType should not have thrown an error for code points: [], string: "" InvalidCharacterError: InvalidCharacterError Reached unreac
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | append a namespaced style attribute preserves HTML inline style | assert_equals: expected "color: green" but got "after"
@@ -2690,7 +2499,6 @@ WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced type a
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced selected attribute does not change an option's selectedness | assert_equals: expected -1 but got 0
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced size attribute does not reset a select | assert_equals: expected -1 but got 0
 WPT SUB FAIL dom/nodes/node-creation-realm.html | Document.createProcessingInstruction() creates a node in the target document's realm | cannot read property 'apply' of undefined
-WPT SUB FAIL dom/nodes/node-creation-realm.html | Document.createAttribute() creates a node in the target document's realm | assert_true: is a top-level-realm Attr expected true got false
 WPT SUB FAIL dom/nodes/node-creation-realm.html | Document.createCDATASection() creates a node in the target document's realm | cannot read property 'call' of undefined
 WPT SUB FAIL dom/nodes/node-creation-realm.html | DOMImplementation.createDocumentType() creates a node in the associated document's realm | cannot read property 'prototype' of undefined
 WPT SUB FAIL dom/nodes/node-creation-realm.html | DOMImplementation.createDocument() creates the document in the target realm | cannot read property 'prototype' of undefined

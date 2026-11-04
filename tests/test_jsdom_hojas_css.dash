@@ -1,0 +1,25 @@
+# Test: document.styleSheets (tarea 41c, Acid3 72): ownerNode, href null en las de dentro, cssRules vivas, insertRule
+# que rehace el estilo, img.height del CSS en px; y getElementById en un documento aparte busca en el suyo (Acid3 46).
+# Antes no había styleSheets y getElementById miraba siempre la página.
+# memcheck
+# expect-out: img: 10 | data 20 | otro texto 30 | insertRule 40 | reglas 3 3 | href null null
+# expect-out: deleteRule: 2 30 | selectorText img | getElementById: P null
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head><style>p { color: red }</style></head><body><p id=x>x</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var d = document.implementation.createHTMLDocument(''); d.open(); d.write('<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><head><title></title><style type=\"text/css\">img { height: 10px; }</style><body><p id=uno><img src=\"data:image/gif;base64,R0lGODlhAQABAID%2FAMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw%3D%3D\" alt=\"\">'); d.close();"
+    c = c + "var s = 'img: ' + d.images[0].height; d.styleSheets[0].ownerNode.firstChild.data = 'img { height: 20px; }'; s += ' | data ' + d.images[0].height;"
+    c = c + "d.styleSheets[0].ownerNode.appendChild(d.createTextNode('img { height: 30px; }')); s += ' | otro texto ' + d.images[0].height; var reglas = d.styleSheets[0].cssRules;"
+    c = c + "d.styleSheets[0].insertRule('img { height: 40px; }', 2); s += ' | insertRule ' + d.images[0].height + ' | reglas ' + d.styleSheets[0].cssRules.length + ' ' + reglas.length;"
+    c = c + "s + ' | href ' + d.styleSheets[0].href + ' ' + document.styleSheets[0].href"
+    Print js_evaluar(js, c, "t.js")
+    c = "d.styleSheets[0].deleteRule(2); 'deleteRule: ' + reglas.length + ' ' + d.images[0].height + ' | selectorText ' + reglas[0].selectorText + ' | getElementById: ' + d.getElementById('uno').tagName + ' ' + d.getElementById('x')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

@@ -55,6 +55,15 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
 `third_party/quickjs/amiga/qjsamiga.c` es un lanzador de pruebas: ejecuta los `.js` dados y mide tiempo
 (EClock de `timer.device`) y memoria. Pide 256 KB de pila.
 
+8. `JS_NAN_DOUBLE` (`cutils.h`, tarea 41c): el gcc de m68k-amigaos escribe una constante NaN (`NAN`,
+   `__builtin_nan`) como `fmove.s #0x7f800000`, que es Infinity; `new Date(NaN).getTime()` daba Infinity. Los NaN que
+   QuickJS pone en tiempo de ejecución salen ahora de un double `volatile` en memoria. Las tablas de datos con `NAN`
+   salen bien. Pendiente: `setMilliseconds(NaN)` deja la fecha en 1970.
+
+9. `js_deq` (`quickjs.c`, tarea 41d): por lo mismo del 7, `Infinity === Infinity` era falso en el emulador; las
+   igualdades y `<=`/`>=` de dos double miran los bits cuando son infinitos. testharness.js de WPT distingue 0 de -0
+   con `1/x === 1/y`, y todas sus comparaciones con 0 fallaban ("expected 0 but got 0").
+
 ## Problemas encontrados
 
 - Las matemáticas de doble precisión de la ROM (`mathieeedoubbas`, las que usa `-lm` de libnix) dan

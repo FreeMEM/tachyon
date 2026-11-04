@@ -4,6 +4,7 @@
 # que nadie tocó queda igual. Un cambio sin efecto (un atributo con el valor que ya tenía, un nodo fuera del documento)
 # no rehace nada.
 # memcheck
+# emu-config: zorro_iii_memory = 65536
 # expect-out: reloj: true true
 # expect-out: clase: true true
 # expect-out: entra: true true

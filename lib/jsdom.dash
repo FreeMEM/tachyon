@@ -16,6 +16,7 @@
 import "js.dash"
 import "estilo.dash"
 import "formularios.dash"
+import "html5.dash"
 import "jsdom_preludio.dash"
 import "lienzo.dash"
 import "traza.dash"
@@ -33,7 +34,12 @@ end
     var sels: [Selector] = []
     for t in css_partir(texto, 44)
         if str_trim(t) != ""
-            sels.push(css_selector(str_trim(t)))
+            # (uno que no se entiende no casa con nada: getElementsByClassName("\u212a") llega como ".?" y era un
+            # selector nil que tiraba el programa; WPT dom/nodes/getElementsByClassName-14)
+            sel = css_selector(t)
+            if sel != nil
+                sels.push(sel)
+            end
         end
     end
     for h in raiz.hijos
@@ -67,12 +73,16 @@ func _jsdom_buscar(n: Nodo, sels: [Selector], todos: Bool, r: [Nodo]) -> Bool
 end
 
 @export func jsdom_texto(n: Nodo) -> String
+    # (el de un comentario o una instrucción, sus datos: DOM)
+    if n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION
+        return n.texto
+    end
     return dom_texto(n)
 end
 
 # textContent = t: los hijos se cambian por un texto
 @export func jsdom_poner_texto(n: Nodo, t: String)
-    if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO
+    if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION
         n.texto = t
         # su elemento cambia de contenido (un reloj de React: sin estilo entero, y si no cambia de forma, sin maqueta;
         # lo medido en él y en los de fuera ya no vale: tarea 37e6)
@@ -165,6 +175,16 @@ end
     dom_apuntar(n, TOQUE_ATRIBUTO, "value", "", v)
 end
 
+# checked (input) y selected (option): el estado, no el atributo (tarea 41c)
+@export func jsdom_marcado(n: Nodo) -> Bool
+    return dom_marcado(n)
+end
+
+@export func jsdom_marcar(n: Nodo, si: Bool)
+    formulario_marcar(n, si)
+    dom_apuntar(n, TOQUE_ATRIBUTO, "checked", "", "")
+end
+
 @export func jsdom_crear(nombre: String) -> Nodo
     return dom_nodo(DOM_ELEMENTO, str_lower(nombre), "")
 end
@@ -188,6 +208,9 @@ end
                 dom_apuntar_salida(padre, hijo)
                 dom_apuntar(dom_hermano_elemento(hijo, false), TOQUE_VECINO, "", "", "")
                 dom_apuntar(dom_hermano_elemento(hijo, true), TOQUE_VECINO, "", "", "")
+            else
+                # (un texto que sale cambia lo de dentro del padre, como uno que entra: :empty; Acid3 38)
+                dom_apuntar(padre, TOQUE_CONTENIDO, "#texto", "", "")
             end
             var nadie: Nodo = nil
             hijo.padre = nadie
@@ -231,6 +254,10 @@ func _jsdom_html_nodo(n: Nodo) -> String
         return _jsdom_escapar(n.texto, false)
     elif n.tipo == DOM_COMENTARIO
         return "<!--" + n.texto + "-->"
+    elif n.tipo == DOM_TIPO_DOC
+        return "<!DOCTYPE " + n.nombre + ">"
+    elif n.tipo == DOM_INSTRUCCION
+        return "<?" + n.nombre + " " + n.texto + ">"
     elif n.tipo != DOM_ELEMENTO
         return ""
     end
@@ -258,7 +285,14 @@ end
     solo_texto = _jsdom_sin_elementos(n)
     _jsdom_vaciar(n)
     dom_apuntar(n, TOQUE_CONTENIDO, _jsdom_marca_texto(solo_texto), "", "")
-    trozo = dom_desde_html("<body>" + html)
+    # (con las reglas de HTML5, como una página: <table><tr> lleva su <tbody>, Acid3 29; dentro de una tabla o un
+    # select, donde el contexto cambia las reglas, con el lector sencillo)
+    var trozo: Nodo = nil
+    if n.nombre == "table" or n.nombre == "thead" or n.nombre == "tbody" or n.nombre == "tfoot" or n.nombre == "tr" or n.nombre == "colgroup" or n.nombre == "select" or n.nombre == "optgroup" or n.nombre == "html" or n.nombre == "head" or n.nombre == "template"
+        trozo = dom_desde_html("<body>" + html)
+    else
+        trozo = dom_desde_html5("<body>" + html)
+    end
     cuerpo = dom_buscar(trozo, "body")
     if cuerpo == nil
         return
@@ -358,6 +392,9 @@ end
     for a in n.atributos
         c.atributos.push(Atributo(a.nombre, a.valor))
     end
+    # (con su value y su checked, como en un navegador)
+    c.valor = n.valor
+    c.marcado = n.marcado
     if profundo
         for h in n.hijos
             dom_agregar(c, jsdom_clonar(h, true))
@@ -442,7 +479,7 @@ end
         if str_trim(t) == ""
             return false
         end
-        sel = css_selector(str_trim(t))
+        sel = css_selector(t)
         if sel == nil or not estilo_puede_cumplirse(sel)
             return false
         end
@@ -454,7 +491,7 @@ end
 # matches(): ¿n cumple alguno de los selectores?
 @export func jsdom_cumple(n: Nodo, texto: String) -> Bool
     for t in css_partir(texto, 44)
-        sel = css_selector(str_trim(t))
+        sel = css_selector(t)
         if sel != nil and estilo_cumple(n, sel)
             return true
         end
@@ -466,13 +503,73 @@ end
     return dom_nodo(DOM_COMENTARIO, "", t)
 end
 
+# document.createProcessingInstruction()
+@export func jsdom_crear_instruccion(destino: String, datos: String) -> Nodo
+    return dom_nodo(DOM_INSTRUCCION, destino, datos)
+end
+
+# document.implementation.createDocumentType()
+@export func jsdom_crear_tipo_doc(nombre: String, publico: String, sistema: String) -> Nodo
+    return dom_tipo_doc(nombre, publico, sistema)
+end
+
 @export func jsdom_crear_fragmento() -> Nodo
     return dom_nodo(DOM_FRAGMENTO, "", "")
 end
 
 # document.implementation.createHTMLDocument(): un documento aparte, vacío
+# (con "aparte": su getComputedStyle calcula el estilo con sus propias hojas, _jsdom_estilo_aparte)
 @export func jsdom_documento_nuevo(titulo: String) -> Nodo
-    return dom_desde_html("<html><head><title>" + titulo + "</title></head><body></body></html>")
+    d = dom_desde_html("<html><head><title>" + titulo + "</title></head><body></body></html>")
+    d.atributos.push(Atributo("aparte", "1"))
+    # (con su <!DOCTYPE html> delante, como dice DOM)
+    t = dom_tipo_doc("html", "", "")
+    t.padre = d
+    d.hijos.insert(0, t)
+    return d
+end
+
+# El documento de un <iframe> u <object> con el HTML que trajo (tarea 41c), con las reglas de HTML5 como una página
+@export func jsdom_documento_html(html: String) -> Nodo
+    d = dom_desde_html5(html)
+    d.atributos.push(Atributo("aparte", "1"))
+    return d
+end
+
+# El estilo de un documento aparte (el de un <iframe> u <object>, el de createHTMLDocument), que no tiene hojas
+# apuntadas ni maqueta: se calcula entero con sus <style> cuando cambió algo o aún no se calculó. Acid3 mete en el
+# documento de su iframe un <style> con cada selector y mira el z-index de lo de dentro (tarea 41c).
+func _jsdom_estilo_aparte(n: Nodo)
+    doc = n
+    while doc.padre != nil
+        doc = doc.padre
+    end
+    if doc.tipo != DOM_DOCUMENTO or dom_atributo(doc, "aparte") != "1"
+        return
+    end
+    var raiz: Nodo = nil
+    for h in doc.hijos
+        if h.tipo == DOM_ELEMENTO
+            raiz = h
+            break
+        end
+    end
+    if raiz == nil or (raiz.estilo != nil and (doc.toques == nil or doc.toques.length == 0))
+        return
+    end
+    # (con la ventana del marco: su ancho y alto, que pone el JavaScript en "vista"; para @media, vw y vh)
+    aw = css_vista_ancho()
+    ah = css_alto_vista()
+    vista = str_split(dom_atributo(doc, "vista"), " ")
+    if vista.length == 2
+        css_vista(Int(vista[0]), Int(vista[1]))
+    end
+    var traidas: {String: String} = {}
+    hojas = estilo_hojas_con(doc, "", traidas)
+    estilo_aplicar(doc, hojas)
+    css_vista(aw, ah)
+    var nada: [Toque] = nil
+    doc.toques = nada
 end
 
 # outerHTML
@@ -487,12 +584,13 @@ end
 # getComputedStyle: lo calculado por lib/estilo.dash; si el elemento es nuevo (sin estilo aún),
 # display según la etiqueta
 @export func jsdom_estilo_calculado(n: Nodo, propiedad: String) -> String
+    _jsdom_estilo_aparte(n)
     e = n.estilo
     fresco = _jsdom_estilo_fresco(n)
     if fresco != nil
         e = fresco
     end
-    if e.has(propiedad)
+    if e != nil and e.has(propiedad)
         return e[propiedad]
     end
     if propiedad == "display" and n.tipo == DOM_ELEMENTO
@@ -633,7 +731,7 @@ func _jsdom_estilo_fresco(n: Nodo) -> {String: String}
     _jsdom_fresco_cuantos = doc.toques.length
     return _jsdom_fresco
 end
-const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s"
+const JSDOM_INICIALES = "top=auto right=auto bottom=auto left=auto z-index=auto position=static float=none clear=none max-width=none max-height=none min-width=0px min-height=0px margin-top=0px margin-right=0px margin-bottom=0px margin-left=0px padding-top=0px padding-right=0px padding-bottom=0px padding-left=0px border-top-width=0px border-right-width=0px border-bottom-width=0px border-left-width=0px opacity=1 visibility=visible transform=none overflow=visible overflow-x=visible overflow-y=visible box-sizing=content-box flex-grow=0 flex-shrink=1 flex-basis=auto pointer-events=auto direction=ltr animation-name=none transition-duration=0s cursor=auto white-space=normal text-transform=none visibility=visible"
 
 # === XMLHttpRequest y fetch (tarea 37e2) ===
 # Las peticiones del JavaScript de cada motor van sin esperar (lib/http.dash); jsdom_peticiones_avanzar, en cada
@@ -834,6 +932,9 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
             traido = false
             if dom_tiene_atributo(s, "src")
                 nombre = url_text(url_resolve(u, dom_atributo(s, "src")))
+                if url_es_data(str_trim(dom_atributo(s, "src")))
+                    nombre = str_trim(dom_atributo(s, "src"))
+                end
                 traido = traidos.has(nombre)
             end
             jsdom_script_actual = s
@@ -896,6 +997,9 @@ func _jsdom_scripts(n: Nodo, r: [Nodo])
 end
 
 func _jsdom_traer(direccion: String) -> String
+    if url_es_data(direccion)
+        return _jsdom_data(direccion)
+    end
     u = url_parse(direccion)
     if URL_RASTREO_BLOQUEAR and url_rastreador(direccion)
         return URL_RASTREO_SUSTITUTO
@@ -909,6 +1013,30 @@ func _jsdom_traer(direccion: String) -> String
     end
     ruta = url_fichero(direccion)
     t = file_read_text(ruta)
+    if t == nil
+        return ""
+    end
+    return utf8_a_js_ascii(t)
+end
+
+# Lo de dentro de una dirección data: (un <script src="data:text/javascript,...">, en claro o en base64, con escapes %
+# y blancos; Acid3 97): el base64, por un fichero de T: (base64_to_file, como las imágenes)
+func _jsdom_data(direccion: String) -> String
+    coma = str_find(direccion, ",")
+    if coma < 0
+        return ""
+    end
+    cabecera = str_lower(direccion[5:coma])
+    datos = url_deshacer(direccion[coma + 1:])
+    if not str_ends(cabecera, ";base64")
+        return utf8_a_js_ascii(datos)
+    end
+    fichero = "T:tachyon_data.js"
+    if base64_to_file(datos, fichero) < 0
+        return ""
+    end
+    t = file_read_text(fichero)
+    file_delete(fichero)
     if t == nil
         return ""
     end

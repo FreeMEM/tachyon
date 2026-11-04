@@ -1,0 +1,65 @@
+# Test: el documento de <iframe> y <object> (tarea 41c, Acid3): contentDocument con lo de su src, load al acabar,
+# getSVGDocument, y getComputedStyle con los <style> de ese documento (Acid3 mete un <style> por selector en el de su
+# iframe y mira el z-index de lo de dentro). Antes contentDocument era undefined.
+# emu-server: http.py 40863
+# memcheck
+# expect-out: html: cargado 1 | title true | body BODY
+# expect-out: estilo: 3 0 auto
+# expect-out: otra vez: 7
+# expect-out: :empty al quitar un texto: 0 1
+# expect-out: svg: cargas 2 | text 1 | mismo true true
+# expect-out: xhtml: xhtml.1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func esperar(js: Int)
+    vueltas = 0
+    while vueltas < 3000 and jsdom_peticiones_pendientes(js) > 0
+        jsdom_peticiones_avanzar(js)
+        jsdom_temporizadores(js)
+        time_delay(1)
+        vueltas = vueltas + 1
+    end
+    i = 0
+    while i < 10
+        jsdom_temporizadores(js)
+        time_delay(5)
+        i = i + 1
+    end
+end
+
+Main
+    h = "<html><body><iframe src='/acid3/empty.html' id=s onload='cargas++'></iframe>"
+    h = h + "<script>var cargas = 0;</script></body></html>"
+    doc = dom_desde_html5(h)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40863/x.html'); __dashweb_imgs = 0", "t.js")
+    jsdom_ejecutar_scripts(js, doc, "http://127.0.0.1:40863/x.html")
+    esperar(js)
+    Print js_evaluar(js, "var d = document.getElementById('s').contentDocument; 'html: cargado ' + cargas + ' | title ' + !!d.querySelector('head > title') + ' | body ' + d.body.tagName", "t.js")
+    # como selectorTest de Acid3
+    c = "var de = d.documentElement; while (de.firstChild) de.removeChild(de.firstChild);"
+    c = c + "de.appendChild(d.createElement('head')); de.firstChild.appendChild(d.createElement('title')); de.appendChild(d.createElement('body'));"
+    c = c + "var st = d.createElement('style'); st.appendChild(d.createTextNode('* { z-index: 0; position: absolute; }\\n p.x { z-index: 3 }')); de.firstChild.appendChild(st);"
+    c = c + "var p = d.createElement('p'); p.className = 'x'; var q = d.createElement('p'); d.body.appendChild(p); d.body.appendChild(q);"
+    c = c + "var v = d.defaultView; 'estilo: ' + v.getComputedStyle(p, '').zIndex + ' ' + v.getComputedStyle(q, '').zIndex + ' ' + getComputedStyle(document.body).zIndex"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "st.firstChild.data = 'p { z-index: 7 }'; 'otra vez: ' + d.defaultView.getComputedStyle(q, '').zIndex", "t.js")
+    c = "var e = document.implementation.createHTMLDocument(''); var se = e.createElement('style'); se.textContent = 'p { z-index: 0 } :empty { z-index: 1 }'; e.head.appendChild(se);"
+    c = c + "var pe = e.body.appendChild(e.createElement('p')); pe.appendChild(e.createComment('c')); pe.appendChild(e.createTextNode('x')); var a1 = getComputedStyle(pe).zIndex;"
+    c = c + "pe.removeChild(pe.lastChild); ':empty al quitar un texto: ' + a1 + ' ' + getComputedStyle(pe).zIndex"
+    Print js_evaluar(js, c, "t.js")
+    c = "var k = document.createElement('p'); var f = document.createElement('iframe'); f.onload = function () { cargas++; }; f.src = '/acid3/svg.xml'; k.appendChild(f);"
+    c = c + "var o = document.createElement('object'); o.onload = function () { cargas++; }; o.data = '/acid3/svg.xml'; k.appendChild(o); document.body.appendChild(k); cargas = 0;"
+    js_evaluar(js, c, "t.js")
+    esperar(js)
+    Print js_evaluar(js, "'svg: cargas ' + cargas + ' | text ' + f.contentDocument.getElementsByTagName('text').length + ' | mismo ' + (f.getSVGDocument() === f.contentDocument) + ' ' + (o.getSVGDocument() === o.contentDocument)", "t.js")
+    c = "var avisos = []; window.notify = function (x) { avisos.push(x); }; [1, 2, 3].forEach(function (i) { var x = document.createElement('iframe'); x.src = '/acid3/xhtml.' + i; document.body.appendChild(x); });"
+    js_evaluar(js, c, "t.js")
+    esperar(js)
+    Print js_evaluar(js, "'xhtml: ' + avisos.join(' ')", "t.js")
+    js_liberar(js)
+end

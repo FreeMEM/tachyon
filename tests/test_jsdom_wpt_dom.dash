@@ -1,0 +1,43 @@
+# Test: lo de WPT dom/nodes (tarea 41d): un selector mal formado da DOMException SyntaxError ("#", ".5cm", "div ++ p",
+# "div >"); getElementsByClassName con cifras y puntos; createEvent solo con los nombres de DOM; new Text, new Comment
+# y new DocumentFragment; isEqualNode, normalize y classList.replace; y la ventana de un marco con DOMException.
+# memcheck
+# expect-out: selectores: 12 12 12 12 12 | bien 1
+# expect-out: clases: 1 1
+# expect-out: createEvent: NotSupportedError true
+# expect-out: constructores: x 8 11
+# expect-out: igual: true false | normalize: 1 ab | replace: b c
+# expect-out: instrucción: 7 xml-stylesheet a b | 5 | comentario c | 5 | xml: DIV
+# expect-out: eventos: pasivo false | init false | sin iniciar 11 | onclick null | true true 3 | cdata 4 9
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><div class='5cm'>a</div><p class='a.b'>b</p><span id=s>x</span></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "function cod(f) { try { f(); return 'nada'; } catch (e) { return e instanceof DOMException ? e.code : 'js ' + e; } }", "t.js")
+    c = "'selectores: ' + ['#', '.', '.5cm', 'div ++ p', 'div >'].map(function (q) { return cod(function () { document.querySelector(q); }); }).join(' ') + ' | bien ' + document.querySelectorAll('#s, .x').length"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "'clases: ' + document.getElementsByClassName('5cm').length + ' ' + document.getElementsByClassName('a.b').length", "t.js")
+    c = "var n = ''; try { document.createEvent('FooEvent'); } catch (e) { n = e.name; } 'createEvent: ' + n + ' ' + (document.createEvent('MouseEvents') instanceof Event)"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "'constructores: ' + new Text('x').data + ' ' + new Comment('c').nodeType + ' ' + new DocumentFragment().nodeType", "t.js")
+    c = "var a = document.createElement('p'); a.setAttribute('x', '1'); a.appendChild(document.createTextNode('t')); var b = a.cloneNode(true); var s1 = a.isEqualNode(b); b.setAttribute('x', '2');"
+    c = c + "var p = document.createElement('p'); p.appendChild(document.createTextNode('a')); p.appendChild(document.createTextNode('')); p.appendChild(document.createTextNode('b')); p.normalize();"
+    c = c + "var d = document.createElement('i'); d.className = 'a b a c'; d.classList.replace('a', 'b');"
+    c = c + "'igual: ' + s1 + ' ' + a.isEqualNode(b) + ' | normalize: ' + p.childNodes.length + ' ' + p.firstChild.data + ' | replace: ' + d.className"
+    Print js_evaluar(js, c, "t.js")
+    c = "var pi = document.createProcessingInstruction('xml-stylesheet', 'a b'); var e = ''; try { document.createProcessingInstruction('x', '?>'); } catch (x) { e = x.code; }"
+    c = c + "var x = document.implementation.createDocument(null, 'r', null);"
+    c = c + "'instrucción: ' + pi.nodeType + ' ' + pi.target + ' ' + pi.data + ' | ' + e + ' | comentario ' + document.createComment('c').textContent + ' | ' + (pi instanceof CharacterData ? 5 : 0) + ' | xml: ' + x.createElement('DIV').localName"
+    Print js_evaluar(js, c, "t.js")
+    c = "var t = document.createElement('div'); t.addEventListener('x', function (e) { e.preventDefault(); }, {passive: true}); var ev = new Event('x', {cancelable: true}); t.dispatchEvent(ev);"
+    c = c + "var e2 = new Event('y', {cancelable: true}); e2.preventDefault(); e2.initEvent('y', true, true); var e3 = document.createEvent('Event'), cod = 0; try { t.dispatchEvent(e3); } catch (x) { cod = x.code; }"
+    c = c + "var m = new MouseEvent('click', {ctrlKey: true, detail: 3}); var xd = document.implementation.createDocument(null, 'r', null); var cd = 0; try { document.createCDATASection('a'); } catch (x) { cd = x.code; }"
+    c = c + "'eventos: pasivo ' + ev.defaultPrevented + ' | init ' + e2.defaultPrevented + ' | sin iniciar ' + cod + ' | onclick ' + t.onclick + ' | ' + m.ctrlKey + ' ' + (m instanceof UIEvent) + ' ' + m.detail + ' | cdata ' + xd.createCDATASection('a').nodeType + ' ' + cd"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

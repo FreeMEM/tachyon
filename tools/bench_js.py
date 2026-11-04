@@ -9,7 +9,7 @@ con su tiempo (Date.now: pasos de 20 ms).
 import json, os, subprocess, sys, tempfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
-DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang" / ".worktrees" / "dashweb"))
+DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang"))
 sys.path.insert(0, str(DASH / "tools"))
 from emu_run import run_programs
 

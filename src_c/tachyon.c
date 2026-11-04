@@ -331,7 +331,11 @@ static char *_js_utf8(const char *s) {
 
 /* What lib/texto.dash latin1_de puts for a code point outside Latin-1 (never longer than its UTF-8: it is written
    in place): "EUR" for the euro, straight quotes, "-", "..."; "?" for the rest */
+static int _js_sin_parecidos = 0;   /* (1: todo lo que no cabe, "?": class e id; ver _jsdom_setAttribute) */
 static const char *_js_parecido(unsigned long c) {
+    /* (un surrogate suelto, que QuickJS da en WTF-8, se quita: es de lo que permite Unicode; Acid3 68) */
+    if (c >= 0xD800 && c <= 0xDFFF) return "";
+    if (_js_sin_parecidos) return "?";
     switch (c) {
     case 8216: case 8217: case 8218: case 8242: return "'";
     case 8249: return "\xAB";
@@ -658,9 +662,17 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
         char *fuente = _js_utf8(t);
         uint8_t *b;
         size_t largo;
-        if (!fuente) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+        if (!fuente) { m->error = strdup("sin memoria (texto del guardado)"); return (STRPTR)""; }
         _js_empieza();
-        f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+        /* sin el texto de sus funciones (el de toString): QuickJS guarda el de cada una, también el de las de dentro,
+           y va en el bytecode; con el preludio de 245 KB ya no cabía en un A1200 de 8 MB (tarea 41d). Sus funciones
+           dicen [native code], como las de un navegador */
+        {
+            int quitar = JS_GetStripInfo(m->rt);
+            JS_SetStripInfo(m->rt, quitar | JS_STRIP_SOURCE);
+            f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+            JS_SetStripInfo(m->rt, quitar);
+        }
         free(fuente);
         if (JS_IsException(f)) {
             m->error = _js_excepcion(m->ctx);
@@ -693,7 +705,11 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
             }
             js_free(m->ctx, b);
         }
-        if (!bc) { m->error = strdup("sin memoria"); return (STRPTR)""; }
+        if (!bc) {
+            m->error = b ? NULL : _js_excepcion(m->ctx);
+            if (!m->error) m->error = strdup("sin memoria (bytecode del guardado)");
+            return (STRPTR)"";
+        }
     }
     _js_empieza();
     f = JS_ReadObject(m->ctx, bc, bc_largo, JS_READ_OBJ_BYTECODE);
@@ -1453,6 +1469,7 @@ static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
     JSValue v;
     _JSDOM_ESTE;
+    if (n->tipo == 10 || n->tipo == 7) return _jsdom_cadena(ctx, n->nombre);   /* (un doctype o una instrucción: su nombre) */
     if (n->tipo != DOM_ELEMENTO)
         return JS_NewString(ctx, n->tipo == DOM_TEXTO ? "#text" : n->tipo == DOM_COMENTARIO ? "#comment"
                                  : n->tipo == DOM_FRAGMENTO ? "#document-fragment" : "#document");
@@ -1510,7 +1527,9 @@ static JSValue _jsdom_atr(JSContext *ctx, JSValueConst this_val, int magic) {
 static JSValue _jsdom_set_atr(JSContext *ctx, JSValueConst this_val, JSValueConst v, int magic) {
     char *t;
     _JSDOM_ESTE_PONER((magic == 0 ? "id" : "className"));
+    _js_sin_parecidos = 1;   /* (id y className: ver _jsdom_setAttribute) */
     t = _js_texto(ctx, v);
+    _js_sin_parecidos = 0;
     jsdom_poner_atributo(n, (STRPTR)_jsdom_atr_nombres[magic], (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
     _jsdom_tocado(ctx, n);
@@ -1535,13 +1554,12 @@ static JSValue _jsdom_set_value(JSContext *ctx, JSValueConst this_val, JSValueCo
 
 static JSValue _jsdom_checked(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
-    return JS_NewBool(ctx, jsdom_tiene_atributo(n, (STRPTR)"checked"));
+    return JS_NewBool(ctx, jsdom_marcado(n));
 }
 
 static JSValue _jsdom_set_checked(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     _JSDOM_ESTE_PONER("checked");
-    if (JS_ToBool(ctx, v)) jsdom_poner_atributo(n, (STRPTR)"checked", (STRPTR)"");
-    else jsdom_quitar_atributo(n, (STRPTR)"checked");
+    jsdom_marcar(n, JS_ToBool(ctx, v) ? 1 : 0);
     _jsdom_tocado(ctx, n);
     return JS_UNDEFINED;
 }
@@ -1592,7 +1610,11 @@ static JSValue _jsdom_setAttribute(JSContext *ctx, JSValueConst this_val, int ar
     char *a, *v;
     _JSDOM_ESTE;
     a = _jsdom_arg(ctx, argc, argv, 0);
+    /* (en class e id, lo que no cabe en Latin-1 es "?", como al leer el CSS (\2003): un espacio de U+2003 partía la
+       clase en dos y ".f\2003g" no casaba; Acid3 33) */
+    _js_sin_parecidos = a && (!strcmp(a, "class") || !strcmp(a, "id"));
     v = _jsdom_arg(ctx, argc, argv, 1);
+    _js_sin_parecidos = 0;
     if (a && v) jsdom_poner_atributo(n, (STRPTR)a, (STRPTR)v);
     _jsdom_soltar(a);
     _jsdom_soltar(v);
@@ -1724,14 +1746,22 @@ static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_v
     _JSDOM_ESTE;
     s = _jsdom_arg(ctx, argc, argv, 0);
     if (!s) return JS_EXCEPTION;
-    sel = (char *)malloc(strlen(s) * 2 + 2);
+    sel = (char *)malloc(strlen(s) * 6 + 2);
     if (!sel) { _jsdom_soltar(s); return JS_EXCEPTION; }
-    /* "a b" -> ".a.b" */
+    /* "a b" -> ".a.b"; una cifra al principio (o tras un "-"), escapada: ".\35 cm" (un selector no empieza por cifra) */
     for (p = s, q = sel; *p; ) {
         while (*p && (unsigned char)*p <= 32) p++;
         if (!*p) break;
         *q++ = '.';
-        while (*p && (unsigned char)*p > 32) *q++ = *p++;
+        if (*p == '-') *q++ = *p++;
+        if (*p >= '0' && *p <= '9') { *q++ = '\\'; *q++ = '3'; *q++ = *p++; *q++ = ' '; }
+        while (*p && (unsigned char)*p > 32) {
+            unsigned char c = (unsigned char)*p;
+            /* (lo que no va en un nombre de CSS, escapado: getElementsByClassName("a.b") es la clase "a.b") */
+            if (!(c >= 0x80 || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-'))
+                *q++ = '\\';
+            *q++ = *p++;
+        }
     }
     *q = 0;
     l = sel[0] ? jsdom_selector(n, (STRPTR)sel, TRUE) : NULL;
@@ -1742,7 +1772,11 @@ static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_v
 
 static JSValue _jsdom_ownerDocument(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
+    _Dash_Nodo *p = n;
     if (n->tipo == DOM_DOCUMENTO) return JS_NULL;
+    /* (el de un <iframe> o de createHTMLDocument si está en uno; tarea 41c) */
+    while (p->padre) p = p->padre;
+    if (p->tipo == DOM_DOCUMENTO) return _jsdom_objeto(ctx, p);
     return _jsdom_objeto(ctx, _jsdom_de(ctx)->doc);
 }
 
@@ -1754,13 +1788,13 @@ static JSValue _jsdom_outerHTML(JSContext *ctx, JSValueConst this_val) {
 /* nodeValue / data: the text of a text or comment node (null for the others) */
 static JSValue _jsdom_nodeValue(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
-    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO) return JS_NULL;
+    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_NULL;
     return _jsdom_cadena(ctx, n->texto);
 }
 
 static JSValue _jsdom_set_nodeValue(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     _JSDOM_ESTE_PONER("nodeValue");
-    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO) return JS_UNDEFINED;
+    if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_UNDEFINED;
     return _jsdom_set_textContent(ctx, this_val, v);
 }
 
@@ -1963,6 +1997,37 @@ static JSValue _jsdom_documento_nuevo(JSContext *ctx, JSValueConst this_val, int
     JSValue v;
     if (!t) return JS_EXCEPTION;
     v = _jsdom_objeto(ctx, jsdom_documento_nuevo((STRPTR)t));
+    _jsdom_soltar(t);
+    return v;
+}
+
+/* __dashweb_instruccion(destino, datos): document.createProcessingInstruction (tarea 41d) */
+static JSValue _jsdom_instruccion(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *a = _jsdom_arg(ctx, argc, argv, 0), *b = _jsdom_arg(ctx, argc, argv, 1);
+    JSValue v = JS_EXCEPTION;
+    if (a && b) v = _jsdom_objeto(ctx, jsdom_crear_instruccion((STRPTR)a, (STRPTR)b));
+    if (a) _jsdom_soltar(a);
+    if (b) _jsdom_soltar(b);
+    return v;
+}
+
+/* __dashweb_tipo_doc(nombre, publicId, systemId): document.implementation.createDocumentType (tarea 41c) */
+static JSValue _jsdom_tipo_doc(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *a = _jsdom_arg(ctx, argc, argv, 0), *b = _jsdom_arg(ctx, argc, argv, 1), *c = _jsdom_arg(ctx, argc, argv, 2);
+    JSValue v = JS_EXCEPTION;
+    if (a && b && c) v = _jsdom_objeto(ctx, jsdom_crear_tipo_doc((STRPTR)a, (STRPTR)b, (STRPTR)c));
+    if (a) _jsdom_soltar(a);
+    if (b) _jsdom_soltar(b);
+    if (c) _jsdom_soltar(c);
+    return v;
+}
+
+/* __dashweb_documento_html(html): el documento de un <iframe> u <object> con lo que trajo (tarea 41c) */
+static JSValue _jsdom_documento_html(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *t = argc > 0 && !JS_IsUndefined(argv[0]) ? _js_texto(ctx, argv[0]) : strdup("");
+    JSValue v;
+    if (!t) return JS_EXCEPTION;
+    v = _jsdom_objeto(ctx, jsdom_documento_html((STRPTR)t));
     _jsdom_soltar(t);
     return v;
 }
@@ -2309,6 +2374,9 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_nuevo", JS_NewCFunction(m->ctx, _jsdom_documento_nuevo, "__dashweb_documento_nuevo", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_instruccion", JS_NewCFunction(m->ctx, _jsdom_instruccion, "__dashweb_instruccion", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_tipo_doc", JS_NewCFunction(m->ctx, _jsdom_tipo_doc, "__dashweb_tipo_doc", 3));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_html", JS_NewCFunction(m->ctx, _jsdom_documento_html, "__dashweb_documento_html", 1));
     _jsdom_lienzo_clase(m->ctx);
     JS_SetPropertyStr(m->ctx, global, "__dashweb_lienzo", JS_NewCFunction(m->ctx, _jsdom_lienzo, "__dashweb_lienzo", 4));
     JS_FreeValue(m->ctx, global);
@@ -2567,6 +2635,20 @@ static hubbub_error _h5_doctype(void *ctx, const hubbub_doctype *d, void **r) {
     LONG id = _h5_nuevo(h, 10);
     if (!id) return HUBBUB_NOMEM;
     if (!h->doctype && d->name.len) h->doctype = _h5_copia(d->name.ptr, d->name.len, FALSE);
+    /* (el nodo: su nombre, y publicId y systemId en el texto separados por \n; tarea 41c) */
+    _H5N(h, id)->nombre = _h5_copia(d->name.ptr, d->name.len, FALSE);
+    {
+        size_t lp = d->public_missing ? 0 : d->public_id.len, ls = d->system_missing ? 0 : d->system_id.len;
+        char *t = (char *)malloc(lp + ls + 2);
+        if (t) {
+            if (lp) memcpy(t, d->public_id.ptr, lp);
+            t[lp] = '\n';
+            if (ls) memcpy(t + lp + 1, d->system_id.ptr, ls);
+            t[lp + 1 + ls] = 0;
+        }
+        _H5N(h, id)->texto = t;
+        if (!t || !_H5N(h, id)->nombre) h->mal = TRUE;
+    }
     *r = (void *)id;
     return HUBBUB_OK;
 }

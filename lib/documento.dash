@@ -61,6 +61,9 @@ struct Documento
     maqueta_fin: Int = 0
     aplazada: Int = -1
     pintar_luego: Bool = false # se maquetó porque el JavaScript pidió una medida: el próximo documento_al_dia dice true
+    # las imágenes por traer que sabe el JavaScript (__dashweb_imgs: load espera a 0). Al final: Documento(...) se
+    # llama con los campos por orden, y en medio desplazaba los de después (lo vio freememlang-47 al compilar con --gcc)
+    imgs_js: Int = -1
 end
 
 const DOCUMENTO_CARO = 150

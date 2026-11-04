@@ -1,0 +1,32 @@
+# Test: el API de las tablas del DOM (tarea 41c, Acid3 49 a 51): caption, tHead, tFoot, tBodies, rows en su orden
+# (thead, cuerpo, tfoot), insertRow, rowIndex, sectionRowIndex, cells, insertCell, deleteRow. Antes no había ninguno.
+# memcheck
+# expect-out: vacía: null 0 0 null null
+# expect-out: creadas: CAPTION,THEAD,TFOOT 0 | borradas: false
+# expect-out: insertRow: TBODY 0 0 | filas 1
+# expect-out: orden: 2 h b f
+# expect-out: celdas: 2 1 TD | fuera: 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var t = document.createElement('table'); 'vacía: ' + t.caption + ' ' + t.tBodies.length + ' ' + t.rows.length + ' ' + t.tHead + ' ' + t.tFoot"
+    Print js_evaluar(js, c, "t.js")
+    c = "t.createTFoot(); t.createTHead(); t.createCaption(); var n = [].map.call(t.childNodes, function (x) { return x.tagName; }).join(',');"
+    c = c + "var s = 'creadas: ' + n + ' ' + t.rows.length; t.deleteCaption(); t.deleteTHead(); t.deleteTFoot(); s + ' | borradas: ' + t.hasChildNodes()"
+    Print js_evaluar(js, c, "t.js")
+    c = "var r = t.insertRow(0); 'insertRow: ' + r.parentNode.tagName + ' ' + r.rowIndex + ' ' + r.sectionRowIndex + ' | filas ' + t.rows.length"
+    Print js_evaluar(js, c, "t.js")
+    c = "var f = t.createTFoot().insertRow(0); f.id = 'f'; r.id = 'b'; var h = t.createTHead().insertRow(-1); h.id = 'h';"
+    c = c + "'orden: ' + f.rowIndex + ' ' + [].map.call(t.rows, function (x) { return x.id; }).join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "r.insertCell(0); var d = r.insertCell(-1); var e; try { r.insertCell(5); } catch (x) { e = x; }"
+    c = c + "'celdas: ' + r.cells.length + ' ' + d.cellIndex + ' ' + d.tagName + ' | fuera: ' + e.code"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

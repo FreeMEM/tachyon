@@ -161,6 +161,11 @@ var dw_dibujos_y1: Int = -1
 var dw_cajas: String = ""
 # CAJASEN=ms (argumento): lo mismo, una vez, a esos ms de empezar la página aunque no acabe (-1: no)
 var dw_cajas_en: Int = -1
+# JS=expresión (con los %XX de una dirección) y JSEN=ms: a esos ms de arrancar, la expresión evaluada en la página
+# por la salida (para depurar: la nota y los fallos de Acid3)
+var dw_js: String = ""
+var dw_js_en: Int = -1
+var dw_js_t0: Int = 0
 # cuándo se devolvieron al sistema los bloques pequeños libres (memoria_recortar)
 var dw_recorte: Int = 0
 
@@ -1226,6 +1231,12 @@ func temporizadores(w: Ventana)
     memoria_recortar()
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
+        # (load espera a las imágenes, como en un navegador: el JavaScript sabe cuántas faltan)
+        faltan = imagenes_pendientes(w.actual.im)
+        if faltan != w.actual.imgs_js
+            w.actual.imgs_js = faltan
+            js_evaluar(w.actual.js, "__dashweb_imgs = " + faltan, "dashweb")
+        end
         espera = jsdom_temporizadores(w.actual.js)
         w.actual.desde = w.desde
         w.actual.alto_vista = mui_height(w.v.pagina)
@@ -1338,6 +1349,15 @@ end
 
 # CAJASEN: las cajas una vez, a su hora (desde tic y desde temporizadores: con temporizadores seguidos no hay tic)
 func cajas_a_su_hora(w: Ventana)
+    # (un temporizador de la página: cuando ya no hace nada, no hay tic que lo mire)
+    if dw_js_en >= 0 and dw_js != "" and w.actual != nil and w.actual.js != 0
+        resto = dw_js_en - (time_ms() - dw_js_t0)
+        if resto < 0
+            resto = 0
+        end
+        dw_js_en = -1
+        js_evaluar(w.actual.js, "setTimeout(function () { try { console.log('JS> ' + (" + dw_js + ")); } catch (e) { console.log('JS> ' + e); } }, " + resto + ")", "dashweb")
+    end
     if dw_cajas_en >= 0 and w.actual != nil and w.actual.doc != nil and w.carga == nil and w.preparando == nil and time_ms() - w.empezada >= dw_cajas_en
         dw_cajas_en = -1
         cajas_volcar(w.actual.doc, 0)
@@ -1672,8 +1692,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.8.1-alfa"
-@version "Tachyon 0.8.1-alfa"
+const DASHWEB_VERSION = "0.9.0-alfa"
+@version "Tachyon 0.9.0-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)
@@ -2106,6 +2126,11 @@ Main
                 actualizar_descargas = arg(i)[10:]
             elif str_starts(arg(i), "CAJASEN=")
                 dw_cajas_en = Int(arg(i)[8:])
+            elif str_starts(arg(i), "JSEN=")
+                dw_js_en = Int(arg(i)[5:])
+                dw_js_t0 = time_ms()
+            elif str_starts(arg(i), "JS=")
+                dw_js = url_deshacer(arg(i)[3:])
             elif str_starts(arg(i), "CAJAS=")
                 dw_cajas = arg(i)[6:]
             elif str_starts(arg(i), "DIBUJOS=")
@@ -2123,7 +2148,7 @@ Main
             nueva_ventana(preferencia(FICHERO_PREFERENCIAS, "inicio"))
         end
         for i in (0..arg_count() - 1)
-            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=")
+            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=") and not str_starts(arg(i), "JS=") and not str_starts(arg(i), "JSEN=")
                 nueva_ventana(arg(i))
             end
         end

@@ -195,6 +195,19 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [x] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
+      "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
+      a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
+      llama al runtime de dashc. Por `./dash --gcc` el navegador no enlaza: faltan dl_str_forget, dl_str_temp,
+      dl_arr_length, dl_arr_get, dl_retain, dl_release y db_time_ms (los dos tests pequeños probados sí compilan).
+      Propuesta: dash1 da la misma API que dashc a un C de @link (las dl_* de dash_tipos.h y los builtins como
+      db_nombre) y `./dash --gcc --cabecera fichero.h prog.dash` escribe la cabecera con los structs tal como los
+      coloca dash1, las constantes y los prototipos de @export. Así el mismo tachyon.c vale para las dos líneas,
+      compilado aparte para cada una. Prueba: `DASH_LINEA=gcc python3 tests/run.py` en Tachyon (tarea 58).
+      La coge freememlang-47 (la sesión dash) al cerrar la optimización del compilador directo; avisará con el commit.
+      Hecha (freememlang-47, f533b12 en main de Dash, PR #81): `./dash --gcc` da las dl_* y los db_* que pide el C de
+      @link, y `./dash --gcc --cabecera build/dash_tipos_gcc.h src/dashweb.dash` escribe la cabecera del camino por C
+      (los mismos nombres; un Bool ocupa 2 bytes: tachyon.c se compila aparte para cada línea). Sin arrancar aún.
 - [ ] D81. **Una imagen transparente del todo se pinta opaca** (2026-10-31, tarea 55; pedida a freememlang-51). En el
       runtime de Dash, _dash_rgba_mask tira la máscara si no hay ningún píxel opaco (`if (!(clear && opaque)) mask =
       NULL`) y _dash_rgba_alpha no guarda el alfa si solo hay 0 y 255: image_from_rgb de una imagen con alfa 0 en
@@ -544,6 +557,12 @@ tarea, con el estilo de Dash.
       vivos en memcheck, por mirar). Pendiente: el logo transparente sale verde (D81, en Dash); el menú se parte en
       dos líneas; los botones de compartir (fijos a la derecha en Chrome) salen en medio; la franja negra de arriba
       con los iconos sociales.
+      Hecho (2026-11-03; ver la bitácora): el menú en una línea, los botones de compartir a la derecha, el botón del
+      modo oscuro abajo, la cinta bajo el menú y los iconos sociales. Quedan: el widget del traductor de Google
+      (error de JavaScript en google-translate.min.js; en Chrome, un desplegable "Seleccionar idioma"); los glifos de
+      los botones de compartir (su fuente SSM Font Awesome: salen cuadrados); el emoji de la cinta y del botón del
+      modo oscuro ("?"); y un ::before flotante a la derecha dentro de un inline-block, que se coloca contra el borde
+      del bloque de fuera y no dentro de su caja (la lista de compartir mediría 59 en vez de 30 con esa forma).
 - [x] 56. **El paquete, comprimido y a prueba de "(1)" (sesión dashc, 2026-10-30, con 0.7.4-alfa).** IBrowse corta la
       descarga de tachyon.lha (-lh0-, 6,9 MB) hacia los 3,3 MB (GitHub manda bien el Content-Length: el fallo es de
       IBrowse) y LhA da "I/O Error" en el fichero Tachyon. Y si el PC lo guarda como "tachyon (1).lha", LhA 2.15 toma
@@ -551,6 +570,13 @@ tarea, con el estilo de Dash.
       solo escribe -lh0-, y la actualización desde Tachyon debe saber abrirlo) y decirlo en el LEEME y en las notas.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
+
+- [ ] 58. **Tachyon por las dos líneas de Dash (usuario, 2026-11-02).** Se puede compilar directo a hunk (dashc, lo
+      de siempre desde la 0.8) o por C con `./dash --gcc` (dash1): la segunda es el camino para portar a PPC. Hacer:
+      a. tests/run.py y tools/build_pegamento.sh con `DASH_LINEA=gcc` (cabecera de dash1, libpegamento aparte en
+         build/pegamento-lib-gcc, y `--gcc` a ./dash); tools/paquete.sh igual. Necesita D82.
+      b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
+      c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
 - [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
@@ -5291,4 +5317,239 @@ Formato:
   (dash_tipos.h de dashc --cabecera). Pendiente de que el usuario diga si Tachyon debe compilar también por --gcc.
 - La rama dashweb de Dash tiene cuatro commits sin copia exacta en main (0dae43b catálogos, 9142671 D71, 3bdc7be D80,
   3f9493e D81); D71, D80 y D81 están en main con otros commits. Avisado al usuario.
-- Quedan los worktrees .worktrees/dash2 y .worktrees/dash2-08 y las ramas dash2-unicode y dash2-08-respaldo.
+- Borrados (usuario) los worktrees dash2 y dash2-08 y las ramas dash2, dash2-08, dash2-unicode y dash2-08-respaldo,
+  también las de GitHub: todo estaba ya en dev.
+
+### 2026-11-03 — Tarea 55 (parte): amigatronics.com, cabecera, menú y botones
+- Con Dash 2.0 (main de ~/Projects/FreeMEMLang). tools/medir_visor.py y tools/cmp_dash_c.sh usaban aún
+  .worktrees/dashweb, y medir_visor compilaba desde la carpeta de Dash: ahora ~/Projects/FreeMEMLang y desde Tachyon.
+- Visto en la RTG ancha de 256 MB y arreglado:
+  - lib/estilo.dash: unset (lo heredado o el valor inicial) e initial (el inicial) ya no van tal cual: "top: unset"
+    medía 0 y el botón del modo oscuro (fixed, bottom: 32px) salía arriba.
+  - lib/maqueta.dash, _sangrias: un hijo de un flex o un grid va como bloque aunque diga inline; el <a> con padding
+    de cada <li> flex del menú medía su texto sin el relleno y "The Podcast" se partía en dos líneas.
+  - lib/maqueta.dash, _ancho_flotante_medir: lo de un flotante a la derecha se mide aparte (su ancho; sumado a lo
+    demás si está a su lado en la misma altura). Medida a lo ancho, la pestaña flotante se iba al borde y la lista
+    fija de botones de compartir medía 801 en vez de 30.
+  - lib/maqueta.dash: un <svg> en la línea lleva relleno, borde y fondo como una <img>, y el fondo y el borde de las
+    dos, redondos con border-radius: los iconos sociales (fondo blanco, 50 %) no se veían.
+  - lib/jsdom_preludio.js: load espera a las imágenes (dashweb pone __dashweb_imgs con las que faltan; como mucho
+    60 s) y a las peticiones que ya iban (4 s): la cinta de noticias pone su addEventListener('load') tras un await
+    fetch y se quedaba arriba del todo.
+  - Tests nuevos: test_maqueta_menu_wp (menú, fijo con top: unset, lista de botones, icono redondo) y
+    test_jsdom_load_peticion (load con una imagen por traer).
+- Queda de 55 (apuntado en la tarea): el widget del traductor de Google, los glifos de la fuente de los botones,
+  los emoji y un ::before flotante dentro de un inline-block.
+- Batería: 122/122 (2864 s).
+- Arreglado después (lo vio freememlang-47 al compilar por --gcc): imgs_js iba en medio de Documento y las cuatro
+  llamadas Documento(...) por orden desplazaban los campos de detrás (js, cambios, pagina...). Ahora va al final.
+  Desde 4787ec0 de Dash (PR #82) los dos compiladores dan error si un constructor deja fuera un campo obligatorio.
+  Tests de documento: 8/8.
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 37/100
+- El usuario: "ya superaste las pruebas ACID pero quedan las gordas, las que pasan Chrome". Acid2 sí; Acid3 nunca se
+  había medido. En acid3.acidtests.org Tachyon se quedaba en blanco: tras los scripts, la lectura del CSS daba vueltas
+  sin fin con "#\ { ... }" (un id que es un espacio escapado). El selector se recortaba a "#\" y _css_fin_nombre no
+  avanzaba sobre una "\" final. Ahora la "\" final va en el nombre y el recorte deja un blanco escapado
+  (lib/css.dash _css_recortar; jsdom ya no recorta antes de css_selector). test_css_escapes, con los dos casos.
+- Acid3 en tests/pages/acid3 (la página y sus ficheros; como Acid2) y servida en /acid3/ por tests/servers/http.py
+  con los tipos de acid3.acidtests.org. Para medirla: tools/medir_visor.py --pagina /acid3/ --js EXPR --js-en MS
+  (dashweb JS= y JSEN=: un setTimeout en la página que escribe la expresión con console.log). Y --depurar: compila con
+  --debug y guarda el programa (dashc --debug-info pasa las posiciones del latido a líneas). wpt.py, bench_js.py y
+  traza.py, con el Dash de main.
+- Nota: 37/100 en la máquina RTG ancha. Los fallos, por grupos: unos 30 por contentDocument de <iframe>/<object>
+  (getTestDocument: "cannot read property 'documentElement' of undefined"; también los de SVG, 74-79); DOM:
+  DocumentType.nodeType (18), las constantes de DOMException (19, 25), getElementById con \0 (20), tagName de
+  createElementNS con prefijo (21), createElement('<div>') sin excepción (22, 23), NodeIterator/TreeWalker (04, 05);
+  formularios (49-58: tBodies, controles, radio, defaultSelected); white-space: pre-wrap calculado (00); httpEquiv
+  (62); surrogates sueltos (68); los data: de <script src> vacíos (97); setMilliseconds() sin argumentos (86); dos
+  "timeout" de red (69, 80) y "not a function" (08, 26, 30, 51, 57, 98).
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 66/100
+- Con /loop (usuario: "activa el loop para que no te detengas").
+- <iframe>, <object> y <frame> tienen documento (lib/jsdom_preludio.js): contentDocument, contentWindow (una ventana
+  pequeña con getComputedStyle), getSVGDocument y object.data. Se trae su src (data) al entrar en el documento o al
+  cambiar la dirección, y al acabar sale load en el elemento. El HTML va a un documento nuevo con el analizador de HTML5
+  (__dashweb_documento_html, jsdom_documento_html); XML y SVG con el de DOMParser; texto en un <pre>. Los marcos de la
+  página se cargan antes del load de la ventana. No se pintan.
+- Un documento aparte (atributo "aparte": el de un marco o de createHTMLDocument) calcula su getComputedStyle con sus
+  propios <style>: estilo entero cuando cambió algo (lib/jsdom.dash _jsdom_estilo_aparte). ownerDocument da el documento
+  de arriba si el nodo está en uno.
+- DOMException con sus constantes y code; createElement y createElementNS comprueban el nombre (InvalidCharacterError,
+  NamespaceError) y createElementNS con otro espacio de nombres guarda tagName, prefix y localName. appendChild,
+  insertBefore y replaceChild dan HierarchyRequestError y NotFoundError. getElementById con \0 da null.
+  createDocumentType y createDocument.
+- El API de tablas: caption, tHead, tFoot, tBodies, rows, create*/delete*, insertRow/deleteRow, rowIndex,
+  sectionRowIndex, cells, insertCell/deleteCell, cellIndex.
+- Selectores (lib/estilo.dash): la raíz no es :first-child ni de las de posición, :empty no cuenta comentarios ni textos
+  vacíos, y :lang().
+- Tests: test_jsdom_iframe (servidor 40863), test_jsdom_excepciones, test_jsdom_tablas, test_estilo_pseudo_acid3.
+  Pasan jsdom (14/14), estilo (15/15) y css (5/5); la batería entera no se ha pasado.
+- Lo siguiente: el estado de los formularios (value y checked que no tocan el atributo, radios, form.elements con
+  nombres, select.add, defaultSelected: 43, 52-58), Range de verdad (08, 09, 12, 13), NodeIterator y TreeWalker (01, 02,
+  04, 05), document.open/write en un documento aparte (71, 72), el doctype (18), y SVG DOM (75-77).
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 80/100
+- El estado de los controles vive en el nodo (lib/dom.dash, al final de Nodo: valor y marcado; dom_valor_campo,
+  dom_marcado; lib/formularios.dash formulario_marcar): value de un input donde se escribe y checked/selected ya no
+  escriben el atributo, que es el de partida (defaultValue, defaultChecked, defaultSelected). Un radio marcado desmarca
+  los de su grupo (mismo name y mismo form), un option elegido los otros del select; el clon lleva el estado. Lo leen
+  la maqueta, el pintor, :checked y el envío. En el JavaScript: option.selected, form.elements por name (con varios,
+  una lista con value), form.length, select.add/remove/item/length.
+- NodeIterator como dice DOM: el filtro se llama antes de mover la referencia; al quitar un nodo con la referencia (o el
+  candidato del recorrido, como en Chrome) dentro, ésta pasa al de al lado. Range entera: puntos comparados en el
+  árbol, toString, extract/clone/deleteContents, insertNode con splitText, surroundContents, compareBoundaryPoints,
+  comparePoint, isPointInRange, intersectsNode, y las vivas se mueven al meter, quitar o partir. Text.splitText.
+- initUIEvent e initMouseEvent, meta.httpEquiv, y un set* de Date sin argumentos deja NaN.
+- QuickJS: el gcc de m68k-amigaos escribe la constante NaN como Infinity ("fmove.s #0x7f800000"; también
+  __builtin_nan). new Date(NaN).getTime() daba Infinity. Ahora los NaN de QuickJS en tiempo de ejecución salen de
+  memoria (cutils.h JS_NAN_DOUBLE, volatile). Pendiente: setMilliseconds(NaN) aún deja la fecha en 1970 (el preludio
+  lo evita sin argumentos con setTime(NaN)). Cualquier otro C del Amiga con NAN tiene el mismo problema.
+- Aviso: el preludio creció unos 40 KB y en la máquina de 8 MB de los tests no cabía en tres (test_idioma,
+  test_jsdom_mutaciones, test_maqueta_epoca: "JS: sin memoria"); van con zorro_iii_memory = 65536, como otros tres. Un
+  Amiga de 8 MB puede quedarse sin memoria en páginas con JavaScript.
+- Tests: test_jsdom_formularios_estado, test_jsdom_rango; test_formularios y test_formularios_post leen el estado.
+  Batería entera antes de Range: 122/127 (los 5, arreglados así); después, js (28), formularios (3), estilo (15) y los
+  6 que dieron timeout con otras sesiones usando el emulador, uno a uno.
+- Quedan 20: pre-wrap tras quitar el último (00), TreeWalker y el árbol de la página (04, 05), doctype (18), clon de la
+  tabla escrita con document.write (29), clases con \r \f y U+2003 (33), :empty con un elemento con espacio de nombres
+  (38), :checked (43), media queries en el iframe (46), cursor no válido (47), clic en submit que envía (54),
+  surrogates (68), document.open/write en el iframe (71, 72), SVG DOM (75-77), script en XHTML (80), data: escapado
+  (97) y 98.
+
+### 2026-11-03 — Tarea 41c (parte): Acid3, 90/100
+- click() hace lo del control (checkbox y radio cambian antes del clic y vuelven si se cancela; input y change; un
+  botón de envío lanza submit y, si nadie lo cancela, form.submit()); un control desactivado no hace nada. :checked solo
+  en checkbox, radio y option.
+- Un valor que no es de los de una propiedad de palabras clave (white-space, position, float, clear, visibility,
+  cursor, text-transform...) no vale y la declaración se ignora (lib/css.dash css_valor_valido). getComputedStyle da
+  cursor, white-space, text-transform y visibility iniciales.
+- Un texto que sale de un elemento avisa como uno que entra (TOQUE_CONTENIDO "#texto"): :empty se recalcula.
+- document.write, mientras carga la página, escribe justo detrás de su <script> (antes, al final del body: el <map> de
+  Acid3 quedaba el último). innerHTML se lee con HTML5 (dentro de tablas y select, con el lector sencillo).
+- Media queries: color, min-color, max-color y monochrome (8 bits, 0 de monocromo). El documento de un marco usa como
+  ventana la caja del marco (atributo "vista" del documento, que pone su getComputedStyle).
+- El doctype es un nodo (DOM_TIPO_DOC, 10): Hubbub lo da con publicId y systemId; document.doctype, firstChild,
+  createDocumentType (nodo de verdad) y createDocument con él; open, write y close en un documento aparte; title de
+  cada documento. document.forms y links por nombre (links lleva los <area>).
+- Aviso: tres tests más ("sin memoria" en 8 MB: test_jsdom_scripts, test_jsdom_sin_doble, test_navegar_js) van con
+  zorro_iii_memory = 65536; ya son seis.
+- Tests nuevos: test_css_valores_validos, test_css_media_color, test_jsdom_doctype; test_html5 mira el nodo doctype.
+  Batería entera 130/131 (test_html5, ajustado y pasado aparte).
+- Quedan 10: clon de la tabla sin el blanco (29), clases con \r \f y U+2003 (33), media queries en el iframe (46,
+  medido sin la ventana del marco), surrogates (68), estilos de <style> que cambian en el iframe e img.height (72), SVG
+  DOM (75-77), script en XHTML (80), data: escapado (97).
+- Tarea 58 empezada (usuario, por la sesión freememlang): Tachyon compila y enlaza por C (./dash --gcc --fpu, 3,8 MB)
+  en una copia; tools/build_pegamento.sh con DASH_LINEA=gcc (cabecera de ./dash --gcc --cabecera; la librería en la
+  misma ruta del @link, con build/pegamento-lib/linea), tests/run.py con DASH_LINEA=gcc y medir_visor --gcc. Aún sin
+  arrancarlo en el emulador. Lo de file:/// lo descarta el usuario.
+
+### 2026-11-04 — Tarea 58 (parte): Tachyon por C arranca y hace lo mismo
+- Compilado con ./dash --gcc --fpu (medir_visor --gcc) en la máquina RTG ancha: Acid3 da 90/100 como el directo, la
+  página entera en unos 3 s en los dos, y las capturas son iguales píxel a píxel.
+- Batería entera con DASH_LINEA=gcc: 63/131, y los 68 que fallan solo por la línea de memcheck (el resto de la salida,
+  igual). Dos tipos, del camino por C según parece (avisada la sesión de Dash): strings temporales (dl_str_temp) que el
+  C devuelve a Dash y no se sueltan (1-8 por test), y los nodos que el C retiene para QuickJS (dl_retain/dl_release)
+  vivos al acabar (76-94 objetos en los tests con JavaScript).
+- Enlace por C: libpegamento.a es un solo objeto y un test sin todos los módulos pedía QuickJS, Hubbub o
+  documento_maquetar_por_js; y libimg.a (con Hubbub) iba antes que libpegamento.a. tests/run.py, en la línea gcc,
+  enlaza con -Wl,--gc-sections -Wl,--start-group (pedido a Dash que lo haga él por --gcc). La primera pasada, sin eso:
+  52/131.
+- Falta: paquete.sh por C, y medir_visor --gcc con el mismo enlace (el navegador entero sí enlaza: lleva todos los
+  módulos).
+- 2026-11-04: con Dash main tras el PR #104 (lo que se pasa al C de @link ya no se escapa, y sus librerías van en grupo
+  y con --gc-sections por --gcc), la batería entera por C pasa 140/140, memcheck incluido. tests/run.py ya no pone
+  DASH_CFLAGS. Falta paquete.sh por C.
+
+### 2026-11-04 — Tarea 41d: WPT de JavaScript (testharness.js), dom/nodes 49 % → 76 %
+- Corredor: tools/wpt_js.py (con un resources/testharnessreport.js propio que deja el resultado en __dashweb_wpt) y
+  tools/wpt_testharness.dash (cada página con su JavaScript hasta que testharness acaba o pasan 20 s). Resumen en
+  docs/wpt/js_<carpeta>.txt. WPT en ~/.cache/dashweb/wpt (sparse: resources, common, dom/nodes).
+- dom/nodes: 4286/8686 (205 de 246 ficheros: getElementsByClassName-14 tiraba el programa) → 6828/9001 (los 246).
+- Arreglos: un selector que no se entiende ya no tira el programa (jsdom_selector); classList según DOM (DOMTokenList,
+  validación, sin repetidos, mismo objeto) y relList; la ventana de un marco hereda de la de la página;
+  CharacterData (substringData, appendData, insertData, deleteData, replaceData), replaceChildren,
+  getElementsByTagNameNS, lookupNamespaceURI/lookupPrefix/isDefaultNamespace, XMLDocument; selectores mal formados
+  ("#", ".5cm", "div ++ p", "div >") dan DOMException SyntaxError, y getElementsByClassName escapa cifras y
+  símbolos; createEvent solo con los nombres de DOM; new Text/Comment/DocumentFragment/Document; isSameNode,
+  isEqualNode, normalize; ownerDocument de lo hecho por otro documento; about:blank, location null y contentType en
+  los documentos aparte (createElement en XML guarda las mayúsculas); Attr de createAttribute; prefix null;
+  instrucciones de procesamiento (DOM_INSTRUCCION, 7) y textContent de comentarios e instrucciones.
+- QuickJS: dos infinitos iguales por sus bits (js_deq): la FPU emulada de FS-UAE daba Infinity === Infinity falso y
+  testharness fallaba con cada 0 ("expected 0 but got 0").
+- Aviso: el selector más estricto también vale para las hojas: "#1a" o ".5cm" ya no casan (como en Chrome).
+- Tests: test_jsdom_wpt_dom, test_js_infinitos, test_jsdom_clases_unicode. Batería entera 137/140 (los 3, uno a uno,
+  pasan; en la batería fallaron, de nuevo, al final del grupo).
+- Lo que queda en dom/nodes, por grupos: las codificaciones de documentos que no son UTF-8 (characterSet, unos 300),
+  los atributos con espacio de nombres (setAttributeNS/getAttributeNS: case.html), ids y clases fuera de Latin-1.
+- Las demás carpetas de dom (primera medida → ahora): events 217/618 → 370/618, ranges 132/209 (24 ficheros ni
+  arrancaban: faltaba createCDATASection) → 36624/44020, traversal 42/53, collections 8/55, lists 123/189.
+- Eventos: oyentes pasivos (y por omisión los de touchstart/touchmove/wheel en la ventana), initEvent reinicia, un
+  evento sin inicializar (de createEvent) o que ya se despacha da InvalidStateError, returnValue y cancelBubble, los
+  on* de HTML a null (sin los táctiles: 'ontouchstart' in window decide "móvil" en muchas webs), y las clases de
+  eventos con su herencia (MouseEvent es un UIEvent) y los campos de su diccionario. createCDATASection.
+- Aviso y arreglo: el preludio (245 KB) ya no cabía al compilarlo en el A1200 de 8 MB de los tests ("sin memoria":
+  JS_WriteObject sin sitio). QuickJS guarda el texto de cada función para toString(), también el de las de dentro, y
+  va en el bytecode: el preludio se compila ahora sin él (JS_STRIP_SOURCE en js_evaluar_guardado). Sus funciones
+  dicen [native code], como las de un navegador. Batería entera 140/140.
+- Cierre de la tanda: dom/nodes 9140 → 10470/12653 (83 %). compareDocumentPosition entre árboles sueltos (desconectados
+  con el bit de "depende de la implementación", el orden fijo por árbol) y createHTMLDocument con su <!DOCTYPE html>
+  delante, como en los navegadores (createDocument y los XML lo quitan). test_jsdom_rango: el <html> de un documento
+  nuevo es ya el segundo hijo (endOffset 2). jsdom 22/22. La batería entera no se ha vuelto a pasar tras esto.
+
+### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
+- getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).
+- document.styleSheets y style.sheet/link.sheet: ownerNode, href, cssRules vivas (del texto del <style> cada vez),
+  insertRule/deleteRule que reescriben el texto; img.width y height del CSS si va en px.
+- <script src="data:..."> (en claro y en base64, por un fichero de T:): lib/jsdom.dash _jsdom_data; lib/recursos.dash
+  ya no los pide.
+- Los <script> de un XHTML bien formado cargado en un marco se ejecutan con window, document y parent de su marco; uno
+  mal formado o de otro espacio de nombres, no.
+- SVG DOM: rect.width, circle.r... (SVGAnimatedLength del atributo) y getNumberOfChars y compañía en <text>.
+- En class e id (setAttribute, className, id), lo que no cabe en Latin-1 pasa a "?" como al leer el CSS: U+2003 se
+  convertía en un espacio y partía la clase.
+- Tests: test_jsdom_hojas_css, test_jsdom_script_data, test_jsdom_svg_dom, test_jsdom_clases_unicode;
+  test_jsdom_iframe con los xhtml de Acid3. Batería entera 127/134: los 7 que fallan dieron timeout con el emulador
+  compartido y pasan uno a uno.
+- Quedan 2: el clon de una tabla escrita con document.write pierde el blanco de después de </tbody> (29), y los
+  surrogates sueltos (68: el DOM es Latin-1).
+
+### 2026-11-04 — Tarea 41c: Acid3 100/100 (la nota; el dibujo, aún no)
+- Hubbub (third_party/hubbub/libhubbub/src/treebuilder/in_row.c): </tbody>, </tfoot> y </thead> dentro de una fila
+  cierran la fila y se vuelven a procesar, como dice HTML5 (iba a "in table", que los ignoraba, y el blanco de detrás
+  acababa en la fila). tests/run.py rehace libimg.a cuando cambia Hubbub.
+- Un surrogate suelto que llega del JavaScript se quita al pasar a Latin-1 (de lo que permite Unicode).
+- Nota 100/100 en la máquina RTG ancha (la prueba 26 tarda 7,4 s). Pero el dibujo no es el de reference.html: los
+  marcos rojos de 2em de las cajas ("! important" con espacio no se lee), el "FAIL" grande (color hsla(0, 0, 0, 1) no
+  válido que se aplica: era transparente), el "FAIL" de dentro de los <iframe> que se pinta, el fondo plateado de
+  <html> que no sale. Es lo siguiente.
+- Batería entera 122/135: los 13 que fallan, timeout seguidos al final, y pasan uno a uno. Aviso: tres baterías
+  seguidas acaban así; a mirar si es el emulador compartido o algo que se acumula en tests/run.py.
+
+### 2026-11-04 — Tarea 41c: el dibujo de Acid3 se acerca a la referencia
+- "! important" con blancos entre ! e important (lib/css.dash): las cajas de Acid3 llevaban un borde de 2em rojo.
+- Colores no válidos se ignoran en color y background-color (hsl/hsla con comas sin %, rgb con % mezclados, #
+  de largo raro, -x- que no es -webkit- ni -moz-): el "FAIL" con color: hsla(0, 0, 0, 1) era transparente.
+- Texto con color transparente: ocupa su sitio y no se pinta (pieza con color -2, dibujo velado).
+- El texto de dentro de un <iframe> no se pinta (lib/maqueta.dash _palabras_texto).
+- El lienzo lleva el fondo de <html> antes que el de <body> (CSS 2.1 14.2): el plateado de Acid3.
+- Una hoja que llega con un tipo que no es text/css se ignora (lib/recursos.dash): el empty.css de Acid3 es HTML y
+  ponía el <h1> en rojo.
+- tests/run.py: los tests de una misma configuración van en una sesión del emulador con 45 s por test (eran 20): los
+  últimos del grupo daban TIMEOUT en cada batería entera. Era eso, no el emulador compartido.
+- Tests: test_maqueta_iframe_dentro (iframe, transparente, lienzo), test_css_valores_validos (colores, ! important).
+  Batería entera 126/136, los 10 que fallan con el TIMEOUT de arriba, pasan uno a uno. Acid3 sigue en 100/100.
+- Falta del dibujo: la escalera de las cajas (vertical-align: 2em de cada una), la posición de "100/100", el enlace de
+  #linktest que debería verse blanco (:visited), los cuadrados rojos de la derecha y los tres cuadros negros junto a
+  las instrucciones (los <object>).
+- Después: vertical-align con longitud en los inline-block (la escalera, ya como en la referencia); lo absoluto sin
+  antepasado posicionado va respecto al bloque contenedor inicial (origen de la página, tamaño de la ventana), no a la
+  caja de <html> (#linktest y map::after en su sitio); nada de dentro de un <iframe> se pinta (los tres cuadros negros
+  eran los checkbox que la prueba 55 mete en un iframe). Tests: test_maqueta_vertical_align,
+  test_maqueta_absoluto_inicial, test_maqueta_iframe_dentro; maqueta 33/33.
+- Queda del dibujo de Acid3 (para otra tanda; la nota ya es 100/100):
+  - el <span> float: right de #instructions va a la línea de debajo y sin su margin-right: -20px; un flotante que
+    aparece a mitad de línea debería subir a esa línea (CSS 2.1 9.5.1). Por eso se ve el cuadrado rojo de su fondo;
+  - #linktest debería verse blanco (:visited: la dirección la ha cargado el iframe);
+  - unos 3 px del cuadrado rojo del fondo del <body> asoman junto al map::after (la posición en % del fondo);
+  - la "X" de map::after con la fuente AcidAhemTest (font.ttf) es un cuadrado entero.

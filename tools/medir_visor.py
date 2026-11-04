@@ -7,7 +7,7 @@ a page in the visor and prints the times it reports (load, html, style, layout, 
     tools/medir_visor.py --pagina otra.html --captura visor.png
     tools/medir_visor.py --sistema ~/.cache/dash-emu/sys31web     # with fonts (tools/emu_sys_fuentes.sh)
 
-Needs $DASH_KICKSTART and $DASH_EMU_SYS, like tests/run.py; Dash is $DASH (default the worktree).
+Needs $DASH_KICKSTART and $DASH_EMU_SYS, like tests/run.py; Dash is $DASH (default ~/Projects/FreeMEMLang).
 """
 import argparse
 import atexit
@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang" / ".worktrees" / "dashweb"))
+DASH = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang"))
 PORT = 40861
 MAQUINAS = {
     "a1200": "fpu = 68882\n",    # (dashweb va con --fpu, como en tools/paquete.sh y los tests)
@@ -61,9 +61,17 @@ def main():
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
+    ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
+                    "(e.g. file:///DH0/p1, to try file: addresses)")
+    ap.add_argument("--js", metavar="EXPR", help="dashweb JS=EXPR: evaluated in the page at --js-en ms, to the output")
+    ap.add_argument("--js-en", metavar="MS", help="when to evaluate --js (ms after the page started)")
+    ap.add_argument("--depurar", action="store_true", help="build with ./dash --debug and keep the program in --guardar "
+                    "(dashc --debug-info turns the latido's code offsets into lines)")
     ap.add_argument("--local", action="store_true",
                     help="the page from the emulated disk, without network: FS-UAE's bsdsocket.library makes the "
                          "emulated CPU many times slower (measure the A1200 like this)")
+    ap.add_argument("--gcc", action="store_true", help="build by the C path (./dash --gcc; tarea 58): needs the C-path "
+                    "build/pegamento-lib (tools/build_pegamento.sh with DASH_LINEA=gcc)")
     ap.add_argument("--memcheck", action="store_true", help="build with ./dash --memcheck (memory errors to the output)")
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
@@ -110,16 +118,27 @@ def main():
         catalogo = destino / "Tachyon.catalog"
         atexit.register(lambda: catalogo.unlink(missing_ok=True))   # (las demás pruebas, en el idioma de siempre)
 
+    # (build/pegamento-lib, de la línea que toca: dashc, o gcc con --gcc; tarea 58)
+    linea = "gcc" if args.gcc else "dashc"
+    hecha = ROOT / "build" / "pegamento-lib" / "linea"
+    if not hecha.exists() or hecha.read_text().strip() != linea:
+        r = subprocess.run([str(ROOT / "tools" / "build_pegamento.sh")], capture_output=True, text=True,
+                           env=dict(os.environ, DASH=str(DASH), DASH_LINEA=linea))
+        if r.returncode != 0:
+            sys.exit("tools/build_pegamento.sh failed:\n" + r.stdout + r.stderr)
     with tempfile.TemporaryDirectory(prefix="visor_") as tmp:
         exe = Path(tmp) / "visor"
         env = dict(os.environ, DASH_TEST_AUTOCLOSE=str(args.segundos))
         if args.perfil:
             env["DASH_PROFILE"] = "1"
-        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--memcheck"] if args.memcheck else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
-                           cwd=DASH, env=env, capture_output=True, text=True)
+        r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--gcc"] if args.gcc else []) + (["--memcheck"] if args.memcheck else []) + (["--debug"] if args.depurar else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
+                           cwd=ROOT, env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("compile failed:\n" + r.stdout + r.stderr)
         size = exe.stat().st_size
+        if args.depurar and args.guardar:
+            Path(args.guardar).mkdir(parents=True, exist_ok=True)
+            shutil.copy(exe, Path(args.guardar) / "programa")
         modo = ["tls-lento"] if args.tls_lento else ["tls"] if args.tls else []
         server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -149,6 +168,9 @@ def main():
                 prog_args[0] += " CAJAS=" + args.cajas
             if args.cajas_en:
                 prog_args[0] += " CAJASEN=" + args.cajas_en
+            if args.js:
+                from urllib.parse import quote
+                prog_args[0] += " JS=" + quote(args.js, safe="") + " JSEN=" + (args.js_en or "0")
             if args.poca_memoria:
                 prog_args[0] += " POCAMEMORIA=" + args.poca_memoria
             if args.gc_siempre:
@@ -159,7 +181,7 @@ def main():
             if args.local:
                 # the page goes to the disk as a second "program" (DH0:p1; running it just fails)
                 programs.append(str(ROOT / "tests" / "pages" / args.pagina))
-                prog_args = ["DH0:p1", ""]
+                prog_args = [args.direccion or "DH0:p1", ""]
                 red = ""
             fondo = []
             if args.acciones:

@@ -149,6 +149,19 @@ class Handler(socketserver.StreamRequestHandler):
                 data, kind = b"", "text/plain"
             self.wfile.write(reply("200 OK", [("Content-Type", kind), ("Content-Length", str(len(data)))], data))
             return
+        if path.startswith("/acid3/"):     # tests/pages/acid3 (Acid3, tarea 41c) con los tipos de acid3.acidtests.org
+            import os
+            nombre = os.path.basename(path) or "index.html"
+            f = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pages", "acid3", nombre)
+            if os.path.isfile(f):
+                data = open(f, "rb").read()
+                tipos = {"empty.png": "image/png", "support-c.png": "image/png", "empty.txt": "text/plain; charset=utf-8",
+                         "empty.xml": "application/xml;charset=utf-8", "svg.xml": "image/svg+xml", "xhtml.1": "text/xml",
+                         "xhtml.2": "text/xml", "xhtml.3": "text/xml", "font.svg": "image/svg+xml",
+                         "font.ttf": "application/x-truetype-font"}
+                kind = tipos.get(nombre, "text/html; charset=utf-8")
+                self.wfile.write(reply("200 OK", [("Content-Type", kind), ("Content-Length", str(len(data)))], data))
+                return
         if path.startswith("/pages/"):     # files of tests/pages
             import os
             f = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pages", os.path.basename(path))

@@ -16,6 +16,15 @@ const DOM_TEXTO = 3
 const DOM_COMENTARIO = 8
 const DOM_DOCUMENTO = 9
 const DOM_FRAGMENTO = 11       # document.createDocumentFragment(): al añadirlo pasan sus hijos
+const DOM_INSTRUCCION = 7      # <?destino datos?>: el destino en nombre, los datos en texto (tarea 41d; no se pinta)
+const DOM_TIPO_DOC = 10        # el doctype: su nombre, y publicId y systemId en sus atributos (tarea 41c; no se pinta)
+
+func dom_tipo_doc(nombre: String, publico: String, sistema: String) -> Nodo
+    n = dom_nodo(DOM_TIPO_DOC, nombre, "")
+    n.atributos.push(Atributo("publicid", publico))
+    n.atributos.push(Atributo("systemid", sistema))
+    return n
+end
 
 # lib/maqueta.dash: lo que dio maquetar un elemento al medir (_bloque_de con _midiendo): con la misma clave en la
 # misma maqueta no se maqueta otra vez, se ponen dos dibujos que lo resumen (_medida_poner)
@@ -101,6 +110,42 @@ struct Nodo
     # lib/imagenes.dash, al volver a escribir un <svg> en un fotograma de sus animaciones: lo que cambia en este
     # elemento ("@r": un atributo; lo demás, propiedades de su style); nil si nada
     svg_sobre: {String: String} = nil
+    # el estado de un control de formulario (tarea 41c): el value que se escribió o puso el JavaScript (nil: el del
+    # atributo) y si está marcado (checked de input, selected de option; 0: lo que diga el atributo, 1 sí, 2 no). El
+    # atributo es el de partida (defaultValue, defaultChecked, defaultSelected), como en un navegador
+    valor: String = nil
+    marcado: Int = 0
+end
+
+# (el value es del campo, no del atributo, en los input donde se escribe: el modo "value" de HTML; en los demás,
+# hidden, botones, checkbox y radio, value es el atributo)
+func dom_campo_modo_valor(n: Nodo) -> Bool
+    if n.nombre != "input"
+        return false
+    end
+    t = str_lower(dom_atributo(n, "type"))
+    return not (t == "hidden" or t == "submit" or t == "image" or t == "reset" or t == "button" or t == "checkbox" or t == "radio" or t == "file")
+end
+
+# El value de un input
+func dom_valor_campo(n: Nodo) -> String
+    if n.valor != nil and dom_campo_modo_valor(n)
+        return n.valor
+    end
+    return dom_atributo(n, "value")
+end
+
+# checked de un input, selected de un option
+func dom_marcado(n: Nodo) -> Bool
+    if n.marcado == 1
+        return true
+    elif n.marcado == 2
+        return false
+    end
+    if n.nombre == "option"
+        return dom_tiene_atributo(n, "selected")
+    end
+    return dom_tiene_atributo(n, "checked")
 end
 
 # Un cambio del JavaScript, apuntado en el documento para rehacer después solo el estilo al que afecta

@@ -1,11 +1,13 @@
 # Test: escapes de CSS en los selectores (tarea 37a1, CSS Syntax 3): "\" y un carácter (".md\:grid-cols-12",
 # ".h-\[1\.35em\]", ".w-1\/2") y "\" con cifras hex (".\31 0" es la clase "10"), como los pone Tailwind; dentro de
-# @layer y @media, con la especificidad de una clase, y desde querySelector.
+# @layer y @media, con la especificidad de una clase, y desde querySelector. Un id que es un espacio escapado ("#\ "
+# de Acid3: antes el selector se recortaba a "#\" y la lectura daba vueltas sin fin) y una "\" suelta al final.
 # memcheck
 # expect-out: md:grid-cols-12 | h-[1.35em] | w-1/2 | 10 | a{b} | hover:bg-x
 # expect-out: a 12 b 1.35em c 50% d 10px e azul f red
 # expect-out: especificidad 200
 # expect-out: js: 1 1
+# expect-out: espacio: [ ] 1 | suelta: true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -36,4 +38,9 @@ Main
     jsdom_preparar(js, doc)
     Print "js: " + js_evaluar(js, "document.querySelectorAll('.md\\\\:grid-cols-12').length + ' ' + document.querySelectorAll('.h-\\\\[1\\\\.35em\\\\]').length", "t.js")
     js_liberar(js)
+    d2 = dom_desde_html("<html><head><style>#\\ { color: blue } a\\</style></head><body><p id=' '>x</p></body></html>")
+    estilo_aplicar(d2, estilo_hojas(d2, "http://ejemplo.com/"))
+    sp = css_selector("#\\ ")
+    suelta = css_selector("a\\")
+    Print "espacio: [" + sp.partes[0].simple.id + "] " + sp.partes.length + " | suelta: " + (suelta != nil or suelta == nil)
 end

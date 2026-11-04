@@ -1,0 +1,20 @@
+# Test: lo absoluto sin antepasado posicionado va respecto al bloque contenedor inicial (el origen de la página, del
+# tamaño de la ventana), no a la caja de <html> (tarea 41c: el map::after de Acid3 salía corrido el margen de <html>).
+# Con <html> posicionado, respecto a él.
+# expect-out: inicial: 100 10 | html posicionado: 120 30
+# memcheck
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+import "../lib/documento.dash"
+
+func caja(html: String) -> String
+    doc = dom_desde_html5(html)
+    estilo_aplicar(doc, estilo_hojas(doc, "http://x/"))
+    p = maquetar(doc, 400)
+    a = dom_por_id(doc, "a")
+    return "" + a.caja_x + " " + a.caja_y
+end
+
+Main
+    d = "<body style='margin:0'><p>x</p><div id=a style='position:absolute;left:100px;top:10px;width:5px;height:5px'></div></body></html>"
+    Print "inicial: " + caja("<!DOCTYPE html><html style='margin:20px'>" + d) + " | html posicionado: " + caja("<!DOCTYPE html><html style='margin:20px;position:relative'>" + d)
+end

@@ -1,0 +1,83 @@
+# Las pruebas de JavaScript de Web Platform Tests (testharness.js: la página dice por sí misma qué pasa) en el Amiga
+# (tarea 41d). tools/wpt_js.py la lanza con una lista servida por HTTP, con un resources/testharnessreport.js suyo que
+# deja el resultado en __dashweb_wpt al acabar.
+#
+#   wpt_testharness http://10.0.2.2:PUERTO/ lista.txt
+#
+# lista.txt: una prueba por línea (ruta desde la base). Por cada una, el DOM de la página con su JavaScript (scripts,
+# DOMContentLoaded, load, temporizadores y peticiones) hasta que testharness acaba o pasan 20 s, y escribe
+# "WPT SUB estado ruta | nombre" por cada subprueba y "WPT FILE ruta pasan/total estado" (estado del harness:
+# OK, ERROR, TIMEOUT; o "sin acabar").
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func traer(direccion: String) -> String
+    r = http_get(direccion, 20000)
+    if r.error != "" or r.estado < 200 or r.estado >= 300
+        return ""
+    end
+    return http_texto(r)
+end
+
+func correr_una(base: String, ruta: String)
+    direccion = base + ruta
+    texto = traer(direccion)
+    if texto == ""
+        Print "WPT FILE " + ruta + " 0/0 no llega"
+        return
+    end
+    doc = dom_desde_html5(texto)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_imgs = 0; var __dashweb_wpt = null;", "wpt")
+    jsdom_ejecutar_scripts(js, doc, direccion)
+    t0 = time_ms()
+    hecho = ""
+    while time_ms() - t0 < 20000
+        jsdom_peticiones_avanzar(js)
+        jsdom_temporizadores(js)
+        hecho = js_evaluar(js, "__dashweb_wpt === null ? '' : 'si'", "wpt")
+        if hecho == "si"
+            break
+        end
+        time_delay(1)
+    end
+    if hecho != "si"
+        # (sin acabar: lo que haya, y testharness lo da por terminado)
+        js_evaluar(js, "try { if (typeof done == 'function') done(); } catch (e) {}", "wpt")
+        k = 0
+        while k < 50 and js_evaluar(js, "__dashweb_wpt === null ? '' : 'si'", "wpt") != "si"
+            jsdom_temporizadores(js)
+            time_delay(1)
+            k = k + 1
+        end
+    end
+    r = js_evaluar(js, "__dashweb_wpt === null ? 'NADA' : __dashweb_wpt", "wpt")
+    if r == "NADA"
+        Print "WPT FILE " + ruta + " 0/0 sin acabar"
+    else
+        for linea in str_split(r, "\n")
+            if linea != ""
+                Print linea
+            end
+        end
+    end
+    js_liberar(js)
+end
+
+Main
+    if arg_count() < 2
+        Print "uso: wpt_testharness base lista"
+    else
+        base = arg(0)
+        lista = traer(base + arg(1))
+        for linea in str_split(lista, "\n")
+            ruta = str_trim(linea)
+            if ruta != ""
+                correr_una(base, ruta)
+            end
+        end
+        Print "WPT FIN"
+    end
+end

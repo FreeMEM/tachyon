@@ -1,0 +1,31 @@
+WPT TOTAL dom/traversal: 42/53 subpruebas en 17 de 17 ficheros
+
+WPT FILE dom/traversal/NodeFilter-constants.html 2/2 OK
+WPT FILE dom/traversal/NodeIterator-removal-during-filtering.html 4/4 OK
+WPT FILE dom/traversal/NodeIterator-removal.html 0/0 ERROR TypeError: not a function
+WPT FILE dom/traversal/NodeIterator.html 0/0 ERROR TypeError: not a function
+WPT FILE dom/traversal/TreeWalker-acceptNode-filter-cross-realm-null-browsing-context.html 0/1 OK
+WPT FILE dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html 0/5 OK
+WPT FILE dom/traversal/TreeWalker-acceptNode-filter.html 12/12 OK
+WPT FILE dom/traversal/TreeWalker-basic.html 2/6 OK
+WPT FILE dom/traversal/TreeWalker-currentNode.html 3/4 OK
+WPT FILE dom/traversal/TreeWalker-previousNodeLastChildReject.html 1/1 OK
+WPT FILE dom/traversal/TreeWalker-previousSiblingLastChildSkip.html 1/1 OK
+WPT FILE dom/traversal/TreeWalker-realm.html 2/2 OK
+WPT FILE dom/traversal/TreeWalker-traversal-reject.html 6/6 OK
+WPT FILE dom/traversal/TreeWalker-traversal-skip-most.html 2/2 OK
+WPT FILE dom/traversal/TreeWalker-traversal-skip.html 6/6 OK
+WPT FILE dom/traversal/TreeWalker-walking-outside-a-tree.html 1/1 OK
+WPT FILE dom/traversal/TreeWalker.html 0/0 ERROR TypeError: not a function
+
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm-null-browsing-context.html | TreeWalker: NodeFilter from detached iframe doesn't get called | not a function
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object without 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object with non-callable 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object with revoked Proxy as 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm non-callable revoked Proxy | 'nodeFilterGlobalObject' is not defined
+WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm callable revoked Proxy | 'nodeFilterGlobalObject' is not defined
+WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
+WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root, null, null). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
+WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root, undefined, undefined). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
+WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Give an invalid root node to document.createTreeWalker(). | assert_throws_js: function "function () { document.createTreeWalker(); }" did not throw
+WPT SUB FAIL dom/traversal/TreeWalker-currentNode.html | Test that setting currentNode to non-Node values throws. | assert_throws_js: function "function() { w.currentNode = null; }" did not throw

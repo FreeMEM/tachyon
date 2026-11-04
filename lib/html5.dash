@@ -92,6 +92,11 @@ func _h5_copiar(h: Int, id: Int, padre: Nodo)
             dom_agregar(padre, dom_nodo(t, "", utf8_a_js(_h5_texto_de(h, c))))
         elif t == DOM_TEXTO or t == DOM_COMENTARIO
             dom_agregar(padre, dom_nodo(t, "", utf8_a_latin1(_h5_texto_de(h, c))))
+        elif t == DOM_TIPO_DOC
+            ids = str_split(utf8_a_latin1(_h5_texto_de(h, c)), "\n")
+            if ids.length == 2
+                dom_agregar(padre, dom_tipo_doc(_h5_nombre(h, c), ids[0], ids[1]))
+            end
         end
         i = i + 1
     end

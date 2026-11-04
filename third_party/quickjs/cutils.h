@@ -29,6 +29,17 @@
 #include <string.h>
 #include <inttypes.h>
 
+/* AmigaOS (Tachyon, tarea 41c): el gcc de m68k-amigaos escribe una constante NaN como "fmove.s #0x7f800000", que es
+   Infinity (new Date(NaN).getTime() daba Infinity y un set* de Date sin argumentos no dejaba la fecha en NaN). Un NaN
+   leído de memoria (volatile: si no, gcc lo vuelve a poner como constante) sí vale. Las tablas de datos con NAN salen
+   bien. */
+#if defined(__m68k__) || defined(__mc68000__)
+static volatile const union { uint64_t u; double d; } js_nan_m68k __attribute__((unused)) = { 0x7ff8000000000000ULL };
+#define JS_NAN_DOUBLE (js_nan_m68k.d)
+#else
+#define JS_NAN_DOUBLE NAN
+#endif
+
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
 #define force_inline inline __attribute__((always_inline))

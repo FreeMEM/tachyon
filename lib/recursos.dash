@@ -84,7 +84,8 @@ func _recursos_en(r: Recursos, n: Nodo, base: Url)
     if n.tipo == DOM_ELEMENTO
         if n.nombre == "link" and str_find(str_lower(dom_atributo(n, "rel")), "stylesheet") >= 0 and dom_atributo(n, "href") != "" and not url_es_data(dom_atributo(n, "href"))
             recursos_pedir(r, url_text(url_resolve(base, dom_atributo(n, "href"))), true, 0)
-        elif n.nombre == "script" and dom_atributo(n, "src") != ""
+        elif n.nombre == "script" and dom_atributo(n, "src") != "" and not url_es_data(str_trim(dom_atributo(n, "src")))
+            # (un data: no se pide: lo lee lib/jsdom.dash _jsdom_data; Acid3 97)
             recursos_pedir(r, url_text(url_resolve(base, dom_atributo(n, "src"))), false, 0)
         elif n.nombre == "style"
             # los @import de un <style> también
@@ -123,7 +124,12 @@ func recursos_avanzar(r: Recursos) -> Int
             if http_avanzar(p.carga)
                 resp = p.carga.respuesta
                 if resp.error == "" and resp.estado == 200
-                    if p.es_css
+                    # (una hoja que llega con otro tipo, como text/html, no vale: Acid3 pone un empty.css que es HTML y
+                    # el <h1> salía rojo. Sin tipo, sí)
+                    t = str_lower(str_trim(resp.tipo))
+                    if p.es_css and t != "" and t != "text/css"
+                        r.traidos[p.direccion] = ""
+                    elif p.es_css
                         r.traidos[p.direccion] = http_texto(resp)
                     elif texto_es_utf8(resp.juego)
                         r.scripts[p.direccion] = resp

@@ -1,0 +1,21 @@
+# Test: vertical-align con una longitud en un inline-block (tarea 41c, la escalera de cajas de Acid3): la caja sube
+# eso sobre la línea base (en em, de su propia letra). Antes se quedaban todas a la misma altura.
+# expect-out: subidas: 0 10 20
+# memcheck
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+import "../lib/documento.dash"
+
+Main
+    h = "<!DOCTYPE html><html><body style='margin:0'><div style='font: 0/0 sans-serif'>"
+    h = h + "<span id=a style='display:inline-block;padding:5px;background:red'></span>"
+    h = h + "<span id=b style='display:inline-block;padding:5px;background:red;vertical-align:10px'></span>"
+    h = h + "<span id=c style='display:inline-block;padding:5px;background:red;font-size:20px;vertical-align:1em'></span>"
+    h = h + "</div></body></html>"
+    doc = dom_desde_html5(h)
+    estilo_aplicar(doc, estilo_hojas(doc, "http://x/"))
+    p = maquetar(doc, 400)
+    a = dom_por_id(doc, "a")
+    b = dom_por_id(doc, "b")
+    c = dom_por_id(doc, "c")
+    Print "subidas: " + (a.caja_y - a.caja_y) + " " + (a.caja_y - b.caja_y) + " " + (a.caja_y - c.caja_y)
+end

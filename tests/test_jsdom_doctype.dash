@@ -1,0 +1,31 @@
+# Test: el doctype es un nodo (tarea 41c, Acid3 18, 71 y 98): document.firstChild con nodeType 10, name, publicId y
+# systemId; createDocumentType y createDocument con él; open, write y close en un documento aparte; y document.forms
+# y links con nombres y <area>. Antes el doctype no estaba en el árbol y createDocumentType daba un objeto suelto.
+# memcheck
+# expect-out: página: 10 html -//W3C//DTD HTML 4.01//EN | true 2
+# expect-out: crear: 10 true true Sparrow 1
+# expect-out: write: 2 HTML -//W3C//DTD HTML 4.0 Transitional//EN true 2 HEAD SPAN
+# expect-out: forms: true 2 #
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><html><head></head><body><map><area href=\"#\"></map><a href=\"x\">x</a><form name=\"f\"></form></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var t = document.firstChild; 'página: ' + t.nodeType + ' ' + t.name + ' ' + t.publicId + ' | ' + (document.doctype === t) + ' ' + document.childNodes.length"
+    Print js_evaluar(js, c, "t.js")
+    c = "var dt = document.implementation.createDocumentType('html', '-//W3C//DTD XHTML 1.0 Strict//EN', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd');"
+    c = c + "var d = document.implementation.createDocument('http://www.w3.org/1999/xhtml', 'html', dt); d.documentElement.appendChild(d.createElementNS('http://www.w3.org/1999/xhtml', 'head'));"
+    c = c + "d.documentElement.appendChild(d.createElementNS('http://www.w3.org/1999/xhtml', 'body')); var ti = d.createElementNS('http://www.w3.org/1999/xhtml', 'title'); d.documentElement.firstChild.appendChild(ti); ti.textContent = 'Sparrow';"
+    c = c + "d.body.appendChild(d.createElementNS('http://www.w3.org/1999/xhtml', 'form'));"
+    c = c + "'crear: ' + dt.nodeType + ' ' + (dt.ownerDocument === d) + ' ' + (d.firstChild === dt) + ' ' + d.title + ' ' + d.forms.length"
+    Print js_evaluar(js, c, "t.js")
+    c = "var e = document.implementation.createHTMLDocument(''); e.open(); e.write('<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><title></title><span></span><script></script>'); e.close();"
+    c = c + "'write: ' + e.childNodes.length + ' ' + e.firstChild.name.toUpperCase() + ' ' + e.firstChild.publicId + ' ' + !e.firstChild.systemId + ' ' + e.documentElement.childNodes.length + ' ' + e.documentElement.firstChild.nodeName + ' ' + e.body.firstChild.tagName"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "'forms: ' + (document.forms.f === document.forms[0]) + ' ' + document.links.length + ' ' + document.links[0].getAttribute('href')", "t.js")
+    js_liberar(js)
+end

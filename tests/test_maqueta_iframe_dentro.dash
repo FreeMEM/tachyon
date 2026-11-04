@@ -1,0 +1,42 @@
+# Test: lo de dentro de un <iframe> (el texto de reserva) no se pinta, flote o no (tarea 41c: el "FAIL" de los iframes
+# de Acid3, con float: left y 0x0, salía en la página); un texto con color transparente ocupa su sitio sin pintarse; y
+# el lienzo lleva el fondo de <html> antes que el de <body>.
+# memcheck
+# expect-out: iframe: textos FAIL 0 | otros 2 | controles 0
+# expect-out: transparente: velado true
+# expect-out: lienzo: html 12632256 | solo body 16777215
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+import "../lib/documento.dash"
+
+Main
+    doc = dom_desde_html5("<!DOCTYPE html><html><body style='margin:0'><p>a<iframe style='float:left;width:0;height:0' src='x.png'>FAIL</iframe><iframe>FAIL</iframe><iframe><input type=checkbox></iframe>b</p><p style='color:transparent'>oculto</p></body></html>")
+    estilo_aplicar(doc, estilo_hojas(doc, "http://x/"))
+    p = maquetar(doc, 400)
+    fail = 0
+    otros = 0
+    velado = false
+    for d in p.dibujos
+        if d.tipo == D_TEXTO and str_trim(d.texto) == "FAIL"
+            fail = fail + 1
+        elif d.tipo == D_TEXTO and (str_trim(d.texto) == "a" or str_trim(d.texto) == "b")
+            otros = otros + 1
+        elif d.tipo == D_TEXTO and str_trim(d.texto) == "oculto"
+            velado = d.velado
+        end
+    end
+    controles = 0
+    for d in p.dibujos
+        if d.tipo == D_CONTROL
+            controles = controles + 1
+        end
+    end
+    Print "iframe: textos FAIL " + fail + " | otros " + otros + " | controles " + controles
+    Print "transparente: velado " + velado
+    d2 = dom_desde_html5("<!DOCTYPE html><html style='background: silver'><body style='background: white'>x</body></html>")
+    estilo_aplicar(d2, estilo_hojas(d2, "http://x/"))
+    p2 = maquetar(d2, 400)
+    d3 = dom_desde_html5("<!DOCTYPE html><html><body style='background: white'>x</body></html>")
+    estilo_aplicar(d3, estilo_hojas(d3, "http://x/"))
+    p3 = maquetar(d3, 400)
+    Print "lienzo: html " + p2.fondo + " | solo body " + p3.fondo
+end

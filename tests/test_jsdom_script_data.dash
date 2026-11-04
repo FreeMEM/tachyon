@@ -1,0 +1,23 @@
+# Test: <script src="data:..."> (tarea 41c, Acid3 97): en claro con escapes %, en base64, en base64 con escapes % y
+# con blancos y saltos dentro, y con ' en el texto. Antes no se ejecutaban.
+# memcheck
+# expect-out: data: one two three four five's
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    h = "<html><head><script>var d1 = 'fail', d2 = 'fail', d3 = 'fail', d4 = 'fail', d5 = 'fail';</script>"
+    h = h + "<script type=\"text/javascript\" src=\"data:text/javascript,d1%20%3D%20'one'%3B\"></script>"
+    h = h + "<script type=\"text/javascript\" src=\"data:text/javascript;base64,ZDIgPSAndHdvJzs%3D\"></script>"
+    h = h + "<script type=\"text/javascript\" src=\"data:text/javascript;base64,%5a%44%4d%67%50%53%41%6e%64%47%68%79%5a%57%55%6e%4f%77%3D%3D\"></script>"
+    h = h + "<script type=\"text/javascript\" src=\"data:text/javascript;base64,%20ZD%20Qg%0D%0APS%20An%20Zm91cic%0D%0A%207%20\"></script>"
+    h = h + "<script type=\"text/javascript\" src=\"data:text/javascript,d5%20%3D%20'five%5Cu0027s'%3B\"></script></head><body></body></html>"
+    doc = dom_desde_html5(h)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    jsdom_ejecutar_scripts(js, doc, "http://127.0.0.1/x.html")
+    Print js_evaluar(js, "'data: ' + [d1, d2, d3, d4, d5].join(' ')", "t.js")
+    js_liberar(js)
+end

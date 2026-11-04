@@ -331,7 +331,9 @@ static char *_js_utf8(const char *s) {
 
 /* What lib/texto.dash latin1_de puts for a code point outside Latin-1 (never longer than its UTF-8: it is written
    in place): "EUR" for the euro, straight quotes, "-", "..."; "?" for the rest */
+static int _js_sin_parecidos = 0;   /* (1: todo lo que no cabe, "?": class e id; ver _jsdom_setAttribute) */
 static const char *_js_parecido(unsigned long c) {
+    if (_js_sin_parecidos) return "?";
     switch (c) {
     case 8216: case 8217: case 8218: case 8242: return "'";
     case 8249: return "\xAB";
@@ -1511,7 +1513,9 @@ static JSValue _jsdom_atr(JSContext *ctx, JSValueConst this_val, int magic) {
 static JSValue _jsdom_set_atr(JSContext *ctx, JSValueConst this_val, JSValueConst v, int magic) {
     char *t;
     _JSDOM_ESTE_PONER((magic == 0 ? "id" : "className"));
+    _js_sin_parecidos = 1;   /* (id y className: ver _jsdom_setAttribute) */
     t = _js_texto(ctx, v);
+    _js_sin_parecidos = 0;
     jsdom_poner_atributo(n, (STRPTR)_jsdom_atr_nombres[magic], (STRPTR)(t ? t : ""));
     _jsdom_soltar(t);
     _jsdom_tocado(ctx, n);
@@ -1592,7 +1596,11 @@ static JSValue _jsdom_setAttribute(JSContext *ctx, JSValueConst this_val, int ar
     char *a, *v;
     _JSDOM_ESTE;
     a = _jsdom_arg(ctx, argc, argv, 0);
+    /* (en class e id, lo que no cabe en Latin-1 es "?", como al leer el CSS (\2003): un espacio de U+2003 partía la
+       clase en dos y ".f\2003g" no casaba; Acid3 33) */
+    _js_sin_parecidos = a && (!strcmp(a, "class") || !strcmp(a, "id"));
     v = _jsdom_arg(ctx, argc, argv, 1);
+    _js_sin_parecidos = 0;
     if (a && v) jsdom_poner_atributo(n, (STRPTR)a, (STRPTR)v);
     _jsdom_soltar(a);
     _jsdom_soltar(v);

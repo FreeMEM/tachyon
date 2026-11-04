@@ -84,7 +84,8 @@ func _recursos_en(r: Recursos, n: Nodo, base: Url)
     if n.tipo == DOM_ELEMENTO
         if n.nombre == "link" and str_find(str_lower(dom_atributo(n, "rel")), "stylesheet") >= 0 and dom_atributo(n, "href") != "" and not url_es_data(dom_atributo(n, "href"))
             recursos_pedir(r, url_text(url_resolve(base, dom_atributo(n, "href"))), true, 0)
-        elif n.nombre == "script" and dom_atributo(n, "src") != ""
+        elif n.nombre == "script" and dom_atributo(n, "src") != "" and not url_es_data(str_trim(dom_atributo(n, "src")))
+            # (un data: no se pide: lo lee lib/jsdom.dash _jsdom_data; Acid3 97)
             recursos_pedir(r, url_text(url_resolve(base, dom_atributo(n, "src"))), false, 0)
         elif n.nombre == "style"
             # los @import de un <style> también

@@ -1,0 +1,20 @@
+# Test: una clase con caracteres fuera de Latin-1 (tarea 41c, Acid3 33): solo los blancos de ASCII (espacio, tab, \n,
+# \r, \f) separan clases; U+2003 y U+3000 quedan dentro y ".f\2003g\3000h" la encuentra. Antes U+2003 pasaba a ser un
+# espacio al llegar al DOM (en Latin-1) y partía la clase.
+# memcheck
+# expect-out: clases: 6 true true | id: true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><p>x</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var p = document.querySelector('p'); p.className = 'a\\u0020b\\u0009c\\u000Ad\\u000De\\u000Cf\\u2003g\\u3000h';"
+    c = c + "var q = document.createElement('i'); q.setAttribute('id', 'x\\u2003y'); document.body.appendChild(q);"
+    c = c + "'clases: ' + p.className.split(/[ \\t\\n\\r\\f]+/).length + ' ' + p.matches('.a.b.c.d.e.f\\\\2003g\\\\3000h') + ' ' + !p.matches('.g') + ' | id: ' + (document.querySelector('#x\\\\2003y') === q)"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

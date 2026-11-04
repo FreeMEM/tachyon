@@ -1,0 +1,20 @@
+# Test: lo de SVG DOM que mira Acid3 (tarea 41c, 75 y 77): rect.width es un SVGAnimatedLength con baseVal.value del
+# atributo, circle.r igual, y text.getNumberOfChars(); un <img> sigue con su width de número. Antes rect.width no
+# existía y text no tenía getNumberOfChars.
+# memcheck
+# expect-out: rect: object 100 100 | circle 7 | text 3 | img 40
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><svg width=10 height=10><circle r=7 /></svg><img width=40 height=20></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var ns = 'http://www.w3.org/2000/svg', svg = document.querySelector('svg'); var r = document.createElementNS(ns, 'rect'); r.setAttribute('width', '100'); svg.appendChild(r);"
+    c = c + "var t = document.createElementNS(ns, 'text'); t.appendChild(document.createTextNode('abc')); svg.appendChild(t);"
+    c = c + "'rect: ' + typeof r.width + ' ' + r.width.baseVal.value + ' ' + r.getAttribute('width') + ' | circle ' + document.querySelector('circle').r.baseVal.value + ' | text ' + t.getNumberOfChars() + ' | img ' + document.querySelector('img').width"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

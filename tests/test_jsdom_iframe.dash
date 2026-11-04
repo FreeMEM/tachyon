@@ -8,6 +8,7 @@
 # expect-out: otra vez: 7
 # expect-out: :empty al quitar un texto: 0 1
 # expect-out: svg: cargas 2 | text 1 | mismo true true
+# expect-out: xhtml: xhtml.1
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -56,5 +57,9 @@ Main
     js_evaluar(js, c, "t.js")
     esperar(js)
     Print js_evaluar(js, "'svg: cargas ' + cargas + ' | text ' + f.contentDocument.getElementsByTagName('text').length + ' | mismo ' + (f.getSVGDocument() === f.contentDocument) + ' ' + (o.getSVGDocument() === o.contentDocument)", "t.js")
+    c = "var avisos = []; window.notify = function (x) { avisos.push(x); }; [1, 2, 3].forEach(function (i) { var x = document.createElement('iframe'); x.src = '/acid3/xhtml.' + i; document.body.appendChild(x); });"
+    js_evaluar(js, c, "t.js")
+    esperar(js)
+    Print js_evaluar(js, "'xhtml: ' + avisos.join(' ')", "t.js")
     js_liberar(js)
 end

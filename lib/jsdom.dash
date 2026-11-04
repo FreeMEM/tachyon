@@ -912,6 +912,9 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
             traido = false
             if dom_tiene_atributo(s, "src")
                 nombre = url_text(url_resolve(u, dom_atributo(s, "src")))
+                if url_es_data(str_trim(dom_atributo(s, "src")))
+                    nombre = str_trim(dom_atributo(s, "src"))
+                end
                 traido = traidos.has(nombre)
             end
             jsdom_script_actual = s
@@ -974,6 +977,9 @@ func _jsdom_scripts(n: Nodo, r: [Nodo])
 end
 
 func _jsdom_traer(direccion: String) -> String
+    if url_es_data(direccion)
+        return _jsdom_data(direccion)
+    end
     u = url_parse(direccion)
     if URL_RASTREO_BLOQUEAR and url_rastreador(direccion)
         return URL_RASTREO_SUSTITUTO
@@ -987,6 +993,30 @@ func _jsdom_traer(direccion: String) -> String
     end
     ruta = url_fichero(direccion)
     t = file_read_text(ruta)
+    if t == nil
+        return ""
+    end
+    return utf8_a_js_ascii(t)
+end
+
+# Lo de dentro de una dirección data: (un <script src="data:text/javascript,...">, en claro o en base64, con escapes %
+# y blancos; Acid3 97): el base64, por un fichero de T: (base64_to_file, como las imágenes)
+func _jsdom_data(direccion: String) -> String
+    coma = str_find(direccion, ",")
+    if coma < 0
+        return ""
+    end
+    cabecera = str_lower(direccion[5:coma])
+    datos = url_deshacer(direccion[coma + 1:])
+    if not str_ends(cabecera, ";base64")
+        return utf8_a_js_ascii(datos)
+    end
+    fichero = "T:tachyon_data.js"
+    if base64_to_file(datos, fichero) < 0
+        return ""
+    end
+    t = file_read_text(fichero)
+    file_delete(fichero)
     if t == nil
         return ""
     end

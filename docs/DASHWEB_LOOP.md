@@ -5457,3 +5457,20 @@ Formato:
   52/131.
 - Falta: paquete.sh por C, y medir_visor --gcc con el mismo enlace (el navegador entero sí enlaza: lleva todos los
   módulos).
+
+### 2026-11-04 — Tarea 41c (parte): Acid3, 98/100
+- getElementById de un documento aparte busca en el suyo (el de C miraba siempre la página: Acid3 46 leía null).
+- document.styleSheets y style.sheet/link.sheet: ownerNode, href, cssRules vivas (del texto del <style> cada vez),
+  insertRule/deleteRule que reescriben el texto; img.width y height del CSS si va en px.
+- <script src="data:..."> (en claro y en base64, por un fichero de T:): lib/jsdom.dash _jsdom_data; lib/recursos.dash
+  ya no los pide.
+- Los <script> de un XHTML bien formado cargado en un marco se ejecutan con window, document y parent de su marco; uno
+  mal formado o de otro espacio de nombres, no.
+- SVG DOM: rect.width, circle.r... (SVGAnimatedLength del atributo) y getNumberOfChars y compañía en <text>.
+- En class e id (setAttribute, className, id), lo que no cabe en Latin-1 pasa a "?" como al leer el CSS: U+2003 se
+  convertía en un espacio y partía la clase.
+- Tests: test_jsdom_hojas_css, test_jsdom_script_data, test_jsdom_svg_dom, test_jsdom_clases_unicode;
+  test_jsdom_iframe con los xhtml de Acid3. Batería entera 127/134: los 7 que fallan dieron timeout con el emulador
+  compartido y pasan uno a uno.
+- Quedan 2: el clon de una tabla escrita con document.write pierde el blanco de después de </tbody> (29), y los
+  surrogates sueltos (68: el DOM es Latin-1).

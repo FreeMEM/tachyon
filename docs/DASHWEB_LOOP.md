@@ -571,6 +571,17 @@ tarea, con el estilo de Dash.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
 
+- [ ] 59. **Pegar, copiar y cortar en los campos de las páginas (usuario por freememlang, 2026-11-05; lo reportó
+      Ferrán García: "los campos de las páginas dentro del navegador tampoco permiten pegar texto").** V pega, C copia
+      y X corta, con Amiga derecha (la norma), Ctrl (costumbre de PC) y Amiga izquierda. Sin selección, C y X van con
+      todo el texto del campo; con selección, con lo seleccionado. Hoy lib/formularios.dash formulario_tecla(campo,
+      caracter, raw) no mira los calificadores y Amiga+V mete una "v" (lo llama src/dashweb.dash, ~2322, con
+      mui_canvas_char). Dash ya tiene mui_canvas_qualifiers(), clip_read_text() y clip_write_text(). Raw: V 0x34, C
+      0x33, X 0x32. Un input pega hasta el primer salto de línea, un textarea todo; respetar maxlength y lanzar input
+      como al teclear. La barra de dirección (String de MUI 5) ya pega con Amiga derecha y Ctrl+V; con Amiga izquierda
+      no (MUI no pasa ese calificador a su edit hook): opcional. Ferrán pidió también guardar un enlace como fichero
+      desde el menú del botón derecho, como AmiFire: es la 57.
+
 - [ ] 58. **Tachyon por las dos líneas de Dash (usuario, 2026-11-02).** Se puede compilar directo a hunk (dashc, lo
       de siempre desde la 0.8) o por C con `./dash --gcc` (dash1): la segunda es el camino para portar a PPC. Hacer:
       a. tests/run.py y tools/build_pegamento.sh con `DASH_LINEA=gcc` (cabecera de dash1, libpegamento aparte en

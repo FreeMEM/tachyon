@@ -2319,7 +2319,27 @@ Main
                 if rueda != 0
                     desplazar(w, 0 - rueda * 30)
                 elif tecla >= 0 and w.foco != nil
-                    r = formulario_tecla(w.foco, mui_canvas_char(w.v.pagina), tecla)
+                    r = FORM_NADA
+                    # Amiga (las dos) o Ctrl con V pega, C copia y X corta (tarea 59): el portapapeles va en UTF-8 y
+                    # el DOM en Latin-1
+                    atajo = (mui_canvas_qualifiers(w.v.pagina) & 10) != 0 and (tecla == 0x34 or tecla == 0x33 or tecla == 0x32)
+                    if atajo and tecla == 0x34
+                        r = formulario_pegar(w.foco, utf8_to_latin1(clip_read_text()))
+                    elif atajo and tecla == 0x33
+                        copia = formulario_copiable(w.foco)
+                        if copia != ""
+                            clip_write_text(latin1_to_utf8(copia))
+                        end
+                    elif atajo
+                        # cortar: el campo se vacía solo si el texto ha llegado al portapapeles
+                        copia = formulario_copiable(w.foco)
+                        if copia != "" and clip_write_text(latin1_to_utf8(copia))
+                            formulario_poner_valor(w.foco, "")
+                            r = FORM_CAMBIO
+                        end
+                    else
+                        r = formulario_tecla(w.foco, mui_canvas_char(w.v.pagina), tecla)
+                    end
                     if r == FORM_CAMBIO
                         mui_canvas_redraw(w.v.pagina)
                     elif r == FORM_ENVIAR

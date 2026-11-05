@@ -4,6 +4,7 @@
 #
 #   r = formulario_clic(n)                     # FORM_NADA, FORM_CAMBIO (repintar), FORM_FOCO, FORM_ENVIAR
 #   r = formulario_tecla(campo, caracter, raw) # FORM_CAMBIO o FORM_ENVIAR (Return)
+#   r = formulario_pegar(campo, texto)         # FORM_CAMBIO o FORM_NADA; formulario_copiable(campo): lo que se copia
 #   destino = formulario_destino(n, base)      # la dirección del envío por GET ("" si no hay <form>)
 #   e = formulario_envio(n, base)              # GET o POST según el <form>: e.metodo, e.direccion, e.cuerpo
 
@@ -249,6 +250,43 @@ func formulario_tecla(campo: Nodo, caracter: String, raw: Int) -> Int
         return FORM_CAMBIO
     end
     return FORM_NADA
+end
+
+# Pegar texto (Latin-1) al final de un campo: en un input solo la primera línea, en un textarea todo (sin los \r de
+# los saltos de PC); lo que no quepa en su maxlength se queda fuera
+func formulario_pegar(campo: Nodo, texto: String) -> Int
+    t = str_replace(str_replace(texto, "\r\n", "\n"), "\r", "\n")
+    if campo.nombre != "textarea"
+        i = str_find(t, "\n")
+        if i >= 0
+            t = t[:i]
+        end
+    end
+    valor = formulario_valor(campo)
+    maximo = Int(dom_atributo(campo, "maxlength"))
+    if maximo > 0
+        sitio = maximo - valor.length
+        if sitio <= 0
+            return FORM_NADA
+        end
+        if t.length > sitio
+            t = t[:sitio]
+        end
+    end
+    if t == ""
+        return FORM_NADA
+    end
+    formulario_poner_valor(campo, valor + t)
+    return FORM_CAMBIO
+end
+
+# Lo que se copia de un campo: todo su texto (no hay selección dentro de los campos); "" en uno de contraseña, que
+# los navegadores no dejan copiar ni cortar
+func formulario_copiable(campo: Nodo) -> String
+    if campo.nombre == "input" and str_lower(dom_atributo(campo, "type")) == "password"
+        return ""
+    end
+    return formulario_valor(campo)
 end
 
 # Los datos del formulario (nombre=valor&...) como application/x-www-form-urlencoded; el botón que lo

@@ -571,7 +571,7 @@ tarea, con el estilo de Dash.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
 
-- [ ] 59. **Pegar, copiar y cortar en los campos de las páginas (usuario por freememlang, 2026-11-05; lo reportó
+- [x] 59. **Pegar, copiar y cortar en los campos de las páginas (usuario por freememlang, 2026-11-05; lo reportó
       Ferrán García: "los campos de las páginas dentro del navegador tampoco permiten pegar texto").** V pega, C copia
       y X corta, con Amiga derecha (la norma), Ctrl (costumbre de PC) y Amiga izquierda. Sin selección, C y X van con
       todo el texto del campo; con selección, con lo seleccionado. Hoy lib/formularios.dash formulario_tecla(campo,
@@ -580,7 +580,7 @@ tarea, con el estilo de Dash.
       0x33, X 0x32. Un input pega hasta el primer salto de línea, un textarea todo; respetar maxlength y lanzar input
       como al teclear. La barra de dirección (String de MUI 5) ya pega con Amiga derecha y Ctrl+V; con Amiga izquierda
       no (MUI no pasa ese calificador a su edit hook): opcional. Ferrán pidió también guardar un enlace como fichero
-      desde el menú del botón derecho, como AmiFire: es la 57.
+      desde el menú del botón derecho, como AmiFire: es la 57. Hecho (2026-11-05; ver la bitácora).
 
 - [ ] 58. **Tachyon por las dos líneas de Dash (usuario, 2026-11-02).** Se puede compilar directo a hunk (dashc, lo
       de siempre desde la 0.8) o por C con `./dash --gcc` (dash1): la segunda es el camino para portar a PPC. Hacer:
@@ -5572,3 +5572,17 @@ Formato:
 - Sin pasar la batería entera tras los dos últimos commits (parada a los 15 min al cerrar el día; jsdom 22/22) ni
   webs reales en el emulador: lo prueba el usuario en su CoffinOS, actualizando desde la 0.8.1 (dev de 8e72640 en
   Traspaso:Tachyon/Tachyon, que dice 0.8.1-alfa; el de antes, Tachyon.081).
+
+### 2026-11-05 — Tarea 59: pegar, copiar y cortar en los campos de las páginas
+- Encargo del usuario por freememlang (lo reportó Ferrán García). src/dashweb.dash: con Amiga (cualquiera de las dos:
+  mui_canvas_qualifiers da 8 por las dos) o Ctrl, V pega (clip_read_text en UTF-8 a Latin-1), C copia y X corta
+  (latin1_to_utf8 a clip_write_text; el campo se vacía solo si el texto llegó al portapapeles). Los campos no tienen
+  selección ni cursor dentro: C y X van con todo el texto y V pega al final. lib/formularios.dash: formulario_pegar
+  (un input, solo la primera línea; un textarea, todo con \r\n y \r como \n; recorta a maxlength) y
+  formulario_copiable ("" en un campo de contraseña, que los navegadores no dejan copiar ni cortar).
+- Aviso para los tests: dashc guarda los textos del programa en Latin-1, no en UTF-8: utf8_to_latin1("ñ") da "?".
+- Test test_formularios_pegar (con la ida y vuelta por el portapapeles); formularios 4/4. tools/amiga/clicar.dash:
+  "k COD" pulsa la tecla con Ctrl. Probado en el navegador en la máquina RTG con MUI 3.8 (tests/pages/pegar.html):
+  Amiga derecha + C, V, V y X, y Ctrl + X, V, espacio y V, bien en las dos capturas. Amiga izquierda, sin probar
+  (input_key de Dash solo pulsa la derecha), pero llega con el mismo calificador.
+- No se lanza el evento input de JavaScript al pegar, igual que al teclear (ninguno de los dos lo lanza aún).

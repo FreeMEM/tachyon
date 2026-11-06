@@ -61,6 +61,8 @@ const ID_CANDADO = 27
 const ID_BUSCADORES = 28
 const ID_DESCARGAS = 29
 const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuración (tarea 54)
+const ID_GUARDAR_PAGINA = 31   # menú Proyecto (Amiga-S) y el del botón derecho sobre la página (tarea 57)
+const ID_GUARDAR_ENLACE = 32   # el del botón derecho: el enlace donde se pulsó, a un fichero
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
@@ -920,19 +922,11 @@ func empezar_descarga(w: Ventana, r: Respuesta)
     if w.actual != nil
         mui_set_text(w.v.url, w.actual.direccion)
     end
-    # (con su nombre ya puesto, en el cajón de la última vez: RAM: la primera)
-    cajon = preferencia(FICHERO_PREFERENCIAS, "cajon_descargas")
-    if cajon == ""
-        cajon = "RAM:"
-    end
-    ruta = descargas_pedir_ruta(hueco(tr(112, "Save %1"), nombre), cajon, nombre)
+    ruta = pedir_ruta(nombre)
     if ruta == ""
         dw_estado(w, hueco(tr(113, "Download cancelled: %1"), nombre))
         actualizar_giro(w)
         return
-    end
-    if dialog_cajon(ruta) != cajon
-        preferencia_poner(FICHERO_PREFERENCIAS, "cajon_descargas", dialog_cajon(ruta))
     end
     descargas_empezar(direccion, ruta, nombre)
     # (si la ventana no tenía página, ésta: no se queda en blanco y se ve cómo va)
@@ -944,6 +938,124 @@ func empezar_descarga(w: Ventana, r: Respuesta)
     descargas_tic()
     actualizar_giro(w)
     programar()
+end
+
+# Dónde guardar nombre: el selector de ficheros con el nombre ya puesto, en el cajón de la última vez (RAM: la
+# primera), que se recuerda; "" si se cancela
+func pedir_ruta(nombre: String) -> String
+    cajon = preferencia(FICHERO_PREFERENCIAS, "cajon_descargas")
+    if cajon == ""
+        cajon = "RAM:"
+    end
+    ruta = descargas_pedir_ruta(hueco(tr(112, "Save %1"), nombre), cajon, nombre)
+    if ruta != "" and dialog_cajon(ruta) != cajon
+        preferencia_poner(FICHERO_PREFERENCIAS, "cajon_descargas", dialog_cajon(ruta))
+    end
+    return ruta
+end
+
+# "Guardar enlace como..." (tarea 57; Ferrán García lo pidió para bajarse los .readme de Aminet, como AmiFire): el
+# enlace donde se pulsó el botón derecho, al gestor de descargas tal cual (sin abrirlo ni interpretarlo)
+func guardar_enlace(w: Ventana)
+    destino = ""
+    if w.actual != nil and w.actual.pagina != nil
+        n = maqueta_nodo_en_vista(w.actual.pagina, mui_canvas_mouse_x(w.v.pagina), mui_canvas_mouse_y(w.v.pagina), w.desde)
+        if n != nil
+            destino = documento_enlace(w.actual, n)
+        end
+    end
+    if destino == ""
+        dw_estado(w, tr(163, "There's no link there"))
+        return
+    end
+    if str_starts(destino, "http://") or str_starts(destino, "https://")
+        bajar_como(w, destino, descargas_nombre(destino))
+        return
+    end
+    # (un fichero del disco, de una página abierta desde él: se copia)
+    f = url_fichero(destino)
+    if f == "NIL:" or str_starts(destino, "tachyon:") or not file_exists(f)
+        dw_estado(w, hueco(tr(164, "Can't save %1"), destino))
+        return
+    end
+    nombre = descargas_nombre(destino)
+    ruta = pedir_ruta(nombre)
+    if ruta == ""
+        dw_estado(w, hueco(tr(166, "Not saved: %1"), nombre))
+    elif file_copy(f, ruta)
+        dw_estado(w, hueco(tr(167, "Saved in %1"), ruta))
+    else
+        dw_estado(w, hueco(tr(164, "Can't save %1"), ruta))
+    end
+end
+
+# El selector de ficheros y, si se elige uno, al gestor de descargas
+func bajar_como(w: Ventana, direccion: String, nombre: String)
+    ruta = pedir_ruta(nombre)
+    if ruta == ""
+        dw_estado(w, hueco(tr(113, "Download cancelled: %1"), nombre))
+        return
+    end
+    descargas_empezar(direccion, ruta, nombre)
+    dw_estado(w, hueco(tr(114, "Downloading %1 (Amiga-J: downloads)"), nombre))
+    descargas_tic()
+    actualizar_giro(w)
+    programar()
+end
+
+# "Guardar página como..." (tarea 57): la que se ve, tal como llegó (el HTML o el texto, no lo pintado). Una muy
+# grande (no se guardó lo que llegó) se baja otra vez con el gestor de descargas
+func guardar_pagina(w: Ventana)
+    d = w.actual
+    if d == nil or d.doc == nil
+        dw_estado(w, tr(165, "There's no page to save"))
+        return
+    end
+    nombre = descargas_nombre(d.direccion)
+    if str_starts(d.direccion, "tachyon:")
+        nombre = d.direccion[8:]
+        q = str_find(nombre, "?")
+        if q >= 0
+            nombre = nombre[:q]
+        end
+        nombre = nombre + ".html"
+    elif str_find(nombre, ".") < 0 and str_starts(str_trim(d.fuente[:200]), "<")
+        # (una página sin extensión en su dirección, como https://aminet.net/package/util/arc/lha)
+        nombre = nombre + ".html"
+    end
+    if d.fuente == "" and (str_starts(d.direccion, "http://") or str_starts(d.direccion, "https://"))
+        bajar_como(w, d.direccion, nombre)
+        return
+    end
+    ruta = pedir_ruta(nombre)
+    if ruta == ""
+        dw_estado(w, hueco(tr(166, "Not saved: %1"), nombre))
+        return
+    end
+    if documento_guardar(d, ruta)
+        dw_estado(w, hueco(tr(167, "Saved in %1"), ruta))
+    else
+        dw_estado(w, hueco(tr(164, "Can't save %1"), ruta))
+    end
+end
+
+# La opción de menú de Amiga+tecla en la página (la letra de cada una en src/navegador.dashui: hay que tenerlas
+# iguales); 0 si no es un atajo. Si Intuition ya hizo el atajo, la tecla no llega a la página: nunca va dos veces
+func atajo_de_menu(w: Ventana) -> Int
+    if mui_canvas_key(w.v.pagina) < 0 or (mui_canvas_qualifiers(w.v.pagina) & 8) == 0
+        return 0
+    end
+    c = mui_canvas_char(w.v.pagina)
+    if c == ""
+        return 0
+    end
+    letras = "nktwlsqrhybdj?"
+    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
+    i = str_find(letras, str_lower(c[:1]))
+    if i < 0
+        return 0
+    end
+    return eventos[i]
 end
 
 # El cajón de una ruta ("Work:a/b.lha" -> "Work:a")
@@ -2220,6 +2332,17 @@ Main
             if w == nil
                 break
             end
+            if ev == ID_PAGINA
+                # un atajo de menú con el puntero sobre la página (tarea 57): la página tiene menú del botón derecho y
+                # MUI 3.8 pone RMBTRAP en la ventana mientras el puntero está sobre ella; con él, Intuition no mira los
+                # atajos de menú y la tecla llega a la página como una más
+                atajo = atajo_de_menu(w)
+                if atajo == ID_SALIR
+                    break
+                elif atajo > 0
+                    ev = atajo
+                end
+            end
             if ev >= ID_PESTANA and ev < ID_PESTANA + MAX_PESTANAS
                 elegir_pestana(w, ev - ID_PESTANA)
                 continue
@@ -2281,6 +2404,12 @@ Main
             if ev == ID_DESCARGAS
                 navegar(w, "tachyon:descargas")
             end
+            if ev == ID_GUARDAR_PAGINA
+                guardar_pagina(w)
+            end
+            if ev == ID_GUARDAR_ENLACE
+                guardar_enlace(w)
+            end
             if ev == ID_IR_DIRECCION
                 activar(w.v.window, w.v.url)
             end
@@ -2337,7 +2466,8 @@ Main
                             formulario_poner_valor(w.foco, "")
                             r = FORM_CAMBIO
                         end
-                    else
+                    elif (mui_canvas_qualifiers(w.v.pagina) & 8) == 0
+                        # (Amiga con otra tecla no escribe: con el puntero sobre la página llegan aquí los atajos)
                         r = formulario_tecla(w.foco, mui_canvas_char(w.v.pagina), tecla)
                     end
                     if r == FORM_CAMBIO

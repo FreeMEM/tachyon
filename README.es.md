@@ -21,7 +21,8 @@ Tachyon ha apuntado (lo ves entero antes) y te da un código para ponerlo en la
 Fase A (sin MUI): `src/visor.dash` abre una página (fichero o URL http/https), la maqueta, la pinta en una
 ventana normal y ejecuta su JavaScript. Fase B (MUI 5): `src/dashweb.dash`, el navegador: barra de dirección,
 atrás/adelante, recargar, parar, historial desplegable, marcadores, página de inicio, hasta 4 ventanas, atajos de
-menú, descargas a disco, cookies (guardadas entre sesiones, se ven y se borran en `dashweb:cookies`), direcciones
+menú, descargas a disco, guardar página y guardar enlace como (botón derecho sobre la página), cookies (guardadas
+entre sesiones, se ven y se borran en `dashweb:cookies`), direcciones
 `file:///Volumen/ruta`; las páginas llegan sin congelar la ventana (consulta DNS, conexión y negociación TLS incluidas, con un
 indicador de actividad; imágenes, hojas y scripts a la vez); enlaces, anclas, formularios (GET y POST). Plan y bitácora en
 [docs/DASHWEB_LOOP.md](docs/DASHWEB_LOOP.md), módulos en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md).

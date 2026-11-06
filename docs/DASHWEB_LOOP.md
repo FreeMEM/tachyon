@@ -589,11 +589,13 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
-- [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
+- [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
       llegó, con el pedidor de ficheros, como las descargas de la tarea 47) y "Guardar enlace como..." para el enlace
       bajo el ratón (con una tecla al pulsarlo, o un menú), que lo baja con el gestor de descargas en vez de abrirlo.
+      Hecho (2026-11-06; ver la bitácora): menú Proyecto "Save page as..." (Amiga-S) y un menú del botón derecho
+      sobre la página con "Save link as..." y "Save page as...".
 
 - [x] 49. **tachyon.freemem.space sale en azul en el CoffinOS del usuario (2026-10-24, con la compilación de 48c y
       48e).** Solo el fondo: ni la cabecera, ni los textos, ni las estrellas; "Listo" en la barra, y sigue así tras un
@@ -5586,3 +5588,33 @@ Formato:
   Amiga derecha + C, V, V y X, y Ctrl + X, V, espacio y V, bien en las dos capturas. Amiga izquierda, sin probar
   (input_key de Dash solo pulsa la derecha), pero llega con el mismo calificador.
 - No se lanza el evento input de JavaScript al pegar, igual que al teclear (ninguno de los dos lo lanza aún).
+
+### 2026-11-06 — Tarea 57: guardar la página y guardar un enlace
+- Lo pidió Ferrán García (bajar de Aminet también el .readme de cada fichero, como hace AmiFire). La página tiene ya
+  menú del botón derecho ("context_menus" de src/navegador.dashui en el lienzo, mui_set_context_menu de Dash):
+  "Save link as..." y "Save page as...". Y en el menú Proyecto, "Save page as..." con Amiga-S.
+- Guardar enlace: el enlace donde se pulsó (mui_canvas_mouse_x/_y, maqueta_nodo_en_vista y documento_enlace), el
+  selector de ficheros con el nombre del final de la dirección (descargas_nombre, nuevo en lib/descargas.dash: sin ?
+  ni #, "index.html" si acaba en /) en el cajón de las descargas, y al gestor de descargas tal cual (http_volcar, sin
+  gzip ni interpretarlo). Un enlace a un fichero del disco se copia. pedir_ruta y bajar_como, sacadas de
+  empezar_descarga, sirven a los tres.
+- Guardar página: Documento.fuente guarda el cuerpo que llegó (r.cuerpo: sin pasar a Latin-1 ni por el DOM; ya sin
+  gzip) hasta 2 MB (DOCUMENTO_FUENTE_MAX); documento_guardar lo escribe. Una página más grande se baja otra vez con
+  el gestor de descargas; una del disco se copia; una tachyon: guarda su HTML. Sin extensión en la dirección y
+  empezando por "<", se le añade .html.
+- Pega encontrada en el emulador: con menú del botón derecho, MUI 3.8 pone RMBTRAP en la ventana mientras el puntero
+  está sobre la página, e Intuition deja de hacer los atajos de menú (Amiga-J, Amiga-L... no hacían nada con el
+  puntero sobre la página; comprobado que antes sí). Ahora la tecla llega al lienzo y atajo_de_menu la convierte en
+  su opción (las letras, copiadas de src/navegador.dashui). Si Intuition ya hizo el atajo, la tecla no llega: nunca
+  va dos veces. En un campo, Amiga con otra tecla ya no escribe la letra.
+- Textos nuevos (48-50, 163-167) en Tachyon.cd y los nueve catálogos. tests/servers/http.py da los .readme como
+  text/plain (como Aminet).
+- Test test_guardar (página por http_empezar y documento_empezar, guardada idéntica al fichero: SHA-1 y tamaño; un
+  .readme abierto como página se guarda sin el <pre>; los enlaces, al gestor: el .readme y /binario con todos los
+  bytes; una tachyon:): pasa. descargas 1/1, documento 8/8, http_volcar 1/1.
+- Probado en el navegador en la máquina RTG con MUI 3.8 (sys32rtg38): botón derecho sobre "lha.readme", "Save link
+  as...", Return en el selector (RAM:guardar.readme) y la descarga acaba con 342 bytes, como el original; Amiga-S
+  con el puntero sobre la página, Return y "Saved in RAM:guardar.html"; Amiga-J abre tachyon:descargas. Con MUI 5
+  (sys32rtg), lo mismo: guardar enlace y Amiga-J, y Amiga-S abre un solo selector (el atajo no va dos veces). El
+  menú de MUI 5 sale con su borde izquierdo en el puntero (el de MUI 3.8, a la izquierda): las pruebas con clicar
+  tienen que ir unos 80 px a la derecha para caer en la opción.

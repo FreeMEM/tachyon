@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language italiano
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Chiudi scheda
 MSG_47
 Invia rapporto di debug...
 ; Send debug report...
+MSG_48
+Salva pagina come...
+; Save page as...
+MSG_49
+Salva link come...
+; Save link as...
+MSG_50
+Pagina
+; Page
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ Al massimo %1 schede per finestra
 MSG_162
 Tachyon nella tua lingua: anche i menu, alla prossima apertura
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Lì non c'è nessun link
+; There's no link there
+MSG_164
+Impossibile salvare %1
+; Can't save %1
+MSG_165
+Nessuna pagina da salvare
+; There's no page to save
+MSG_166
+Non salvato: %1
+; Not saved: %1
+MSG_167
+Salvata in %1
+; Saved in %1
 MSG_300
 La sua versione senza JavaScript: leggera, quella che va meglio su un Amiga. Privato.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

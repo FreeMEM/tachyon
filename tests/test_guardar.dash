@@ -1,0 +1,83 @@
+# Test: "Guardar página como..." y "Guardar enlace como..." (tarea 57). La página llega como en el navegador
+# (http_empezar, con gzip si el servidor quiere) y se guarda tal como llegó, no lo pintado: idéntica al fichero de
+# tests/pages (su SHA-1, calculado en el PC), con sus acentos en UTF-8 y su <script>. Un .readme abierto como página
+# (texto plano: se ve dentro de un <pre>) se guarda como el texto que llegó, sin el <pre>. Un enlace se baja con el
+# gestor de descargas tal cual: el .readme y /binario (todos los bytes, el 0 incluido). Y el nombre que se propone.
+# emu-server: http.py 40895
+# memcheck
+# expect-out: nombres: lha.readme index.html index.html lha a_b.lha
+# expect-out: página: true 608 e445394b176fcc812f9bdb3c987cd5dc0075dd67
+# expect-out: texto: true 342 d7632951ed0469b0d9bb7360908a2093728c1f5f
+# expect-out: enlace: 1 342 d7632951ed0469b0d9bb7360908a2093728c1f5f
+# expect-out: binario: 1 20000 296c9da95ea33aa1111906980c7edab6dabf0901
+# expect-out: interna: true true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+import "../lib/descargas.dash"
+
+const SERVIDOR = "http://127.0.0.1:40895"
+
+# El tamaño y el SHA-1 de un fichero
+func huella(fichero: String) -> String
+    n = file_size(fichero)
+    if n <= 0
+        return "" + n
+    end
+    b = buffer_alloc(n)
+    leidos = file_load(fichero, b, n)
+    h = sha1(b, leidos)
+    buffer_free(b)
+    return "" + leidos + " " + h
+end
+
+# La página como la trae el navegador (src/dashweb.dash: http_empezar y documento_empezar), entera
+func traer(direccion: String) -> Documento
+    c = http_empezar(direccion, 20000)
+    t0 = time_ms()
+    while not http_avanzar(c) and time_ms() - t0 < 20000
+        time_delay(1)
+    end
+    d = documento_empezar(direccion, c.respuesta)
+    while not documento_avanzar(d)
+        time_delay(1)
+    end
+    return d
+end
+
+func esperar()
+    t0 = time_ms()
+    while descargas_activas() > 0 and time_ms() - t0 < 30000
+        descargas_avanzar()
+        time_delay(1)
+    end
+end
+
+Main
+    Print "nombres: " + descargas_nombre("https://aminet.net/util/arc/lha.readme?x=1#arriba") + " " + descargas_nombre("https://aminet.net") + " " + descargas_nombre("https://aminet.net/util/") + " " + descargas_nombre("https://aminet.net/package/util/arc/lha") + " " + descargas_nombre("http://x/a%3Ab.lha")
+    file_delete("T:g_pagina.html")
+    file_delete("T:g_texto.readme")
+    file_delete("T:g_enlace.readme")
+    file_delete("T:g_binario")
+    d = traer(SERVIDOR + "/pages/guardar.html")
+    ok = documento_guardar(d, "T:g_pagina.html")
+    Print "página: " + ok + " " + huella("T:g_pagina.html")
+    documento_liberar(d)
+    t = traer(SERVIDOR + "/pages/guardar.readme")
+    ok = documento_guardar(t, "T:g_texto.readme") and dom_buscar(t.doc, "pre") != nil
+    Print "texto: " + ok + " " + huella("T:g_texto.readme")
+    documento_liberar(t)
+    # los enlaces, al gestor de descargas (sin lista guardada)
+    descargas_fichero = ""
+    a = descargas_empezar(SERVIDOR + "/pages/guardar.readme", "T:g_enlace.readme", "guardar.readme")
+    b = descargas_empezar(SERVIDOR + "/binario", "T:g_binario", "binario")
+    esperar()
+    Print "enlace: " + a.estado + " " + huella("T:g_enlace.readme")
+    Print "binario: " + b.estado + " " + huella("T:g_binario")
+    # una página de Tachyon (tachyon:...): su HTML
+    i = documento_html("tachyon:prueba", "<title>Prueba</title><p>hola</p>")
+    ok = documento_guardar(i, "T:g_interna.html")
+    Print "interna: " + ok + " " + (file_read_text("T:g_interna.html") == "<title>Prueba</title><p>hola</p>")
+    documento_liberar(i)
+    red_terminar()
+end

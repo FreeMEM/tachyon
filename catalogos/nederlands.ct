@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Tabblad sluiten
 MSG_47
 Foutrapport versturen...
 ; Send debug report...
+MSG_48
+Pagina opslaan als...
+; Save page as...
+MSG_49
+Link opslaan als...
+; Save link as...
+MSG_50
+Pagina
+; Page
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ Hoogstens %1 tabbladen per venster
 MSG_162
 Tachyon in uw taal: de menu's ook, als u het opnieuw opent
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Daar staat geen link
+; There's no link there
+MSG_164
+Kan %1 niet opslaan
+; Can't save %1
+MSG_165
+Er is geen pagina om op te slaan
+; There's no page to save
+MSG_166
+Niet opgeslagen: %1
+; Not saved: %1
+MSG_167
+Opgeslagen in %1
+; Saved in %1
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

@@ -168,7 +168,8 @@ class Handler(socketserver.StreamRequestHandler):
             if os.path.isfile(f):
                 data = open(f, "rb").read()
                 kinds = {".css": "text/css", ".png": "image/png", ".gif": "image/gif", ".iff": "image/x-ilbm",
-                         ".jpg": "image/jpeg", ".txt": "text/plain", ".ttf": "font/ttf"}
+                         ".jpg": "image/jpeg", ".txt": "text/plain", ".ttf": "font/ttf",
+                         ".readme": "text/plain"}
                 kind = kinds.get(os.path.splitext(f)[1], "text/html; charset=utf-8")
                 self.wfile.write(reply("200 OK", [("Content-Type", kind), ("Content-Length", str(len(data)))], data))
                 return

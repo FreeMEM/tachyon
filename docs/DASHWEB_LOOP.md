@@ -5757,3 +5757,18 @@ Formato:
   2. Probar selectores (~2,2 s del estilo de gh_local, 308.000 _cumple_desde): son sobre todo las subidas por los
      antepasados de los combinadores de descendiente; un filtro de Bloom por nodo, como los navegadores.
   3. Maqueta (5,9 s): _flex_maquetar copia y quita los dibujos uno a uno y monta un diccionario por elemento medido.
+
+### 2026-11-07 — Tarea 41d: classList, iterable como dice WebIDL y más rápido (WPT dom/lists 123 → 169/189)
+- DOMTokenList del preludio: [Symbol.toStringTag] (Object.prototype.toString da [object DOMTokenList]); forEach,
+  keys, values, entries y [Symbol.iterator] son los de Array.prototype (iterable con índices), con la trampa has en
+  el Proxy de classList (forEach mira si está cada índice); el Proxy ya no hace bind de cada método leído.
+- Velocidad (tests/pages/bench_classlist.html, máquina RTG con MUI 3.8, ms de 0.9.1 → ahora): 3000 contains 1960 →
+  440; 1000 add+remove 1960 → 1980; 1000 toggle 860 → 900; 500 for...of 320 → 400 (los de Array.prototype pasan por
+  la trampa; recorrerla es raro, contains no). Lo que hacía lento classList: cada llamada partía el class otra vez
+  (ahora la lista se guarda mientras el texto del atributo no cambia; quien la cambia, sobre una copia) y cada método
+  pasaba varias veces por la trampa del Proxy, con una expresión regular en cada una (ahora toma una vez el objeto de
+  verdad, __yo, y la regex solo si el nombre empieza por cifra). Una primera versión sin eso salía más lenta que la
+  0.9.1 (for...of 1960, add+remove 2360): no entró así.
+- Quedan en dom/lists: relList, htmlFor y sizes en elementos de otro espacio de nombres deberían ser undefined.
+- Tests: test_jsdom_classlist_iterable; jsdom y documento sin red 27/27. WPT dom/nodes 10470 → 10501/12653 (por la
+  HTMLCollection viva y classList; ningún fichero a peor). Lo medido de WPT: dom/ 47744/57588 (83 %).

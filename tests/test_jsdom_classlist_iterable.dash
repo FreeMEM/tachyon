@@ -1,0 +1,24 @@
+# Test: classList como DOMTokenList iterable de WebIDL (tarea 41d, WPT dom/lists): forEach, keys, values, entries y
+# [Symbol.iterator] son los de Array.prototype; forEach da la lista como tercer argumento y su this; toString de
+# Object dice [object DOMTokenList]; los métodos se llaman sobre la lista sin bind.
+# memcheck
+# expect-out: iterable: a,b | 0,1 | a,b | 0:a,1:b | true true true true true
+# expect-out: forEach: a0,b1 true true | tipo: [object DOMTokenList] | add: a b c true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><span class=' a a b '>x</span></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var l = document.querySelector('span').classList;"
+    c = c + "'iterable: ' + [...l].join(',') + ' | ' + [...l.keys()].join(',') + ' | ' + [...l.values()].join(',') + ' | ' + [...l.entries()].map(function (e) { return e[0] + ':' + e[1]; }).join(',')"
+    c = c + " + ' | ' + (l[Symbol.iterator] === Array.prototype[Symbol.iterator]) + ' ' + (l.keys === Array.prototype.keys) + ' ' + (l.values === Array.prototype.values) + ' ' + (l.entries === Array.prototype.entries) + ' ' + (l.forEach === Array.prototype.forEach)"
+    Print js_evaluar(js, c, "t.js")
+    c = "var r = [], yo = {}, misma = true, este = true; l.forEach(function (v, i, o) { r.push(v + i); misma = misma && o === l; este = este && this === yo; }, yo);"
+    c = c + "l.add('c'); 'forEach: ' + r.join(',') + ' ' + misma + ' ' + este + ' | tipo: ' + Object.prototype.toString.call(l) + ' | add: ' + l.value.trim().split(/ +/).join(' ') + ' ' + l.contains('c')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

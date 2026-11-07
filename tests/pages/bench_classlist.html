@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta classList (contains, add, remove, toggle, recorrerla); el resultado en la página y en el
+     título -->
+<p id=r>midiendo...</p>
+<script>
+var d = document.createElement('div'); d.className = 'uno dos tres';
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var n = 0;
+var r1 = medir(function () { for (var i = 0; i < 3000; i++) if (d.classList.contains('dos')) n++; });
+var r2 = medir(function () { for (var i = 0; i < 1000; i++) { d.classList.add('x'); d.classList.remove('x'); } });
+var r3 = medir(function () { for (var i = 0; i < 1000; i++) d.classList.toggle('y'); });
+var r4 = medir(function () { for (var i = 0; i < 500; i++) for (var c of d.classList) n += c.length; });
+var s = 'contains ' + r1 + ' addremove ' + r2 + ' toggle ' + r3 + ' forof ' + r4;
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

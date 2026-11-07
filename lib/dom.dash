@@ -171,8 +171,21 @@ end
 # estilo, sus hijos, un atributo) y lo medido en él y en los de fuera ya no vale
 var dom_reloj: Int = 0
 
+# Cada cambio de un árbol (un hijo que entra o sale, un atributo, un texto) sube dom_version (tarea 41d): las
+# colecciones vivas de JavaScript (HTMLCollection de src_c/tachyon.c) rehacen su lista solo cuando cambia
+var dom_version: Int = 0
+
+@export func dom_version_actual() -> Int
+    return dom_version
+end
+
+func dom_cambio()
+    dom_version = dom_version + 1
+end
+
 func dom_tocar(n: Nodo)
     dom_reloj = dom_reloj + 1
+    dom_version = dom_version + 1
     a = n
     while a != nil
         a.sub_cambio = dom_reloj
@@ -182,6 +195,7 @@ end
 
 # Apunta un cambio en el documento de n (si n está en uno)
 func dom_apuntar(n: Nodo, tipo: Int, nombre: String, antes: String, despues: String)
+    dom_version = dom_version + 1
     if n == nil
         return
     end
@@ -286,6 +300,7 @@ end
 
 # Tras cambiar un atributo: class e id se vuelven a leer
 func dom_olvidar_atributos(n: Nodo)
+    dom_version = dom_version + 1
     var sin_clases: [String] = nil
     var sin_id: String = nil
     n.clases_cache = sin_clases
@@ -301,6 +316,7 @@ func dom_nodo(tipo: Int, nombre: String, texto: String) -> Nodo
 end
 
 func dom_agregar(padre: Nodo, hijo: Nodo)
+    dom_version = dom_version + 1
     hijo.padre = padre
     padre.hijos.push(hijo)
 end

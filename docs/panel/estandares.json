@@ -39,18 +39,18 @@
 "prueba": "Acid3",
 "mide": "DOM y JavaScript",
 "total": 100,
-"pasan": 0,
+"pasan": 100,
 "unidad": "subpruebas",
-"estado": "pendiente",
-"nota": "41c"
+"estado": "en curso",
+"nota": "41c: la nota, 100/100 (v0.9.0-alfa); quedan cuatro detalles del dibujo"
 },
 {
 "prueba": "WPT entero (wpt.fyi)",
 "mide": "Todo, por carpetas",
-"total": 0,
-"pasan": 0,
+"total": 57588,
+"pasan": 47683,
 "unidad": "subpruebas",
-"estado": "pendiente",
-"nota": "41d; unos 2 millones de subpruebas"
+"estado": "en curso",
+"nota": "41d: lo medido, dom/ (nodes 83 %, ranges 83 %, collections 54/55, traversal, lists, events); el resto de carpetas, sin pasar aún"
 }
 ]

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta recorrer colecciones del DOM (children, getElementsByTagName, getElementsByClassName) con
+     2000 elementos; el resultado sale en la página y en el título -->
+<div id=caja></div>
+<p id=r>midiendo...</p>
+<script>
+var caja = document.getElementById('caja');
+for (var i = 0; i < 2000; i++) {
+    var d = document.createElement('div');
+    d.className = i % 3 ? 'a' : 'b';
+    if (i < 1500) caja.appendChild(d); else caja.lastChild.appendChild(d);
+}
+caja.style.display = 'none';
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var n = 0;
+var r1 = medir(function () { for (var k = 0; k < 10; k++) { var c = document.getElementsByTagName('div'); for (var i = 0; i < c.length; i++) n += c[i].nodeType; } });
+var r2 = medir(function () { for (var k = 0; k < 10; k++) { var h = caja.children; for (var i = 0; i < h.length; i++) n += h[i].nodeType; } });
+var r3 = medir(function () { for (var k = 0; k < 50; k++) n += document.getElementsByClassName('b').length; });
+var r4 = medir(function () { var h = caja.children; for (var k = 0; k < 100; k++) { caja.appendChild(document.createElement('i')); n += h.length; } });
+var r5 = medir(function () { for (var k = 0; k < 10; k++) { var c = document.querySelectorAll('div'); for (var i = 0; i < c.length; i++) n += c[i].nodeType; } });
+var s = 'tag ' + r1 + ' hijos ' + r2 + ' clase ' + r3 + ' vivo ' + r4 + ' qsa ' + r5;
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

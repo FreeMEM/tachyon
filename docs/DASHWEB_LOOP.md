@@ -15,6 +15,11 @@ publicar la 0.7.2; luego la 53 (las webs de chat).**
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
 pendiente del plan. Esto manda sobre los dos encargos de arriba.**
 
+**Y sin perder velocidad ni memoria (usuario, 2026-11-07: "vamos a conseguir que wpt pase entero bien, pero no a costa
+de ser lento o consumiendo mucha memoria").** Cada cambio para WPT se mide antes y después (tests/pages/bench_*.html
+en la máquina RTG, y el tiempo y la memoria de una página grande); si empeora, se arregla antes del commit o no
+entra. Y la tarea 61, el repaso de velocidad y memoria, va la siguiente tras la vuelta en curso.
+
 ## Objetivo
 
 Un navegador ligero para AmigaOS 3.x escrito en Dash, con interfaz MUI 5: XHTML, CSS, JavaScript
@@ -593,6 +598,11 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
+      en páginas reales guardadas (gh_repo.html, Wikipedia, amigatronics, YouTube) con el perfil (--perfil), TRAZA y
+      la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
+      podrían ser parciales, JavaScript del preludio que se ejecuta siempre. Dejar medidas antes y después en la
+      bitácora y en docs/panel/medidas.json.
 - [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
       cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
       Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
@@ -5643,3 +5653,28 @@ Formato:
   Amiga+C, Amiga+V, Ctrl+V, Amiga+X y Amiga-S ("Saved in RAM:pegar.html") bien; cuatro ventanas a la vez (Acid3,
   gh_repo.html de 300 KB en ~65 s, estrellas.html animada y Acid2) unos 5 min sin colgarse, y al final un clic en el
   enlace de Acid2 responde.
+
+### 2026-11-07 — Tarea 41d: HTMLCollection viva (WPT dom/collections 8/55 → 54/55), sin perder velocidad
+- children, getElementsByTagName, getElementsByClassName y getElementsByTagNameNS daban un Array hecho al pedirlas:
+  ahora una HTMLCollection viva, como en los navegadores (src_c/tachyon.c, _col_*): un objeto exótico de QuickJS con
+  los índices y los nombres (id, y name en los de HTML) como propiedades propias de solo lectura que no se borran, que
+  no tapan lo del prototipo (un id="length" no tapa length), no enumerables los nombres, y [[Set]] de WebIDL (un
+  objeto que hereda de la colección se queda con lo que se le pone). item, namedItem, for...of; sin forEach (como en
+  Chrome). HTMLCollection global (instanceof, toString). children es siempre la misma (el preludio, con un WeakMap).
+  __dashweb_coleccion(raiz, filtro) para getElementsByTagNameNS y los nombres con prefijo.
+- Viva sin recalcular a cada paso: lib/dom.dash cuenta cada cambio de un árbol en dom_version (dom_agregar,
+  dom_apuntar, dom_olvidar_atributos, dom_tocar; jsdom_quitar, insertar y vaciar), y la colección rehace su lista solo
+  si cambió. La lista son los nodos en un array de C con el objeto de JS de cada uno guardado al pedirlo; children sale
+  de la lista de hijos del nodo sin hacer otra en Dash; c[i] y c.length van por get_property, sin mirar más.
+- attributes (NamedNodeMap del preludio): Object.getOwnPropertyNames da índices y nombres (era un Proxy sobre un
+  Array, que arrastraba length).
+- Velocidad (usuario: "no a costa de ser lento"): tests/pages/bench_colecciones.html, 2000 elementos, en la máquina RTG
+  con MUI 3.8, ms de 0.9.1 → primera versión (Array de JS por dentro) → la final: recorrer getElementsByTagName 10
+  veces 200 → 680 → 300; children 10 veces 120 → 440 → 140; getElementsByClassName 50 veces 440 → 440 → 380; leer
+  children.length tras 100 cambios 140 → 460 → 180 (la 0.9.1 daba el número viejo); querySelectorAll 220 → 240 → 220.
+  gh_repo.html (300 KB) entera en 30,3 s con la 0.9.1 y 29,8 s con la nueva; memoria libre igual (110 MB).
+- Lo que queda: el orden de Object.getOwnPropertyNames con una propiedad puesta a mano (QuickJS pone las del objeto
+  antes que las del exótico; WPT quiere los índices primero): cambio en QuickJS, no hecho.
+- Tests: test_jsdom_colecciones (viva con cambios y atributos, solo lectura, borrar, nombres, prototipo, iterable,
+  getElementsByTagNameNS); jsdom y documento sin red 26/26. WPT dom/collections 54/55 (docs/wpt/js_dom_collections.txt).
+  Lo medido de WPT: dom/ 47683/57588 (83 %). Batería entera sin pasar tras esto.

@@ -1,4 +1,4 @@
-WPT TOTAL encoding: 11085/12004 subpruebas en 46 de 46 ficheros
+WPT TOTAL encoding: 11101/12004 subpruebas en 46 de 46 ficheros
 
 WPT FILE encoding/api-basics.any.html 6/6 OK
 WPT FILE encoding/api-invalid-label.any.html 1000/1000 OK
@@ -17,7 +17,7 @@ WPT FILE encoding/json-document-utf8.html 1/4 OK
 WPT FILE encoding/remove-only-one-bom.html 0/0 ERROR done() was called without first defining any tests
 WPT FILE encoding/replacement-encodings.any.html 0/12 OK
 WPT FILE encoding/sharedarraybuffer.https.html 1/1 OK
-WPT FILE encoding/single-byte-decoder-iframe.window.html 0/168 TIMEOUT 
+WPT FILE encoding/single-byte-decoder-iframe.window.html 0/168 OK
 WPT FILE encoding/single-byte-decoder.any.html 0/168 TIMEOUT 
 WPT FILE encoding/single-byte-decoder.any.html 165/168 OK
 WPT FILE encoding/sniffing.html 0/1 OK
@@ -43,7 +43,7 @@ WPT FILE encoding/textdecoder-utf16-surrogates.any.html 10/10 OK
 WPT FILE encoding/textencoder-constructor-non-utf.any.html 71/79 OK
 WPT FILE encoding/textencoder-utf16-surrogates.any.html 7/7 OK
 WPT FILE encoding/unsupported-encodings.any.html 0/14 OK
-WPT FILE encoding/unsupported-labels.window.html 142/158 TIMEOUT 
+WPT FILE encoding/unsupported-labels.window.html 158/158 OK
 WPT FILE encoding/utf-32-from-win1252.html 0/8 OK
 WPT FILE encoding/utf-32.html 3/8 OK
 
@@ -195,7 +195,7 @@ WPT SUB FAIL encoding/replacement-encodings.any.html | replacement - empty input
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | IBM866: 866 (document.characterSet and document.inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | IBM866: cp866 (document.characterSet and document.inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | IBM866: csibm866 (document.characterSet and document.inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | IBM866: ibm866 (document.characterSet and document.inputEncoding) | Test timed out
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | IBM866: ibm866 (document.characterSet and document.inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-2: csisolatin2 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-2: iso-8859-2 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-2: iso-ir-101 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
@@ -225,21 +225,21 @@ WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-4: l4 (d
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-4: latin4 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: csisolatincyrillic (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: cyrillic (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso-8859-5 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso-ir-144 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso8859-5 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso88595 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso_8859-5 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso_8859-5:1988 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: arabic (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: asmo-708 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csiso88596e (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csiso88596i (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csisolatinarabic (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: ecma-114 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6 (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6-e (document.characterSet and document.inputEncoding) | Test timed out
-WPT SUB TIMEOUT encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6-i (document.characterSet and document.inputEncoding) | Test timed out
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso-8859-5 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso-ir-144 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso8859-5 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso88595 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso_8859-5 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-5: iso_8859-5:1988 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: arabic (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: asmo-708 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csiso88596e (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csiso88596i (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: csisolatinarabic (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: ecma-114 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6-e (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-8859-6-i (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso-ir-127 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso8859-6 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
 WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | ISO-8859-6: iso88596 (document.characterSet and document.inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
@@ -363,11 +363,11 @@ WPT SUB FAIL encoding/single-byte-decoder-iframe.window.html | x-mac-cyrillic: x
 WPT SUB FAIL encoding/single-byte-decoder.any.html | IBM866: 866 (XMLHttpRequest) | assert_equals: IBM866:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | IBM866: cp866 (XMLHttpRequest) | assert_equals: IBM866:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | IBM866: csibm866 (XMLHttpRequest) | assert_equals: IBM866:0 expected 0 but got 100
-WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | IBM866: ibm866 (XMLHttpRequest) | Test timed out
+WPT SUB FAIL encoding/single-byte-decoder.any.html | IBM866: ibm866 (XMLHttpRequest) | assert_equals: IBM866:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: csisolatin2 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso-8859-2 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso-ir-101 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
-WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso8859-2 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
+WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | ISO-8859-2: iso8859-2 (XMLHttpRequest) | Test timed out
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso88592 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso_8859-2 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-2: iso_8859-2:1987 (XMLHttpRequest) | assert_equals: ISO-8859-2:0 expected 0 but got 100
@@ -392,7 +392,7 @@ WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-4: iso_8859-4:1988
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-4: l4 (XMLHttpRequest) | assert_equals: ISO-8859-4:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-4: latin4 (XMLHttpRequest) | assert_equals: ISO-8859-4:0 expected 0 but got 100
 WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-5: csisolatincyrillic (XMLHttpRequest) | assert_equals: ISO-8859-5:0 expected 0 but got 100
-WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | ISO-8859-5: cyrillic (XMLHttpRequest) | Test timed out
+WPT SUB FAIL encoding/single-byte-decoder.any.html | ISO-8859-5: cyrillic (XMLHttpRequest) | assert_equals: ISO-8859-5:0 expected 0 but got 100
 WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | ISO-8859-5: iso-8859-5 (XMLHttpRequest) | Test timed out
 WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | ISO-8859-5: iso-ir-144 (XMLHttpRequest) | Test timed out
 WPT SUB TIMEOUT encoding/single-byte-decoder.any.html | ISO-8859-5: iso8859-5 (XMLHttpRequest) | Test timed out
@@ -937,22 +937,6 @@ WPT SUB FAIL encoding/unsupported-encodings.any.html | UTF-32be with no BOM shou
 WPT SUB FAIL encoding/unsupported-encodings.any.html | UTF-32be with BOM should decode as UTF-8 | promise_test: Unhandled rejection with value: object "Error"
 WPT SUB FAIL encoding/unsupported-encodings.any.html | utf-32be with no BOM should decode as UTF-8 | promise_test: Unhandled rejection with value: object "Error"
 WPT SUB FAIL encoding/unsupported-encodings.any.html | utf-32be with BOM should decode as UTF-8 | promise_test: Unhandled rejection with value: object "Error"
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01142 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01143 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01144 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01145 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01146 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01147 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01148 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm01149 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm037 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm1026 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm1047 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm273 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm277 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm278 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm280 is not supported by the Encoding Standard | Test timed out
-WPT SUB TIMEOUT encoding/unsupported-labels.window.html | ibm284 is not supported by the Encoding Standard | Test timed out
 WPT SUB FAIL encoding/utf-32-from-win1252.html | Expect resources/utf-32-big-endian-bom.html to parse as windows-1252 | assert_equals: expected "windows-1252" but got "UTF-8"
 WPT SUB FAIL encoding/utf-32-from-win1252.html | Expect resources/utf-32-big-endian-bom.xml to parse as UTF-8 | assert_equals: expected "application/xml" but got "text/xml"
 WPT SUB FAIL encoding/utf-32-from-win1252.html | Expect resources/utf-32-big-endian-nobom.html to parse as windows-1252 | assert_equals: expected "windows-1252" but got "UTF-8"

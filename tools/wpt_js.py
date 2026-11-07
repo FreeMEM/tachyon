@@ -41,7 +41,9 @@ add_completion_callback(function (tests, status) {
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
     var harness = ['OK', 'ERROR', 'TIMEOUT', 'PRECONDITION_FAILED'];
     var pasan = 0, l = [];
-    function una(t) { return String(t === undefined || t === null ? '' : t).replace(/\s+/g, ' ').slice(0, 160); }
+    // (en una línea y sin caracteres de control: un nulo en el nombre de una subprueba cortaba el informe entero, que
+    // pasa por textos de C; url-origin, a-element)
+    function una(t) { return String(t === undefined || t === null ? '' : t).replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').slice(0, 160); }
     tests.forEach(function (t) {
         if (t.status === 0) pasan++;
         l.push('WPT SUB ' + (est[t.status] || t.status) + ' ' + ruta + ' | ' + una(t.name) + (t.status ? ' | ' + una(t.message) : ''));

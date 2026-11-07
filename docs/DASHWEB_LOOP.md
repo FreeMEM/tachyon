@@ -5887,3 +5887,9 @@ Formato:
 - dom/events: single-activation 86 → 124/132; ningún fichero a peor. Lo que queda ahí: con formularios uno dentro de
   otro (por el DOM), el submit del de dentro llega también al de fuera. Total de dom/events: 482/674 en 97 ficheros
   (ahora entran también sus .any.js y .window.js: eran 83 ficheros y 618 subpruebas).
+
+### 2026-11-07 — Tarea 41d: el informe de WPT sin caracteres de control (url/ entero: 5976/8699)
+- url/ daba resultado de 34 de 41 páginas: url-origin, a-element, a-element-origin y failure corrían enteras, pero el
+  nombre de una subprueba lleva un carácter nulo y el informe, que pasa por textos de C, se cortaba ahí (sin la línea
+  WPT FILE). tools/wpt_js.py cambia los caracteres de control de nombres y mensajes por espacios.
+- url/ 41/41 páginas: 5976/8699 (69 %). encoding/ con más tiempo por página: 11101/12004.

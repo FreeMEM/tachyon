@@ -1,9 +1,13 @@
-WPT TOTAL dom/events: 413/618 subpruebas en 83 de 83 ficheros
+WPT TOTAL dom/events: 482/674 subpruebas en 97 de 97 ficheros
 
+WPT FILE dom/events/AddEventListenerOptions-once.any.html 4/4 OK
+WPT FILE dom/events/AddEventListenerOptions-passive.any.html 4/5 OK
+WPT FILE dom/events/AddEventListenerOptions-signal.any.html 4/11 OK
 WPT FILE dom/events/Body-FrameSet-Event-Handlers.html 2/5 OK
 WPT FILE dom/events/CustomEvent.html 1/3 OK
 WPT FILE dom/events/Event-cancelBubble.html 7/8 OK
 WPT FILE dom/events/Event-constants.html 1/4 OK
+WPT FILE dom/events/Event-constructors.any.html 13/14 OK
 WPT FILE dom/events/Event-defaultPrevented-after-dispatch.html 2/2 OK
 WPT FILE dom/events/Event-defaultPrevented.html 8/8 OK
 WPT FILE dom/events/Event-dispatch-bubble-canceled.html 1/1 OK
@@ -14,6 +18,7 @@ WPT FILE dom/events/Event-dispatch-click.tentative.html 6/6 OK
 WPT FILE dom/events/Event-dispatch-detached-click.html 2/2 OK
 WPT FILE dom/events/Event-dispatch-detached-input-and-change.html 8/12 OK
 WPT FILE dom/events/Event-dispatch-handlers-changed.html 0/1 OK
+WPT FILE dom/events/Event-dispatch-listener-order.window.html 0/1 OK
 WPT FILE dom/events/Event-dispatch-multiple-cancelBubble.html 0/1 OK
 WPT FILE dom/events/Event-dispatch-multiple-stopPropagation.html 0/1 OK
 WPT FILE dom/events/Event-dispatch-omitted-capture.html 1/1 OK
@@ -24,13 +29,14 @@ WPT FILE dom/events/Event-dispatch-other-document.html 1/1 OK
 WPT FILE dom/events/Event-dispatch-propagation-stopped.html 1/1 OK
 WPT FILE dom/events/Event-dispatch-redispatch.html 1/4 TIMEOUT 
 WPT FILE dom/events/Event-dispatch-reenter.html 1/1 OK
-WPT FILE dom/events/Event-dispatch-single-activation-behavior.html 86/132 TIMEOUT 
+WPT FILE dom/events/Event-dispatch-single-activation-behavior.html 124/132 OK
 WPT FILE dom/events/Event-dispatch-target-moved.html 1/1 OK
 WPT FILE dom/events/Event-dispatch-target-removed.html 1/1 OK
 WPT FILE dom/events/Event-dispatch-throwing-multiple-globals.html 0/2 TIMEOUT 
 WPT FILE dom/events/Event-dispatch-throwing.html 0/2 OK
 WPT FILE dom/events/Event-init-while-dispatching.html 1/5 OK
 WPT FILE dom/events/Event-initEvent.html 11/12 OK
+WPT FILE dom/events/Event-isTrusted.any.html 0/1 OK
 WPT FILE dom/events/Event-propagation.html 4/7 OK
 WPT FILE dom/events/Event-returnValue.html 7/7 OK
 WPT FILE dom/events/Event-stopImmediatePropagation.html 1/1 OK
@@ -47,8 +53,12 @@ WPT FILE dom/events/EventListener-handleEvent.html 3/6 OK
 WPT FILE dom/events/EventListener-invoke-legacy.html 0/6 TIMEOUT 
 WPT FILE dom/events/EventListenerOptions-capture.html 2/4 OK
 WPT FILE dom/events/EventTarget-add-listener-platform-object.html 1/1 OK
+WPT FILE dom/events/EventTarget-add-remove-listener.any.html 1/1 OK
+WPT FILE dom/events/EventTarget-addEventListener.any.html 1/1 OK
+WPT FILE dom/events/EventTarget-constructible.any.html 2/3 OK
 WPT FILE dom/events/EventTarget-dispatchEvent-returnvalue.html 2/2 OK
 WPT FILE dom/events/EventTarget-dispatchEvent.html 24/25 OK
+WPT FILE dom/events/EventTarget-removeEventListener.any.html 1/1 OK
 WPT FILE dom/events/EventTarget-this-of-listener.html 5/6 OK
 WPT FILE dom/events/EventTarget-window-constructor.html 1/1 OK
 WPT FILE dom/events/KeyEvent-initKeyEvent.html 3/3 OK
@@ -56,9 +66,11 @@ WPT FILE dom/events/click-on-absolute-pseudo.html 0/1 OK
 WPT FILE dom/events/element-click.html 3/3 OK
 WPT FILE dom/events/event-disabled-dynamic.html 1/1 OK
 WPT FILE dom/events/event-global-event-targets.html 0/5 OK
+WPT FILE dom/events/event-global-extra.window.html 0/6 OK
 WPT FILE dom/events/event-global-is-still-set-when-coercing-beforeunload-result.html 0/1 OK
 WPT FILE dom/events/event-global-is-still-set-when-reporting-exception-onerror.html 0/1 OK
 WPT FILE dom/events/event-global-replaceable.html 2/2 OK
+WPT FILE dom/events/event-global-set-before-handleEvent-lookup.window.html 0/1 OK
 WPT FILE dom/events/event-global.html 0/8 TIMEOUT 
 WPT FILE dom/events/event-handler-attribute-replace-preserves-passive.html 2/2 OK
 WPT FILE dom/events/event-listener-not-fully-active-adopted-node.html 0/5 OK
@@ -69,12 +81,14 @@ WPT FILE dom/events/event-src-element-nullable.html 1/1 OK
 WPT FILE dom/events/focus-event-document-move.html 0/1 TIMEOUT 
 WPT FILE dom/events/handler-count.html 0/2 TIMEOUT 
 WPT FILE dom/events/label-default-action.html 1/1 OK
+WPT FILE dom/events/legacy-pre-activation-behavior.window.html 1/1 OK
 WPT FILE dom/events/mouse-event-retarget.html 0/1 OK
 WPT FILE dom/events/no-focus-events-at-clicking-editable-content-in-link.html 0/2 OK
 WPT FILE dom/events/passive-by-default-non-node.html 1/2 OK
 WPT FILE dom/events/passive-by-default.html 100/100 OK
 WPT FILE dom/events/pointer-event-document-move.html 0/1 OK
 WPT FILE dom/events/preventDefault-during-activation-behavior.html 1/1 OK
+WPT FILE dom/events/relatedTarget.window.html 0/6 OK
 WPT FILE dom/events/remove-all-listeners.html 0/2 OK
 WPT FILE dom/events/shadow-relatedTarget.html 0/0 TIMEOUT 
 WPT FILE dom/events/webkit-animation-end-event.html 3/13 TIMEOUT 
@@ -84,6 +98,14 @@ WPT FILE dom/events/webkit-transition-end-event.html 3/13 TIMEOUT
 WPT FILE dom/events/window-composed-path.html 0/1 OK
 WPT FILE dom/events/window-event-restored-after-throwing-onerror.html 0/1 OK
 
+WPT SUB FAIL dom/events/AddEventListenerOptions-passive.any.html | Supports passive option on addEventListener only | assert_true: addEventListener doesn't support the passive option expected true got false
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing an AbortSignal to addEventListener options should allow removing a listener | assert_equals: Aborting on the controller removes the listener expected 2 but got 3
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing an AbortSignal to addEventListener works with the once flag | assert_equals: The listener was still removed expected 0 but got 1
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing an AbortSignal to multiple listeners | assert_equals: The listener was still removed expected 0 but got 2
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing an AbortSignal to addEventListener works with the capture flag | assert_equals: The listener was still removed expected 0 but got 1
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Aborting from a listener does not call future listeners | assert_equals: The listener was still removed expected 0 but got 1
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing null as the signal should throw | assert_throws_js: function "() => { et.addEventListener("foo", () => {}, { signal: null }); }" did not throw
+WPT SUB FAIL dom/events/AddEventListenerOptions-signal.any.html | Passing null as the signal should throw (listener is also null) | assert_throws_js: function "() => { et.addEventListener("foo", null, { signal: null }); }" did not throw
 WPT SUB FAIL dom/events/Body-FrameSet-Event-Handlers.html | Reflect HTMLBodyElement.onblur | assert_equals: Convert to function expected "function" but got "object"
 WPT SUB FAIL dom/events/Body-FrameSet-Event-Handlers.html | Forward HTMLBodyElement.onblur to Window | assert_equals: Convert to function expected "function" but got "object"
 WPT SUB FAIL dom/events/Body-FrameSet-Event-Handlers.html | Set HTMLFrameSetElement.onblur | 'HTMLFrameSetElement' is not defined
@@ -93,6 +115,7 @@ WPT SUB FAIL dom/events/Event-cancelBubble.html | cancelBubble must be false aft
 WPT SUB FAIL dom/events/Event-constants.html | Constants for eventPhase on Event prototype object. | assert_true: Object [object Object] doesn't have NONE expected true got false
 WPT SUB FAIL dom/events/Event-constants.html | Constants for eventPhase on Event object. | assert_true: Object [object Object] doesn't have NONE expected true got false
 WPT SUB FAIL dom/events/Event-constants.html | Constants for eventPhase on CustomEvent object. | assert_true: Object [object Object] doesn't have NONE expected true got false
+WPT SUB FAIL dom/events/Event-constructors.any.html | Event constructors 1 | assert_throws_js: function "function() { new Event() }" did not throw
 WPT SUB FAIL dom/events/Event-dispatch-bubbles-false.html | In window.document.cloneNode(true) | not a function
 WPT SUB FAIL dom/events/Event-dispatch-bubbles-true.html | In window.document.cloneNode(true) | not a function
 WPT SUB FAIL dom/events/Event-dispatch-click.html | look at parents when event bubbles | assert_true: expected true got false
@@ -110,6 +133,7 @@ WPT SUB FAIL dom/events/Event-dispatch-detached-input-and-change.html | detached
 WPT SUB FAIL dom/events/Event-dispatch-detached-input-and-change.html | detached checkbox should not emit input or change events on dispatchEvent(new MouseEvent('click')). | assert_false: expected false got true
 WPT SUB FAIL dom/events/Event-dispatch-detached-input-and-change.html | detached radio should not emit input or change events on dispatchEvent(new MouseEvent('click')). | assert_false: expected false got true
 WPT SUB FAIL dom/events/Event-dispatch-handlers-changed.html |  Dispatch additional events inside an event listener  | assert_array_equals: actual_targets lengths differ, expected array [object "[object global]", Document node with 2 children, Element node <html><head><meta char
+WPT SUB FAIL dom/events/Event-dispatch-listener-order.window.html | Event-dispatch-listener-order.window.js | assert_array_equals: lengths differ, expected array ["capturing SECTION", "capturing DIV", "capturing #document-fragment", "capturing P", "capturing SPAN", "bub
 WPT SUB FAIL dom/events/Event-dispatch-multiple-cancelBubble.html | Multiple dispatchEvent() and cancelBubble | assert_array_equals: lengths differ, expected array [Element node <div id="parent" style="display: none"> <input id="ta...] length 1, got [] length 0
 WPT SUB FAIL dom/events/Event-dispatch-multiple-stopPropagation.html |  Multiple dispatchEvent() and stopPropagation()  | assert_array_equals: lengths differ, expected array [Element node <div id="parent" style="display: none"> <input id="ta...] length 1, got [] length 0
 WPT SUB FAIL dom/events/Event-dispatch-order-at-target.html | Listeners are invoked in correct order (AT_TARGET phase) | assert_array_equals: bubbles: true expected property 0 to be "capturing" but got "bubbling" (expected array ["capturing", "bubbling"] got ["bubbling", "capturin
@@ -124,44 +148,6 @@ WPT SUB FAIL dom/events/Event-dispatch-single-activation-behavior.html | When cl
 WPT SUB FAIL dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated. | assert_array_equals: lengths differ, expected array [Element node <form onsubmit="activated(this); return false" class="act...] length 1, got [Element node <for
 WPT SUB FAIL dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. | assert_array_equals: lengths differ, expected array [Element node <form onsubmit="activated(this); return false" class="act...] length 1, got [Element node <for
 WPT SUB FAIL dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. | assert_array_equals: lengths differ, expected array [Element node <form onreset="activated(this)" class="activates test70">...] length 1, got [Element node <for
-WPT SUB TIMEOUT dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <AREA></AREA> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated. | Test timed out
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <AREA></AREA> of parent <A></A>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <AREA></AREA> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <AREA></AREA> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <AREA></AREA> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=checkbox></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=radio></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <A></A>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <AREA></AREA>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activat | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activate | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <A></A>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <AREA></AREA>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activ | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <A></A>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <AREA></AREA>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated. | 
-WPT SUB NOTRUN dom/events/Event-dispatch-single-activation-behavior.html | When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activ | 
 WPT SUB TIMEOUT dom/events/Event-dispatch-throwing-multiple-globals.html | exception thrown in event listener function should result in error event on listener's global | Test timed out
 WPT SUB NOTRUN dom/events/Event-dispatch-throwing-multiple-globals.html | exception thrown in event listener interface object should result in error event on listener's global | 
 WPT SUB FAIL dom/events/Event-dispatch-throwing.html | Throwing in event listener with a single listeners | assert_equals: expected 1 but got 0
@@ -171,6 +157,7 @@ WPT SUB FAIL dom/events/Event-init-while-dispatching.html | Calling initMouseEve
 WPT SUB FAIL dom/events/Event-init-while-dispatching.html | Calling initCustomEvent while dispatching. | assert_equals: initCustomEvent detail setter should short-circuit expected (object) null but got (number) 1
 WPT SUB FAIL dom/events/Event-init-while-dispatching.html | Calling initUIEvent while dispatching. | assert_equals: initUIEvent view setter should short-circuit expected null but got object "[object global]"
 WPT SUB FAIL dom/events/Event-initEvent.html | First parameter to initEvent should be mandatory. | assert_throws_js: function "function() { e.initEvent() }" did not throw
+WPT SUB FAIL dom/events/Event-isTrusted.any.html | Event-isTrusted.any.js | assert_equals: expected "function" but got "undefined"
 WPT SUB FAIL dom/events/Event-propagation.html | After stopPropagation() | assert_equals: Propagation flag after first dispatch expected true but got false
 WPT SUB FAIL dom/events/Event-propagation.html | After stopImmediatePropagation() | assert_equals: Propagation flag after first dispatch expected true but got false
 WPT SUB FAIL dom/events/Event-propagation.html | After cancelBubble=true | assert_equals: Propagation flag after first dispatch expected true but got false
@@ -194,6 +181,7 @@ WPT SUB TIMEOUT dom/events/EventListener-invoke-legacy.html | Listener of animat
 WPT SUB TIMEOUT dom/events/EventListener-invoke-legacy.html | Legacy listener of animationstart | Test timed out
 WPT SUB FAIL dom/events/EventListenerOptions-capture.html | Capture boolean should be honored correctly | assert_equals: Incorrect event phase for value: 2.3 expected 1 but got 3
 WPT SUB FAIL dom/events/EventListenerOptions-capture.html | Supports capture option | assert_true: addEventListener doesn't support the capture option expected true got false
+WPT SUB FAIL dom/events/EventTarget-constructible.any.html | A constructed EventTarget implements dispatch correctly | assert_array_equals: lengths differ, expected array [] length 0, got [object "[object Object]"] length 1
 WPT SUB FAIL dom/events/EventTarget-dispatchEvent.html | Capturing event listeners should be called before non-capturing ones | assert_array_equals: expected property 1 to be 3 but got 2 (expected array [1, 3, 2] got [1, 2, 3])
 WPT SUB FAIL dom/events/EventTarget-this-of-listener.html | addEventListener should not require handleEvent to be defined on object listeners | assert_equals: expected 5 but got 0
 WPT SUB FAIL dom/events/click-on-absolute-pseudo.html | Click on pseudo-element that disappears on mousedown | promise_test: Unhandled rejection with value: object "Error: action_sequence() is not implemented by testdriver-vendor.js"
@@ -202,8 +190,15 @@ WPT SUB FAIL dom/events/event-global-event-targets.html | window.event is set wh
 WPT SUB FAIL dom/events/event-global-event-targets.html | window.event is set when dispatching on FileReader | 'FileReader' is not defined
 WPT SUB FAIL dom/events/event-global-event-targets.html | window.event is set when dispatching on Performance | not a function
 WPT SUB FAIL dom/events/event-global-event-targets.html | An event target's _document property does not affect window.event | assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
+WPT SUB FAIL dom/events/event-global-extra.window.html | window.event for constructors from another global: EventTarget | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
+WPT SUB FAIL dom/events/event-global-extra.window.html | window.event for constructors from another global: XMLHttpRequest | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
+WPT SUB FAIL dom/events/event-global-extra.window.html | window.event and element from another document | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
+WPT SUB FAIL dom/events/event-global-extra.window.html | window.event and moving an element post-dispatch | assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
+WPT SUB FAIL dom/events/event-global-extra.window.html | window.event should not be affected by nodes moving post-dispatch | assert_equals: expected 4 but got 3
+WPT SUB FAIL dom/events/event-global-extra.window.html | Listener from a different global | assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
 WPT SUB FAIL dom/events/event-global-is-still-set-when-coercing-beforeunload-result.html | window.event is still set when 'beforeunload' result is coerced to string | 'iframe' is not defined
 WPT SUB FAIL dom/events/event-global-is-still-set-when-reporting-exception-onerror.html | window.onerror handler restores window.event after it reports an exception | cannot read property 'Function' of undefined
+WPT SUB FAIL dom/events/event-global-set-before-handleEvent-lookup.window.html | window.event is set before 'handleEvent' lookup | assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
 WPT SUB FAIL dom/events/event-global.html | event exists on window, which is initially set to undefined | assert_own_property: expected property "event" missing
 WPT SUB FAIL dom/events/event-global.html | window.event is only defined during dispatch | assert_equals: window.event set to current event during dispatch expected (object) object "[object Object]" but got (undefined) undefined
 WPT SUB FAIL dom/events/event-global.html | window.event is undefined if the target is in a shadow tree (event dispatched outside shadow tree) | assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
@@ -245,6 +240,12 @@ WPT SUB FAIL dom/events/no-focus-events-at-clicking-editable-content-in-link.htm
 WPT SUB FAIL dom/events/no-focus-events-at-clicking-editable-content-in-link.html | Click editable link | promise_test: Unhandled rejection with value: object "Error: action_sequence() is not implemented by testdriver-vendor.js"
 WPT SUB FAIL dom/events/passive-by-default-non-node.html | wheel listeners on Performance are not passive by default | not a function
 WPT SUB FAIL dom/events/pointer-event-document-move.html | Moving a node to new document should move the registered event listeners together | promise_test: Unhandled rejection with value: object "Error: document.elementsFromPoint unsupported"
+WPT SUB FAIL dom/events/relatedTarget.window.html | Reset if target pointed to a shadow tree | assert_equals: expected null but got DocumentFragment node with 1 child
+WPT SUB FAIL dom/events/relatedTarget.window.html | Retarget a shadow-tree relatedTarget | assert_equals: expected Element node <div><p></p></div> but got DocumentFragment node with 1 child
+WPT SUB FAIL dom/events/relatedTarget.window.html | Reset if target pointed to a shadow tree pre-dispatch | assert_equals: expected null but got Element node <div></div>
+WPT SUB FAIL dom/events/relatedTarget.window.html | Retarget a shadow-tree relatedTarget, part 2 | assert_equals: expected Element node <div><p></p></div> but got Element node <div></div>
+WPT SUB FAIL dom/events/relatedTarget.window.html | Reset targets on early return | assert_unreached: Reached unreachable code
+WPT SUB FAIL dom/events/relatedTarget.window.html | Reset targets before activation behavior | assert_equals: expected null but got Element node <input type="checkbox"></input>
 WPT SUB FAIL dom/events/remove-all-listeners.html | Removing all listeners and then adding a new one should work. | assert_equals: expected 0 but got 1
 WPT SUB FAIL dom/events/remove-all-listeners.html | Nested usage of once listeners should work. | assert_equals: expected 1 but got 2
 WPT SUB FAIL dom/events/webkit-animation-end-event.html | dispatchEvent of a webkitAnimationEnd event does trigger a prefixed event handler or listener | assert_equals: prefixed listener and handler received event expected 2 but got 1

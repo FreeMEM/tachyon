@@ -35,7 +35,7 @@ from medir_visor import MAQUINAS          # noqa: E402
 
 # (el informe: cada subprueba y el total del fichero, en __dashweb_wpt; sin la tabla de resultados en la página)
 INFORME = r"""
-setup({output: false});
+setup({output: false, timeout_multiplier: 5});  // (el emulador es lento: como hace wptrunner con las plataformas lentas)
 add_completion_callback(function (tests, status) {
     var ruta = String(location.pathname).replace(/^\//, '');
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
@@ -155,7 +155,7 @@ def main():
                            cwd=ROOT, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit(r.stdout + r.stderr)
-        out = run_programs([str(exe)], timeout=120 + 30 * len(lote), kickstart=os.environ.get("DASH_KICKSTART_32"),
+        out = run_programs([str(exe)], timeout=120 + 70 * len(lote), kickstart=os.environ.get("DASH_KICKSTART_32"),
                            extra_config="bsdsocket_library = 1\n" + MAQUINAS[a.maquina],
                            system=os.path.expanduser("~/.cache/dash-emu/sys32rtg38"),
                            args=[f"http://127.0.0.1:{PUERTO}/ dashweb-lista-js.txt"])[0]

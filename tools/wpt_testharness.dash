@@ -5,7 +5,7 @@
 #   wpt_testharness http://10.0.2.2:PUERTO/ lista.txt
 #
 # lista.txt: una prueba por línea (ruta desde la base). Por cada una, el DOM de la página con su JavaScript (scripts,
-# DOMContentLoaded, load, temporizadores y peticiones) hasta que testharness acaba o pasan 20 s, y escribe
+# DOMContentLoaded, load, temporizadores y peticiones) hasta que testharness acaba o pasan 60 s (era 20: las de muchas subpruebas con temporizadores no llegaban), y escribe
 # "WPT SUB estado ruta | nombre" por cada subprueba y "WPT FILE ruta pasan/total estado" (estado del harness:
 # OK, ERROR, TIMEOUT; o "sin acabar").
 
@@ -34,7 +34,7 @@ func correr_una(base: String, ruta: String)
     jsdom_ejecutar_scripts(js, doc, direccion)
     t0 = time_ms()
     hecho = ""
-    while time_ms() - t0 < 20000
+    while time_ms() - t0 < 60000
         jsdom_peticiones_avanzar(js)
         jsdom_temporizadores(js)
         hecho = js_evaluar(js, "__dashweb_wpt === null ? '' : 'si'", "wpt")

@@ -5788,3 +5788,13 @@ Formato:
 - WPT dom/events 370 → 413/618 (single-activation-behavior 49 → 86, dispatch-click 19 → 23,
   detached-input-and-change 6 → 8; ningún fichero a peor). Lo medido de WPT: dom/ 47787/57588.
 - Tests: test_jsdom_activacion; jsdom, documento, formularios y acid sin red, todos.
+
+### 2026-11-07 — Tarea 41d: el corredor de WPT pasa también las .any.js y .window.js; url/ medido (2319/4319)
+- tools/wpt_js.py: casi todas las pruebas de JavaScript de WPT fuera de dom/ son x.any.js o x.window.js, que wptserve
+  envuelve en una página (x.any.html). Ahora el servidor del corredor hace esa página al vuelo (testharness.js, el
+  testharnessreport.js propio, los "// META: script=" y el .js; una por "// META: variant="; las de "// META:
+  global=" sin window, fuera). WPT en ~/.cache/dashweb/wpt con url/ y encoding/ (sparse-checkout add).
+- url/ (41 páginas con sus variantes; 34 dan resultado): 2319/4319 subpruebas (54 %). Lo que más falla: IDNA
+  (IdnaTestV2 1372/2676 y se corta por tiempo; toascii 469/784), url-setters-stripping 148/320, url-constructor
+  83/137 (la variante sin file, javascript ni mailto), urlencoded-parser 60/105, percent-encoding 1/17, y
+  javascript-urls y data-uri-fragment (no acaban). En docs/wpt/js_url.txt.

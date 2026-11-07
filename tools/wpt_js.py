@@ -9,6 +9,9 @@ resources/testharnessreport.js propio, que al acabar deja el resultado en __dash
 carga cada página con su JavaScript y lo escribe. Solo las .html que cargan testharness.js (las .any.js y .window.js,
 que wptserve envuelve en una página, no; las .sub.html, que necesitan sus sustituciones, tampoco).
 
+Las .any.js y .window.js van en la página que les haría wptserve (x.any.html con testharness.js, sus META script= y
+el .js; las de global= sin window, no).
+
 Escribe cada fichero (subpruebas que pasan / total, y el estado del harness) y el total como wpt.fyi: subpruebas que
 pasan / subpruebas. Con --guardar, docs/wpt/js_<carpeta>.txt con el resumen y las subpruebas que fallan.
 """
@@ -53,6 +56,16 @@ add_completion_callback(function (tests, status) {
 def pruebas(carpeta):
     r = []
     for f in sorted((WPT / carpeta).iterdir()):
+        # las .any.js y .window.js, en la página que les haría wptserve (x.any.html, x.window.html; una por variante)
+        if f.name.endswith((".any.js", ".window.js")) and ".sub." not in f.name:
+            meta = _meta(f)
+            globales = ",".join(meta.get("global", ["window"])) if f.name.endswith(".any.js") else "window"
+            if "window" not in globales.split(",") and f.name.endswith(".any.js") and meta.get("global"):
+                continue
+            pagina = str(f.relative_to(WPT))[:-3] + ".html"
+            for v in meta.get("variant", [""]):
+                r.append(pagina + v)
+            continue
         if f.suffix not in (".html", ".htm") or ".sub." in f.name or "-ref" in f.stem:
             continue
         try:
@@ -62,6 +75,37 @@ def pruebas(carpeta):
         if "testharness.js" in t:
             r.append(str(f.relative_to(WPT)))
     return r
+
+
+def _meta(f):
+    """Las líneas // META: clave=valor del principio de un .any.js o .window.js"""
+    m = {}
+    for l in f.read_text(errors="replace").splitlines():
+        x = re.match(r"\s*//\s*META:\s*(\w+)=(.*)$", l)
+        if x:
+            m.setdefault(x.group(1), []).append(x.group(2).strip())
+        elif l.strip() and not l.strip().startswith("//"):
+            break
+    return m
+
+
+def _envoltorio(ruta):
+    """La página de un .any.js o .window.js (ruta: /url/x.any.html), como la hace wptserve; None si no es una"""
+    if not ruta.endswith((".any.html", ".window.html")):
+        return None
+    js = WPT / (ruta.lstrip("/")[:-5] + ".js")
+    if not js.is_file():
+        return None
+    meta = _meta(js)
+    partes = ["<!doctype html>", "<meta charset=utf-8>", f"<title>{(meta.get('title') or [js.name])[0]}</title>",
+              "<script>self.GLOBAL = {isWindow: function () { return true; }, isWorker: function () { return false; },"
+              " isShadowRealm: function () { return false; }};</script>",
+              '<script src="/resources/testharness.js"></script>', '<script src="/resources/testharnessreport.js"></script>']
+    for sc in meta.get("script", []):
+        partes.append(f'<script src="{sc}"></script>')
+    partes.append('<div id=log></div>')
+    partes.append(f'<script src="/{js.relative_to(WPT)}"></script>')
+    return "\n".join(partes).encode()
 
 
 def main():
@@ -93,6 +137,14 @@ def main():
                 self.send_header("Content-Length", str(len(cuerpo)))
                 self.end_headers()
                 self.wfile.write(cuerpo)
+                return
+            env = _envoltorio(self.path.split("?")[0])
+            if env is not None:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(env)))
+                self.end_headers()
+                self.wfile.write(env)
                 return
             super().do_GET()
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", PUERTO), Servidor)

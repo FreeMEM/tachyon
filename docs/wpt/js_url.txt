@@ -1,9 +1,9 @@
-WPT TOTAL url: 6984/8699 subpruebas en 41 de 41 ficheros
+WPT TOTAL url: 7242/8699 subpruebas en 41 de 41 ficheros
 
 WPT FILE url/IdnaTestV2-removed.any.html 1/21 OK
 WPT FILE url/IdnaTestV2.any.html 1536/2676 OK
 WPT FILE url/a-element-origin.html 405/415 OK
-WPT FILE url/a-element.html 586/897 OK
+WPT FILE url/a-element.html 844/897 OK
 WPT FILE url/data-uri-fragment.html 0/1 TIMEOUT 
 WPT FILE url/failure.html 1175/1175 OK
 WPT FILE url/historical.any.html 6/8 OK
@@ -1212,278 +1212,45 @@ WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://foo:?@example.c
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://a:?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got "http://a"
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:b/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f: /c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:fifty-two/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <non-special://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f: 21 / b ? d # e > against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[1::2]:3:4> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://example:1/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://example:test/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://example%/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://[example]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <#?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#%CE%B2" but got "http://example.org/foo/bar#?"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/????> against <about:blank> | assert_equals: href expected "http://example.com/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD" but got "http://example.com/????"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%A5/foo" but got "http://example.com/?/foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/ /foo> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BB%BF/foo" but got "http://example.com//foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo/?/bar> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%AE/foo/%E2%80%AD/bar" but got "http://example.com/?/foo/?/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <http://user:pass@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo:-80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://user@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http::@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <?/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/%E4%B8%AD/test.txt" but got "http://www.example.com/test?/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <http://example example.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://Goo%20 goo%7C|.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[:]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://GOO goo.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://GOO goo.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://GOO goo.com" but got "http://GOO ?goo.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http://GOO? goo.com> against <http://other.com/> | assert_equals: href expected "http://googoo.com/" but got "http://goo/?goo.com"
 WPT SUB FAIL url/a-element.html | Parsing: < http://example.com/ > against <about:blank> | assert_equals: href expected "http://example.com/" but got ""
 WPT SUB FAIL url/a-element.html | Parsing: <http://www.foo?bar.com> against <http://other.com/> | assert_equals: href expected "http://www.foo.bar.com/" but got "http://www.foo/?bar.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http://?zyx.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%ef%b7%90zyx.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://?> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://%EF%BF%BD> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://?zyx.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://?zyx.com" but got "http://?zyx.com"
+WPT SUB FAIL url/a-element.html | Parsing: <https://?> against <about:blank> | assert_equals: failure should set href to input expected "https://\ufffd" but got "https://?"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/???#?> against <about:blank> | assert_equals: href expected "https://x/%EF%BF%BD?%EF%BF%BD#%EF%BF%BD" but got "https://x/???#?"
 WPT SUB FAIL url/a-element.html | Parsing: <http://??.com> against <http://other.com/> | assert_equals: href expected "http://go.com/" but got "http://??.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%ef%bc%85%ef%bc%90%ef%bc%90.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://???.com" but got "http://???.com"
+WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://???.com" but got "http://???.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http://????> against <http://other.com/> | assert_equals: href expected "http://xn--6qqa088eba/" but got "http://????"
-WPT SUB FAIL url/a-element.html | Parsing: <http://%zz%66%a.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%25> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://hello%00> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://192.168.0.257> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%3g%78%63%30%2e%30%32%35%30%2E.01> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://192.168.0.1 hello> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://x x:12> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://????????????> against <http://other.com/> | assert_equals: href expected "http://192.168.0.1/" but got "http://????????????"
-WPT SUB FAIL url/a-element.html | Parsing: <http://[www.google.com]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[google.com]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::1.2.3.4x]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::1.2.3.]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::1.2.]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::.1.2]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::1.]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::.1]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::%31]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://%5B::1]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://foo:?@example.com/bar> against <http://other.com/> | assert_equals: href expected "http://foo:%F0%9F%92%A9@example.com/bar" but got "http://foo/?@example.com/bar"
 WPT SUB FAIL url/a-element.html | Parsing: <http://?x@host/> against <about:blank> | assert_equals: href expected "http://%F0%9F%98%80x@host/" but got "http://?x@host/"
 WPT SUB FAIL url/a-element.html | Parsing: <http://a:?x@host/> against <about:blank> | assert_equals: href expected "http://a:%F0%9F%98%80x@host/" but got "http://a/?x@host/"
 WPT SUB FAIL url/a-element.html | Parsing: <http://?@host/> against <about:blank> | assert_equals: href expected "http://%F0%9F%98%80@host/" but got "http://?@host/"
 WPT SUB FAIL url/a-element.html | Parsing: <https://localhost?q=?> against <about:blank> | assert_equals: href expected "https://localhost/?q=%F0%9F%94%A5" but got "https://localhost/?q=?"
 WPT SUB FAIL url/a-element.html | Parsing: <https://localhost#?> against <about:blank> | assert_equals: href expected "https://localhost/#%F0%9F%94%A5" but got "https://localhost/#?"
-WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://te@s:t@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://:/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://:12/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <wow:?> against <about:blank> | assert_equals: href expected "wow:%EF%BF%BF" but got "wow:?"
 WPT SUB FAIL url/a-element.html | Parsing: <sc://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a<b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a>b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a[b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a\b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a]b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a^b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <sc://a|b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a%b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a<b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a>b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a[b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a]b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a^b> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a|b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%00st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%01st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%02st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%03st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%04st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%05st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%06st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%07st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%08st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%09st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Ast/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Bst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Cst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Dst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Est/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%0Fst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%10st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%11st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%12st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%13st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%14st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%15st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%16st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%17st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%18st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%19st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Ast/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Bst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Cst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Dst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Est/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%1Fst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%20st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%23st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%25st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%2Fst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%3Ast/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%3Cst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%3Est/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%3Fst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%40st/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%5Bst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%5Cst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%5Dst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%7Cst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://ho%7Fst/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <ftp://example.com%80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <ftp://example.com%A0/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://example.com%80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://example.com%A0/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:> against <https://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://10000000000> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://4294967296> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://18446744073709551616> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://18446744075840258049> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0xffffffff1> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://256.256.256.256> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://0x100000000/test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://256.0.0.1/test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://%43%3A> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://%43%7C> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://%43|> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://C%7C> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://%43%7C/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://%43%7C/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <asdf://%43|/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <\\\.\Y:> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <\\\.\y:> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1:2:3:4:5:192.0.02.1]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[192.0.2.1::]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[0:1:2:3:4:5:6:7:8]> against <http://example.net/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0::0::0]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:.0]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:0:]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1:2:3:4:5:6:7.0.0.0.1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1.00.0.0.0]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1.290.0.0.0]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1.23.23]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://?> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://#> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:4294967377/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:18446744073709551697/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:340282366920938463463374607431768211537/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <non-special://[:80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::127.0.0.0.1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test??> against <about:blank> | assert_equals: href expected "http://example.org/test?%E2%8C%A3" but got "http://example.org/test??"
-WPT SUB FAIL url/a-element.html | Parsing: <a> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <a/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <a//> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon.html> against <a:> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-b.html> against <a:b> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "http://example.org/test?a#b%00c" but got "http://example.org/test?a#b"
 WPT SUB FAIL url/a-element.html | Parsing: <non-spec://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec://example.org/test?a#b%00c" but got "non-spec://example.org/test?a#b"
 WPT SUB FAIL url/a-element.html | Parsing: <non-spec:/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec:/test?a#b%00c" but got "non-spec:/test?a#b"
 WPT SUB FAIL url/a-element.html | Parsing: <file://loC??????/usr/bin> against <about:blank> | assert_equals: href expected "file:///usr/bin" but got "file://loc/??????/usr/bin"
-WPT SUB FAIL url/a-element.html | Parsing: <file://­/p> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://%C2%AD/p> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <non-special:cannot-be-a-base-url- ~ > against <about:blank> | assert_equals: href expected "non-special:cannot-be-a-base-url-%00%01%1F%1E~%7F%C2%80" but got "non-special:cannot-be-a-base-url-"
-WPT SUB FAIL url/a-element.html | Parsing: <?> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.4.5> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.4.5.> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0..0x300/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0..0x300./> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://256.256.256.256.256> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://256.256.256.256.256.> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.08> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.08.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.09> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://09.2.3.4> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://09.2.3.4.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://01.2.3.4.5> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://01.2.3.4.5.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0x100.2.3.4> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0x100.2.3.4.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0x1.2.3.4.5> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0x1.2.3.4.5.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.1.2.3.4> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.1.2.3.4.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.2.3.4> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.2.3.4.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.09> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.09.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.0x4> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.0x4.> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://0999999999999999999/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.0x> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo.0XFfFfFfFfFfFfFfFfFfAcE123> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://?.123/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https:// y> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://?.123/> against <about:blank> | assert_equals: failure should set href to input expected "http://?.123/" but got "http://?.123/"
+WPT SUB FAIL url/a-element.html | Parsing: <https:// y> against <about:blank> | assert_equals: failure should set href to input expected "https://\0y" but got "https://"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/ y> against <about:blank> | assert_equals: href expected "https://x/%00y" but got "https://x/"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/? y> against <about:blank> | assert_equals: href expected "https://x/?%00y" but got "https://x/?"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/?# y> against <about:blank> | assert_equals: href expected "https://x/?#%00y" but got "https://x/?#"
-WPT SUB FAIL url/a-element.html | Parsing: <https://?y> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <https://?y> against <about:blank> | assert_equals: failure should set href to input expected "https://\uffffy" but got "https://?y"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/?y> against <about:blank> | assert_equals: href expected "https://x/%EF%BF%BFy" but got "https://x/?y"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/??y> against <about:blank> | assert_equals: href expected "https://x/?%EF%BF%BFy" but got "https://x/??y"
 WPT SUB FAIL url/a-element.html | Parsing: <https://x/?#?y> against <about:blank> | assert_equals: href expected "https://x/?#%EF%BF%BFy" but got "https://x/?#?y"
@@ -1495,31 +1262,6 @@ WPT SUB FAIL url/a-element.html | Parsing: <non-special:?y> against <about:blank
 WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/?y> against <about:blank> | assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/?y"
 WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/??y> against <about:blank> | assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/??y"
 WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/?#?y> against <about:blank> | assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#?y"
-WPT SUB FAIL url/a-element.html | Parsing: <> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://­/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https://%C2%AD/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <data://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <data://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <data://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <javascript://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <javascript://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <javascript://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <mailto://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <mailto://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <mailto://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <intent://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <intent://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <intent://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <urn://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <urn://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <urn://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <turn://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <turn://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <turn://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <stun://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <stun://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <stun://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <non-special://host\a> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <data:text/plain,test# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "data:text/plain,test#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "data:text/pl
 WPT SUB FAIL url/a-element.html | Parsing: <about:blank# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "about:blank#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "about:blank#"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/U+d800?U+dfff???????U+d800?U+dfff??????> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%B

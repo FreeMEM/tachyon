@@ -1,0 +1,25 @@
+# Test: TextDecoder con las etiquetas y las tablas de WHATWG Encoding (tarea 41d, WPT encoding/): windows-1252 no es
+# Latin-1 (0x80 es el euro), KOI8-R, ISO-8859-7 con un hueco (fatal da TypeError), utf-16be con su BOM, x-user-defined,
+# las etiquetas con blancos y mayúsculas, y una que no se sabe leer da RangeError.
+# memcheck
+# expect-out: 1252: 20ac 41 | koi8: 0430 | hueco: TypeError | be: 0041 0042 | xud: f780 | etiqueta: windows-1252 iso-8859-2 | no: RangeError
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "function h(s) { return Array.from(s).map(function (x) { return x.charCodeAt(0).toString(16).padStart(4, '0'); }).join(' '); }"
+    c = c + "var r = '1252: ' + h(new TextDecoder('windows-1252').decode(new Uint8Array([0x80]))) + ' ' + new TextDecoder('latin1').decode(new Uint8Array([0x41])).charCodeAt(0).toString(16);"
+    c = c + "r += ' | koi8: ' + h(new TextDecoder('koi8-r').decode(new Uint8Array([0xC1])));"
+    c = c + "try { new TextDecoder('iso-8859-7', {fatal: true}).decode(new Uint8Array([0xAE])); r += ' | hueco: no'; } catch (e) { r += ' | hueco: ' + e.name; }"
+    c = c + "r += ' | be: ' + h(new TextDecoder('utf-16be').decode(new Uint8Array([0xFE, 0xFF, 0, 0x41, 0, 0x42])));"
+    c = c + "r += ' | xud: ' + h(new TextDecoder('x-user-defined').decode(new Uint8Array([0x80])));"
+    c = c + "r += ' | etiqueta: ' + new TextDecoder(' ASCII ').encoding + ' ' + new TextDecoder('L2').encoding;"
+    c = c + "try { new TextDecoder('shift_jis'); r += ' | no: sí'; } catch (e) { r += ' | no: ' + e.name; } r"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

@@ -5823,3 +5823,17 @@ Formato:
   percent-encoding (pide otras codificaciones), urlencoded-parser, javascript-urls y data-uri-fragment.
 - Tests: jsdom, documento y js sin red, todos (4 dieron TIMEOUT al final de una tanda de 33 y pasan sueltos);
   jsdom_load_peticion, jsdom_scripts, jsdom_iframe y documento_tipo con red.
+
+### 2026-11-07 — Tarea 41d: TextDecoder con las etiquetas y las tablas de WHATWG (WPT encoding/ 3893 → 11085/12004)
+- Primera medida de encoding/ (46 páginas, con las .any.js): 3893/12004 (32 %). TextDecoder solo conocía 10
+  etiquetas, tomaba windows-1252 por Latin-1 (0x80-0x9F mal) y no sabía otras de un byte.
+- lib/jsdom_preludio.js: las 181 etiquetas de encodings.json de lo que se sabe leer (ENC_ETIQUETAS; sin las de
+  varios bytes de Asia ni "replacement", que dan RangeError) y las 27 tablas de un byte de indexes.json (ENC_UN_BYTE:
+  128 caracteres cada una, U+FFFF donde no hay; con fatal, TypeError ahí), sacadas de los recursos de WPT (son del
+  estándar). También utf-16be (con su BOM), los suplentes por pares en UTF-16 (uno suelto, error), x-user-defined, y
+  la etiqueta sin los blancos de HTML alrededor.
+- WPT encoding/ 3893 → 11085/12004 (92 %; ningún fichero a peor). Lo que queda: las de varios bytes (big5,
+  iso-2022-jp, gbk...), encodeInto con SharedArrayBuffer y otros detalles.
+- Coste: el preludio crece 26 KB de texto. Con todos los cambios de hoy en él, la segunda página con scripts tarda lo
+  mismo en prepararlos (237 → 240 ms) y la primera tras arrancar (la que compila el preludio) 1228 → 1353 ms.
+- Test test_js_textdecoder.

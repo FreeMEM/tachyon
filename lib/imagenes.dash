@@ -56,6 +56,11 @@ struct Imagenes
     # sus imágenes y se queda con los ficheros de T:; tarea 46)
     hechas: [Pedida] = nil
     dormida: Bool = false
+    # los <svg> de la página iguales (el mismo texto, ya con su color y tamaño) comparten fichero e imagen: los iconos
+    # de GitHub se rasterizaban uno a uno (125 en gh_repo.html, ~3 s; tarea 61). svg_usos: cuántos <svg> tiene cada
+    # fichero (uno compartido que hay que rehacer pasa antes a tener el suyo: imagenes_svg_rehacer)
+    svg_textos: {String: String} = nil
+    svg_usos: {String: Int} = nil
 end
 
 struct Pedida
@@ -830,11 +835,25 @@ func _imagenes_svg(im: Imagenes, n: Nodo)
     h = svg_alto(n)
     texto = _svg_elemento(n, raiz, true, w, h)
     texto = str_replace(str_replace(str_replace(texto, "currentColor", color), "currentcolor", color), "CurrentColor", color)
+    if im.svg_textos == nil
+        var textos: {String: String} = {}
+        im.svg_textos = textos
+        var usos: {String: Int} = {}
+        im.svg_usos = usos
+    end
+    if im.svg_textos.has(texto)
+        igual = im.svg_textos[texto]
+        im.svg_usos[igual] = im.svg_usos[igual] + 1
+        _poner_atributo(n, "data-dashweb-svg", igual)
+        return
+    end
     fichero = "T:dashweb_svg" + im.ficheros.length + ".svg"
     if not file_write_text(fichero, texto)
         return
     end
     im.ficheros.push(fichero)
+    im.svg_textos[texto] = fichero
+    im.svg_usos[fichero] = 1
     _poner_atributo(n, "data-dashweb-svg", fichero)
     if not im.por_src.has(fichero)
         im.por_src[fichero] = imagen_cargar_a(fichero, IMAGEN_MAX_ANCHO, IMAGEN_MAX_ALTO)
@@ -847,6 +866,19 @@ func imagenes_svg_rehacer(im: Imagenes, n: Nodo) -> Bool
     fichero = dom_atributo(n, "data-dashweb-svg")
     if fichero == "" or not im.por_src.has(fichero)
         return false
+    end
+    # (uno compartido con otros <svg> iguales: antes, el suyo, para no cambiar la imagen de los demás)
+    if im.svg_usos != nil and im.svg_usos.has(fichero) and im.svg_usos[fichero] > 1
+        suyo = "T:dashweb_svg" + im.ficheros.length + ".svg"
+        if not file_copy(fichero, suyo)
+            return false
+        end
+        im.ficheros.push(suyo)
+        im.svg_usos[fichero] = im.svg_usos[fichero] - 1
+        im.svg_usos[suyo] = 1
+        im.por_src[suyo] = imagen_cargar_a(suyo, IMAGEN_MAX_ANCHO, IMAGEN_MAX_ALTO)
+        _poner_atributo(n, "data-dashweb-svg", suyo)
+        fichero = suyo
     end
     raiz = n
     while raiz.padre != nil

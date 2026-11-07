@@ -5730,3 +5730,14 @@ Formato:
 - gh_local.html en la máquina RTG con MUI 3.8: maqueta 8,7 s → 5,9 s; "Ready" a los ~15,3 s (unos 28 s con la 0.9.1).
   Captura igual píxel a píxel (salvo el tiempo de la barra de estado). Memoria: 12 bytes más por nodo. Batería:
   143/143.
+
+### 2026-11-07 — Tarea 61 (5): los <svg> iguales, rasterizados una vez
+- Perfil de gh_local.html con lo de antes: _imagenes_svg, el 6,9 % (125 <svg>, unos 3 s), casi todos iconos de
+  GitHub repetidos. Cada <svg> se escribía en su fichero de T: y nanosvg lo rasterizaba.
+- lib/imagenes.dash: los de texto igual (ya con su color y su tamaño) comparten fichero e imagen (Imagenes.svg_textos,
+  svg_usos). imagenes_svg_rehacer (fotogramas de animaciones de dentro, un tamaño en % que cambia) le da antes uno
+  propio al que está compartido (una copia del fichero), para no cambiar los demás.
+- gh_local.html: del estilo a la maqueta, 2,6 → 1,3 s; "Ready" a los 14,3 s (15,3 antes; ~28 s con la 0.9.1).
+  Captura igual. Tests: svg, imagen*, documento* y animación, sin red y con red.
+- Lo siguiente que pesa: jsdom_preparar, ~1,2 s en cada página con scripts (leer el bytecode del preludio y
+  ejecutarlo en un runtime nuevo por página); probar selectores, ~2,2 s en gh_local (308.000 _cumple_desde).

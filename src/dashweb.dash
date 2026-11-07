@@ -63,6 +63,7 @@ const ID_DESCARGAS = 29
 const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuración (tarea 54)
 const ID_GUARDAR_PAGINA = 31   # menú Proyecto (Amiga-S) y el del botón derecho sobre la página (tarea 57)
 const ID_GUARDAR_ENLACE = 32   # el del botón derecho: el enlace donde se pulsó, a un fichero
+const ID_ABRIR_FICHERO = 33    # menú Proyecto (Amiga-O): una página del disco (tarea 60)
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
@@ -959,6 +960,20 @@ func pedir_ruta(nombre: String) -> String
     return ruta
 end
 
+# "Abrir fichero..." (tarea 60; Ferrán García: una web guardada, documentación en HTML): el selector de ficheros,
+# en el cajón de la última vez, y la página con su dirección file: (así sus enlaces relativos van a su cajón)
+func abrir_fichero(w: Ventana)
+    cajon = preferencia(FICHERO_PREFERENCIAS, "cajon_abrir")
+    ruta = dialog_file_at(tr(476, "Open file"), "", false, cajon, "")
+    if ruta == ""
+        return
+    end
+    if dialog_cajon(ruta) != cajon
+        preferencia_poner(FICHERO_PREFERENCIAS, "cajon_abrir", dialog_cajon(ruta))
+    end
+    navegar(w, url_de_ruta(ruta))
+end
+
 # "Guardar enlace como..." (tarea 57; Ferrán García lo pidió para bajarse los .readme de Aminet, como AmiFire): el
 # enlace donde se pulsó el botón derecho, al gestor de descargas tal cual (sin abrirlo ni interpretarlo)
 func guardar_enlace(w: Ventana)
@@ -1054,8 +1069,8 @@ func atajo_de_menu(w: Ventana) -> Int
     if c == ""
         return 0
     end
-    letras = "nktwlsqrhybdj?"
-    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
+    letras = "nktwlosqrhybdj?"
+    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
     i = str_find(letras, str_lower(c[:1]))
     if i < 0
         return 0
@@ -2418,6 +2433,9 @@ Main
             end
             if ev == ID_GUARDAR_ENLACE
                 guardar_enlace(w)
+            end
+            if ev == ID_ABRIR_FICHERO
+                abrir_fichero(w)
             end
             if ev == ID_IR_DIRECCION
                 activar(w.v.window, w.v.url)

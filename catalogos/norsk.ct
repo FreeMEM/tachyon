@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (06.11.2026)
+## version $VER: Tachyon.catalog 1.0 (07.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -152,6 +152,9 @@ Lagre lenken som...
 MSG_50
 Side
 ; Page
+MSG_51
+Åpne fil...
+; Open file...
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -641,3 +644,6 @@ Du får en kode: skriv den i saken du oppretter på %1, og fortell hva du gjorde
 MSG_475
 Dette er alt som blir sendt:
 ; This is everything that will be sent:
+MSG_476
+Åpne fil
+; Open file

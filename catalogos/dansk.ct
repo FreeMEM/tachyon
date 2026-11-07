@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (06.11.2026)
+## version $VER: Tachyon.catalog 1.0 (07.11.2026)
 ## language dansk
 ## codeset 0
 ;
@@ -152,6 +152,9 @@ Gem link som...
 MSG_50
 Side
 ; Page
+MSG_51
+Åbn fil...
+; Open file...
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -641,3 +644,6 @@ Du får en kode: skriv den i den sag, du opretter på %1, og fortæl, hvad du la
 MSG_475
 Dette er alt, hvad der bliver sendt:
 ; This is everything that will be sent:
+MSG_476
+Åbn fil
+; Open file

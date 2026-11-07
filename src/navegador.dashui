@@ -43,6 +43,12 @@
               "tr": 4
             },
             {
+              "label": "Open file...",
+              "key": "O",
+              "event": 33,
+              "tr": 51
+            },
+            {
               "label": "Save page as...",
               "key": "S",
               "event": 31,

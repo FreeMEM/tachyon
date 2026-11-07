@@ -204,6 +204,13 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
+      abrir una página soltando su icono en la ventana de Tachyon). app_window y app_drop de Dash valen solo para las
+      ventanas de window_create; las de MUI no. MUI lo trae de serie: MUIA_Window_AppWindow TRUE en la ventana y
+      notificación de MUIA_AppMessage en el objeto donde cae (o en la ventana). Hace falta algo como
+      `mui_app_window(ventana)` y un evento que dé la ruta del icono soltado (y el objeto: la página, la barra de
+      dirección...), en dashc y en dash1, con su test. El usuario: "Sí que suelte iconos ya": pedida a freememlang
+      [e4f769] el 2026-11-07 (que la pase a quien lleve Dash main si no es ella).
 - [x] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
       "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
       a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
@@ -607,6 +614,7 @@ tarea, con el estilo de Dash.
       cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
       Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
       ficheros (ASL), y soltar el icono de un fichero en la ventana (AppWindow de Workbench) para abrirlo.
+      Hecho el menú (2026-11-07): Proyecto, "Open file..." (Amiga-O). Falta soltar el icono: D83 (Dash).
 - [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
@@ -5900,3 +5908,33 @@ Formato:
   a.href no busca el `<base>` en cada lectura.
 - url/a-element 423 → 586, a-element-origin 320 → 405; ningún fichero peor. url/ 41/41: 6224/8699 (72 %).
   Tests de jsdom y documento sin red: 28/28.
+
+### 2026-11-07 — Tarea 41d: una dirección que no se analiza da SyntaxError (url/failure.html 415 → 1175/1175)
+- window.open, location (la de la página y la de un marco), XMLHttpRequest.open y navigator.sendBeacon resolvían
+  como podían una dirección mala (o, la de location, navegaban a ella tal cual). Ahora, como dice HTML, un
+  DOMException SyntaxError (TypeError en sendBeacon), con dirValida() en el preludio. La location de un marco es un
+  objeto con href (accesor) y window.location de su ventana, un accesor.
+- url/ 41/41: 6984/8699 (80 %), ningún fichero peor. Sin cambios en lo que corre a menudo (misma resolución).
+
+### 2026-11-07 — "demasiadas conexiones" al salir de YouTube (lo vio el usuario en su Amiga)
+- Captura del usuario: ir de YouTube a consent.youtube.com daba "No se pudo cargar la página: demasiadas
+  conexiones". La tabla de la tarea de la red (net_bg_*, de Dash) tiene 48 sitios. El JavaScript de YouTube lanzaba
+  sus fetch/XHR sin límite, las de la página que se deja no avanzan (ni se cierran) mientras se carga la nueva, y
+  red_abrir_empezar fallaba en seguida si no había sitio.
+- lib/red.dash: sin sitio, la conexión queda en fase 3 ("esperando") y red_abrir_avanzar lo vuelve a intentar hasta
+  su espera (20 s como poco); red_sin_sitio(c) lo dice. lib/http.dash: con una esperando, se cierran antes las
+  conexiones libres (keep-alive). src/dashweb.dash: si la carga de la página espera sitio, se cancelan las
+  peticiones del JavaScript de la que se deja (lo mismo que al llegar la nueva); el estado dice "Conectando".
+  lib/jsdom.dash: 6 peticiones del JavaScript a la vez por motor (como Chrome por servidor); las demás, en cola.
+- tests/test_http_sin_sitio.dash (puerto 40871): llena la tabla con conexiones al puerto 1 y comprueba que la carga
+  espera y sigue al cerrarse una, y que una libre se cierra para dejar sitio. Pasan los de red (http*, js_fetch,
+  jsdom_load_peticion, navegacion, navegar_js, youtube) y los de jsdom y documento.
+
+### 2026-11-07 — Tarea 60: "Abrir fichero..." en el menú Proyecto (Amiga-O)
+- Lo pidió Ferrán García. abrir_fichero() en src/dashweb.dash: dialog_file_at en el cajón de la última vez
+  (preferencia cajon_abrir) y la página por su dirección file: (url_de_ruta, nueva en lib/url.dash: "Work:Docs/a
+  b.html" -> "file:///Work/Docs/a%20b.html", Latin-1 en UTF-8), así sus enlaces relativos van a su cajón.
+  Textos 51 y 476 en el .cd y traducidos en los nueve .ct. test_url con url_de_ruta; el navegador compila. El
+  selector no se ha probado en el emulador (ASL interactivo).
+- Soltar el icono en la ventana: hace falta Dash (D83). El usuario: "Sí que suelte iconos ya": pedida a
+  freememlang [e4f769].

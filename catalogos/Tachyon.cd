@@ -100,6 +100,8 @@ MSG_49 (49//)
 Save link as...
 MSG_50 (50//)
 Page
+MSG_51 (51//)
+Open file...
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -426,3 +428,5 @@ MSG_474 (474//)
 You will get a code: put it in the issue you open at %1, and say what you were doing and what happened.
 MSG_475 (475//)
 This is everything that will be sent:
+MSG_476 (476//)
+Open file

@@ -1,0 +1,11 @@
+WPT TOTAL dom/abort: 35/37 subpruebas en 6 de 6 ficheros
+
+WPT FILE dom/abort/AbortSignal.any.html 2/2 OK
+WPT FILE dom/abort/abort-signal-any.any.html 14/14 OK
+WPT FILE dom/abort/abort-signal-timeout.html 0/1 OK
+WPT FILE dom/abort/event.any.html 16/16 OK
+WPT FILE dom/abort/reason-constructor.html 0/1 OK
+WPT FILE dom/abort/timeout.any.html 3/3 OK
+
+WPT SUB FAIL dom/abort/abort-signal-timeout.html | Signal returned by AbortSignal.timeout() is not aborted after frame detach | 'iframe' is not defined
+WPT SUB FAIL dom/abort/reason-constructor.html | AbortSignal.reason.constructor should be from iframe | 'iframe' is not defined

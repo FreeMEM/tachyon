@@ -1,0 +1,48 @@
+WPT TOTAL dom: 108/142 subpruebas en 11 de 11 ficheros
+
+WPT FILE dom/attributes-are-nodes.html 0/4 OK
+WPT FILE dom/eventPathRemoved.html 1/1 OK
+WPT FILE dom/historical-mutation-events.html 10/10 OK
+WPT FILE dom/historical.html 75/80 OK
+WPT FILE dom/idlharness.window.html 0/1 OK
+WPT FILE dom/idlharness.window.html 0/1 OK
+WPT FILE dom/interface-objects.html 20/23 OK
+WPT FILE dom/svg-insert-crash.html 1/1 OK
+WPT FILE dom/window-extends-event-target.html 1/3 OK
+WPT FILE dom/xpath-evaluation-detached-nodes.html 0/17 TIMEOUT 
+WPT FILE dom/xpath-result-single-node-value-nullable.html 0/1 OK
+
+WPT SUB FAIL dom/attributes-are-nodes.html | Attrs are subclasses of Nodes | assert_true: attribute instances are instances of Node expected true got false
+WPT SUB FAIL dom/attributes-are-nodes.html | appendChild with an attribute as the child should fail | assert_throws_dom: function "() => { parent.appendChild(attribute); }" threw object "TypeError: appendChild: not a node" that is not a DOMException HierarchyReq
+WPT SUB FAIL dom/attributes-are-nodes.html | replaceChild with an attribute as the child should fail | assert_throws_dom: function "() => { parent.replaceChild(attribute, parent.firstChild); }" threw object "RangeError: replaceChild: not a child of this node" tha
+WPT SUB FAIL dom/attributes-are-nodes.html | insertBefore with an attribute as the child should fail | assert_throws_dom: function "() => { parent.insertBefore(attribute, parent.firstChild); }" threw object "TypeError: insertBefore: not a node" that is not a DOME
+WPT SUB FAIL dom/historical.html | Node member must be removed: hasAttributes | assert_false: expected false got true
+WPT SUB FAIL dom/historical.html | Node member must be removed: attributes | assert_false: expected false got true
+WPT SUB FAIL dom/historical.html | Node member must be removed: namespaceURI | assert_false: expected false got true
+WPT SUB FAIL dom/historical.html | Node member must be removed: prefix | assert_false: expected false got true
+WPT SUB FAIL dom/historical.html | Node member must be removed: localName | assert_false: expected false got true
+WPT SUB FAIL dom/idlharness.window.html | idl_test setup | promise_test: Unhandled rejection with value: object "Error fetching /interfaces/dom.idl."
+WPT SUB FAIL dom/idlharness.window.html | idl_test setup | promise_test: Unhandled rejection with value: object "Error fetching /interfaces/dom.idl."
+WPT SUB FAIL dom/interface-objects.html | Interface objects properties should not be Enumerable | assert_not_equals: got disallowed value "HTMLCollection"
+WPT SUB FAIL dom/interface-objects.html | Should be able to delete DOMImplementation. | assert_true: Interface should exist. expected true got false
+WPT SUB FAIL dom/interface-objects.html | Should be able to delete NodeList. | assert_true: Interface should exist. expected true got false
+WPT SUB FAIL dom/window-extends-event-target.html | EventTarget methods on Window instances are inherited from the EventTarget prototype | assert_equals: expected function "function () { [native code] }" but got function "function () { [native code] }"
+WPT SUB FAIL dom/window-extends-event-target.html | window.addEventListener respects custom `this` | assert_equals: expected Element node <body> <script> "use strict"; test(() => { assert_equ... but got object "[object global]"
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_SNAPSHOT_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_ITERATOR_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | FIRST_ORDERED_NODE_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ANY_UNORDERED_NODE_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | UNORDERED_NODE_SNAPSHOT_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | UNORDERED_NODE_ITERATOR_TYPE with union of connected element and detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | String value evaluation with node-set containing detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_SNAPSHOT_TYPE with self-union on detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_SNAPSHOT_TYPE with union of connected element and disconnected element | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_SNAPSHOT_TYPE does not crash with union of connected and disconnected nodes | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | ORDERED_NODE_SNAPSHOT_TYPE does not crash with union containing disconnected element, attribute, and child | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | Positional predicate [1] on union containing detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | Positional predicate [last()] on union containing detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | Equality comparison of node-sets containing detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | Axis traversal on detached attribute does not crash and returns empty node-set | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | TraversalSort with >10000 connected nodes and a detached attribute | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-evaluation-detached-nodes.html | TraversalSort with connected node and a disconnected subtree with >10000 nodes | 'XPathResult' is not defined
+WPT SUB FAIL dom/xpath-result-single-node-value-nullable.html | singleNodeValue should be nullable | 'XPathResult' is not defined

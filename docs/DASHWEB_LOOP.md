@@ -5868,3 +5868,12 @@ Formato:
 - TreeWalker y NodeIterator: [Symbol.toStringTag], root/whatToShow/filter de solo lectura, whatToShow como entero
   sin signo (null es 0), la raíz tiene que ser un nodo (TypeError) y currentNode solo acepta nodos.
 - WPT dom/traversal 1590/1608 (ningún fichero a peor). Tests: acid, jsdom_rango, jsdom_interfaces, jsdom_wpt_dom.
+
+### 2026-11-07 — Tarea 41d: AbortSignal y AbortController como dice DOM (WPT dom/abort 21 → 35/37); dom/ suelto medido
+- Medidas nuevas: dom/abort 21/37 y los ficheros sueltos de dom/ 108/142 (historical 75/80, interface-objects 20/23;
+  los de XPath, sin hacer).
+- lib/jsdom_preludio.js: el motivo por omisión de abort() y de AbortSignal.timeout es una DOMException (AbortError,
+  TimeoutError; era un Error con ese name); el evento abort es de confianza; AbortSignal.any da una señal dependiente
+  de las fuentes de verdad (las de otra any, sus fuentes), con el motivo de la primera ya abortada; al abortar se marcan
+  antes la señal y sus dependientes y luego van los eventos, en orden (salían al revés). toStringTag.
+- WPT dom/abort 35/37 (las dos que faltan necesitan iframes de otra ventana). test_js_fetch pasa.

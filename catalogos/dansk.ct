@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language dansk
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Luk fane
 MSG_47
 Send fejlrapport...
 ; Send debug report...
+MSG_48
+Gem side som...
+; Save page as...
+MSG_49
+Gem link som...
+; Save link as...
+MSG_50
+Side
+; Page
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ Højst %1 faner pr. vindue
 MSG_162
 Tachyon på dit sprog: menuerne også, når du åbner det igen
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Der er intet link der
+; There's no link there
+MSG_164
+Kan ikke gemme %1
+; Can't save %1
+MSG_165
+Der er ingen side at gemme
+; There's no page to save
+MSG_166
+Ikke gemt: %1
+; Not saved: %1
+MSG_167
+Gemt i %1
+; Saved in %1
 MSG_300
 Udgaven uden JavaScript: let, den der kører bedst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

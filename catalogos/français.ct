@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language français
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Fermer l'onglet
 MSG_47
 Envoyer un rapport de débogage...
 ; Send debug report...
+MSG_48
+Enregistrer la page sous...
+; Save page as...
+MSG_49
+Enregistrer le lien sous...
+; Save link as...
+MSG_50
+Page
+; Page
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ MSG_161
 MSG_162
 Tachyon dans votre langue : les menus aussi, à la prochaine ouverture
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Il n'y a pas de lien ici
+; There's no link there
+MSG_164
+Impossible d'enregistrer %1
+; Can't save %1
+MSG_165
+Aucune page à enregistrer
+; There's no page to save
+MSG_166
+Non enregistré : %1
+; Not saved: %1
+MSG_167
+Enregistrée dans %1
+; Saved in %1
 MSG_300
 Sa version sans JavaScript : légère, celle qui marche le mieux sur un Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

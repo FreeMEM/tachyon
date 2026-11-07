@@ -190,6 +190,36 @@ func descargas_pedir_ruta(titulo: String, cajon: String, nombre: String) -> Stri
     return dialog_file_at(titulo, "", true, cajon, nombre)
 end
 
+# El nombre con que guardar lo que apunta una dirección ("Guardar enlace como...", "Guardar página como...": tarea
+# 57): lo último de su ruta, sin ?... ni #...; "index.html" si acaba en "/"
+func descargas_nombre(direccion: String) -> String
+    u = direccion
+    for corte in ["#", "?"]
+        p = str_find(u, corte)
+        if p >= 0
+            u = u[:p]
+        end
+    end
+    # (sin la parte del servidor: "https://aminet.net" no es un nombre)
+    p = str_find(u, "://")
+    if p >= 0
+        b = str_find(u[p + 3:], "/")
+        if b < 0
+            return "index.html"
+        end
+        u = u[p + 3 + b:]
+    end
+    i = u.length - 1
+    while i >= 0 and str_code(u, i) != 47 and str_code(u, i) != 58
+        i = i - 1
+    end
+    n = url_fichero_nombre(u[i + 1:])
+    if n == ""
+        return "index.html"
+    end
+    return n
+end
+
 # "1,5 MB", "640 KB", "512 bytes"
 func _tamano(n: Int) -> String
     if n >= 1048576

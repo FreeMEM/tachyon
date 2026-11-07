@@ -64,9 +64,14 @@ struct Documento
     # las imágenes por traer que sabe el JavaScript (__dashweb_imgs: load espera a 0). Al final: Documento(...) se
     # llama con los campos por orden, y en medio desplazaba los de después (lo vio freememlang-47 al compilar con --gcc)
     imgs_js: Int = -1
+    # lo que llegó tal cual (el HTML o el texto, sin interpretar ni pasar a Latin-1), para "Guardar página como..."
+    # (tarea 57); "" si pasaba de DOCUMENTO_FUENTE_MAX (entonces se baja otra vez) o si es un fichero del disco
+    fuente: String = ""
 end
 
 const DOCUMENTO_CARO = 150
+# Hasta cuánto se guarda lo que llegó de una página (YouTube: unos 300 KB de HTML); lo de más, se baja otra vez
+const DOCUMENTO_FUENTE_MAX = 2097152
 
 # === Maquetar al pedir una medida (tarea 38c5) ===
 # Un navegador maqueta en cuanto el JavaScript pide la medida de algo que cambió; aquí el JavaScript ve la última
@@ -226,6 +231,9 @@ func documento_empezar(direccion: String, r: Respuesta) -> Documento
     else
         d.direccion = r.url
         texto = _documento_de_tipo(r)
+        if r.cuerpo.length <= DOCUMENTO_FUENTE_MAX
+            d.fuente = r.cuerpo
+        end
     end
     d.bytes = texto.length
     if r.error == "" and _documento_html_utf8(r)
@@ -437,7 +445,22 @@ func documento_html(direccion: String, html: String) -> Documento
     var sin_hojas: Hojas = nil
     var sin_pagina: Pagina = nil
     d = Documento(direccion, "", 0, nadie, sin_hojas, imagenes_nuevas(), 0, 0, sin_pagina, 0, "", 0)
+    d.fuente = html
     return documento_desde_html(d, html, time_ms())
+end
+
+# "Guardar página como..." (tarea 57): la página tal como llegó (el HTML o el texto, no lo pintado) al fichero ruta;
+# false si no se tiene (pasaba de DOCUMENTO_FUENTE_MAX o es de la red sin cuerpo: se baja otra vez) o no se pudo
+# escribir. Un fichero del disco (file: o una ruta del Amiga), copiado
+func documento_guardar(d: Documento, ruta: String) -> Bool
+    if d.fuente != ""
+        return file_write_text(ruta, d.fuente)
+    end
+    f = url_fichero(d.direccion)
+    if f != "NIL:" and not str_starts(d.direccion, "tachyon:") and file_exists(f)
+        return file_copy(f, ruta)
+    end
+    return false
 end
 
 func documento_desde_html(d: Documento, texto: String, t0: Int) -> Documento

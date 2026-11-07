@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language deutsch
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Tab schließen
 MSG_47
 Fehlerbericht senden...
 ; Send debug report...
+MSG_48
+Seite speichern unter...
+; Save page as...
+MSG_49
+Link speichern unter...
+; Save link as...
+MSG_50
+Seite
+; Page
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ Höchstens %1 Tabs pro Fenster
 MSG_162
 Tachyon in Ihrer Sprache: die Menüs auch, wenn Sie es wieder öffnen
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Dort ist kein Link
+; There's no link there
+MSG_164
+%1 kann nicht gespeichert werden
+; Can't save %1
+MSG_165
+Keine Seite zum Speichern
+; There's no page to save
+MSG_166
+Nicht gespeichert: %1
+; Not saved: %1
+MSG_167
+Gespeichert in %1
+; Saved in %1
 MSG_300
 Die Version ohne JavaScript: leicht, läuft am besten auf einem Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

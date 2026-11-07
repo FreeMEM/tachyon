@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Stäng flik
 MSG_47
 Skicka felsökningsrapport...
 ; Send debug report...
+MSG_48
+Spara sidan som...
+; Save page as...
+MSG_49
+Spara länken som...
+; Save link as...
+MSG_50
+Sida
+; Page
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ Högst %1 flikar per fönster
 MSG_162
 Tachyon på ditt språk: menyerna också, när du öppnar det igen
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Det finns ingen länk där
+; There's no link there
+MSG_164
+Kan inte spara %1
+; Can't save %1
+MSG_165
+Det finns ingen sida att spara
+; There's no page to save
+MSG_166
+Inte sparad: %1
+; Not saved: %1
+MSG_167
+Sparad i %1
+; Saved in %1
 MSG_300
 Dess version utan JavaScript: lätt, den som fungerar bäst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

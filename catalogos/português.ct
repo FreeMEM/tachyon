@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (25.10.2026)
+## version $VER: Tachyon.catalog 1.0 (06.11.2026)
 ## language português
 ## codeset 0
 ;
@@ -143,6 +143,15 @@ Fechar separador
 MSG_47
 Enviar relatório de depuração...
 ; Send debug report...
+MSG_48
+Guardar página como...
+; Save page as...
+MSG_49
+Guardar ligação como...
+; Save link as...
+MSG_50
+Página
+; Page
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -326,6 +335,21 @@ No máximo %1 separadores por janela
 MSG_162
 Tachyon no seu idioma: os menus também, ao abri-lo de novo
 ; Tachyon in your language: the menus too when you open it again
+MSG_163
+Não há nenhuma ligação aí
+; There's no link there
+MSG_164
+Não é possível guardar %1
+; Can't save %1
+MSG_165
+Não há nenhuma página para guardar
+; There's no page to save
+MSG_166
+Não guardado: %1
+; Not saved: %1
+MSG_167
+Guardada em %1
+; Saved in %1
 MSG_300
 A sua versão sem JavaScript: leve, a que funciona melhor num Amiga. Privado.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

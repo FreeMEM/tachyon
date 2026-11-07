@@ -43,6 +43,12 @@
               "tr": 4
             },
             {
+              "label": "Save page as...",
+              "key": "S",
+              "event": 31,
+              "tr": 48
+            },
+            {
               "separator": true
             },
             {
@@ -170,6 +176,25 @@
             }
           ],
           "tr": 18
+        }
+      ],
+      "context_menus": [
+        {
+          "name": "menu_pagina",
+          "title": "Page",
+          "items": [
+            {
+              "label": "Save link as...",
+              "event": 32,
+              "tr": 49
+            },
+            {
+              "label": "Save page as...",
+              "event": 31,
+              "tr": 48
+            }
+          ],
+          "tr": 50
         }
       ],
       "root": {
@@ -435,7 +460,8 @@
                 "type": "canvas",
                 "name": "pagina",
                 "min_width": 500,
-                "min_height": 100
+                "min_height": 100,
+                "context_menu": "menu_pagina"
               },
               {
                 "type": "scrollbar",

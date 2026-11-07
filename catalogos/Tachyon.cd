@@ -94,6 +94,12 @@ MSG_46 (46//)
 Close tab
 MSG_47 (47//)
 Send debug report...
+MSG_48 (48//)
+Save page as...
+MSG_49 (49//)
+Save link as...
+MSG_50 (50//)
+Page
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -216,6 +222,16 @@ MSG_161 (161//)
 At most %1 tabs per window
 MSG_162 (162//)
 Tachyon in your language: the menus too when you open it again
+MSG_163 (163//)
+There's no link there
+MSG_164 (164//)
+Can't save %1
+MSG_165 (165//)
+There's no page to save
+MSG_166 (166//)
+Not saved: %1
+MSG_167 (167//)
+Saved in %1
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)

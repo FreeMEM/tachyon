@@ -1,0 +1,9 @@
+Short:        LhA archiver (prueba de la tarea 57)
+Author:       nadie@ejemplo.org
+Uploader:     nadie@ejemplo.org
+Type:         util/arc
+Version:      2.15
+Architecture: m68k-amigaos >= 2.0.4
+
+Un .readme de Aminet de prueba: "Guardar enlace como..." lo guarda tal cual,
+con sus <ángulos> & sus acentos (ñ, ü) en UTF-8, sin interpretarlo.

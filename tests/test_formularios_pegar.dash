@@ -1,0 +1,41 @@
+# Test: pegar y copiar en los campos de las páginas (tarea 59). Un input se queda con la primera línea de lo pegado
+# y con su maxlength; un textarea lo pega todo (los \r\n de PC como \n); una contraseña no se copia; y el texto va y
+# vuelve por el portapapeles (UTF-8 fuera, Latin-1 dentro).
+# memcheck
+# expect-out: input: 1 [Hola mundo]
+# expect-out: maxlength: 1 [abcde] 0 [abcde]
+# expect-out: textarea: 1 [uno|dos|tres]
+# expect-out: copiable: [Hola mundo] contraseña: []
+# expect-out: vacío: 0 []
+# expect-out: portapapeles: true 7 [ñandú]
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/formularios.dash"
+
+Main
+    h = "<body><form><input id=q><input id=m maxlength=5><textarea id=t></textarea><input type=password id=c value=secreto>"
+    h = h + "<input id=v></form></body>"
+    doc = dom_desde_html(h)
+    q = dom_por_id(doc, "q")
+    r = formulario_pegar(q, "Hola mundo\nsegunda línea")
+    Print "input: " + r + " [" + formulario_valor(q) + "]"
+    m = dom_por_id(doc, "m")
+    r = formulario_pegar(m, "abcdefgh")
+    r2 = formulario_pegar(m, "xyz")
+    Print "maxlength: " + r + " [" + formulario_valor(m) + "] " + r2 + " [" + formulario_valor(m) + "]"
+    t = dom_por_id(doc, "t")
+    r = formulario_pegar(t, "uno\r\ndos\rtres")
+    Print "textarea: " + r + " [" + str_replace(formulario_valor(t), "\n", "|") + "]"
+    Print "copiable: [" + formulario_copiable(q) + "] contraseña: [" + formulario_copiable(dom_por_id(doc, "c")) + "]"
+    v = dom_por_id(doc, "v")
+    r = formulario_pegar(v, "")
+    Print "vacío: " + r + " [" + formulario_valor(v) + "]"
+    # ida y vuelta por el portapapeles, como hace src/dashweb.dash: el campo y los textos de Dash en Latin-1, el
+    # portapapeles en UTF-8 (ñ y ú, dos bytes cada una: 7 en total)
+    formulario_pegar(v, "ñandú")
+    ok = clip_write_text(latin1_to_utf8(formulario_copiable(v)))
+    leido = clip_read_text()
+    formulario_poner_valor(v, "")
+    formulario_pegar(v, utf8_to_latin1(leido))
+    Print "portapapeles: " + ok + " " + leido.length + " [" + formulario_valor(v) + "]"
+end

@@ -11,7 +11,7 @@ It is also Dash's testbed: a large, demanding program that forces the language, 
 performance to grow.
 
 **Download:** test release
-[v0.9.0-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.9.0-alfa) (`tachyon.lha`). It is an alpha:
+[v0.9.1-alfa](https://github.com/FreeMEM/tachyon/releases/tag/v0.9.1-alfa) (`tachyon.lha`). It is an alpha:
 it may freeze on some pages. If something goes wrong, *Project → Send debug report...* sends what Tachyon
 noted down (you see it all first) and gives you a code to put in the
 [issue](https://github.com/FreeMEM/tachyon/issues).
@@ -20,7 +20,8 @@ noted down (you see it all first) and gives you a code to put in the
 
 Phase A (no MUI): `src/visor.dash` opens a page (a file or an http/https URL), lays it out, draws it in a plain
 window and runs its JavaScript. Phase B (MUI 5): `src/dashweb.dash`, the browser: address bar, back/forward, reload,
-stop, history drop-down, bookmarks, home page, up to 4 windows, menu shortcuts, downloads to disk, cookies (kept
+stop, history drop-down, bookmarks, home page, up to 4 windows, menu shortcuts, downloads to disk, save page and save
+link as (right button on the page), cookies (kept
 between sessions, viewed and deleted at `dashweb:cookies`), `file:///Volumen/ruta` addresses; pages load without
 freezing the window (DNS lookup, connection and TLS handshake included, with an activity indicator; images,
 stylesheets and scripts in parallel); links, anchors, forms (GET and POST). Plan and log in

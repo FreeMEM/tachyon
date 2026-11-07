@@ -11,6 +11,10 @@ Arranque (desde cualquier directorio):
 **Después (usuario, 2026-10-24): "que se vea bien la web de youtube sería un puntazo": la 38 va la siguiente, tras
 publicar la 0.7.2; luego la 53 (las webs de chat).**
 
+**Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
+carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
+pendiente del plan. Esto manda sobre los dos encargos de arriba.**
+
 ## Objetivo
 
 Un navegador ligero para AmigaOS 3.x escrito en Dash, con interfaz MUI 5: XHTML, CSS, JavaScript
@@ -571,6 +575,17 @@ tarea, con el estilo de Dash.
       Y sacar el visor del paquete (usuario, por dashc, 2026-10-30: es solo para sus pruebas; 3,3 MB sin comprimir):
       solo lo nombran tools/paquete.sh (lo compila) y paquete/LEEME; ni Instalar ni la actualización lo usan.
 
+- [x] 59. **Pegar, copiar y cortar en los campos de las páginas (usuario por freememlang, 2026-11-05; lo reportó
+      Ferrán García: "los campos de las páginas dentro del navegador tampoco permiten pegar texto").** V pega, C copia
+      y X corta, con Amiga derecha (la norma), Ctrl (costumbre de PC) y Amiga izquierda. Sin selección, C y X van con
+      todo el texto del campo; con selección, con lo seleccionado. Hoy lib/formularios.dash formulario_tecla(campo,
+      caracter, raw) no mira los calificadores y Amiga+V mete una "v" (lo llama src/dashweb.dash, ~2322, con
+      mui_canvas_char). Dash ya tiene mui_canvas_qualifiers(), clip_read_text() y clip_write_text(). Raw: V 0x34, C
+      0x33, X 0x32. Un input pega hasta el primer salto de línea, un textarea todo; respetar maxlength y lanzar input
+      como al teclear. La barra de dirección (String de MUI 5) ya pega con Amiga derecha y Ctrl+V; con Amiga izquierda
+      no (MUI no pasa ese calificador a su edit hook): opcional. Ferrán pidió también guardar un enlace como fichero
+      desde el menú del botón derecho, como AmiFire: es la 57. Hecho (2026-11-05; ver la bitácora).
+
 - [ ] 58. **Tachyon por las dos líneas de Dash (usuario, 2026-11-02).** Se puede compilar directo a hunk (dashc, lo
       de siempre desde la 0.8) o por C con `./dash --gcc` (dash1): la segunda es el camino para portar a PPC. Hacer:
       a. tests/run.py y tools/build_pegamento.sh con `DASH_LINEA=gcc` (cabecera de dash1, libpegamento aparte en
@@ -578,11 +593,17 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
-- [ ] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
+- [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
+      cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
+      Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
+      ficheros (ASL), y soltar el icono de un fichero en la ventana (AppWindow de Workbench) para abrirlo.
+- [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
       llegó, con el pedidor de ficheros, como las descargas de la tarea 47) y "Guardar enlace como..." para el enlace
       bajo el ratón (con una tecla al pulsarlo, o un menú), que lo baja con el gestor de descargas en vez de abrirlo.
+      Hecho (2026-11-06; ver la bitácora): menú Proyecto "Save page as..." (Amiga-S) y un menú del botón derecho
+      sobre la página con "Save link as..." y "Save page as...".
 
 - [x] 49. **tachyon.freemem.space sale en azul en el CoffinOS del usuario (2026-10-24, con la compilación de 48c y
       48e).** Solo el fondo: ni la cabecera, ni los textos, ni las estrellas; "Listo" en la barra, y sigue así tras un
@@ -5553,3 +5574,55 @@ Formato:
   - #linktest debería verse blanco (:visited: la dirección la ha cargado el iframe);
   - unos 3 px del cuadrado rojo del fondo del <body> asoman junto al map::after (la posición en % del fondo);
   - la "X" de map::after con la fuente AcidAhemTest (font.ttf) es un cuadrado entero.
+
+### 2026-11-04 — Publicada la v0.9.0-alfa
+- Usuario: "se puede publicar, saca la release". Versión 0.9.0-alfa (72e6df7), PR #20 de dev a main (db1df96),
+  etiqueta v0.9.0-alfa y pre-release https://github.com/FreeMEM/tachyon/releases/tag/v0.9.0-alfa con tachyon.lha,
+  Tachyon.gz (SHA-256 f5a2f092...f993, comprobado tras subirlo) y los nueve catálogos; Dash 331db05 (2.3.1).
+- Sin pasar la batería entera tras los dos últimos commits (parada a los 15 min al cerrar el día; jsdom 22/22) ni
+  webs reales en el emulador: lo prueba el usuario en su CoffinOS, actualizando desde la 0.8.1 (dev de 8e72640 en
+  Traspaso:Tachyon/Tachyon, que dice 0.8.1-alfa; el de antes, Tachyon.081).
+
+### 2026-11-05 — Tarea 59: pegar, copiar y cortar en los campos de las páginas
+- Encargo del usuario por freememlang (lo reportó Ferrán García). src/dashweb.dash: con Amiga (cualquiera de las dos:
+  mui_canvas_qualifiers da 8 por las dos) o Ctrl, V pega (clip_read_text en UTF-8 a Latin-1), C copia y X corta
+  (latin1_to_utf8 a clip_write_text; el campo se vacía solo si el texto llegó al portapapeles). Los campos no tienen
+  selección ni cursor dentro: C y X van con todo el texto y V pega al final. lib/formularios.dash: formulario_pegar
+  (un input, solo la primera línea; un textarea, todo con \r\n y \r como \n; recorta a maxlength) y
+  formulario_copiable ("" en un campo de contraseña, que los navegadores no dejan copiar ni cortar).
+- Aviso para los tests: dashc guarda los textos del programa en Latin-1, no en UTF-8: utf8_to_latin1("ñ") da "?".
+- Test test_formularios_pegar (con la ida y vuelta por el portapapeles); formularios 4/4. tools/amiga/clicar.dash:
+  "k COD" pulsa la tecla con Ctrl. Probado en el navegador en la máquina RTG con MUI 3.8 (tests/pages/pegar.html):
+  Amiga derecha + C, V, V y X, y Ctrl + X, V, espacio y V, bien en las dos capturas. Amiga izquierda, sin probar
+  (input_key de Dash solo pulsa la derecha), pero llega con el mismo calificador.
+- No se lanza el evento input de JavaScript al pegar, igual que al teclear (ninguno de los dos lo lanza aún).
+
+### 2026-11-06 — Tarea 57: guardar la página y guardar un enlace
+- Lo pidió Ferrán García (bajar de Aminet también el .readme de cada fichero, como hace AmiFire). La página tiene ya
+  menú del botón derecho ("context_menus" de src/navegador.dashui en el lienzo, mui_set_context_menu de Dash):
+  "Save link as..." y "Save page as...". Y en el menú Proyecto, "Save page as..." con Amiga-S.
+- Guardar enlace: el enlace donde se pulsó (mui_canvas_mouse_x/_y, maqueta_nodo_en_vista y documento_enlace), el
+  selector de ficheros con el nombre del final de la dirección (descargas_nombre, nuevo en lib/descargas.dash: sin ?
+  ni #, "index.html" si acaba en /) en el cajón de las descargas, y al gestor de descargas tal cual (http_volcar, sin
+  gzip ni interpretarlo). Un enlace a un fichero del disco se copia. pedir_ruta y bajar_como, sacadas de
+  empezar_descarga, sirven a los tres.
+- Guardar página: Documento.fuente guarda el cuerpo que llegó (r.cuerpo: sin pasar a Latin-1 ni por el DOM; ya sin
+  gzip) hasta 2 MB (DOCUMENTO_FUENTE_MAX); documento_guardar lo escribe. Una página más grande se baja otra vez con
+  el gestor de descargas; una del disco se copia; una tachyon: guarda su HTML. Sin extensión en la dirección y
+  empezando por "<", se le añade .html.
+- Pega encontrada en el emulador: con menú del botón derecho, MUI 3.8 pone RMBTRAP en la ventana mientras el puntero
+  está sobre la página, e Intuition deja de hacer los atajos de menú (Amiga-J, Amiga-L... no hacían nada con el
+  puntero sobre la página; comprobado que antes sí). Ahora la tecla llega al lienzo y atajo_de_menu la convierte en
+  su opción (las letras, copiadas de src/navegador.dashui). Si Intuition ya hizo el atajo, la tecla no llega: nunca
+  va dos veces. En un campo, Amiga con otra tecla ya no escribe la letra.
+- Textos nuevos (48-50, 163-167) en Tachyon.cd y los nueve catálogos. tests/servers/http.py da los .readme como
+  text/plain (como Aminet).
+- Test test_guardar (página por http_empezar y documento_empezar, guardada idéntica al fichero: SHA-1 y tamaño; un
+  .readme abierto como página se guarda sin el <pre>; los enlaces, al gestor: el .readme y /binario con todos los
+  bytes; una tachyon:): pasa. descargas 1/1, documento 8/8, http_volcar 1/1.
+- Probado en el navegador en la máquina RTG con MUI 3.8 (sys32rtg38): botón derecho sobre "lha.readme", "Save link
+  as...", Return en el selector (RAM:guardar.readme) y la descarga acaba con 342 bytes, como el original; Amiga-S
+  con el puntero sobre la página, Return y "Saved in RAM:guardar.html"; Amiga-J abre tachyon:descargas. Con MUI 5
+  (sys32rtg), lo mismo: guardar enlace y Amiga-J, y Amiga-S abre un solo selector (el atajo no va dos veces). El
+  menú de MUI 5 sale con su borde izquierdo en el puntero (el de MUI 3.8, a la izquierda): las pruebas con clicar
+  tienen que ir unos 80 px a la derecha para caer en la opción.

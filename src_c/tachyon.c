@@ -2527,6 +2527,12 @@ static JSValue _jsdom_navegar(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_UNDEFINED;
 }
 
+/* __dashweb_version(): dom_version de lib/dom.dash (sube con cada cambio de un árbol): lo que el preludio guarda
+   mientras no cambie el DOM (document.baseURI; tarea 41d) */
+static JSValue _jsdom_version(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    return JS_NewInt32(ctx, dom_version_actual());
+}
+
 /* milliseconds since the program started (Dash's time_ms) */
 static JSValue _jsdom_reloj(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     return JS_NewInt32(ctx, _dash_time_ms());
@@ -2804,6 +2810,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_coleccion", JS_NewCFunction(m->ctx, _col_js, "__dashweb_coleccion", 2));
     JS_SetPropertyStr(m->ctx, global, "window", JS_DupValue(m->ctx, global));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_reloj", JS_NewCFunction(m->ctx, _jsdom_reloj, "__dashweb_reloj", 0));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_version", JS_NewCFunction(m->ctx, _jsdom_version, "__dashweb_version", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galletas", JS_NewCFunction(m->ctx, _jsdom_galletas, "__dashweb_galletas", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));

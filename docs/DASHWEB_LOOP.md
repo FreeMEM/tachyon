@@ -5893,3 +5893,10 @@ Formato:
   nombre de una subprueba lleva un carácter nulo y el informe, que pasa por textos de C, se cortaba ahí (sin la línea
   WPT FILE). tools/wpt_js.py cambia los caracteres de control de nombres y mensajes por espacios.
 - url/ 41/41 páginas: 5976/8699 (69 %). encoding/ con más tiempo por página: 11101/12004.
+
+### 2026-11-07 — Tarea 41d: document.baseURI con el primer <base href> (url/: 6224/8699)
+- document.baseURI salía siempre de la dirección del documento; ahora resuelve el primer `<base href>` contra ella,
+  como dice HTML. Se guarda hasta que cambia el DOM: el C da `__dashweb_version()` (el contador dom_version), así
+  a.href no busca el `<base>` en cada lectura.
+- url/a-element 423 → 586, a-element-origin 320 → 405; ningún fichero peor. url/ 41/41: 6224/8699 (72 %).
+  Tests de jsdom y documento sin red: 28/28.

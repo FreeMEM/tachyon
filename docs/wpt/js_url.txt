@@ -1,9 +1,9 @@
-WPT TOTAL url: 5976/8699 subpruebas en 41 de 41 ficheros
+WPT TOTAL url: 6224/8699 subpruebas en 41 de 41 ficheros
 
 WPT FILE url/IdnaTestV2-removed.any.html 1/21 OK
 WPT FILE url/IdnaTestV2.any.html 1536/2676 OK
-WPT FILE url/a-element-origin.html 320/415 OK
-WPT FILE url/a-element.html 423/897 OK
+WPT FILE url/a-element-origin.html 405/415 OK
+WPT FILE url/a-element.html 586/897 OK
 WPT FILE url/data-uri-fragment.html 0/1 TIMEOUT 
 WPT FILE url/failure.html 415/1175 OK
 WPT FILE url/historical.any.html 6/8 OK
@@ -1202,62 +1202,8 @@ WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???????") C1; V6; V7 | assert_th
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???.?4?") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???.?4?") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???????") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:foo.com> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < :foo.com > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < foo.com > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:foo.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:foo.com\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:a> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:#> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#;?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </:23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <\x> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <::> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <::23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http::@c:29> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <[61:24:74]:98> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:[61:27]/:foo> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/example.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/> against <http://example.com/> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:example.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/b/c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/ /c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a%2fc> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/%2f/c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/example.com/> against <about:blank> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:example.com/> against <about:blank> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:a:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/a:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http::b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:a:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/a:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <.> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <..> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <./test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../aaa/test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../../test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?/test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://GOO? goo.com> against <http://other.com/> | assert_equals: origin expected "http://googoo.com" but got "http://goo"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < http://example.com/ > against <about:blank> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: < http://example.com/ > against <about:blank> | assert_equals: origin expected "http://example.com" but got ""
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://www.foo?bar.com> against <http://other.com/> | assert_equals: origin expected "http://www.foo.bar.com" but got "http://www.foo"
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://??.com> against <http://other.com/> | assert_equals: origin expected "http://go.com" but got ""
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://????> against <http://other.com/> | assert_equals: origin expected "http://xn--6qqa088eba" but got ""
@@ -1266,111 +1212,28 @@ WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://foo:?@example.c
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://a:?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got "http://a"
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#> against <test:test> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#x> against <mailto:x@x.com> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#x> against <about:blank> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#x:y> against <about:blank> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#> against <test:test?test> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </some/path> against <http://user@example.org/smth> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <> against <http://user:pass@example.org:21/smth> | assert_equals: origin expected "http://example.org:21" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </some/path> against <http://user:pass@example.org:21/smth> | assert_equals: origin expected "http://example.org:21" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <i> against <sc:/pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <i> against <sc://ho/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <i> against <sc:///pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../i> against <sc:/pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../i> against <sc://ho/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../i> against <sc:///pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </i> against <sc:/pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </i> against <sc://ho/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </i> against <sc:///pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?i> against <sc:/pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?i> against <sc://ho/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?i> against <sc:///pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#i> against <sc:sd> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#i> against <sc:sd/sd> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#i> against <sc:/pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#i> against <sc://ho/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#i> against <sc:///pa/pa> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <x> against <sc://ñ> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?a=b&c=d> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <??a=b&c=d> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#x> against <sc://ñ> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?x> against <sc://ñ> | assert_equals: origin expected "null" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element.html | Parsing: <http:foo.com> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/foo.com" but got "http://127.0.0.1:40881/url/foo.com"
-WPT SUB FAIL url/a-element.html | Parsing: < :foo.com > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com" but got "http://127.0.0.1:40881/url/:foo.com"
-WPT SUB FAIL url/a-element.html | Parsing: < foo.com > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/foo.com" but got "http://127.0.0.1:40881/url/foo.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:b/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f: /c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:fifty-two/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <non-special://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f: 21 / b ? d # e > against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: < > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: <:foo.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com/" but got "http://127.0.0.1:40881/url/:foo.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <:foo.com\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com/" but got "http://127.0.0.1:40881/url/:foo.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <:> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:" but got "http://127.0.0.1:40881/url/:"
-WPT SUB FAIL url/a-element.html | Parsing: <:a> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:a" but got "http://127.0.0.1:40881/url/:a"
-WPT SUB FAIL url/a-element.html | Parsing: <:/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:/" but got "http://127.0.0.1:40881/url/:/"
-WPT SUB FAIL url/a-element.html | Parsing: <:\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:/" but got "http://127.0.0.1:40881/url/:/"
-WPT SUB FAIL url/a-element.html | Parsing: <:#> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:#" but got "http://127.0.0.1:40881/url/:#"
-WPT SUB FAIL url/a-element.html | Parsing: <#> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#" but got "http://127.0.0.1:40881/url/a-element.html#"
-WPT SUB FAIL url/a-element.html | Parsing: <#/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#/" but got "http://127.0.0.1:40881/url/a-element.html#/"
-WPT SUB FAIL url/a-element.html | Parsing: <#\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#\\" but got "http://127.0.0.1:40881/url/a-element.html#\\"
-WPT SUB FAIL url/a-element.html | Parsing: <#;?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#;?" but got "http://127.0.0.1:40881/url/a-element.html#;?"
-WPT SUB FAIL url/a-element.html | Parsing: <?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar?" but got "http://127.0.0.1:40881/url/a-element.html?"
-WPT SUB FAIL url/a-element.html | Parsing: </> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <:23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:23" but got "http://127.0.0.1:40881/url/:23"
-WPT SUB FAIL url/a-element.html | Parsing: </:23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/:23" but got "http://127.0.0.1:40881/:23"
-WPT SUB FAIL url/a-element.html | Parsing: <\x> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/x" but got "http://127.0.0.1:40881/x"
-WPT SUB FAIL url/a-element.html | Parsing: <::> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/::" but got "http://127.0.0.1:40881/url/::"
-WPT SUB FAIL url/a-element.html | Parsing: <::23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/::23" but got "http://127.0.0.1:40881/url/::23"
-WPT SUB FAIL url/a-element.html | Parsing: <http::@c:29> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:@c:29" but got "http://127.0.0.1:40881/url/:@c:29"
-WPT SUB FAIL url/a-element.html | Parsing: <[61:24:74]:98> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/[61:24:74]:98" but got "http://127.0.0.1:40881/url/[61:24:74]:98"
-WPT SUB FAIL url/a-element.html | Parsing: <http:[61:27]/:foo> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/[61:27]/:foo" but got "http://127.0.0.1:40881/url/[61:27]/:foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://[1::2]:3:4> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/example.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/example.com/" but got "http://127.0.0.1:40881/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/> against <http://example.com/> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/"
 WPT SUB FAIL url/a-element.html | Parsing: <file://example:1/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <file://example:test/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <file://example%/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <file://[example]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:example.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/example.com/" but got "http://127.0.0.1:40881/url/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: </a/b/c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/b/c" but got "http://127.0.0.1:40881/a/b/c"
-WPT SUB FAIL url/a-element.html | Parsing: </a/ /c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/%20/c" but got "http://127.0.0.1:40881/a/%20/c"
-WPT SUB FAIL url/a-element.html | Parsing: </a%2fc> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a%2fc" but got "http://127.0.0.1:40881/a%2fc"
-WPT SUB FAIL url/a-element.html | Parsing: </a/%2f/c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/%2f/c" but got "http://127.0.0.1:40881/a/%2f/c"
-WPT SUB FAIL url/a-element.html | Parsing: <#?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#%CE%B2" but got "http://127.0.0.1:40881/url/a-element.html#?"
-WPT SUB FAIL url/a-element.html | Parsing: <C|/foo/bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "http://127.0.0.1:40881/url/C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: </C|\foo\bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "http://127.0.0.1:40881/C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <//C|/foo/bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "//C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <//server/file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: <\\server\file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: </\server/file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: <//> against <file:///tmp/mock/path> | assert_equals: href expected "file:///" but got "//"
-WPT SUB FAIL url/a-element.html | Parsing: <///> against <file:///tmp/mock/path> | assert_equals: href expected "file:///" but got "///"
-WPT SUB FAIL url/a-element.html | Parsing: <///test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///test" but got "http://test/"
-WPT SUB FAIL url/a-element.html | Parsing: <test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///tmp/mock/test" but got "http://127.0.0.1:40881/url/test"
-WPT SUB FAIL url/a-element.html | Parsing: <file:test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///tmp/mock/test" but got "file:///test"
+WPT SUB FAIL url/a-element.html | Parsing: <#?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#%CE%B2" but got "http://example.org/foo/bar#?"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/????> against <about:blank> | assert_equals: href expected "http://example.com/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD" but got "http://example.com/????"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%A5/foo" but got "http://example.com/?/foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/ /foo> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BB%BF/foo" but got "http://example.com//foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo/?/bar> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%AE/foo/%E2%80%AD/bar" but got "http://example.com/?/foo/?/bar"
 WPT SUB FAIL url/a-element.html | Parsing: <http://user:pass@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://foo:-80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/example.com/> against <about:blank> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:example.com/> against <about:blank> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/url/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:@www.example.com> against <about:blank> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/url/@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@www.example.com> against <about:blank> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:b@www.example.com> against <about:blank> | assert_equals: href expected "http://a:b@www.example.com/" but got "http://127.0.0.1:40881/url/a:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:b@www.example.com> against <about:blank> | assert_equals: href expected "http://a:b@www.example.com/" but got "http://127.0.0.1:40881/a:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http::b@www.example.com> against <about:blank> | assert_equals: href expected "http://:b@www.example.com/" but got "http://127.0.0.1:40881/url/:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/:b@www.example.com> against <about:blank> | assert_equals: href expected "http://:b@www.example.com/" but got "http://127.0.0.1:40881/:b@www.example.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http:/:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://user@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1381,28 +1244,17 @@ WPT SUB FAIL url/a-element.html | Parsing: <http:a:b@/www.example.com> against <
 WPT SUB FAIL url/a-element.html | Parsing: <http:/a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http::@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:@www.example.com> against <about:blank> | assert_equals: href expected "http://a@www.example.com/" but got "http://127.0.0.1:40881/url/a:@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:@www.example.com> against <about:blank> | assert_equals: href expected "http://a@www.example.com/" but got "http://127.0.0.1:40881/a:@www.example.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http:@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http:/@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: </> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: </test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <.> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/url/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/url/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <./test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/url/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../aaa/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/aaa/test.txt" but got "http://127.0.0.1:40881/aaa/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../../test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <?/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/%E4%B8%AD/test.txt" but got "http://127.0.0.1:40881/url/a-element.html?/test.txt"
+WPT SUB FAIL url/a-element.html | Parsing: <?/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/%E4%B8%AD/test.txt" but got "http://www.example.com/test?/test.txt"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example example.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://Goo%20 goo%7C|.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://[]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://[:]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://GOO goo.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://GOO? goo.com> against <http://other.com/> | assert_equals: href expected "http://googoo.com/" but got "http://goo/?goo.com"
-WPT SUB FAIL url/a-element.html | Parsing: < http://example.com/ > against <about:blank> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/url/a-element.html"
+WPT SUB FAIL url/a-element.html | Parsing: < http://example.com/ > against <about:blank> | assert_equals: href expected "http://example.com/" but got ""
 WPT SUB FAIL url/a-element.html | Parsing: <http://www.foo?bar.com> against <http://other.com/> | assert_equals: href expected "http://www.foo.bar.com/" but got "http://www.foo/?bar.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http://?zyx.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://%ef%b7%90zyx.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1439,44 +1291,18 @@ WPT SUB FAIL url/a-element.html | Parsing: <http://a:?x@host/> against <about:bl
 WPT SUB FAIL url/a-element.html | Parsing: <http://?@host/> against <about:blank> | assert_equals: href expected "http://%F0%9F%98%80@host/" but got "http://?@host/"
 WPT SUB FAIL url/a-element.html | Parsing: <https://localhost?q=?> against <about:blank> | assert_equals: href expected "https://localhost/?q=%F0%9F%94%A5" but got "https://localhost/?q=?"
 WPT SUB FAIL url/a-element.html | Parsing: <https://localhost#?> against <about:blank> | assert_equals: href expected "https://localhost/#%F0%9F%94%A5" but got "https://localhost/#?"
-WPT SUB FAIL url/a-element.html | Parsing: <#> against <test:test> | assert_equals: href expected "test:test#" but got "http://127.0.0.1:40881/url/a-element.html#"
-WPT SUB FAIL url/a-element.html | Parsing: <#x> against <mailto:x@x.com> | assert_equals: href expected "mailto:x@x.com#x" but got "http://127.0.0.1:40881/url/a-element.html#x"
-WPT SUB FAIL url/a-element.html | Parsing: <#x> against <about:blank> | assert_equals: href expected "about:blank#x" but got "http://127.0.0.1:40881/url/a-element.html#x"
-WPT SUB FAIL url/a-element.html | Parsing: <#x:y> against <about:blank> | assert_equals: href expected "about:blank#x:y" but got "http://127.0.0.1:40881/url/a-element.html#x:y"
-WPT SUB FAIL url/a-element.html | Parsing: <#> against <test:test?test> | assert_equals: href expected "test:test?test#" but got "http://127.0.0.1:40881/url/a-element.html#"
-WPT SUB FAIL url/a-element.html | Parsing: </some/path> against <http://user@example.org/smth> | assert_equals: href expected "http://user@example.org/some/path" but got "http://127.0.0.1:40881/some/path"
-WPT SUB FAIL url/a-element.html | Parsing: <> against <http://user:pass@example.org:21/smth> | assert_equals: href expected "http://user:pass@example.org:21/smth" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: </some/path> against <http://user:pass@example.org:21/smth> | assert_equals: href expected "http://user:pass@example.org:21/some/path" but got "http://127.0.0.1:40881/some/path"
 WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:/pa/pa> | assert_equals: href expected "sc:/pa/i" but got "http://127.0.0.1:40881/url/i"
-WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc://ho/pa> | assert_equals: href expected "sc://ho/i" but got "http://127.0.0.1:40881/url/i"
-WPT SUB FAIL url/a-element.html | Parsing: <i> against <sc:///pa/pa> | assert_equals: href expected "sc:///pa/i" but got "http://127.0.0.1:40881/url/i"
 WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:/pa/pa> | assert_equals: href expected "sc:/i" but got "http://127.0.0.1:40881/i"
-WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc://ho/pa> | assert_equals: href expected "sc://ho/i" but got "http://127.0.0.1:40881/i"
-WPT SUB FAIL url/a-element.html | Parsing: <../i> against <sc:///pa/pa> | assert_equals: href expected "sc:///i" but got "http://127.0.0.1:40881/i"
 WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:/pa/pa> | assert_equals: href expected "sc:/i" but got "http://127.0.0.1:40881/i"
-WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc://ho/pa> | assert_equals: href expected "sc://ho/i" but got "http://127.0.0.1:40881/i"
-WPT SUB FAIL url/a-element.html | Parsing: </i> against <sc:///pa/pa> | assert_equals: href expected "sc:///i" but got "http://127.0.0.1:40881/i"
 WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:sd/sd> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:/pa/pa> | assert_equals: href expected "sc:/pa/pa?i" but got "http://127.0.0.1:40881/url/a-element.html?i"
-WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc://ho/pa> | assert_equals: href expected "sc://ho/pa?i" but got "http://127.0.0.1:40881/url/a-element.html?i"
-WPT SUB FAIL url/a-element.html | Parsing: <?i> against <sc:///pa/pa> | assert_equals: href expected "sc:///pa/pa?i" but got "http://127.0.0.1:40881/url/a-element.html?i"
-WPT SUB FAIL url/a-element.html | Parsing: <#i> against <sc:sd> | assert_equals: href expected "sc:sd#i" but got "http://127.0.0.1:40881/url/a-element.html#i"
-WPT SUB FAIL url/a-element.html | Parsing: <#i> against <sc:sd/sd> | assert_equals: href expected "sc:sd/sd#i" but got "http://127.0.0.1:40881/url/a-element.html#i"
-WPT SUB FAIL url/a-element.html | Parsing: <#i> against <sc:/pa/pa> | assert_equals: href expected "sc:/pa/pa#i" but got "http://127.0.0.1:40881/url/a-element.html#i"
-WPT SUB FAIL url/a-element.html | Parsing: <#i> against <sc://ho/pa> | assert_equals: href expected "sc://ho/pa#i" but got "http://127.0.0.1:40881/url/a-element.html#i"
-WPT SUB FAIL url/a-element.html | Parsing: <#i> against <sc:///pa/pa> | assert_equals: href expected "sc:///pa/pa#i" but got "http://127.0.0.1:40881/url/a-element.html#i"
 WPT SUB FAIL url/a-element.html | Parsing: <sc://@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <sc://te@s:t@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <sc://:/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <sc://:12/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <x> against <sc://ñ> | assert_equals: href expected "sc://%C3%B1/x" but got "http://127.0.0.1:40881/url/x"
 WPT SUB FAIL url/a-element.html | Parsing: <wow:?> against <about:blank> | assert_equals: href expected "wow:%EF%BF%BF" but got "wow:?"
 WPT SUB FAIL url/a-element.html | Parsing: <sc://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <sc://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1575,9 +1401,6 @@ WPT SUB FAIL url/a-element.html | Parsing: <ftp://example.com%80/> against <abou
 WPT SUB FAIL url/a-element.html | Parsing: <ftp://example.com%A0/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <https://example.com%80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <https://example.com%A0/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <?a=b&c=d> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar?a=b&c=d" but got "http://127.0.0.1:40881/url/a-element.html?a=b&c=d"
-WPT SUB FAIL url/a-element.html | Parsing: <??a=b&c=d> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar??a=b&c=d" but got "http://127.0.0.1:40881/url/a-element.html??a=b&c=d"
-WPT SUB FAIL url/a-element.html | Parsing: <http:> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar" but got "http://127.0.0.1:40881/url/a-element.html"
 WPT SUB FAIL url/a-element.html | Parsing: <http:> against <https://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://10000000000> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://4294967296> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1594,54 +1417,8 @@ WPT SUB FAIL url/a-element.html | Parsing: <file://C%7C> against <about:blank> |
 WPT SUB FAIL url/a-element.html | Parsing: <file://%43%7C/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <https://%43%7C/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <asdf://%43|/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html> | assert_equals: href expected "file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/pix/submit.gif" but got "http://127.0.0.1:40881/url/pi
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <file:///C:/> | assert_equals: href expected "file:///C:/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <file:///> | assert_equals: href expected "file:///" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: </> against <file:///C:/a/b> | assert_equals: href expected "file:///C:/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: </> against <file://h/C:/a/b> | assert_equals: href expected "file://h/C:/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: </> against <file://h/a/b> | assert_equals: href expected "file://h/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <//d:> against <file:///C:/a/b> | assert_equals: href expected "file:///d:" but got "http://d/"
-WPT SUB FAIL url/a-element.html | Parsing: <//d:/..> against <file:///C:/a/b> | assert_equals: href expected "file:///d:/" but got "http://d/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <file:///ab:/> | assert_equals: href expected "file:///" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <file:///1:/> | assert_equals: href expected "file:///" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <> against <file:///test?test#test> | assert_equals: href expected "file:///test?test" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: <file:> against <file:///test?test#test> | assert_equals: href expected "file:///test?test" but got "file:///"
-WPT SUB FAIL url/a-element.html | Parsing: <?x> against <file:///test?test#test> | assert_equals: href expected "file:///test?x" but got "http://127.0.0.1:40881/url/a-element.html?x"
-WPT SUB FAIL url/a-element.html | Parsing: <file:?x> against <file:///test?test#test> | assert_equals: href expected "file:///test?x" but got "file:///?x"
-WPT SUB FAIL url/a-element.html | Parsing: <#x> against <file:///test?test#test> | assert_equals: href expected "file:///test?test#x" but got "http://127.0.0.1:40881/url/a-element.html#x"
-WPT SUB FAIL url/a-element.html | Parsing: <file:#x> against <file:///test?test#test> | assert_equals: href expected "file:///test?test#x" but got "file:///#x"
-WPT SUB FAIL url/a-element.html | Parsing: </////mouse> against <file:///elephant> | assert_equals: href expected "file://///mouse" but got "http://mouse/"
-WPT SUB FAIL url/a-element.html | Parsing: <\//pig> against <file://lion/> | assert_equals: href expected "file:///pig" but got "http://pig/"
-WPT SUB FAIL url/a-element.html | Parsing: <\/localhost//pig> against <file://lion/> | assert_equals: href expected "file:////pig" but got "http://localhost//pig"
-WPT SUB FAIL url/a-element.html | Parsing: <//localhost//pig> against <file://lion/> | assert_equals: href expected "file:////pig" but got "http://localhost//pig"
-WPT SUB FAIL url/a-element.html | Parsing: </..//localhost//pig> against <file://lion/> | assert_equals: href expected "file://lion//localhost//pig" but got "http://127.0.0.1:40881//localhost//pig"
-WPT SUB FAIL url/a-element.html | Parsing: </rooibos> against <file://tea/> | assert_equals: href expected "file://tea/rooibos" but got "http://127.0.0.1:40881/rooibos"
-WPT SUB FAIL url/a-element.html | Parsing: </?chai> against <file://tea/> | assert_equals: href expected "file://tea/?chai" but got "http://127.0.0.1:40881/?chai"
-WPT SUB FAIL url/a-element.html | Parsing: <C|> against <file://host/dir/file> | assert_equals: href expected "file://host/C:" but got "http://127.0.0.1:40881/url/C|"
-WPT SUB FAIL url/a-element.html | Parsing: <C|> against <file://host/D:/dir1/dir2/file> | assert_equals: href expected "file://host/C:" but got "http://127.0.0.1:40881/url/C|"
-WPT SUB FAIL url/a-element.html | Parsing: <C|#> against <file://host/dir/file> | assert_equals: href expected "file://host/C:#" but got "http://127.0.0.1:40881/url/C|#"
-WPT SUB FAIL url/a-element.html | Parsing: <C|?> against <file://host/dir/file> | assert_equals: href expected "file://host/C:?" but got "http://127.0.0.1:40881/url/C|?"
-WPT SUB FAIL url/a-element.html | Parsing: <C|/> against <file://host/dir/file> | assert_equals: href expected "file://host/C:/" but got "http://127.0.0.1:40881/url/C|/"
-WPT SUB FAIL url/a-element.html | Parsing: <C| /> against <file://host/dir/file> | assert_equals: href expected "file://host/C:/" but got "http://127.0.0.1:40881/url/C|/"
-WPT SUB FAIL url/a-element.html | Parsing: <C|\> against <file://host/dir/file> | assert_equals: href expected "file://host/C:/" but got "http://127.0.0.1:40881/url/C|/"
-WPT SUB FAIL url/a-element.html | Parsing: <C> against <file://host/dir/file> | assert_equals: href expected "file://host/dir/C" but got "http://127.0.0.1:40881/url/C"
-WPT SUB FAIL url/a-element.html | Parsing: <C|a> against <file://host/dir/file> | assert_equals: href expected "file://host/dir/C|a" but got "http://127.0.0.1:40881/url/C|a"
-WPT SUB FAIL url/a-element.html | Parsing: </c:/foo/bar> against <file:///c:/baz/qux> | assert_equals: href expected "file:///c:/foo/bar" but got "http://127.0.0.1:40881/c:/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: </c|/foo/bar> against <file:///c:/baz/qux> | assert_equals: href expected "file:///c:/foo/bar" but got "http://127.0.0.1:40881/c|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: </c:/foo/bar> against <file://host/path> | assert_equals: href expected "file://host/c:/foo/bar" but got "http://127.0.0.1:40881/c:/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <abc://x/y/z/C:/> | assert_equals: href expected "abc://x/y/z/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <file://x/C:/> | assert_equals: href expected "file://x/C:/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <C|/> against <file://host/> | assert_equals: href expected "file://host/C:/" but got "http://127.0.0.1:40881/url/C|/"
-WPT SUB FAIL url/a-element.html | Parsing: </C:/> against <file://host/> | assert_equals: href expected "file://host/C:/" but got "http://127.0.0.1:40881/C:/"
-WPT SUB FAIL url/a-element.html | Parsing: <file:C:/> against <file://host/> | assert_equals: href expected "file://host/C:/" but got "file:///C:/"
-WPT SUB FAIL url/a-element.html | Parsing: <file:/C:/> against <file://host/> | assert_equals: href expected "file://host/C:/" but got "file:///C:/"
-WPT SUB FAIL url/a-element.html | Parsing: <//C:/> against <file://host/> | assert_equals: href expected "file:///C:/" but got "http://c/"
-WPT SUB FAIL url/a-element.html | Parsing: <///C:/> against <file://host/> | assert_equals: href expected "file:///C:/" but got "http://c/"
 WPT SUB FAIL url/a-element.html | Parsing: <\\\.\Y:> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <\\\.\y:> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <//one/two> against <file:///> | assert_equals: href expected "file://one/two" but got "http://one/two"
-WPT SUB FAIL url/a-element.html | Parsing: <///one/two> against <file:///> | assert_equals: href expected "file:///one/two" but got "http://one/two"
-WPT SUB FAIL url/a-element.html | Parsing: <////one/two> against <file:///> | assert_equals: href expected "file:////one/two" but got "http://one/two"
 WPT SUB FAIL url/a-element.html | Parsing: <https://[0:1:2:3:4:5:192.0.02.1]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <https://[192.0.2.1::]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://[0:1:2:3:4:5:6:7:8]> against <http://example.net/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1657,18 +1434,6 @@ WPT SUB FAIL url/a-element.html | Parsing: <http://#> against <about:blank> | as
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:4294967377/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:18446744073709551697/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://f:340282366920938463463374607431768211537/c> against <http://example.org/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <#x> against <sc://ñ> | assert_equals: href expected "sc://%C3%B1#x" but got "http://127.0.0.1:40881/url/a-element.html#x"
-WPT SUB FAIL url/a-element.html | Parsing: <?x> against <sc://ñ> | assert_equals: href expected "sc://%C3%B1?x" but got "http://127.0.0.1:40881/url/a-element.html?x"
-WPT SUB FAIL url/a-element.html | Parsing: <///> against <sc://x/> | assert_equals: href expected "sc:///" but got "///"
-WPT SUB FAIL url/a-element.html | Parsing: <////> against <sc://x/> | assert_equals: href expected "sc:////" but got "////"
-WPT SUB FAIL url/a-element.html | Parsing: <////x/> against <sc://x/> | assert_equals: href expected "sc:////x/" but got "http://x/"
-WPT SUB FAIL url/a-element.html | Parsing: </.//path> against <non-spec:/p> | assert_equals: href expected "non-spec:/.//path" but got "http://127.0.0.1:40881//path"
-WPT SUB FAIL url/a-element.html | Parsing: </..//path> against <non-spec:/p> | assert_equals: href expected "non-spec:/.//path" but got "http://127.0.0.1:40881//path"
-WPT SUB FAIL url/a-element.html | Parsing: <..//path> against <non-spec:/p> | assert_equals: href expected "non-spec:/.//path" but got "http://127.0.0.1:40881//path"
-WPT SUB FAIL url/a-element.html | Parsing: <a/..//path> against <non-spec:/p> | assert_equals: href expected "non-spec:/.//path" but got "http://127.0.0.1:40881/url//path"
-WPT SUB FAIL url/a-element.html | Parsing: <> against <non-spec:/..//p> | assert_equals: href expected "non-spec:/.//p" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: <path> against <non-spec:/..//p> | assert_equals: href expected "non-spec:/.//path" but got "http://127.0.0.1:40881/url/path"
-WPT SUB FAIL url/a-element.html | Parsing: <../path> against <non-spec:/.//p> | assert_equals: href expected "non-spec:/path" but got "http://127.0.0.1:40881/path"
 WPT SUB FAIL url/a-element.html | Parsing: <non-special://[:80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://[::127.0.0.0.1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test??> against <about:blank> | assert_equals: href expected "http://example.org/test?%E2%8C%A3" but got "http://example.org/test??"
@@ -1677,19 +1442,12 @@ WPT SUB FAIL url/a-element.html | Parsing: <a/> against <about:blank> | assert_u
 WPT SUB FAIL url/a-element.html | Parsing: <a//> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon.html> against <a:> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-b.html> against <a:b> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-slash.html> against <a:/> | assert_equals: href expected "a:/test-a-colon-slash.html" but got "http://127.0.0.1:40881/url/test-a-colon-slash.html"
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-slash-slash.html> against <a://> | assert_equals: href expected "a:///test-a-colon-slash-slash.html" but got "http://127.0.0.1:40881/url/test-a-colon-slash-slash.html"
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-slash-b.html> against <a:/b> | assert_equals: href expected "a:/test-a-colon-slash-b.html" but got "http://127.0.0.1:40881/url/test-a-colon-slash-b.html"
-WPT SUB FAIL url/a-element.html | Parsing: <test-a-colon-slash-slash-b.html> against <a://b> | assert_equals: href expected "a://b/test-a-colon-slash-slash-b.html" but got "http://127.0.0.1:40881/url/test-a-colon-slash-slash-b.html"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "http://example.org/test?a#b%00c" but got "http://example.org/test?a#b"
 WPT SUB FAIL url/a-element.html | Parsing: <non-spec://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec://example.org/test?a#b%00c" but got "non-spec://example.org/test?a#b"
 WPT SUB FAIL url/a-element.html | Parsing: <non-spec:/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec:/test?a#b%00c" but got "non-spec:/test?a#b"
-WPT SUB FAIL url/a-element.html | Parsing: <10.0.0.7:8080/foo.html> against <file:///some/dir/bar.html> | assert_equals: href expected "file:///some/dir/10.0.0.7:8080/foo.html" but got "http://127.0.0.1:40881/url/10.0.0.7:8080/foo.html"
-WPT SUB FAIL url/a-element.html | Parsing: <a!@$*=/foo.html> against <file:///some/dir/bar.html> | assert_equals: href expected "file:///some/dir/a!@$*=/foo.html" but got "http://127.0.0.1:40881/url/a!@$*=/foo.html"
 WPT SUB FAIL url/a-element.html | Parsing: <file://loC??????/usr/bin> against <about:blank> | assert_equals: href expected "file:///usr/bin" but got "file://loc/??????/usr/bin"
 WPT SUB FAIL url/a-element.html | Parsing: <file://­/p> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <file://%C2%AD/p> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <#link> against <https://example.org/##link> | assert_equals: href expected "https://example.org/#link" but got "http://127.0.0.1:40881/url/a-element.html#link"
 WPT SUB FAIL url/a-element.html | Parsing: <non-special:cannot-be-a-base-url- ~ > against <about:blank> | assert_equals: href expected "non-special:cannot-be-a-base-url-%00%01%1F%1E~%7F%C2%80" but got "non-special:cannot-be-a-base-url-"
 WPT SUB FAIL url/a-element.html | Parsing: <?> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <http://1.2.3.4.5> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
@@ -1761,13 +1519,7 @@ WPT SUB FAIL url/a-element.html | Parsing: <turn://[:1]> against <about:blank> |
 WPT SUB FAIL url/a-element.html | Parsing: <stun://:443> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <stun://test:test> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
 WPT SUB FAIL url/a-element.html | Parsing: <stun://[:1]> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <///abcdef/../> against <file:///> | assert_equals: href expected "file:///" but got "http://abcdef/"
-WPT SUB FAIL url/a-element.html | Parsing: </\//\/a/../> against <file:///> | assert_equals: href expected "file://////" but got "http://a/"
-WPT SUB FAIL url/a-element.html | Parsing: <//a/../> against <file:///> | assert_equals: href expected "file://a/" but got "http://a/"
 WPT SUB FAIL url/a-element.html | Parsing: <non-special://host\a> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <\a> against <foo://foo/a> | assert_equals: href expected "foo://foo/\\a" but got "http://127.0.0.1:40881/a"
-WPT SUB FAIL url/a-element.html | Parsing: <\/a> against <foo://foo/a> | assert_equals: href expected "foo://foo/\\/a" but got "http://a/"
-WPT SUB FAIL url/a-element.html | Parsing: <\\a> against <foo://foo/a> | assert_equals: href expected "foo://foo/\\\\a" but got "http://a/"
 WPT SUB FAIL url/a-element.html | Parsing: <data:text/plain,test# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "data:text/plain,test#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "data:text/pl
 WPT SUB FAIL url/a-element.html | Parsing: <about:blank# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "about:blank#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "about:blank#"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/U+d800?U+dfff???????U+d800?U+dfff??????> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%B

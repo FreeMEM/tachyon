@@ -5708,3 +5708,12 @@ Formato:
   llega a escribir nada en 200 s (sin mirar aún por qué: con prueba.html va).
 - Tests: estilo, css, maqueta, acid y documento sin red, todos; con red: estilo_enlaces, acid2_pagina, documento_tipo,
   jsdom_iframe, jsdom_load_peticion, jsdom_scripts; jsdom entero 23/23.
+
+### 2026-11-07 — Tarea 61 (3, no entra): compartir el estilo calculado entre hermanos
+- Probado: hermanos seguidos con las mismas reglas ganadoras y sin style, pistas ni animación usan el mismo
+  diccionario (como el "style sharing" de los navegadores). En gh_local.html gana poco (estilo 4,43 → 4,31 s, 0,5 de
+  los ~8,4 MB del estilo) y rompe tests (test_estilo: un span sale block; maqueta_campo, maqueta_inset,
+  maqueta_svg_tam, maqueta_absoluto_img, formularios, documento_ligero): algo cambia n.estilo en su sitio después de
+  calcularlo (la maqueta o los formularios), por un camino que no sale buscando ".estilo[...] =". Deshecho.
+- Si se vuelve a intentar: primero encontrar esas escrituras (que cambien el estilo de un elemento sin copiarlo es
+  también un riesgo con estilo_aplicar_partes, que compara el viejo con el nuevo).

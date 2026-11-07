@@ -838,9 +838,14 @@ func avanzar_carga(w: Ventana)
             fase = http_fase(w.carga)
             if fase != "recibiendo"
                 host = url_parse(w.carga_dir).host
+                if fase == "esperando" and w.actual != nil and w.actual.js != 0
+                    # (la tabla de conexiones llena: las del JavaScript de la página que se deja no avanzan
+                    # mientras se carga la nueva y no se cerrarían; se cancelan, como al llegar la nueva)
+                    jsdom_peticiones_cancelar(w.actual.js)
+                end
                 if fase == "buscando"
                     dw_estado(w, hueco(tr(107, "Looking up %1..."), host))
-                elif fase == "conectando"
+                elif fase == "conectando" or fase == "esperando"
                     dw_estado(w, hueco(tr(104, "Connecting to %1..."), host))
                 else
                     dw_estado(w, hueco(tr(108, "Secure connection to %1..."), host))

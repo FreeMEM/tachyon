@@ -744,6 +744,42 @@ struct PeticionJS
     js: Int
     id: Int
     carga: Carga
+    # (en cola: aún sin carga, con lo que hace falta para empezarla)
+    en_cola: Bool = false
+    metodo: String = ""
+    url: String = ""
+    cuerpo: String = ""
+    tipo: String = ""
+    extra: String = ""
+end
+
+# Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
+# conexiones de la red: "demasiadas conexiones" al ir a otra página). Chrome hace 6 por servidor.
+const JSDOM_PETICIONES_A_LA_VEZ = 6
+
+func _jsdom_peticiones_activas(js: Int) -> Int
+    n = 0
+    for p in jsdom_peticiones
+        if p.js == js and p.carga != nil
+            n = n + 1
+        end
+    end
+    return n
+end
+
+# Empieza las de la cola de ese motor mientras haya sitio
+func _jsdom_peticiones_empezar(js: Int)
+    activas = _jsdom_peticiones_activas(js)
+    for p in jsdom_peticiones
+        if activas >= JSDOM_PETICIONES_A_LA_VEZ
+            return
+        end
+        if p.js == js and p.en_cola
+            p.en_cola = false
+            p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+            activas = activas + 1
+        end
+    end
 end
 
 var jsdom_peticiones: [PeticionJS] = []
@@ -780,7 +816,16 @@ var jsdom_peticiones: [PeticionJS] = []
         jsdom_peticiones.push(PeticionJS(js, id, sin))
         return
     end
-    jsdom_peticiones.push(PeticionJS(js, id, http_empezar_metodo(url, metodo, cuerpo, tipo, extra, 20000)))
+    var nada: Carga = nil
+    p = PeticionJS(js, id, nada)
+    p.en_cola = true
+    p.metodo = metodo
+    p.url = url
+    p.cuerpo = cuerpo
+    p.tipo = tipo
+    p.extra = extra
+    jsdom_peticiones.push(p)
+    _jsdom_peticiones_empezar(js)
 end
 
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
@@ -789,6 +834,10 @@ func jsdom_peticiones_avanzar(js: Int) -> Int
     i = 0
     while i < jsdom_peticiones.length
         p = jsdom_peticiones[i]
+        if p.js == js and p.en_cola
+            i = i + 1
+            continue
+        end
         if p.js == js and p.carga == nil
             jsdom_peticiones.remove(i)
             _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
@@ -807,6 +856,9 @@ func jsdom_peticiones_avanzar(js: Int) -> Int
             continue
         end
         i = i + 1
+    end
+    if hechas > 0
+        _jsdom_peticiones_empezar(js)
     end
     return hechas
 end

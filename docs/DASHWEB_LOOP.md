@@ -5853,3 +5853,10 @@ Formato:
   mentira en el PC): icono verde, baja Tachyon.gz y los nueve catálogos, instalado idéntico al compilado, .old el de
   antes, Reiniciar abre la 0.9.2. La 0.9.2 del paquete: Amiga+C/V/X, Ctrl+V y Amiga-S bien; cuatro ventanas (Acid3,
   gh_local.html, estrellas.html y Acid2) unos 5 min sin colgarse y un clic al final que responde.
+
+### 2026-11-07 — Tarea 61 (7): el preludio, 15 KB más pequeño (las tablas de codificaciones comprimidas)
+- Tras la batería de la 0.9.2 (una compilación del preludio sin memoria en el A1200 de 8 MB): el preludio, sin
+  comentarios ni sangría, pasó hoy de 184 KB (v0.9.1) a 234 KB; 26 KB eran las 27 tablas de un byte en \uXXXX.
+- Ahora van comprimidas (cada código en base 36, "+k" para los k siguientes de uno en uno, "-" sin carácter) y
+  encTabla abre cada una la primera vez que una página la usa: 6,7 KB. Preludio: 219 KB. Comprobado en node que cada
+  tabla sale igual; WPT encoding/ sigue en 11085/12004 y test_js_textdecoder pasa.

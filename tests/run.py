@@ -28,6 +28,7 @@ results do not count) and $DASH_EMU_SYS (Workbench files), as in Dash.
 """
 
 import argparse
+import re
 import os
 import shlex
 import subprocess
@@ -184,6 +185,15 @@ def main():
             results[src.stem] = (True, f"compiled (emulator skipped: no {', '.join(missing)})")
         else:
             cfg = EMU_BASE + "".join(c + "\n" for c in directives(src, "emu-config"))
+            # (--memcheck se lleva 2,7 MB del A1200 de 8 MB para su cuenta de cada bloque: se le dan 4 MB más, para que
+            # el programa tenga lo de un A1200 de verdad y no la mitad; con el preludio compilándose, los de JavaScript
+            # se quedaban sin memoria según la suerte; tarea 61)
+            if (args.memcheck or any(l.strip() == "# memcheck" for l in src.read_text().splitlines())) and "zorro_iii_memory" not in cfg:
+                cfg += "zorro_iii_memory = 4096\n"
+            # (la Zorro III solo la ve un 68020 entero: el del A1200 de FS-UAE es un 68EC020, de 24 bits, y sin esto no
+            # había memoria de más, tampoco en los que pedían 64 MB)
+            if "zorro_iii_memory" in cfg and not re.search(r"^cpu\s*=", cfg, re.M):
+                cfg += "cpu = 68020\n"
             if directives(src, "emu-server"):
                 cfg += "bsdsocket_library = 1\n"
             to_run.setdefault((cfg, system), []).append((src, exe, expected))

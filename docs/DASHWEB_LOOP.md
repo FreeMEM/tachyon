@@ -13,7 +13,8 @@ publicar la 0.7.2; luego la 53 (las webs de chat).**
 
 **Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
-pendiente del plan. Esto manda sobre los dos encargos de arriba.**
+pendiente del plan. Esto manda sobre los dos encargos de arriba. Al acabar WPT, la 62
+(las demás baterías: compatibilidad, velocidad, red y seguridad).**
 
 **Y sin perder velocidad ni memoria (usuario, 2026-11-07: "vamos a conseguir que wpt pase entero bien, pero no a costa
 de ser lento o consumiendo mucha memoria").** Cada cambio para WPT se mide antes y después (tests/pages/bench_*.html
@@ -607,6 +608,15 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 62. **Las demás baterías de pruebas, cuando acabe WPT (usuario, 2026-11-07: "Cuando terminemos con wpt, vamos a
+      pasar todos los test de compatibilidad, velocidad, red y seguridad").** Con copias guardadas y servidas desde el
+      PC (nada automático contra webs de otros), cada una con su resumen en docs/ para ver cómo sube:
+      (a) compatibilidad: Acid1, Test262 (el JavaScript de QuickJS), css3test.com, html5test.com y las áreas de
+      Interop (las de WPT que eligen cada año los navegadores grandes);
+      (b) velocidad: SunSpider, Kraken, Dromaeo (el DOM) y, si caben, Speedometer, JetStream y MotionMark (en PiStorm);
+      (c) red y seguridad: los casos de badssl.com (certificados caducados, de otro nombre, autofirmados, cifrados
+      débiles: se tienen que rechazar) y lo de howsmyssl.com (versión de TLS y cifrados), con servidores de prueba
+      propios donde se pueda.
 - [~] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
       en páginas reales guardadas (gh_repo.html, Wikipedia, amigatronics, YouTube) con el perfil (--perfil), TRAZA y
       la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
@@ -6012,3 +6022,39 @@ Formato:
   para tanto) con QuotaExceededError. tests/test_jsdom_storage.dash.
 - Falta: que localStorage dure más que la página (guardarlo en disco por origen): tarea siguiente. Lo que queda de
   la carpeta son eventos storage entre ventanas, iframes de otro origen y window.open.
+
+### 2026-11-07 — Preparando la 0.9.3: la batería y la memoria del preludio en un A1200 de 8 MB (tarea 61)
+- Usuario: "Adelante" a preparar la 0.9.3 y pedir el visto bueno antes de publicar. Primera batería: 145/151
+  (5941 s). Los seis:
+  - test_jsdom_iframe, de verdad: el location del marco analizaba su dirección contra la suya, que al empezar es el
+    src tal cual ("/acid3/empty.html", sin base válida) y desde b076bde daba "Invalid URL". Ahora contra la base de
+    la página (quien la pone).
+  - test_imagenes_carga: el puerto 40856 lo tiene una conexión de Chrome del PC (ss lo dice), como en la 0.9.2.
+  - test_js_crypto, test_jsdom_custom, test_jsdom_domparser y test_guardar: "out of memory" (o un SyntaxError raro)
+    al compilar el preludio. Repetidos en tanda (tests sin red con sondas de memoria entre medias): salen siempre
+    los mismos; sueltos, pasan.
+- Por qué (medido con marcas de AvailMem en js_evaluar_guardado, copias aparte de cada commit):
+  - La primera página de un programa compila el preludio en el motor de la página, en su pool de charcos de 512 KB,
+    y lo que dura (los átomos de la compilación) acaba en cada charco: no vuelven hasta soltar la página. Desde
+    e73b73d (el preludio 15 KB más pequeño) la compilación se queda con un charco más: la primera página con 0,89 MB
+    libres (0,9.2: 1,43; las siguientes, 1,94 en las dos). En el PC el pico de compilar es el mismo (1,43 → 1,50 MB):
+    es dónde caen los bloques, no más memoria.
+  - --memcheck se lleva 2,7 MB de los 8 (un test vacío: 8,2 MB libres sin él, 0,8 con documento.dash y él): los
+    tests de JavaScript con memcheck compilaban el preludio con 1,2 MB libres y pasaban según la suerte de los
+    charcos (la reserva de _jm_hay solo se mira al pedir charco nuevo).
+- Hecho:
+  - src_c/tachyon.c: con más de 4 MB libres el preludio se compila en un motor aparte (su pool; solo Eval y el
+    compilador de expresiones regulares: mismo bytecode, comprobado en el PC) que se borra entero; con menos, en el
+    de la página, y lo compilado se ejecuta tal cual sin leerlo otra vez del bytecode.
+  - El preludio, solo ASCII (las siete letras con acento de sus mensajes, con \u; tools/preludio.py falla si hay
+    otra): se compila sin la copia en UTF-8 (230 KB menos en el pico). Se mira solo al compilar: mirarlo con la suma
+    de cada página costaba 140 ms por página.
+  - tests/run.py: los de --memcheck llevan 4 MB de Zorro III de más (lo que se come memcheck), y con Zorro III la CPU
+    es un 68020 entero: el de FS-UAE en A1200 es un 68EC020 de 24 bits y no la veía (los nueve tests que pedían
+    64 MB tampoco la tenían: mem_total 10,3 MB).
+  - Probado y quitado: charcos según la memoria libre (64-512 KB): la primera página igual y con poca memoria la
+    reserva de _jm_hay saltaba antes.
+- Medido (A1200 de 8 MB, documento con un script, tres veces): primera página 85,99 s y 0,89 MB libres → 86,76 s y
+  1,94 MB; las siguientes 14,79 s → 14,80 s, 1,94 MB las dos. test_js_crypto y test_jsdom_custom pasan.
+- Batería entera con esto: 150/151 (5760 s); el que falta, test_imagenes_carga, por el puerto 40856 de Chrome: con
+  40859 pasa.

@@ -1,0 +1,26 @@
+# Test: localStorage como Storage (tarea 41d, WPT webstorage): localStorage.x = 1 guarda "1", 'x' in, delete,
+# Object.keys solo con las claves que se ven (no "getItem", tapada por el método), setItem(k, null) guarda "null", getItem del método aunque haya una clave "getItem",
+# key(), length, instanceof Storage, sin argumentos TypeError, y el cupo da QuotaExceededError.
+# memcheck
+# expect-out: x: 1 string true | keys: x,n | null: null | metodo: function v | key: x 3 | storage: true [object Storage] | sin: TypeError | borrado: false 2 | cupo: QuotaExceededError
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var s = localStorage; s.x = 1; var r = 'x: ' + s.getItem('x') + ' ' + typeof s.x + ' ' + ('x' in s);"
+    c = c + "s.setItem('getItem', 'v'); s.setItem('n', null); r += ' | keys: ' + Object.keys(s).join(',');"
+    c = c + "r += ' | null: ' + s.n;"
+    c = c + "r += ' | metodo: ' + typeof s.getItem + ' ' + s.getItem('getItem');"
+    c = c + "r += ' | key: ' + s.key(0) + ' ' + s.length;"
+    c = c + "r += ' | storage: ' + (s instanceof Storage) + ' ' + Object.prototype.toString.call(s);"
+    c = c + "try { s.setItem('a'); } catch (e) { r += ' | sin: ' + e.name; }"
+    c = c + "delete s.x; r += ' | borrado: ' + ('x' in s) + ' ' + s.length;"
+    c = c + "try { s.setItem('grande', 'x'.repeat(1000001)); } catch (e) { r += ' | cupo: ' + e.name; } r"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

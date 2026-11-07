@@ -1,0 +1,88 @@
+WPT TOTAL webstorage: 1240/1273 subpruebas en 52 de 52 ficheros
+
+WPT FILE webstorage/defineProperty.window.html 12/12 OK
+WPT FILE webstorage/document-domain.html 0/1 OK
+WPT FILE webstorage/event_basic.html 0/0 sin acabar
+WPT FILE webstorage/event_body_attribute.html 0/0 sin acabar
+WPT FILE webstorage/event_case_sensitive.html 0/0 sin acabar
+WPT FILE webstorage/event_constructor.window.html 4/6 OK
+WPT FILE webstorage/event_initstorageevent.window.html 0/5 OK
+WPT FILE webstorage/event_local_key.html 0/1 OK
+WPT FILE webstorage/event_local_newvalue.html 0/1 OK
+WPT FILE webstorage/event_local_oldvalue.html 0/1 OK
+WPT FILE webstorage/event_local_removeitem.html 0/1 OK
+WPT FILE webstorage/event_local_storagearea.html 0/1 OK
+WPT FILE webstorage/event_local_url.html 0/1 OK
+WPT FILE webstorage/event_local_window_open_oldvalue.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_no_duplicates.html 0/0 TIMEOUT 
+WPT FILE webstorage/event_session_key.html 0/1 OK
+WPT FILE webstorage/event_session_newvalue.html 0/1 OK
+WPT FILE webstorage/event_session_oldvalue.html 0/1 OK
+WPT FILE webstorage/event_session_removeitem.html 0/1 OK
+WPT FILE webstorage/event_session_storagearea.html 0/1 OK
+WPT FILE webstorage/event_session_url.html 0/1 OK
+WPT FILE webstorage/event_session_window_open_scope.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_setattribute.html 0/0 sin acabar
+WPT FILE webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.html 0/1 TIMEOUT 
+WPT FILE webstorage/localstorage-cross-origin-iframe.https.window.html 0/1 OK
+WPT FILE webstorage/localstorage-share-data-unrelated-origins.html 0/1 OK
+WPT FILE webstorage/missing_arguments.window.html 10/10 OK
+WPT FILE webstorage/set.window.html 20/20 OK
+WPT FILE webstorage/storage_builtins.window.html 2/2 OK
+WPT FILE webstorage/storage_clear.window.html 2/2 OK
+WPT FILE webstorage/storage_enumerate.window.html 4/4 OK
+WPT FILE webstorage/storage_functions_not_overwritten.window.html 2/2 OK
+WPT FILE webstorage/storage_getitem.window.html 8/8 OK
+WPT FILE webstorage/storage_in.window.html 4/4 OK
+WPT FILE webstorage/storage_indexing.window.html 8/8 OK
+WPT FILE webstorage/storage_key.window.html 22/22 OK
+WPT FILE webstorage/storage_key_empty_string.window.html 2/2 OK
+WPT FILE webstorage/storage_length.window.html 4/4 OK
+WPT FILE webstorage/storage_local_quota_independent_from_session.window.html 0/1 OK
+WPT FILE webstorage/storage_local_setitem_quotaexceedederr.window.html 0/1 OK
+WPT FILE webstorage/storage_local_window_open.window.html 0/1 TIMEOUT 
+WPT FILE webstorage/storage_removeitem.window.html 8/8 OK
+WPT FILE webstorage/storage_session_quota_independent_from_local.window.html 0/1 OK
+WPT FILE webstorage/storage_session_setitem_quotaexceedederr.window.html 0/1 OK
+WPT FILE webstorage/storage_session_window_noopener.window.html 0/1 OK
+WPT FILE webstorage/storage_session_window_open.window.html 0/1 TIMEOUT 
+WPT FILE webstorage/storage_session_window_reopen.window.html 0/1 OK
+WPT FILE webstorage/storage_set_value_enumerate.window.html 2/2 OK
+WPT FILE webstorage/storage_setitem.window.html 1106/1106 OK
+WPT FILE webstorage/storage_string_conversion.window.html 2/2 OK
+WPT FILE webstorage/storage_supported_property_names.window.html 4/4 OK
+WPT FILE webstorage/symbol-props.window.html 14/14 OK
+
+WPT SUB FAIL webstorage/document-domain.html | localStorage and document.domain | cannot read property 'addEventListener' of undefined
+WPT SUB FAIL webstorage/event_constructor.window.html | constructor with no arguments | assert_equals: StorageEvent.length expected 1 but got 2
+WPT SUB FAIL webstorage/event_constructor.window.html | constructor with null type argument and members | assert_equals: url expected (string) "null" but got (object) null
+WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 0 arguments | cannot read property 'length' of undefined
+WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 1 argument | not a function
+WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 sensible arguments | not a function
+WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 null arguments | not a function
+WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 undefined arguments | not a function
+WPT SUB FAIL webstorage/event_local_key.html | key property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_clear_iframe.html'
+WPT SUB FAIL webstorage/event_local_newvalue.html | newValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_change_item_iframe.html'
+WPT SUB FAIL webstorage/event_local_oldvalue.html | oldValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_change_item_iframe.html'
+WPT SUB FAIL webstorage/event_local_removeitem.html | key property test of local event | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_remove_iframe.html'
+WPT SUB FAIL webstorage/event_local_storagearea.html | storageArea property test of local event - Local event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_iframe.html'
+WPT SUB FAIL webstorage/event_local_url.html | url property test of local event - Local event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_iframe.html'
+WPT SUB TIMEOUT webstorage/event_local_window_open_oldvalue.html | oldValue property test of local event from window.open() - Local event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB FAIL webstorage/event_session_key.html | key property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_clear_iframe.html'
+WPT SUB FAIL webstorage/event_session_newvalue.html | newvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_change_item_iframe.html'
+WPT SUB FAIL webstorage/event_session_oldvalue.html | oldvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_change_item_iframe.html'
+WPT SUB FAIL webstorage/event_session_removeitem.html | key property test of session event | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_remove_iframe.html'
+WPT SUB FAIL webstorage/event_session_storagearea.html | storageArea property test of session event - session event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_iframe.html'
+WPT SUB FAIL webstorage/event_session_url.html | url property test of session event - Session event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_iframe.html'
+WPT SUB TIMEOUT webstorage/event_session_window_open_scope.html | sessionStorage events from a new window opened via window.open() should not fire in the opener | Test timed out
+WPT SUB TIMEOUT webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.html | StorageKey: test 3P about:blank window opened from a 3P iframe | Test timed out
+WPT SUB FAIL webstorage/localstorage-cross-origin-iframe.https.window.html | LocalStorage should be accessible on both same_origin and cross_origin iframes | promise_test: Unhandled rejection with value: object "ReferenceError: 'newIframe' is not defined"
+WPT SUB FAIL webstorage/localstorage-share-data-unrelated-origins.html | Ensure two about:srcdoc origins cannot share localstorage | 'testDiv' is not defined
+WPT SUB FAIL webstorage/storage_local_quota_independent_from_session.window.html | localStorage retains comparable quota after sessionStorage exhaustion | assert_throws_quotaexceedederror: function "() => { while (true) { localStorage.setItem("" + key + indexBefore, "" + val + indexBefore); indexBefore++; } }" thr
+WPT SUB FAIL webstorage/storage_local_setitem_quotaexceedederr.window.html | Throws QuotaExceededError when the quota has been exceeded | assert_throws_quotaexceedederror: function "() => { while (true) { index++; localStorage.setItem("" + key + index, "" + val + index); } }" threw object "QuotaEx
+WPT SUB TIMEOUT webstorage/storage_local_window_open.window.html | A new window to make sure there is a copy of the previous window's localStorage, and that they do not diverge after a change | Test timed out
+WPT SUB FAIL webstorage/storage_session_quota_independent_from_local.window.html | sessionStorage retains comparable quota after localStorage exhaustion | assert_throws_quotaexceedederror: function "() => { while (true) { sessionStorage.setItem("" + key + indexBefore, "" + val + indexBefore); indexBefore++; } }" t
+WPT SUB FAIL webstorage/storage_session_setitem_quotaexceedederr.window.html | Throws QuotaExceededError when the quota has been exceeded | assert_throws_quotaexceedederror: function "() => { while (true) { index++; sessionStorage.setItem("" + key + index, "" + val + index); } }" threw object "Quota
+WPT SUB FAIL webstorage/storage_session_window_noopener.window.html | A new noopener window to make sure there is a not copy of the previous window's sessionStorage | 'BroadcastChannel' is not defined
+WPT SUB TIMEOUT webstorage/storage_session_window_open.window.html | A new window to make sure there is a copy of the previous window's sessionStorage, and that they diverge after a change | Test timed out
+WPT SUB FAIL webstorage/storage_session_window_reopen.window.html | ensure that re-opening a named window doesn't copy sessionStorage | cannot read property 'sessionStorage' of null

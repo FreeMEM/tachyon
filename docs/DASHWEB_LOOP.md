@@ -6001,3 +6001,14 @@ Formato:
   80. dom/events igual (509/673, ningún fichero distinto); los de jsdom, documento y js pasan.
 - Lo que queda (unos 1,6 ms por despacho): los nodeType, parentNode y hasAttribute('on...') de cada nodo del camino
   (llamadas a C).
+
+### 2026-11-07 — Tarea 41d: localStorage y sessionStorage como Storage (WPT webstorage 56 → 1240/1273)
+- Carpeta nueva (git sparse-checkout add webstorage). localStorage era un objeto con seis métodos: localStorage.x = 1
+  no se guardaba (getItem daba null), setItem(k, null) tampoco, sin Storage ni instanceof.
+- Ahora un Proxy por almacén sobre un objeto de Storage.prototype, con las propiedades con nombre de HTML: leer
+  (si el nombre no está en el prototipo: getItem sigue siendo el método aunque haya una clave "getItem"), poner
+  (siempre guarda, como texto), in, delete, Object.keys y defineProperty; key() con el número como unsigned long;
+  sin argumentos, TypeError; cupo de 1.000.000 de caracteres (claves y valores; Chrome da 5 MB, un Amiga no tiene
+  para tanto) con QuotaExceededError. tests/test_jsdom_storage.dash.
+- Falta: que localStorage dure más que la página (guardarlo en disco por origen): tarea siguiente. Lo que queda de
+  la carpeta son eventos storage entre ventanas, iframes de otro origen y window.open.

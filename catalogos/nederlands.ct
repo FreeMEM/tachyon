@@ -647,3 +647,9 @@ Dit is alles wat verstuurd wordt:
 MSG_476
 Bestand openen
 ; Open file
+MSG_477
+Inhoud van %1
+; Contents of %1
+MSG_478
+Bovenliggende lade
+; Parent drawer

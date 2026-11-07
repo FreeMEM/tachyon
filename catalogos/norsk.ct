@@ -647,3 +647,9 @@ Dette er alt som blir sendt:
 MSG_476
 Åpne fil
 ; Open file
+MSG_477
+Innhold i %1
+; Contents of %1
+MSG_478
+Overordnet skuff
+; Parent drawer

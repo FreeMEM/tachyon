@@ -204,13 +204,15 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
+- [x] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
       abrir una página soltando su icono en la ventana de Tachyon). app_window y app_drop de Dash valen solo para las
       ventanas de window_create; las de MUI no. MUI lo trae de serie: MUIA_Window_AppWindow TRUE en la ventana y
       notificación de MUIA_AppMessage en el objeto donde cae (o en la ventana). Hace falta algo como
       `mui_app_window(ventana)` y un evento que dé la ruta del icono soltado (y el objeto: la página, la barra de
       dirección...), en dashc y en dash1, con su test. El usuario: "Sí que suelte iconos ya": pedida a freememlang
       [e4f769] el 2026-11-07 (que la pase a quien lleve Dash main si no es ella).
+      Hecha (freememlang, PR #126 de Dash, e3da1d0): todas las ventanas MUI son AppWindow; mui_on_drop(obj, id) da
+      el evento y app_drop() las rutas, una a una. Solo en la pantalla del Workbench (cosa de MUI).
 - [x] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
       "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
       a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
@@ -610,11 +612,11 @@ tarea, con el estilo de Dash.
       la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
       podrían ser parciales, JavaScript del preludio que se ejecuta siempre. Dejar medidas antes y después en la
       bitácora y en docs/panel/medidas.json.
-- [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
+- [x] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
       cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
       Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
       ficheros (ASL), y soltar el icono de un fichero en la ventana (AppWindow de Workbench) para abrirlo.
-      Hecho el menú (2026-11-07): Proyecto, "Open file..." (Amiga-O). Falta soltar el icono: D83 (Dash).
+      Hecho (2026-11-07): Proyecto, "Open file..." (Amiga-O), y soltar iconos en la ventana (con D83).
 - [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
@@ -5938,3 +5940,23 @@ Formato:
   selector no se ha probado en el emulador (ASL interactivo).
 - Soltar el icono en la ventana: hace falta Dash (D83). El usuario: "Sí que suelte iconos ya": pedida a
   freememlang [e4f769].
+
+### 2026-11-07 — Tarea 41d: las partes de la dirección de <a> y <area> como dice HTML (url/a-element 586 → 844/897)
+- a.protocol, host, pathname... con un href que no se analiza (o sin href) daban "" o lo que salía de analizar
+  a.href (que, al fallar, es el atributo tal cual): ahora protocol ":" y lo demás "", y sus setters no hacen nada.
+  urlEnlace() analiza el atributo una vez contra document.baseURI (antes, dos: a.href y luego new URL(a.href)).
+- url/ 41/41: 7242/8699 (83 %), ningún fichero peor. Los de a-element-origin que faltan llevan caracteres fuera de
+  Latin-1 en el atributo (el DOM los guarda en Latin-1: se pierden; otra tarea).
+
+### 2026-11-07 — Tarea 60 acabada: soltar iconos del Workbench en la ventana (D83)
+- src/dashweb.dash: mui_on_drop(ventana, ID_SOLTADO + k) en cada ventana; soltado() abre el primer icono en la
+  pestaña que se ve y los demás en pestañas nuevas, por su dirección file: (url_de_ruta).
+- Un cajón o un disco soltado (o una dirección file: de un cajón) daba "can't read": ahora una página con lo que
+  tiene, como en los navegadores (documento_cajon en lib/documento.dash: el cajón padre, los cajones con "/" y los
+  ficheros con su tamaño; textos 477 y 478, traducidos). tests/test_documento_cajon.dash.
+- Probado de verdad en la máquina RTG con MUI 3.8 y el Workbench cargado: tools/medir_visor.py --workbench (nuevo:
+  C:LoadWB antes del programa) y la acción "i" nueva de tools/amiga/clicar.dash (arrastra el primer icono del
+  escritorio que no tape la ventana, con el ARexx del Workbench). RAM Disk soltado: "Contents of RAM Disk:" con
+  Clipboards/, ENV/ y T/. Para repetirlo:
+      medir_visor.py --maquina rtg --sistema ~/.cache/dash-emu/sys32rtg38 --programa src/dashweb.dash --workbench
+                     --pagina bench_url.html --acciones 'Tachyon e 500 i e 500' --captura x.png

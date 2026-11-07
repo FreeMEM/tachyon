@@ -7,7 +7,7 @@
 # "C X Y" lo mismo con Mayúsculas pulsada; "v X Y" lleva el puntero a X, Y sin pulsar; "t COD" pulsa y suelta la tecla raw COD (0x4D abajo, 0x40 espacio...); "a COD" la misma con Amiga
 # derecha (atajos de menú: 0x22 = D); "k COD" la misma con Ctrl; "m M E" elige con el ratón el elemento E del menú M (desde 0,
 # separadores incluidos); "h M E N" lo mismo, pero con el menú abierto N/50 s antes de soltar (para una captura);
-# "r X Y" pulsa el botón derecho en X, Y, "p X Y" lo lleva pulsado al punto X, Y
+# "i" arrastra el primer icono del escritorio del Workbench hasta la ventana; "r X Y" pulsa el botón derecho en X, Y, "p X Y" lo lleva pulsado al punto X, Y
 # de la pantalla y "s" lo suelta (menús de MUI). Escribe lo que hace.
 
 # (Dash 2.0: con los builtins window_find, window_found_*, input_*; antes, C con input.device)
@@ -95,6 +95,43 @@ Main
                 input_move_screen(Int(arg(i + 1)), Int(arg(i + 2)), 2)
                 Print "clicar: con el botón derecho a " + arg(i + 1) + "," + arg(i + 2)
                 i = i + 3
+            elif a == "i"
+                # un icono del escritorio del Workbench que no tape la ventana (su ARexx da dónde está), arrastrado
+                # con el botón izquierdo hasta el centro de la ventana (tarea 60: soltar iconos, D83)
+                n = Int(rexx_send("WORKBENCH", "GETATTR WINDOW.ICONS.ALL.COUNT NAME root"))
+                x0 = -1
+                y0 = -1
+                k = 0
+                while k < n and x0 < 0
+                    q = "WINDOW.ICONS.ALL." + k + "."
+                    l = Int(rexx_send("WORKBENCH", "GETATTR " + q + "LEFT NAME root"))
+                    tp = Int(rexx_send("WORKBENCH", "GETATTR " + q + "TOP NAME root"))
+                    iw = Int(rexx_send("WORKBENCH", "GETATTR " + q + "WIDTH NAME root"))
+                    ih = Int(rexx_send("WORKBENCH", "GETATTR " + q + "HEIGHT NAME root"))
+                    px = l + iw / 2
+                    py = tp + ih / 2 + wm_bar_height()
+                    fuera = px < window_found_box(w, 0) or px >= window_found_box(w, 0) + window_found_box(w, 2) or py < window_found_box(w, 1) or py >= window_found_box(w, 1) + window_found_box(w, 3)
+                    if fuera
+                        x0 = px
+                        y0 = py
+                        Print "clicar: icono " + k + " de " + n + ": " + rexx_send("WORKBENCH", "GETATTR " + q + "NAME NAME root")
+                    end
+                    k = k + 1
+                end
+                input_move_screen(x0, y0, 0)
+                input_button(1, true)
+                input_move_screen(x0 + 10, y0 + 10, 1)
+                cx = window_found_box(w, 0) + window_found_box(w, 2) / 2
+                cy = window_found_box(w, 1) + window_found_box(w, 3) / 2
+                input_move_screen(cx, cy, 1)
+                time_delay(25)
+                input_move_screen(cx + 2, cy + 2, 1)
+                time_delay(10)
+                input_button(1, false)
+                time_delay(10)
+                input_move_screen(cx + 4, cy + 4, 0)
+                Print "clicar: icono de " + x0 + "," + y0 + " soltado en la ventana"
+                i = i + 1
             elif a == "s"
                 input_button(2, false)
                 Print "clicar: suelta el botón derecho"

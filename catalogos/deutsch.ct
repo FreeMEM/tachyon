@@ -647,3 +647,9 @@ Das ist alles, was gesendet wird:
 MSG_476
 Datei öffnen
 ; Open file
+MSG_477
+Inhalt von %1
+; Contents of %1
+MSG_478
+Übergeordnete Schublade
+; Parent drawer

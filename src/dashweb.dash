@@ -74,6 +74,7 @@ const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeou
 const ID_RANGO = 12       # la barra, después de maquetar en el dibujo (el ancho cambió)
 const ID_CERRADA = 100    # + número de ventana: su botón de cerrar
 const ID_RATON = 120      # + número de ventana: el ratón se movió sobre su página (o salió; D63, tarea 37f3)
+const ID_SOLTADO = 130    # + número de ventana: iconos del Workbench soltados en ella (tarea 60, D83)
 const ID_COMPLETA = 90    # la ventana del vídeo a pantalla completa: un clic o una tecla
 const ID_COMPLETA_CERRADA = 91
 
@@ -972,6 +973,22 @@ func abrir_fichero(w: Ventana)
         preferencia_poner(FICHERO_PREFERENCIAS, "cajon_abrir", dialog_cajon(ruta))
     end
     navegar(w, url_de_ruta(ruta))
+end
+
+# Iconos del Workbench soltados en la ventana (tarea 60, D83 de Dash; solo en la pantalla del Workbench): el
+# primero se abre en la pestaña que se ve y los demás, cada uno en una nueva (mientras quepan)
+func soltado(w: Ventana)
+    ruta = app_drop()
+    primero = true
+    while ruta != ""
+        if primero
+            navegar(w, url_de_ruta(ruta))
+            primero = false
+        else
+            nueva_pestana(w, url_de_ruta(ruta))
+        end
+        ruta = app_drop()
+    end
 end
 
 # "Guardar enlace como..." (tarea 57; Ferrán García lo pidió para bajarse los .readme de Aminet, como AmiFire): el
@@ -2129,6 +2146,7 @@ func nueva_ventana(direccion: String) -> Ventana
     # la página se pinta aparte y llega a la ventana de una vez: no se ve redibujarse
     mui_canvas_buffered(v.pagina, true)
     mui_on_close(v.window, ID_CERRADA + k)
+    mui_on_drop(v.window, ID_SOLTADO + k)
     mui_window_open(v.window)
     if k > 0
         mover_ventana(v.window, k * 24, k * 16)
@@ -2350,6 +2368,10 @@ Main
             end
             if ev >= ID_RATON and ev < ID_RATON + MAX_VENTANAS
                 raton(dw_ventanas[ev - ID_RATON])
+                continue
+            end
+            if ev >= ID_SOLTADO and ev < ID_SOLTADO + MAX_VENTANAS
+                soltado(dw_ventanas[ev - ID_SOLTADO])
                 continue
             end
             w = activa()

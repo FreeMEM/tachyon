@@ -647,3 +647,9 @@ Isto é tudo o que será enviado:
 MSG_476
 Abrir ficheiro
 ; Open file
+MSG_477
+Conteúdo de %1
+; Contents of %1
+MSG_478
+Gaveta superior
+; Parent drawer

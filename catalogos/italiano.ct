@@ -647,3 +647,9 @@ Questo è tutto ciò che verrà inviato:
 MSG_476
 Apri file
 ; Open file
+MSG_477
+Contenuto di %1
+; Contents of %1
+MSG_478
+Cassetto superiore
+; Parent drawer

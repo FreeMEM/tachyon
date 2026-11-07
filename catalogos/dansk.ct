@@ -647,3 +647,9 @@ Dette er alt, hvad der bliver sendt:
 MSG_476
 Åbn fil
 ; Open file
+MSG_477
+Indhold af %1
+; Contents of %1
+MSG_478
+Overordnet skuffe
+; Parent drawer

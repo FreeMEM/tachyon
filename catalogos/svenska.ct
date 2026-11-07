@@ -647,3 +647,9 @@ Det här är allt som skickas:
 MSG_476
 Öppna fil
 ; Open file
+MSG_477
+Innehåll i %1
+; Contents of %1
+MSG_478
+Överordnad låda
+; Parent drawer

@@ -5977,3 +5977,17 @@ Formato:
   un record con dos claves que quedan iguales al cambiar sus sustitutos sueltos por U+FFFD es una sola (sitio de la
   primera, valor de la última).
 - url/ 41/41: 7283/8699, ningún fichero peor (historical 8/8, url-constructor 740/740, url-searchparams 4/4).
+
+### 2026-11-07 — Tarea 41d: signal en addEventListener, window.event, reportError (dom/events 482 → 509/673)
+- addEventListener(t, f, {signal}): abortarla quita el oyente (antes del evento abort, con los _algos nuevos de
+  AbortSignal); ya abortada no lo pone; signal null es TypeError (una de un polyfill, por su evento abort). Un oyente
+  quitado durante un despacho ya no se llama ("quitado").
+- El oyente puede ser cualquier objeto: handleEvent se lee en cada evento, y si no es función, TypeError reportado.
+- window.event: el evento mientras se llama a un oyente (undefined si el objeto está en una sombra; se mira solo si
+  alguien llamó a attachShadow), undefined fuera.
+- Las excepciones de los oyentes y reportError() (nuevo: React lo usa si está) van a la consola y al evento error de
+  la ventana; window.onerror recibe mensaje, fichero, línea, columna y error, y true lo cancela.
+- 10 ficheros mejor, ninguno peor. tests/test_jsdom_eventos_signal.dash. Velocidad (bench_eventos.html nuevo, máquina
+  RTG, dos pasadas): 500 despachos por 13 nodos con oyentes 1180-1240 → 1220-1280 ms, sin oyentes 1000-1060 →
+  1040-1060, add/remove 220 → 220-240: lo mismo dentro del ruido (pasos de 20 ms). Lo caro es despachar en sí (2 ms
+  cada uno sin oyentes): para la tarea 61.

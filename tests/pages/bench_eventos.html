@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta despachar eventos (un árbol de 12 niveles; oyentes en el objetivo y en la raíz, sin
+     oyentes, y addEventListener/removeEventListener); el resultado en la página y en el título -->
+<p id=r>midiendo...</p>
+<div id=raiz></div>
+<script>
+var raiz = document.getElementById('raiz'), e = raiz;
+for (var i = 0; i < 12; i++) { var h = document.createElement('div'); e.appendChild(h); e = h; }
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var n = 0;
+e.addEventListener('a', function () { n++; });
+raiz.addEventListener('a', function () { n++; });
+var r1 = medir(function () { for (var i = 0; i < 500; i++) e.dispatchEvent(new Event('a', {bubbles: true})); });
+var r2 = medir(function () { for (var i = 0; i < 500; i++) e.dispatchEvent(new Event('b', {bubbles: true})); });
+var r3 = medir(function () { for (var i = 0; i < 1000; i++) { var f = function () {}; e.addEventListener('c', f); e.removeEventListener('c', f); } });
+var s = 'oyentes ' + r1 + ' sin ' + r2 + ' addremove ' + r3;
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

@@ -5741,3 +5741,19 @@ Formato:
   Captura igual. Tests: svg, imagen*, documento* y animación, sin red y con red.
 - Lo siguiente que pesa: jsdom_preparar, ~1,2 s en cada página con scripts (leer el bytecode del preludio y
   ejecutarlo en un runtime nuevo por página); probar selectores, ~2,2 s en gh_local (308.000 _cumple_desde).
+
+### 2026-11-07 — Tarea 61 (6): medido el preludio; lo que queda
+- jsdom_preparar no es caro por página: leer el bytecode del preludio (190 KB) 35 ms y ejecutarlo 160 ms (medido con un
+  printf temporal, ya quitado). Lo que pesaba en el perfil es compilarlo, solo la primera página tras arrancar el
+  Amiga (luego va de T:tachyon_preludio.bc). Cada página tiene su runtime y su charco de memoria a propósito (se suelta
+  entero al cerrarla): el preludio compilado no se puede compartir entre páginas.
+- Memoria de gh_local.html (134,5 MB libres al empezar → 113,4 al acabar, ~21 MB): árbol ~6,5 MB, estilo ~8,4 MB (un
+  diccionario por elemento con todo, también lo heredado), maqueta ~2 MB, JavaScript ~2 MB.
+- Lo que queda, por orden de lo que puede ganar:
+  1. Memoria del estilo: compartir diccionarios iguales exige antes que nadie cambie n.estilo en su sitio
+     (_flex_maquetar fuerza width/height/min/max/box-sizing; la altura de los reemplazados; la dirección de
+     background-image): que trabajen sobre una copia y la suelten. Con eso, compartir entre hermanos (61 (3)) o por
+     contenido.
+  2. Probar selectores (~2,2 s del estilo de gh_local, 308.000 _cumple_desde): son sobre todo las subidas por los
+     antepasados de los combinadores de descendiente; un filtro de Bloom por nodo, como los navegadores.
+  3. Maqueta (5,9 s): _flex_maquetar copia y quita los dibujos uno a uno y monta un diccionario por elemento medido.

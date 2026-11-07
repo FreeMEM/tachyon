@@ -5967,3 +5967,13 @@ Formato:
   TypeError (antes, Response lo leía siempre como urlencoded).
 - url/ 41/41: 7277/8699 (84 %), ningún fichero peor. Pasan los de jsdom, documento y js sin red, js_fetch y
   jsdom_load_peticion.
+
+### 2026-11-07 — Tarea 41d: structuredClone y dos detalles de URLSearchParams (url/: 7283/8699)
+- No había structuredClone (lo usan muchas webs para copiar datos). Copia honda: objetos (una clase propia queda en
+  objeto llano, como en los navegadores), listas, Date, RegExp, Map, Set, ArrayBuffer y vistas, Blob, errores y los
+  envoltorios de primitivos, con las referencias repetidas y circulares. Funciones, símbolos y objetos de la
+  plataforma (nodos, URL, Promise, Headers...) dan DataCloneError. tests/test_js_structuredclone.dash.
+- url.searchParams leía la query con el constructor, que quita un "?" del principio ("??a=b" daba "a" y no "?a");
+  un record con dos claves que quedan iguales al cambiar sus sustitutos sueltos por U+FFFD es una sola (sitio de la
+  primera, valor de la última).
+- url/ 41/41: 7283/8699, ningún fichero peor (historical 8/8, url-constructor 740/740, url-searchparams 4/4).

@@ -1,4 +1,4 @@
-WPT TOTAL url: 7277/8699 subpruebas en 41 de 41 ficheros
+WPT TOTAL url: 7283/8699 subpruebas en 41 de 41 ficheros
 
 WPT FILE url/IdnaTestV2-removed.any.html 1/21 OK
 WPT FILE url/IdnaTestV2.any.html 1536/2676 OK
@@ -6,7 +6,7 @@ WPT FILE url/a-element-origin.html 405/415 OK
 WPT FILE url/a-element.html 844/897 OK
 WPT FILE url/data-uri-fragment.html 0/1 TIMEOUT 
 WPT FILE url/failure.html 1175/1175 OK
-WPT FILE url/historical.any.html 6/8 OK
+WPT FILE url/historical.any.html 8/8 OK
 WPT FILE url/idlharness.any.html 0/1 OK
 WPT FILE url/javascript-urls.window.html 0/6 TIMEOUT 
 WPT FILE url/percent-encoding.window.html 1/17 OK
@@ -14,9 +14,9 @@ WPT FILE url/toascii.window.html 616/784 OK
 WPT FILE url/url-constructor.any.html 137/137 OK
 WPT FILE url/url-constructor.any.html 13/13 OK
 WPT FILE url/url-constructor.any.html 14/14 OK
-WPT FILE url/url-constructor.any.html 739/740 OK
+WPT FILE url/url-constructor.any.html 740/740 OK
 WPT FILE url/url-origin.any.html 416/416 OK
-WPT FILE url/url-searchparams.any.html 3/4 OK
+WPT FILE url/url-searchparams.any.html 4/4 OK
 WPT FILE url/url-setters-a-area.window.html 43/43 OK
 WPT FILE url/url-setters-a-area.window.html 13/13 OK
 WPT FILE url/url-setters-a-area.window.html 13/13 OK
@@ -31,7 +31,7 @@ WPT FILE url/url-statics-parse.any.html 8/8 OK
 WPT FILE url/url-tojson.any.html 1/1 OK
 WPT FILE url/urlencoded-parser.any.html 105/105 OK
 WPT FILE url/urlsearchparams-append.any.html 4/4 OK
-WPT FILE url/urlsearchparams-constructor.any.html 24/27 OK
+WPT FILE url/urlsearchparams-constructor.any.html 26/27 OK
 WPT FILE url/urlsearchparams-delete.any.html 8/8 OK
 WPT FILE url/urlsearchparams-foreach.any.html 6/6 OK
 WPT FILE url/urlsearchparams-get.any.html 2/2 OK
@@ -1266,8 +1266,6 @@ WPT SUB FAIL url/a-element.html | Parsing: <data:text/plain,test# !"#$%&'()*+,-.
 WPT SUB FAIL url/a-element.html | Parsing: <about:blank# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "about:blank#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "about:blank#"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/U+d800?U+dfff???????U+d800?U+dfff??????> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%B
 WPT SUB TIMEOUT url/data-uri-fragment.html | Data URI parsing of fragments | Test timed out
-WPT SUB FAIL url/historical.any.html | URL: no structured serialize/deserialize support | assert_throws_dom: function "() => self.structuredClone(new URL("about:blank"))" threw object "TypeError: not a function" that is not a DOMException DataCloneEr
-WPT SUB FAIL url/historical.any.html | URLSearchParams: no structured serialize/deserialize support | assert_throws_dom: function "() => self.structuredClone(new URLSearchParams())" threw object "TypeError: not a function" that is not a DOMException DataCloneErr
 WPT SUB FAIL url/idlharness.any.html | idl_test setup | promise_test: Unhandled rejection with value: object "Error fetching /interfaces/url.idl."
 WPT SUB TIMEOUT url/javascript-urls.window.html | javascript: URL that fails to parse due to invalid host | Test timed out
 WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL that fails to parse due to invalid host and has a U+0009 in scheme | 
@@ -1459,8 +1457,4 @@ WPT SUB FAIL url/toascii.window.html | xn--0.com (using <a>.hostname) | assert_e
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>) | Failed to construct 'URL': Invalid URL
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.host) | assert_equals: expected "xn--0.com" but got "x"
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.hostname) | assert_equals: expected "xn--0.com" but got "x"
-WPT SUB FAIL url/url-constructor.any.html | Parsing: <??a=b&c=d> against <http://example.org/foo/bar> | assert_equals: searchParams expected "%3Fa=b&c=d" but got "a=b&c=d"
-WPT SUB FAIL url/url-searchparams.any.html | URL.searchParams and URL.search setters, update propagation | assert_equals: expected "%3Fa=b&c=d" but got "a=b&c=d"
 WPT SUB FAIL url/urlsearchparams-constructor.any.html | URLSearchParams constructor, DOMException as argument | assert_throws_js: Constructing a URLSearchParams from DOMException.prototype should throw due to branding checks function "() => new URLSearchParams(DOMExceptio
-WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 2 unpaired surrogates (no trailing) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["\ufffdx", "3"] got ["\ufffdx", "1"])
-WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 3 unpaired surrogates (no leading) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["x\ufffd", "3"] got ["x\ufffd", "1"])

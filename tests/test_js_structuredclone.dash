@@ -1,0 +1,28 @@
+# Test: structuredClone (HTML; tarea 41d, WPT url/historical): copia honda de objetos, listas, Date, Map, Set,
+# ArrayBuffer y vistas, con las referencias circulares y repetidas; la clase propia queda en objeto llano; funciones,
+# nodos y URL dan DataCloneError (un DOMException).
+# memcheck
+# expect-out: honda: true 2 | fecha: true | mapa: b 1 | circular: true | repetida: true | vista: 3 7 | clase: false 5 | funcion: DataCloneError 25 | nodo: DataCloneError | url: DataCloneError
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var o = {a: [1, 2], d: new Date(5)}, k = structuredClone(o);"
+    c = c + "var r = 'honda: ' + (k.a !== o.a) + ' ' + k.a[1];"
+    c = c + "r += ' | fecha: ' + (k.d instanceof Date && k.d.getTime() == 5 && k.d !== o.d);"
+    c = c + "var m = structuredClone(new Map([['b', new Set([1])]])); r += ' | mapa: ' + Array.from(m.keys())[0] + ' ' + m.get('b').size;"
+    c = c + "var ci = {}; ci.yo = ci; var cc = structuredClone(ci); r += ' | circular: ' + (cc.yo === cc && cc !== ci);"
+    c = c + "var x = {}, rp = structuredClone([x, x]); r += ' | repetida: ' + (rp[0] === rp[1]);"
+    c = c + "var u8 = new Uint8Array([3, 7]), cu = structuredClone(u8); u8[0] = 9; r += ' | vista: ' + cu[0] + ' ' + cu[1];"
+    c = c + "class P { constructor() { this.v = 5; } } var cp = structuredClone(new P()); r += ' | clase: ' + (cp instanceof P) + ' ' + cp.v;"
+    c = c + "try { structuredClone({f: function () {}}); } catch (e) { r += ' | funcion: ' + e.name + ' ' + e.code; }"
+    c = c + "try { structuredClone(document.body); } catch (e) { r += ' | nodo: ' + e.name; }"
+    c = c + "try { structuredClone(new URL('about:blank')); } catch (e) { r += ' | url: ' + e.name; } r"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

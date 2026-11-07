@@ -1161,6 +1161,10 @@ func mostrar(w: Ventana, d: Documento, direccion: String)
     w.desde = 0
     ancho = mui_width(w.v.pagina)
     if ancho > 0
+        # (con el alto de la vista, como pinta_en: sin él, pinta_en la veía con otro alto y la maquetaba entera otra
+        # vez; cada página nueva se maquetaba dos veces desde el 2026-10-22: tarea 61)
+        estilo_vh = mui_height(w.v.pagina)
+        w.actual.vh = estilo_vh
         documento_maquetar(w.actual, ancho)
         y = documento_y_de(w.actual, documento_fragmento(direccion))
         if y > 0

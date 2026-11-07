@@ -598,7 +598,7 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
-- [ ] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
+- [~] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
       en páginas reales guardadas (gh_repo.html, Wikipedia, amigatronics, YouTube) con el perfil (--perfil), TRAZA y
       la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
       podrían ser parciales, JavaScript del preludio que se ejecuta siempre. Dejar medidas antes y después en la
@@ -5678,3 +5678,18 @@ Formato:
 - Tests: test_jsdom_colecciones (viva con cambios y atributos, solo lectura, borrar, nombres, prototipo, iterable,
   getElementsByTagNameNS); jsdom y documento sin red 26/26. WPT dom/collections 54/55 (docs/wpt/js_dom_collections.txt).
   Lo medido de WPT: dom/ 47683/57588 (83 %). Batería entera sin pasar tras esto.
+
+### 2026-11-07 — Tarea 61 (1): cada página se maquetaba dos veces
+- Traza (TRAZA) de una página grande en la máquina RTG con MUI 3.8: tests/pages/gh_repo.html, 31 s hasta entera, con
+  estilo 6,4 s, "maquetada en 9399 ms" y luego otra vez "maquetada en 8675 ms" sin nada entre medias. mostrar() maqueta
+  con el ancho de la zona de la página pero no ponía su alto (Documento.vh), y pinta_en, al pintar, lo veía distinto
+  y maquetaba entera otra vez (la comprobación del alto es de la 42e, 2026-10-22: desde entonces, cada página nueva
+  dos veces). Ahora mostrar pone vh y estilo_vh antes de maquetar.
+- Medido con una copia de gh_repo.html sin nada de fuera (tests/pages/gh_local.html, sin seguimiento como gh_repo):
+  0.9.1, maqueta 8,7 s + 8,2 s, "Ready" a los ~28 s; con esto, una sola maqueta de 9,1 s y "Ready" a los 19,8 s. Las
+  capturas, iguales píxel a píxel salvo el tiempo de la barra de estado.
+- Aviso: gh_repo.html pide sus scripts a github.githubassets.com (la web de verdad) en cada prueba con ella; para
+  medir, gh_local.html. El perfil (--perfil) da el 75 % en Main (el C y QuickJS no se desglosan): lo siguiente, el
+  estilo (6-8 s) y la maqueta (9 s) de esta página, por fases.
+- El panel de progreso (https://claude.ai/artifact/6RpPSBd7iEVaXduBDX9QEA) no se abre con esta cuenta ("no such
+  artifact"): docs/panel/estandares.json, al día en el repo (Acid3 100/100, WPT dom 47683/57588), sin subir.

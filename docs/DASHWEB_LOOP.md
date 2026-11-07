@@ -5878,11 +5878,12 @@ Formato:
   antes la señal y sus dependientes y luego van los eventos, en orden (salían al revés). toStringTag.
 - WPT dom/abort 35/37 (las dos que faltan necesitan iframes de otra ventana). test_js_fetch pasa.
 
-### 2026-11-07 — Tarea 41d: el corredor de WPT, con más tiempo por página (dom/events 413 → 451/618)
+### 2026-11-07 — Tarea 41d: el corredor de WPT, con más tiempo por página (dom/events 482/674)
 - Event-dispatch-single-activation-behavior se quedaba en 86/132 con 37 NOTRUN: no era Tachyon (los de <AREA>, en una
   copia de la página solos, pasan), sino los 20 s por página de tools/wpt_testharness.dash, que con 132 promise_test de
   dos temporizadores cada uno no llegaban en el emulador.
 - tools/wpt_testharness.dash espera hasta 60 s por página; tools/wpt_js.py pone setup({timeout_multiplier: 5}) en
   testharness (como hace wptrunner con las plataformas lentas) y da 70 s por página al emulador.
 - dom/events: single-activation 86 → 124/132; ningún fichero a peor. Lo que queda ahí: con formularios uno dentro de
-  otro (por el DOM), el submit del de dentro llega también al de fuera.
+  otro (por el DOM), el submit del de dentro llega también al de fuera. Total de dom/events: 482/674 en 97 ficheros
+  (ahora entran también sus .any.js y .window.js: eran 83 ficheros y 618 subpruebas).

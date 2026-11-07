@@ -5798,3 +5798,28 @@ Formato:
   (IdnaTestV2 1372/2676 y se corta por tiempo; toascii 469/784), url-setters-stripping 148/320, url-constructor
   83/137 (la variante sin file, javascript ni mailto), urlencoded-parser 60/105, percent-encoding 1/17, y
   javascript-urls y data-uri-fragment (no acaban). En docs/wpt/js_url.txt.
+
+### 2026-11-07 — Tarea 41d: URL como la máquina de estados del estándar, y más rápida que antes
+- lib/jsdom_preludio.js: el URL de antes (expresiones regulares que aproximaban) falla mucho en WPT url/ (file:,
+  IPv4 y IPv6, credenciales, setters...). Ahora es el "basic URL parser" de WHATWG con su registro (scheme, username,
+  password, host, port, path en lista u opaco, query, fragment), estado forzado para los setters (protocol, host,
+  hostname, port, pathname, search, hash) como dice el estándar, host parser con IPv4 (hex, octal, partes) e IPv6
+  (con IPv4 dentro, compresión al serializar), percent-encode por conjuntos, percent-decode a UTF-8 y domainToASCII
+  aproximado (NFKC, minúsculas, lo que UTS 46 quita o no deja, Punycode en las dos direcciones; sin sus tablas ni la
+  regla bidi). URLSearchParams con el application/x-www-form-urlencoded del estándar, USVString, iteradores vivos.
+- Probado primero en el PC con node contra los datos de WPT: urltestdata 896/896, setters_tests 278/278 (toascii
+  69/87: lo que falta es UTS 46 fino).
+- Velocidad (tests/pages/bench_url.html, máquina RTG con MUI 3.8, ms de 0.9.1 → máquina de estados carácter a
+  carácter → final): 500 absolutas 920 → 3380 → 320; 500 relativas 1220 → 4140 → 840; 300 con searchParams 880 →
+  2100 → 700; 300 con setters 640 → 1560 → 560. La primera versión no entró así: ahora va sobre el texto con
+  charCodeAt, salta de golpe los trozos de ruta, consulta, ancla, autoridad y host (y los codifica solo si hace
+  falta), lee el esquema con una expresión regular, no mira si el host es IPv4 cuando no puede serlo, URLSearchParams
+  no decodifica lo que no tiene % ni +, y una vía rápida (una expresión regular) para lo más común, una dirección
+  http(s) absoluta limpia, que da lo mismo que la máquina de estados.
+- Aviso: la herramienta Write cambió los \uXXXX del fichero por los caracteres; en el preludio van como \uXXXX
+  (comprobado: nada fuera de ASCII en su código, solo en comentarios).
+- WPT url/ 2319 → 2926/4319 (68 %): url-constructor 137+13+14 de 137+13+14, setters y setters-stripping enteros,
+  urlsearchparams casi enteros; ningún fichero a peor. Lo que queda: IDNA (IdnaTestV2, toascii; se cortan por tiempo),
+  percent-encoding (pide otras codificaciones), urlencoded-parser, javascript-urls y data-uri-fragment.
+- Tests: jsdom, documento y js sin red, todos (4 dieron TIMEOUT al final de una tanda de 33 y pasan sueltos);
+  jsdom_load_peticion, jsdom_scripts, jsdom_iframe y documento_tipo con red.

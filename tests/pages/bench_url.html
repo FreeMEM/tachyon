@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta URL (new URL absoluta y relativa, href, searchParams); el resultado en la página y en el
+     título -->
+<p id=r>midiendo...</p>
+<script>
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var n = 0;
+var r1 = medir(function () { for (var i = 0; i < 500; i++) n += new URL('https://www.example.com:8080/a/b/c.html?x=' + i + '&y=2#frag').href.length; });
+var r2 = medir(function () { for (var i = 0; i < 500; i++) n += new URL('../img/foto' + i + '.png?v=1', 'https://cdn.example.com/static/css/main.css').pathname.length; });
+var r3 = medir(function () { for (var i = 0; i < 300; i++) { var u = new URL('https://a.com/?q=hola+mundo&n=' + i); n += u.searchParams.get('n').length; u.searchParams.set('p', 'x y'); n += u.search.length; } });
+var r4 = medir(function () { for (var i = 0; i < 300; i++) { var u = new URL('https://a.com/x'); u.hostname = 'b.com'; u.pathname = '/y/' + i; u.hash = 'z'; n += u.href.length; } });
+var s = 'abs ' + r1 + ' rel ' + r2 + ' params ' + r3 + ' set ' + r4;
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

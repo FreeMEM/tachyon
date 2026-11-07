@@ -128,6 +128,10 @@ struct Hojas
     # los selectores por su parte de la derecha: "#id", ".clase" o la etiqueta; los demás en universales
     indice: {String: [Entrada]} = nil
     universales: [Entrada] = nil
+    # los que no tienen ni id, ni clase, ni etiqueta pero sí un atributo ("[data-color-mode=dark] ...", "[hidden]"),
+    # en el índice con la clave "[nombre": solo se prueban en los elementos con ese atributo (tarea 61: en GitHub eran
+    # unos 300 de sus 550 universales, probados en cada elemento)
+    con_atributos: Bool = false
     indice_ancho: Int = -1             # el ancho de la página con que se hizo (por los @media)
     # los de ::before y ::after, con la clave "before .clase", "after a"... ("before " los universales)
     indice_pe: {String: [Entrada]} = nil
@@ -1267,7 +1271,12 @@ func _estilo_indexar(h: Hojas)
                     e.antes = _requisitos(sel)
                     numero = numero + 1
                     e.num = numero
-                    clave = _clave(sel.partes[sel.partes.length - 1].simple)
+                    ultima = sel.partes[sel.partes.length - 1].simple
+                    clave = _clave(ultima)
+                    if clave == "" and ultima.atributos.length > 0
+                        clave = "[" + str_lower(ultima.atributos[0].nombre)
+                        h.con_atributos = true
+                    end
                     if clave == ""
                         universales.push(e)
                     elif indice.has(clave)
@@ -2582,6 +2591,14 @@ end
 func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: {String: String})
     var cumplidas: [Entrada] = []
     _cumplidas(n, hojas.universales, cumplidas)
+    if hojas.con_atributos
+        for a in n.atributos
+            k = "[" + a.nombre
+            if hojas.indice.has(k)
+                _cumplidas(n, hojas.indice[k], cumplidas)
+            end
+        end
+    end
     if hojas.indice.has(n.nombre)
         _cumplidas(n, hojas.indice[n.nombre], cumplidas)
     end

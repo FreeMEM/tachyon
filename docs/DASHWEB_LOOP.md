@@ -5693,3 +5693,18 @@ Formato:
   estilo (6-8 s) y la maqueta (9 s) de esta página, por fases.
 - El panel de progreso (https://claude.ai/artifact/6RpPSBd7iEVaXduBDX9QEA) no se abre con esta cuenta ("no such
   artifact"): docs/panel/estandares.json, al día en el repo (Acid3 100/100, WPT dom 47683/57588), sin subir.
+
+### 2026-11-07 — Tarea 61 (2): los selectores de atributo, fuera de los universales
+- Del perfil de gh_repo.html: la mitad del estilo es probar selectores (_cumple_desde, 570.000 llamadas, ~190 por
+  elemento). Las hojas de GitHub tienen 2351 selectores y unos 550 van a los universales (sin id, clase ni etiqueta en
+  su última parte), que se prueban en cada elemento: sobre todo de atributo ([data-color-mode=...] 179, [type],
+  [data-component], [data-kbd-chord]...) y :root.
+- lib/estilo.dash: los de atributo van al índice con la clave "[nombre" (Hojas.con_atributos), y cada elemento prueba
+  solo los de los atributos que tiene. La cascada no depende del orden en que se juntan (especificidad y orden de la
+  regla). La invalidación (_clave, estilo_aplicar_partes) no cambia: los sigue tratando como universales.
+- gh_local.html en la máquina RTG con MUI 3.8: estilo 5,8 s → 4,4 s; "Ready" a los 18,2 s (20,3 s antes; ~28 s con la
+  0.9.1). Captura igual píxel a píxel (salvo el tiempo de la barra de estado).
+- tests/bench/fases.dash: el árbol con Hubbub (como el navegador) y cada fase escrita al acabarla; con gh_local.html no
+  llega a escribir nada en 200 s (sin mirar aún por qué: con prueba.html va).
+- Tests: estilo, css, maqueta, acid y documento sin red, todos; con red: estilo_enlaces, acid2_pagina, documento_tipo,
+  jsdom_iframe, jsdom_load_peticion, jsdom_scripts; jsdom entero 23/23.

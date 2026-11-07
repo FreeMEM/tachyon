@@ -5626,3 +5626,20 @@ Formato:
   (sys32rtg), lo mismo: guardar enlace y Amiga-J, y Amiga-S abre un solo selector (el atajo no va dos veces). El
   menú de MUI 5 sale con su borde izquierdo en el puntero (el de MUI 3.8, a la izquierda): las pruebas con clicar
   tienen que ir unos 80 px a la derecha para caer en la opción.
+
+### 2026-11-07 — Publicada la v0.9.1-alfa
+- Usuario: "ve publicando la 0.9.1 para que la gente tenga novedades calentitas", y después (por freemem-14): "antes
+  de publicar la versión asegúrate que funciona bien y que actualiza bien desde el propio tachyon y que corre y no se
+  jode". Tachyon pasa a esta sesión (tachyon-97) desde freememlang [e4f769].
+- Versión 0.9.1-alfa (67495f2: tareas 57 y 59), PR #21 de dev a main (8d080dd), etiqueta v0.9.1-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.1-alfa con tachyon.lha, Tachyon.gz (SHA-256 2ac8d584...a4ea,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Antes de publicar: batería entera 143/143 (4829 s, con el código de la versión). Actualización de verdad: el
+  Tachyon.gz de la v0.9.0-alfa publicada, en la máquina RTG con MUI 3.8 (sys32rtg38), con VERSIONES= hacia un GitHub
+  de mentira en el PC que daba la 0.9.1 compilada (guion en el scratchpad, como tests/servers/http.py /act/): icono
+  verde, un clic, baja Tachyon.gz y los nueve catálogos (a Catalogs/<idioma>/), el programa instalado es idéntico al
+  compilado (cmp), el de antes queda como .old, "0.9.1-alfa installed: click the green icon", y Reiniciar abre la
+  0.9.1 (su página de inicio dice 0.9.1-alfa; la vieja sale con rc 0). La 0.9.1 del paquete en la misma máquina:
+  Amiga+C, Amiga+V, Ctrl+V, Amiga+X y Amiga-S ("Saved in RAM:pegar.html") bien; cuatro ventanas a la vez (Acid3,
+  gh_repo.html de 300 KB en ~65 s, estrellas.html animada y Acid2) unos 5 min sin colgarse, y al final un clic en el
+  enlace de Acid2 responde.

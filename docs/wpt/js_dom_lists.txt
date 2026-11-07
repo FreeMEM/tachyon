@@ -1,53 +1,11 @@
-WPT TOTAL dom/lists: 123/189 subpruebas en 5 de 5 ficheros
+WPT TOTAL dom/lists: 169/189 subpruebas en 5 de 5 ficheros
 
 WPT FILE dom/lists/DOMTokenList-Iterable.html 6/6 OK
-WPT FILE dom/lists/DOMTokenList-coverage-for-attributes.html 113/175 ERROR 35 duplicate test names: "a.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList.", "area.classList in http://www.w3.org/1999/xhtml namesp
-WPT FILE dom/lists/DOMTokenList-iteration.html 4/6 OK
-WPT FILE dom/lists/DOMTokenList-stringifier.html 0/1 OK
-WPT FILE dom/lists/DOMTokenList-value.html 0/1 OK
+WPT FILE dom/lists/DOMTokenList-coverage-for-attributes.html 155/175 ERROR 35 duplicate test names: "a.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList.", "area.classList in http://www.w3.org/1999/xhtml namesp
+WPT FILE dom/lists/DOMTokenList-iteration.html 6/6 OK
+WPT FILE dom/lists/DOMTokenList-stringifier.html 1/1 OK
+WPT FILE dom/lists/DOMTokenList-value.html 1/1 OK
 
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | iframe.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | output.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | td.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | th.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | iframe.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | output.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | td.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | th.classList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | iframe.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | output.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | td.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | th.classList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | iframe.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | output.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | td.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | th.classList in http://example.com/ namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | iframe.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | output.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | td.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | th.classList in null namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.relList in http://www.w3.org/1999/xhtml namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.relList in http://www.w3.org/1998/Math/MathML namespace should be DOMTokenList. | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | area.relList in http://www.w3.org/1998/Math/MathML namespace should be undefined. | assert_equals: expected (undefined) undefined but got (object) object ""
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.relList in http://www.w3.org/1998/Math/MathML namespace should be undefined. | assert_equals: expected (undefined) undefined but got (object) object ""
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | a.relList in http://example.com/ namespace should be undefined. | assert_equals: expected (undefined) undefined but got (object) object ""
@@ -68,7 +26,3 @@ WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.sizes in
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.sizes in http://www.w3.org/1998/Math/MathML namespace should be undefined. | assert_equals: expected (undefined) undefined but got (string) ""
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.sizes in http://example.com/ namespace should be undefined. | assert_equals: expected (undefined) undefined but got (string) ""
 WPT SUB FAIL dom/lists/DOMTokenList-coverage-for-attributes.html | link.sizes in null namespace should be undefined. | assert_equals: expected (undefined) undefined but got (string) ""
-WPT SUB FAIL dom/lists/DOMTokenList-iteration.html | classList.forEach | assert_equals: Entry 0 listObj expected object " a a b " but got ["a", "b"]
-WPT SUB FAIL dom/lists/DOMTokenList-iteration.html | classList inheritance from Array.prototype | assert_equals: [Symbol.iterator] expected function "function values() { [native code] }" but got function "function bound values() { [native code] }"
-WPT SUB FAIL dom/lists/DOMTokenList-stringifier.html | DOMTokenList stringifier | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"
-WPT SUB FAIL dom/lists/DOMTokenList-value.html | DOMTokenList value | assert_class_string: expected "[object DOMTokenList]" but got "[object Object]"

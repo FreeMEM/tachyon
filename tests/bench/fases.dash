@@ -1,7 +1,8 @@
 # Tiempo de cada fase sobre una página servida por HTTP (tools/medir_visor.py --fases):
-# tokenizar, árbol, estilo, maquetar. Uso: fases URL
+# tokenizar, árbol (Hubbub, como el navegador), estilo, maquetar. Uso: fases URL
 import "../../lib/maqueta.dash"
 import "../../lib/http.dash"
+import "../../lib/html5.dash"
 
 Main
     r = http_get(arg(0), 20000)
@@ -15,15 +16,20 @@ Main
         tok = html_siguiente(t)
     end
     t_tok = time_ms() - t0
+    Print "tokens " + t_tok
     t0 = time_ms()
-    doc = dom_desde_html(texto)
+    # (el árbol como en el navegador: Hubbub, lib/html5.dash)
+    doc = dom_desde_html5(texto)
     t_dom = time_ms() - t0
+    Print "dom " + t_dom
     t0 = time_ms()
     hojas = estilo_hojas(doc, arg(0))
     t_hojas = time_ms() - t0
+    Print "hojas " + t_hojas
     t0 = time_ms()
     estilo_aplicar(doc, hojas)
     t_estilo = time_ms() - t0
+    Print "estilo " + t_estilo
     t0 = time_ms()
     p = maquetar(doc, 580)
     t_maq = time_ms() - t0

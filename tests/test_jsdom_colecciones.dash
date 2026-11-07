@@ -1,0 +1,49 @@
+# Test: HTMLCollection viva (tarea 41d, WPT dom/collections). children, getElementsByTagName, getElementsByClassName y
+# getElementsByTagNameNS ven los cambios del árbol y de los atributos; los índices y los nombres (id, name) son
+# propiedades propias de solo lectura que no se borran; el nombre que tiene el prototipo (length) no tapa; se
+# recorre con for...of y no tiene forEach; Object.getOwnPropertyNames da índices y nombres.
+# memcheck
+# expect-out: viva: 2 3 3 | 1 2
+# expect-out: clase: true 1 0 | children: true 1
+# expect-out: item: B null | namedItem: B null | nombre: B C undefined
+# expect-out: solo lectura: true true false TypeError
+# expect-out: borrar: false true | expando: 7 | prototipo: 2
+# expect-out: nombres: 0,1,2,b,c,dd
+# expect-out: iterable: B,C,D false | tipo: [object HTMLCollection] true | ns: 2 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><div id='r'><b id='b'>B</b><i id='c'>C</i></div></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var r = document.getElementById('r'), t = r.getElementsByTagName('*'), h = r.children; var a = t.length;"
+    c = c + "var d = document.createElement('u'); d.textContent = 'D'; r.appendChild(d);"
+    c = c + "var s1 = t.length, s2 = h.length; r.removeChild(d); var x = h.length; r.appendChild(d);"
+    c = c + "'viva: ' + a + ' ' + s1 + ' ' + s2 + ' | ' + r.getElementsByTagName('u').length + ' ' + (x + 0)"
+    Print js_evaluar(js, c, "t.js")
+    c = "var k = document.getElementsByClassName('z'); var k0 = k.length; d.className = 'z';"
+    c = c + "'clase: ' + (k0 === 0) + ' ' + k.length + ' ' + (d.className = '', k.length) + ' | children: ' + (r.children === r.children) + ' ' + document.children.length"
+    Print js_evaluar(js, c, "t.js")
+    c = "'item: ' + h.item(0).textContent + ' ' + h.item(9) + ' | namedItem: ' + h.namedItem('b').textContent + ' ' + h.namedItem('zz')"
+    c = c + " + ' | nombre: ' + h.b.textContent + ' ' + h['c'].textContent + ' ' + h.zz"
+    Print js_evaluar(js, c, "t.js")
+    c = "h[0] = 5; var e1; try { (function () { 'use strict'; h[0] = 5; })(); } catch (e) { e1 = e.name; }"
+    c = c + "var w = Object.getOwnPropertyDescriptor(h, 0); var nw = Object.getOwnPropertyDescriptor(h, 'b');"
+    c = c + "'solo lectura: ' + (h[0].textContent === 'B') + ' ' + w.enumerable + ' ' + nw.enumerable + ' ' + e1"
+    Print js_evaluar(js, c, "t.js")
+    c = "var b1 = delete h[0], b2 = delete h[7]; h.otra = 7; var q = document.createElement('p'); q.id = 'length'; r.appendChild(q);"
+    c = c + "'borrar: ' + b1 + ' ' + b2 + ' | expando: ' + h.otra + ' | prototipo: ' + (typeof h.length === 'number' ? 2 : 0)"
+    Print js_evaluar(js, c, "t.js")
+    c = "r.removeChild(q); delete h.otra; d.setAttribute('name', 'dd');"
+    c = c + "'nombres: ' + Object.getOwnPropertyNames(h).join(',')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var l = []; for (var e of h) l.push(e.textContent);"
+    c = c + "var sv = document.createElementNS('urn:x', 'g'); r.appendChild(sv); var ns = r.getElementsByTagNameNS('urn:x', '*'); var n1 = ns.length;"
+    c = c + "r.appendChild(document.createElementNS('urn:x', 'g'));"
+    c = c + "'iterable: ' + l.join(',') + ' ' + ('forEach' in h) + ' | tipo: ' + Object.prototype.toString.call(h) + ' ' + (h instanceof HTMLCollection) + ' | ns: ' + ns.length + ' ' + n1"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

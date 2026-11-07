@@ -1570,8 +1570,11 @@ static JSValue _jsdom_parentNode(JSContext *ctx, JSValueConst this_val) {
 }
 
 /* magic 0: children (elements), 1: childNodes */
+/* children: una HTMLCollection viva (tarea 41d; el preludio da siempre la misma); childNodes: un Array */
+static JSValue _col_nueva(JSContext *ctx, _Dash_Nodo *raiz, int tipo, char *sel, JSValueConst filtro);
 static JSValue _jsdom_hijos(JSContext *ctx, JSValueConst this_val, int magic) {
     _JSDOM_ESTE;
+    if (magic == 0) return _col_nueva(ctx, n, 0, NULL, JS_UNDEFINED);
     return _jsdom_lista(ctx, jsdom_hijos(n, magic == 0));
 }
 
@@ -1663,6 +1666,13 @@ static JSValue _jsdom_selector(JSContext *ctx, JSValueConst this_val, int argc, 
         _jsdom_soltar(s);
         return e;
     }
+    if (magic == 2) {
+        /* getElementsByTagName: una HTMLCollection viva (tarea 41d) */
+        char *sel = strdup(s);
+        _jsdom_soltar(s);
+        if (!sel) return JS_ThrowOutOfMemory(ctx);
+        return _col_nueva(ctx, n, 1, sel, JS_UNDEFINED);
+    }
     l = jsdom_selector(n, (STRPTR)s, magic != 0);
     _jsdom_soltar(s);
     if (magic) return _jsdom_lista(ctx, l);
@@ -1740,14 +1750,12 @@ static JSValue _jsdom_matches(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_NewBool(ctx, r);
 }
 
-static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    char *s, *sel, *p, *q;
-    DashArrayLong *l;
-    _JSDOM_ESTE;
-    s = _jsdom_arg(ctx, argc, argv, 0);
-    if (!s) return JS_EXCEPTION;
+/* the selector of getElementsByClassName(s) (malloc; free it), NULL without memory */
+static char *_jsdom_clases_selector(const char *s) {
+    const char *p;
+    char *sel, *q;
     sel = (char *)malloc(strlen(s) * 6 + 2);
-    if (!sel) { _jsdom_soltar(s); return JS_EXCEPTION; }
+    if (!sel) return NULL;
     /* "a b" -> ".a.b"; una cifra al principio (o tras un "-"), escapada: ".\35 cm" (un selector no empieza por cifra) */
     for (p = s, q = sel; *p; ) {
         while (*p && (unsigned char)*p <= 32) p++;
@@ -1764,11 +1772,441 @@ static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_v
         }
     }
     *q = 0;
-    l = sel[0] ? jsdom_selector(n, (STRPTR)sel, TRUE) : NULL;
-    _jsdom_soltar(s);
-    _jsdom_soltar(sel);
-    return _jsdom_lista(ctx, l);
+    return sel;
 }
+
+/* HTMLCollection (tarea 41d, WPT dom/collections): viva, como en los navegadores. children, getElementsByTagName y
+   getElementsByClassName dan una; su lista se rehace solo cuando cambia algún árbol (dom_version_actual de
+   lib/dom.dash). Es un objeto exótico de QuickJS, como los "legacy platform objects" de WebIDL: los índices (de solo
+   lectura) y los nombres (id, o name en los de HTML; no enumerables y solo si el prototipo no tiene esa propiedad)
+   son propiedades propias que no se pueden poner ni borrar.
+   Velocidad: la lista son los nodos en un array de C (sin Array de JS); c[i] y c.length van directos a él, y el
+   objeto de JS de cada elemento sale de la tabla de _jsdom_objeto. Mientras dom_version no cambia, ningún nodo de la
+   lista ha salido de su árbol (la raíz se retiene), así que los punteros valen sin retenerlos. */
+static JSClassID _col_clase;
+
+typedef struct {
+    _Dash_Nodo *raiz;
+    int tipo;            /* 0: los hijos elemento; 1: los de raiz que casan con sel; 2: los de raiz que pasan filtro */
+    char *sel;
+    JSValue filtro;
+    LONG version;        /* -1: sin lista */
+    _Dash_Nodo **nodos;
+    JSValue *objs;       /* el objeto de JS de cada uno, al pedirlo (JS_UNDEFINED hasta entonces) */
+    uint32_t n, cap;
+} _JsCol;
+
+static void _col_soltar_objs(JSRuntime *rt, _JsCol *c) {
+    uint32_t i;
+    for (i = 0; i < c->n; i++) JS_FreeValueRT(rt, c->objs[i]);
+}
+
+static void _col_finalizar(JSRuntime *rt, JSValue val) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(val, _col_clase);
+    if (!c) return;
+    JS_FreeValueRT(rt, c->filtro);
+    _col_soltar_objs(rt, c);
+    if (c->raiz) _dash_release(c->raiz);
+    free(c->objs);
+    free(c->nodos);
+    free(c->sel);
+    free(c);
+}
+
+static void _col_marcar(JSRuntime *rt, JSValueConst val, JS_MarkFunc *mark) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(val, _col_clase);
+    uint32_t i;
+    if (!c) return;
+    JS_MarkValue(rt, c->filtro, mark);
+    for (i = 0; i < c->n; i++) JS_MarkValue(rt, c->objs[i], mark);
+}
+
+static int _col_meter(_JsCol *c, _Dash_Nodo *nd) {
+    if (c->n == c->cap) {
+        uint32_t cap = c->cap ? c->cap * 2 : 16;
+        _Dash_Nodo **p = (_Dash_Nodo **)realloc(c->nodos, cap * sizeof(_Dash_Nodo *));
+        JSValue *o;
+        if (!p) return 0;
+        c->nodos = p;
+        o = (JSValue *)realloc(c->objs, cap * sizeof(JSValue));
+        if (!o) return 0;
+        c->objs = o;
+        c->cap = cap;
+    }
+    c->objs[c->n] = JS_UNDEFINED;
+    c->nodos[c->n++] = nd;
+    return 1;
+}
+
+/* el objeto de JS del i-ésimo (i < n) */
+static JSValue _col_obj(JSContext *ctx, _JsCol *c, uint32_t i) {
+    if (JS_IsUndefined(c->objs[i])) c->objs[i] = _jsdom_objeto(ctx, c->nodos[i]);
+    return JS_DupValue(ctx, c->objs[i]);
+}
+
+/* la lista al día; -1 si falla (excepción puesta) */
+static int _col_al_dia(JSContext *ctx, _JsCol *c) {
+    LONG v = dom_version_actual();
+    DashArray *l;
+    uint32_t i, k;
+    if (c->version == v) return 0;
+    _col_soltar_objs(JS_GetRuntime(ctx), c);
+    c->n = 0;
+    if (c->tipo == 0) {
+        /* los hijos elemento, directos de la lista de hijos (sin hacer otra en Dash) */
+        l = c->raiz->hijos;
+        k = l ? (uint32_t)DashArray_length(l) : 0;
+        for (i = 0; i < k; i++) {
+            _Dash_Nodo *nd = (_Dash_Nodo *)DashArray_get(l, i);
+            if (nd->tipo == DOM_ELEMENTO && !_col_meter(c, nd)) { c->version = -1; JS_ThrowOutOfMemory(ctx); return -1; }
+        }
+        c->version = v;
+        return 0;
+    }
+    l = c->sel && c->sel[0] ? jsdom_selector(c->raiz, (STRPTR)c->sel, TRUE) : NULL;
+    k = l ? (uint32_t)DashArray_length(l) : 0;
+    for (i = 0; i < k; i++) {
+        _Dash_Nodo *nd = (_Dash_Nodo *)DashArray_get(l, i);
+        if (c->tipo == 2) {
+            JSValue e = _jsdom_objeto(ctx, nd), r;
+            int si;
+            r = JS_Call(ctx, c->filtro, JS_UNDEFINED, 1, (JSValueConst *)&e);
+            JS_FreeValue(ctx, e);
+            if (JS_IsException(r)) { c->version = -1; return -1; }
+            si = JS_ToBool(ctx, r);
+            JS_FreeValue(ctx, r);
+            if (!si) continue;
+        }
+        if (!_col_meter(c, nd)) { c->version = -1; JS_ThrowOutOfMemory(ctx); return -1; }
+    }
+    /* (el filtro puede haber cambiado el árbol: entonces se rehará la próxima vez) */
+    c->version = c->tipo == 2 ? v : dom_version_actual();
+    return 0;
+}
+
+/* prop es un índice de array (0 .. 2^32 - 2)? */
+static int _col_indice(JSContext *ctx, JSAtom prop, uint32_t *i) {
+    JSValue v;
+    const char *s;
+    int r = 0;
+    if (prop & 0x80000000u) { *i = prop & 0x7fffffffu; return 1; }   /* (un átomo entero de QuickJS: JS_ATOM_TAG_INT) */
+    v = JS_AtomToValue(ctx, prop);
+    if (JS_IsString(v) && (s = JS_ToCString(ctx, v)) != NULL) {
+        size_t n = strlen(s), k;
+        if (n >= 1 && n <= 10 && (s[0] != '0' || n == 1)) {
+            unsigned long long x = 0;
+            for (k = 0; k < n && s[k] >= '0' && s[k] <= '9'; k++) x = x * 10 + (unsigned)(s[k] - '0');
+            if (k == n && x <= 4294967294ULL) { *i = (uint32_t)x; r = 1; }
+        }
+        JS_FreeCString(ctx, s);
+    }
+    JS_FreeValue(ctx, v);
+    return r;
+}
+
+/* el nodo es de HTML (namespaceURI de su objeto)? */
+static int _col_de_html(JSContext *ctx, _Dash_Nodo *nd) {
+    JSValue e = _jsdom_objeto(ctx, nd);
+    JSValue ns = JS_GetPropertyStr(ctx, e, "namespaceURI");
+    const char *s = JS_IsString(ns) ? JS_ToCString(ctx, ns) : NULL;
+    int r = s && !strcmp(s, "http://www.w3.org/1999/xhtml");
+    if (s) JS_FreeCString(ctx, s);
+    JS_FreeValue(ctx, ns);
+    JS_FreeValue(ctx, e);
+    return r;
+}
+
+/* el primero de la lista con id k, o con name k si es de HTML; NULL si ninguno */
+static _Dash_Nodo *_col_por_nombre(JSContext *ctx, _JsCol *c, const char *k) {
+    uint32_t i;
+    if (!k[0]) return NULL;
+    for (i = 0; i < c->n; i++) {
+        _Dash_Nodo *nd = c->nodos[i];
+        if ((jsdom_tiene_atributo(nd, (STRPTR)"id") && !strcmp((const char *)jsdom_atributo(nd, (STRPTR)"id"), k))
+            || (jsdom_tiene_atributo(nd, (STRPTR)"name") && !strcmp((const char *)jsdom_atributo(nd, (STRPTR)"name"), k)
+                && _col_de_html(ctx, nd)))
+            return nd;
+    }
+    return NULL;
+}
+
+/* el prototipo de obj tiene prop? (-1 si falla) */
+static int _col_en_proto(JSContext *ctx, JSValueConst obj, JSAtom prop) {
+    JSValue proto = JS_GetPrototype(ctx, obj);
+    int r = JS_IsObject(proto) ? JS_HasProperty(ctx, proto, prop) : 0;
+    JS_FreeValue(ctx, proto);
+    return r;
+}
+
+/* el elemento con el nombre prop, si se ve como propiedad (el prototipo no la tiene); NULL si no, y -1 en *error */
+static _Dash_Nodo *_col_nombre_visible(JSContext *ctx, JSValueConst obj, _JsCol *c, JSAtom prop, int *error) {
+    JSValue v;
+    char *k;
+    _Dash_Nodo *nd;
+    int r = _col_en_proto(ctx, obj, prop);
+    *error = 0;
+    if (r) { *error = r < 0; return NULL; }
+    v = JS_AtomToValue(ctx, prop);
+    if (!JS_IsString(v)) { JS_FreeValue(ctx, v); return NULL; }
+    k = _js_texto(ctx, v);
+    JS_FreeValue(ctx, v);
+    if (!k || _col_al_dia(ctx, c) < 0) { if (k) _jsdom_soltar(k); *error = 1; return NULL; }
+    nd = _col_por_nombre(ctx, c, k);
+    _jsdom_soltar(k);
+    return nd;
+}
+
+static int _col_propia(JSContext *ctx, JSPropertyDescriptor *desc, JSValueConst obj, JSAtom prop) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(obj, _col_clase);
+    _Dash_Nodo *nd;
+    uint32_t i;
+    int error;
+    if (!c) return 0;
+    if (_col_indice(ctx, prop, &i)) {
+        if (_col_al_dia(ctx, c) < 0) return -1;
+        if (i >= c->n) return 0;
+        if (desc) {
+            desc->flags = JS_PROP_ENUMERABLE | JS_PROP_CONFIGURABLE;
+            desc->value = _col_obj(ctx, c, i);
+            desc->getter = desc->setter = JS_UNDEFINED;
+        }
+        return 1;
+    }
+    nd = _col_nombre_visible(ctx, obj, c, prop, &error);
+    if (error) return -1;
+    if (!nd) return 0;
+    if (desc) {
+        desc->flags = JS_PROP_CONFIGURABLE;
+        desc->value = _jsdom_objeto(ctx, nd);
+        desc->getter = desc->setter = JS_UNDEFINED;
+    }
+    return 1;
+}
+
+/* leer, por el camino corto: un índice va directo a la lista; lo que tiene el prototipo (length, item...), a él; si no,
+   un nombre */
+static JSValue _col_leer(JSContext *ctx, JSValueConst obj, JSAtom prop, JSValueConst receptor) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(obj, _col_clase);
+    JSValue proto, r;
+    _Dash_Nodo *nd;
+    uint32_t i;
+    int error;
+    static JSAtom largo = JS_ATOM_NULL;   /* ("length" es un átomo fijo de QuickJS: el mismo en todos los runtimes) */
+    if (largo == JS_ATOM_NULL) largo = JS_NewAtom(ctx, "length");
+    /* (solo en la propia colección: en un objeto que hereda de ella, el getter da TypeError; WPT as-prototype) */
+    if (c && prop == largo && JS_IsObject(receptor) && JS_VALUE_GET_PTR(receptor) == JS_VALUE_GET_PTR(obj)) {
+        if (_col_al_dia(ctx, c) < 0) return JS_EXCEPTION;
+        return JS_NewUint32(ctx, c->n);
+    }
+    if (c && (prop & 0x80000000u)) {
+        i = prop & 0x7fffffffu;
+        if (_col_al_dia(ctx, c) < 0) return JS_EXCEPTION;
+        if (i < c->n) return _col_obj(ctx, c, i);
+        return JS_UNDEFINED;   /* (un índice que no hay: ni el prototipo lo tiene) */
+    }
+    proto = JS_GetPrototype(ctx, obj);
+    if (JS_IsObject(proto)) {
+        int t = JS_HasProperty(ctx, proto, prop);
+        if (t < 0) { JS_FreeValue(ctx, proto); return JS_EXCEPTION; }
+        if (t) {
+            r = JS_GetPropertyInternal(ctx, proto, prop, receptor, FALSE);
+            JS_FreeValue(ctx, proto);
+            return r;
+        }
+    }
+    JS_FreeValue(ctx, proto);
+    if (!c) return JS_UNDEFINED;
+    if (_col_indice(ctx, prop, &i)) {
+        if (_col_al_dia(ctx, c) < 0) return JS_EXCEPTION;
+        return i < c->n ? _col_obj(ctx, c, i) : JS_UNDEFINED;
+    }
+    nd = _col_nombre_visible(ctx, obj, c, prop, &error);
+    if (error) return JS_EXCEPTION;
+    return nd ? _jsdom_objeto(ctx, nd) : JS_UNDEFINED;
+}
+
+/* los índices y después los nombres, en orden del árbol (id, y name si es de HTML), sin repetir */
+static int _col_nombres(JSContext *ctx, JSPropertyEnum **ptab, uint32_t *plen, JSValueConst obj) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(obj, _col_clase);
+    JSPropertyEnum *t;
+    uint32_t i, k = 0, j, n;
+    *ptab = NULL;
+    *plen = 0;
+    if (!c) return 0;
+    if (_col_al_dia(ctx, c) < 0) return -1;
+    n = c->n;
+    t = (JSPropertyEnum *)js_malloc(ctx, sizeof(JSPropertyEnum) * (n * 3 + 1));
+    if (!t) return -1;
+    for (i = 0; i < n; i++) {
+        t[k].is_enumerable = TRUE;
+        t[k++].atom = JS_NewAtomUInt32(ctx, i);
+    }
+    for (i = 0; i < n; i++) {
+        _Dash_Nodo *nd = c->nodos[i];
+        int m;
+        for (m = 0; m < 2; m++) {
+            const char *at = m ? "name" : "id";
+            JSValue s;
+            JSAtom x;
+            if (!jsdom_tiene_atributo(nd, (STRPTR)at) || !((const char *)jsdom_atributo(nd, (STRPTR)at))[0]) continue;
+            if (m && !_col_de_html(ctx, nd)) continue;
+            s = _jsdom_cadena(ctx, jsdom_atributo(nd, (STRPTR)at));
+            x = JS_ValueToAtom(ctx, s);
+            JS_FreeValue(ctx, s);
+            for (j = n; j < k && t[j].atom != x; j++) ;
+            if (j < k || _col_en_proto(ctx, obj, x) > 0) { JS_FreeAtom(ctx, x); continue; }
+            t[k].is_enumerable = FALSE;
+            t[k++].atom = x;
+        }
+    }
+    *ptab = t;
+    *plen = k;
+    return 0;
+}
+
+/* un índice que hay o un nombre visible no se borran */
+static int _col_borrar(JSContext *ctx, JSValueConst obj, JSAtom prop) {
+    int r = _col_propia(ctx, NULL, obj, prop);
+    return r < 0 ? -1 : !r;
+}
+
+/* (en un objeto no extensible, define falla como debe: TypeError en modo estricto, false si no) */
+static int _col_rechazar(JSContext *ctx, JSAtom prop, JSValueConst val, JSValueConst getter, JSValueConst setter, int flags) {
+    JSValue b = JS_NewObject(ctx);
+    int r;
+    JS_PreventExtensions(ctx, b);
+    r = JS_DefineProperty(ctx, b, prop, val, getter, setter, flags);
+    JS_FreeValue(ctx, b);
+    return r;
+}
+
+/* ni índices ni nombres visibles: lo demás, como en un objeto normal */
+static int _col_definir(JSContext *ctx, JSValueConst obj, JSAtom prop, JSValueConst val, JSValueConst getter,
+                        JSValueConst setter, int flags) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(obj, _col_clase);
+    uint32_t i;
+    int error;
+    if (c && _col_indice(ctx, prop, &i)) return _col_rechazar(ctx, prop, val, getter, setter, flags);
+    if (c && _col_nombre_visible(ctx, obj, c, prop, &error)) return _col_rechazar(ctx, prop, val, getter, setter, flags);
+    if (c && error) return -1;
+    return JS_DefineProperty(ctx, obj, prop, val, getter, setter, flags | JS_PROP_NO_EXOTIC);
+}
+
+/* poner: como WebIDL [[Set]], sin mirar los nombres (un objeto que hereda de la colección se queda con la suya:
+   WPT HTMLCollection-as-prototype); un índice no se pone nunca */
+static int _col_poner(JSContext *ctx, JSValueConst obj, JSAtom prop, JSValueConst val, JSValueConst receptor, int flags) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(obj, _col_clase);
+    JSValue proto;
+    uint32_t i;
+    int r;
+    if (c && _col_indice(ctx, prop, &i))
+        return _col_rechazar(ctx, prop, val, JS_UNDEFINED, JS_UNDEFINED, JS_PROP_HAS_VALUE | (flags & (JS_PROP_THROW | JS_PROP_THROW_STRICT)));
+    proto = JS_GetPrototype(ctx, obj);
+    if (JS_IsObject(proto)) {
+        r = JS_SetPropertyInternal(ctx, proto, prop, JS_DupValue(ctx, val), receptor, flags);
+        JS_FreeValue(ctx, proto);
+        return r;
+    }
+    JS_FreeValue(ctx, proto);
+    return JS_DefinePropertyValue(ctx, receptor, prop, JS_DupValue(ctx, val), JS_PROP_C_W_E | (flags & (JS_PROP_THROW | JS_PROP_THROW_STRICT)));
+}
+
+static JSClassExoticMethods _col_exotico = { _col_propia, _col_nombres, _col_borrar, _col_definir, NULL, _col_leer, _col_poner };
+
+static JSValue _col_nueva(JSContext *ctx, _Dash_Nodo *raiz, int tipo, char *sel, JSValueConst filtro) {
+    _JsCol *c = (_JsCol *)calloc(1, sizeof(_JsCol));
+    JSValue o;
+    if (!c) { free(sel); return JS_ThrowOutOfMemory(ctx); }
+    o = JS_NewObjectClass(ctx, _col_clase);
+    if (JS_IsException(o)) { free(sel); free(c); return o; }
+    _dash_retain(raiz);
+    c->raiz = raiz;
+    c->tipo = tipo;
+    c->sel = sel;
+    c->filtro = JS_DupValue(ctx, filtro);
+    c->version = -1;
+    JS_SetOpaque(o, c);
+    return o;
+}
+
+static _JsCol *_col_de(JSContext *ctx, JSValueConst v) {
+    _JsCol *c = (_JsCol *)JS_GetOpaque(v, _col_clase);
+    if (!c) JS_ThrowTypeError(ctx, "not an HTMLCollection");
+    return c;
+}
+
+static JSValue _col_length(JSContext *ctx, JSValueConst this_val) {
+    _JsCol *c = _col_de(ctx, this_val);
+    if (!c || _col_al_dia(ctx, c) < 0) return JS_EXCEPTION;
+    return JS_NewUint32(ctx, c->n);
+}
+
+static JSValue _col_item(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsCol *c = _col_de(ctx, this_val);
+    uint32_t i = 0;
+    if (!c) return JS_EXCEPTION;
+    if (argc > 0 && JS_ToUint32(ctx, &i, argv[0])) return JS_EXCEPTION;
+    if (_col_al_dia(ctx, c) < 0) return JS_EXCEPTION;
+    return i < c->n ? _col_obj(ctx, c, i) : JS_NULL;
+}
+
+static JSValue _col_namedItem(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsCol *c = _col_de(ctx, this_val);
+    _Dash_Nodo *nd;
+    char *k;
+    if (!c) return JS_EXCEPTION;
+    k = _jsdom_arg(ctx, argc, argv, 0);
+    if (!k) return JS_EXCEPTION;
+    if (_col_al_dia(ctx, c) < 0) { _jsdom_soltar(k); return JS_EXCEPTION; }
+    nd = _col_por_nombre(ctx, c, k);
+    _jsdom_soltar(k);
+    return nd ? _jsdom_objeto(ctx, nd) : JS_NULL;
+}
+
+static JSValue _col_constructor(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    return JS_ThrowTypeError(ctx, "Illegal constructor");
+}
+
+static const JSCFunctionListEntry _col_metodos[] = {
+    JS_CGETSET_DEF("length", _col_length, NULL),
+    JS_CFUNC_DEF("item", 1, _col_item),
+    JS_CFUNC_DEF("namedItem", 1, _col_namedItem),
+    JS_PROP_STRING_DEF("[Symbol.toStringTag]", "HTMLCollection", JS_PROP_CONFIGURABLE),
+};
+
+/* la clase, su prototipo y el constructor HTMLCollection en global (el preludio le pone [Symbol.iterator]) */
+static void _col_registrar(JSContext *ctx, JSValueConst global) {
+    JSClassDef clase = { "HTMLCollection", _col_finalizar, _col_marcar, NULL, &_col_exotico };
+    JSValue proto, ctor;
+    JS_NewClassID(&_col_clase);
+    if (!JS_IsRegisteredClass(JS_GetRuntime(ctx), _col_clase)) JS_NewClass(JS_GetRuntime(ctx), _col_clase, &clase);
+    proto = JS_NewObject(ctx);
+    JS_SetPropertyFunctionList(ctx, proto, _col_metodos, sizeof(_col_metodos) / sizeof(_col_metodos[0]));
+    ctor = JS_NewCFunction2(ctx, _col_constructor, "HTMLCollection", 0, JS_CFUNC_constructor, 0);
+    JS_SetConstructor(ctx, ctor, proto);
+    JS_SetClassProto(ctx, _col_clase, proto);
+    JS_SetPropertyStr(ctx, global, "HTMLCollection", ctor);
+}
+
+/* __dashweb_coleccion(raiz, filtro): una HTMLCollection viva con los elementos de dentro de raiz que pasan
+   filtro(e) (getElementsByTagNameNS, nombres con prefijo; el preludio) */
+static JSValue _col_js(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _Dash_Nodo *n = argc > 1 ? _jsdom_nodo(ctx, argv[0]) : NULL;
+    if (!n || !JS_IsFunction(ctx, argv[1])) return JS_ThrowTypeError(ctx, "__dashweb_coleccion: (node, function)");
+    return _col_nueva(ctx, n, 2, strdup("*"), argv[1]);
+}
+
+static JSValue _jsdom_getElementsByClassName(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *s, *sel;
+    _JSDOM_ESTE;
+    s = _jsdom_arg(ctx, argc, argv, 0);
+    if (!s) return JS_EXCEPTION;
+    sel = _jsdom_clases_selector(s);
+    _jsdom_soltar(s);
+    if (!sel) return JS_ThrowOutOfMemory(ctx);
+    return _col_nueva(ctx, n, 1, sel, JS_UNDEFINED);
+}
+
 
 static JSValue _jsdom_ownerDocument(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
@@ -2362,6 +2800,8 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyFunctionList(m->ctx, documento, _jsdom_documento, sizeof(_jsdom_documento) / sizeof(_jsdom_documento[0]));
     global = JS_GetGlobalObject(m->ctx);
     JS_SetPropertyStr(m->ctx, global, "document", documento);
+    _col_registrar(m->ctx, global);
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_coleccion", JS_NewCFunction(m->ctx, _col_js, "__dashweb_coleccion", 2));
     JS_SetPropertyStr(m->ctx, global, "window", JS_DupValue(m->ctx, global));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_reloj", JS_NewCFunction(m->ctx, _jsdom_reloj, "__dashweb_reloj", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galletas", JS_NewCFunction(m->ctx, _jsdom_galletas, "__dashweb_galletas", 1));

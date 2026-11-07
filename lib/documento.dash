@@ -395,6 +395,7 @@ func documento_avanzar(d: Documento) -> Bool
         d.titulo = d.direccion
     end
     d.hojas = estilo_hojas_con(d.doc, d.direccion, traidos)
+    traza("hojas leídas")
     _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)

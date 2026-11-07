@@ -125,6 +125,7 @@ func _jsdom_vaciar(n: Nodo)
         h.padre = nadie
     end
     n.hijos.clear()
+    dom_cambio()
 end
 
 @export func jsdom_atributo(n: Nodo, nombre: String) -> String
@@ -215,6 +216,7 @@ end
             var nadie: Nodo = nil
             hijo.padre = nadie
             padre.hijos.remove(i)
+            dom_cambio()
             return true
         end
         i = i + 1
@@ -364,6 +366,7 @@ end
     while i < padre.hijos.length
         if padre.hijos[i] == ref
             padre.hijos.insert(i, nuevo)
+            dom_cambio()
             nuevo.padre = padre
             _jsdom_entra(nuevo)
             return true

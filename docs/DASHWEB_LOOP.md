@@ -15,6 +15,11 @@ publicar la 0.7.2; luego la 53 (las webs de chat).**
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
 pendiente del plan. Esto manda sobre los dos encargos de arriba.**
 
+**Y sin perder velocidad ni memoria (usuario, 2026-11-07: "vamos a conseguir que wpt pase entero bien, pero no a costa
+de ser lento o consumiendo mucha memoria").** Cada cambio para WPT se mide antes y después (tests/pages/bench_*.html
+en la máquina RTG, y el tiempo y la memoria de una página grande); si empeora, se arregla antes del commit o no
+entra. Y la tarea 61, el repaso de velocidad y memoria, va la siguiente tras la vuelta en curso.
+
 ## Objetivo
 
 Un navegador ligero para AmigaOS 3.x escrito en Dash, con interfaz MUI 5: XHTML, CSS, JavaScript
@@ -593,6 +598,11 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [~] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
+      en páginas reales guardadas (gh_repo.html, Wikipedia, amigatronics, YouTube) con el perfil (--perfil), TRAZA y
+      la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
+      podrían ser parciales, JavaScript del preludio que se ejecuta siempre. Dejar medidas antes y después en la
+      bitácora y en docs/panel/medidas.json.
 - [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
       cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
       Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
@@ -5626,3 +5636,204 @@ Formato:
   (sys32rtg), lo mismo: guardar enlace y Amiga-J, y Amiga-S abre un solo selector (el atajo no va dos veces). El
   menú de MUI 5 sale con su borde izquierdo en el puntero (el de MUI 3.8, a la izquierda): las pruebas con clicar
   tienen que ir unos 80 px a la derecha para caer en la opción.
+
+### 2026-11-07 — Publicada la v0.9.1-alfa
+- Usuario: "ve publicando la 0.9.1 para que la gente tenga novedades calentitas", y después (por freemem-14): "antes
+  de publicar la versión asegúrate que funciona bien y que actualiza bien desde el propio tachyon y que corre y no se
+  jode". Tachyon pasa a esta sesión (tachyon-97) desde freememlang [e4f769].
+- Versión 0.9.1-alfa (67495f2: tareas 57 y 59), PR #21 de dev a main (8d080dd), etiqueta v0.9.1-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.1-alfa con tachyon.lha, Tachyon.gz (SHA-256 2ac8d584...a4ea,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Antes de publicar: batería entera 143/143 (4829 s, con el código de la versión). Actualización de verdad: el
+  Tachyon.gz de la v0.9.0-alfa publicada, en la máquina RTG con MUI 3.8 (sys32rtg38), con VERSIONES= hacia un GitHub
+  de mentira en el PC que daba la 0.9.1 compilada (guion en el scratchpad, como tests/servers/http.py /act/): icono
+  verde, un clic, baja Tachyon.gz y los nueve catálogos (a Catalogs/<idioma>/), el programa instalado es idéntico al
+  compilado (cmp), el de antes queda como .old, "0.9.1-alfa installed: click the green icon", y Reiniciar abre la
+  0.9.1 (su página de inicio dice 0.9.1-alfa; la vieja sale con rc 0). La 0.9.1 del paquete en la misma máquina:
+  Amiga+C, Amiga+V, Ctrl+V, Amiga+X y Amiga-S ("Saved in RAM:pegar.html") bien; cuatro ventanas a la vez (Acid3,
+  gh_repo.html de 300 KB en ~65 s, estrellas.html animada y Acid2) unos 5 min sin colgarse, y al final un clic en el
+  enlace de Acid2 responde.
+
+### 2026-11-07 — Tarea 41d: HTMLCollection viva (WPT dom/collections 8/55 → 54/55), sin perder velocidad
+- children, getElementsByTagName, getElementsByClassName y getElementsByTagNameNS daban un Array hecho al pedirlas:
+  ahora una HTMLCollection viva, como en los navegadores (src_c/tachyon.c, _col_*): un objeto exótico de QuickJS con
+  los índices y los nombres (id, y name en los de HTML) como propiedades propias de solo lectura que no se borran, que
+  no tapan lo del prototipo (un id="length" no tapa length), no enumerables los nombres, y [[Set]] de WebIDL (un
+  objeto que hereda de la colección se queda con lo que se le pone). item, namedItem, for...of; sin forEach (como en
+  Chrome). HTMLCollection global (instanceof, toString). children es siempre la misma (el preludio, con un WeakMap).
+  __dashweb_coleccion(raiz, filtro) para getElementsByTagNameNS y los nombres con prefijo.
+- Viva sin recalcular a cada paso: lib/dom.dash cuenta cada cambio de un árbol en dom_version (dom_agregar,
+  dom_apuntar, dom_olvidar_atributos, dom_tocar; jsdom_quitar, insertar y vaciar), y la colección rehace su lista solo
+  si cambió. La lista son los nodos en un array de C con el objeto de JS de cada uno guardado al pedirlo; children sale
+  de la lista de hijos del nodo sin hacer otra en Dash; c[i] y c.length van por get_property, sin mirar más.
+- attributes (NamedNodeMap del preludio): Object.getOwnPropertyNames da índices y nombres (era un Proxy sobre un
+  Array, que arrastraba length).
+- Velocidad (usuario: "no a costa de ser lento"): tests/pages/bench_colecciones.html, 2000 elementos, en la máquina RTG
+  con MUI 3.8, ms de 0.9.1 → primera versión (Array de JS por dentro) → la final: recorrer getElementsByTagName 10
+  veces 200 → 680 → 300; children 10 veces 120 → 440 → 140; getElementsByClassName 50 veces 440 → 440 → 380; leer
+  children.length tras 100 cambios 140 → 460 → 180 (la 0.9.1 daba el número viejo); querySelectorAll 220 → 240 → 220.
+  gh_repo.html (300 KB) entera en 30,3 s con la 0.9.1 y 29,8 s con la nueva; memoria libre igual (110 MB).
+- Lo que queda: el orden de Object.getOwnPropertyNames con una propiedad puesta a mano (QuickJS pone las del objeto
+  antes que las del exótico; WPT quiere los índices primero): cambio en QuickJS, no hecho.
+- Tests: test_jsdom_colecciones (viva con cambios y atributos, solo lectura, borrar, nombres, prototipo, iterable,
+  getElementsByTagNameNS); jsdom y documento sin red 26/26. WPT dom/collections 54/55 (docs/wpt/js_dom_collections.txt).
+  Lo medido de WPT: dom/ 47683/57588 (83 %). Batería entera sin pasar tras esto.
+
+### 2026-11-07 — Tarea 61 (1): cada página se maquetaba dos veces
+- Traza (TRAZA) de una página grande en la máquina RTG con MUI 3.8: tests/pages/gh_repo.html, 31 s hasta entera, con
+  estilo 6,4 s, "maquetada en 9399 ms" y luego otra vez "maquetada en 8675 ms" sin nada entre medias. mostrar() maqueta
+  con el ancho de la zona de la página pero no ponía su alto (Documento.vh), y pinta_en, al pintar, lo veía distinto
+  y maquetaba entera otra vez (la comprobación del alto es de la 42e, 2026-10-22: desde entonces, cada página nueva
+  dos veces). Ahora mostrar pone vh y estilo_vh antes de maquetar.
+- Medido con una copia de gh_repo.html sin nada de fuera (tests/pages/gh_local.html, sin seguimiento como gh_repo):
+  0.9.1, maqueta 8,7 s + 8,2 s, "Ready" a los ~28 s; con esto, una sola maqueta de 9,1 s y "Ready" a los 19,8 s. Las
+  capturas, iguales píxel a píxel salvo el tiempo de la barra de estado.
+- Aviso: gh_repo.html pide sus scripts a github.githubassets.com (la web de verdad) en cada prueba con ella; para
+  medir, gh_local.html. El perfil (--perfil) da el 75 % en Main (el C y QuickJS no se desglosan): lo siguiente, el
+  estilo (6-8 s) y la maqueta (9 s) de esta página, por fases.
+- El panel de progreso (https://claude.ai/artifact/6RpPSBd7iEVaXduBDX9QEA) no se abre con esta cuenta ("no such
+  artifact"): docs/panel/estandares.json, al día en el repo (Acid3 100/100, WPT dom 47683/57588), sin subir.
+
+### 2026-11-07 — Tarea 61 (2): los selectores de atributo, fuera de los universales
+- Del perfil de gh_repo.html: la mitad del estilo es probar selectores (_cumple_desde, 570.000 llamadas, ~190 por
+  elemento). Las hojas de GitHub tienen 2351 selectores y unos 550 van a los universales (sin id, clase ni etiqueta en
+  su última parte), que se prueban en cada elemento: sobre todo de atributo ([data-color-mode=...] 179, [type],
+  [data-component], [data-kbd-chord]...) y :root.
+- lib/estilo.dash: los de atributo van al índice con la clave "[nombre" (Hojas.con_atributos), y cada elemento prueba
+  solo los de los atributos que tiene. La cascada no depende del orden en que se juntan (especificidad y orden de la
+  regla). La invalidación (_clave, estilo_aplicar_partes) no cambia: los sigue tratando como universales.
+- gh_local.html en la máquina RTG con MUI 3.8: estilo 5,8 s → 4,4 s; "Ready" a los 18,2 s (20,3 s antes; ~28 s con la
+  0.9.1). Captura igual píxel a píxel (salvo el tiempo de la barra de estado).
+- tests/bench/fases.dash: el árbol con Hubbub (como el navegador) y cada fase escrita al acabarla; con gh_local.html no
+  llega a escribir nada en 200 s (sin mirar aún por qué: con prueba.html va).
+- Tests: estilo, css, maqueta, acid y documento sin red, todos; con red: estilo_enlaces, acid2_pagina, documento_tipo,
+  jsdom_iframe, jsdom_load_peticion, jsdom_scripts; jsdom entero 23/23.
+
+### 2026-11-07 — Tarea 61 (3, no entra): compartir el estilo calculado entre hermanos
+- Probado: hermanos seguidos con las mismas reglas ganadoras y sin style, pistas ni animación usan el mismo
+  diccionario (como el "style sharing" de los navegadores). En gh_local.html gana poco (estilo 4,43 → 4,31 s, 0,5 de
+  los ~8,4 MB del estilo) y rompe tests (test_estilo: un span sale block; maqueta_campo, maqueta_inset,
+  maqueta_svg_tam, maqueta_absoluto_img, formularios, documento_ligero): algo cambia n.estilo en su sitio después de
+  calcularlo (la maqueta o los formularios), por un camino que no sale buscando ".estilo[...] =". Deshecho.
+- Si se vuelve a intentar: primero encontrar esas escrituras (que cambien el estilo de un elemento sin copiarlo es
+  también un riesgo con estilo_aplicar_partes, que compara el viejo con el nuevo).
+
+### 2026-11-07 — Tarea 61 (4): las sangrías de cada caja, guardadas en la maqueta
+- Lo que rompía el estilo compartido de la 61 (3): _flex_maquetar fuerza width, min-width, max-width, height,
+  min-height, max-height y box-sizing en el estilo del elemento mientras lo maqueta y los deja como estaban después
+  (lib/maqueta.dash), y la altura de algunos reemplazados también se escribe ahí. Es ese estilo, no una copia.
+- _sangrias (lo que dejan a izquierda y derecha los márgenes, bordes y rellenos de las cajas de n hacia arriba) se
+  llama por cada dibujo al medir anchos: 75.000 llamadas en gh_repo.html, cada una subiendo hasta arriba y leyendo los
+  textos del estilo de cada antepasado. Ahora cada nodo guarda lo suyo para la maqueta en curso (Nodo.sg_pase,
+  sg_izq, sg_der; con _maqueta_pase, que sube en cada maquetar: la época no siempre). Seguro dentro de una maqueta:
+  lo que se fuerza en flex no son márgenes, rellenos ni bordes.
+- gh_local.html en la máquina RTG con MUI 3.8: maqueta 8,7 s → 5,9 s; "Ready" a los ~15,3 s (unos 28 s con la 0.9.1).
+  Captura igual píxel a píxel (salvo el tiempo de la barra de estado). Memoria: 12 bytes más por nodo. Batería:
+  143/143.
+
+### 2026-11-07 — Tarea 61 (5): los <svg> iguales, rasterizados una vez
+- Perfil de gh_local.html con lo de antes: _imagenes_svg, el 6,9 % (125 <svg>, unos 3 s), casi todos iconos de
+  GitHub repetidos. Cada <svg> se escribía en su fichero de T: y nanosvg lo rasterizaba.
+- lib/imagenes.dash: los de texto igual (ya con su color y su tamaño) comparten fichero e imagen (Imagenes.svg_textos,
+  svg_usos). imagenes_svg_rehacer (fotogramas de animaciones de dentro, un tamaño en % que cambia) le da antes uno
+  propio al que está compartido (una copia del fichero), para no cambiar los demás.
+- gh_local.html: del estilo a la maqueta, 2,6 → 1,3 s; "Ready" a los 14,3 s (15,3 antes; ~28 s con la 0.9.1).
+  Captura igual. Tests: svg, imagen*, documento* y animación, sin red y con red.
+- Lo siguiente que pesa: jsdom_preparar, ~1,2 s en cada página con scripts (leer el bytecode del preludio y
+  ejecutarlo en un runtime nuevo por página); probar selectores, ~2,2 s en gh_local (308.000 _cumple_desde).
+
+### 2026-11-07 — Tarea 61 (6): medido el preludio; lo que queda
+- jsdom_preparar no es caro por página: leer el bytecode del preludio (190 KB) 35 ms y ejecutarlo 160 ms (medido con un
+  printf temporal, ya quitado). Lo que pesaba en el perfil es compilarlo, solo la primera página tras arrancar el
+  Amiga (luego va de T:tachyon_preludio.bc). Cada página tiene su runtime y su charco de memoria a propósito (se suelta
+  entero al cerrarla): el preludio compilado no se puede compartir entre páginas.
+- Memoria de gh_local.html (134,5 MB libres al empezar → 113,4 al acabar, ~21 MB): árbol ~6,5 MB, estilo ~8,4 MB (un
+  diccionario por elemento con todo, también lo heredado), maqueta ~2 MB, JavaScript ~2 MB.
+- Lo que queda, por orden de lo que puede ganar:
+  1. Memoria del estilo: compartir diccionarios iguales exige antes que nadie cambie n.estilo en su sitio
+     (_flex_maquetar fuerza width/height/min/max/box-sizing; la altura de los reemplazados; la dirección de
+     background-image): que trabajen sobre una copia y la suelten. Con eso, compartir entre hermanos (61 (3)) o por
+     contenido.
+  2. Probar selectores (~2,2 s del estilo de gh_local, 308.000 _cumple_desde): son sobre todo las subidas por los
+     antepasados de los combinadores de descendiente; un filtro de Bloom por nodo, como los navegadores.
+  3. Maqueta (5,9 s): _flex_maquetar copia y quita los dibujos uno a uno y monta un diccionario por elemento medido.
+
+### 2026-11-07 — Tarea 41d: classList, iterable como dice WebIDL y más rápido (WPT dom/lists 123 → 169/189)
+- DOMTokenList del preludio: [Symbol.toStringTag] (Object.prototype.toString da [object DOMTokenList]); forEach,
+  keys, values, entries y [Symbol.iterator] son los de Array.prototype (iterable con índices), con la trampa has en
+  el Proxy de classList (forEach mira si está cada índice); el Proxy ya no hace bind de cada método leído.
+- Velocidad (tests/pages/bench_classlist.html, máquina RTG con MUI 3.8, ms de 0.9.1 → ahora): 3000 contains 1960 →
+  440; 1000 add+remove 1960 → 1980; 1000 toggle 860 → 900; 500 for...of 320 → 400 (los de Array.prototype pasan por
+  la trampa; recorrerla es raro, contains no). Lo que hacía lento classList: cada llamada partía el class otra vez
+  (ahora la lista se guarda mientras el texto del atributo no cambia; quien la cambia, sobre una copia) y cada método
+  pasaba varias veces por la trampa del Proxy, con una expresión regular en cada una (ahora toma una vez el objeto de
+  verdad, __yo, y la regex solo si el nombre empieza por cifra). Una primera versión sin eso salía más lenta que la
+  0.9.1 (for...of 1960, add+remove 2360): no entró así.
+- Quedan en dom/lists: relList, htmlFor y sizes en elementos de otro espacio de nombres deberían ser undefined.
+- Tests: test_jsdom_classlist_iterable; jsdom y documento sin red 27/27. WPT dom/nodes 10470 → 10501/12653 (por la
+  HTMLCollection viva y classList; ningún fichero a peor). Lo medido de WPT: dom/ 47744/57588 (83 %).
+
+### 2026-11-07 — Tarea 41d: la activación de DOM y los saltos dentro de la página (WPT dom/events 370 → 413/618)
+- Un clic (MouseEvent click, de click() o de dispatchEvent) activa el primero del camino con algo que hacer: él o,
+  si el evento sube, el primer antepasado (input checkbox/radio/submit/image/reset/button, button, a y area con href,
+  el primer <summary> de un <details>, label). Antes del evento, lo previo (el checkbox cambia, el radio se marca);
+  cancelado, vuelve (y el radio que estaba marcado en su grupo, otra vez marcado); si no: input y change, submit
+  (SubmitEvent con submitter) y form.submit(), form.reset() (el evento reset y cada control a su valor del HTML; antes
+  no hacía nada), abrir o cerrar el <details> (toggle después), seguir el enlace (no los de download, target a otra
+  ventana ni javascript:), o el clic en el control del <label> (no si el clic fue en algo interactivo de dentro).
+  click() dentro de su propio clic no hace nada (un WeakSet). Antes solo se activaba el propio elemento.
+- location: hash es un accesor (location.hash = 'x' no hacía nada) y una dirección que solo cambia el fragmento ya no
+  carga la página otra vez (location.href = '#x' la recargaba entera; con "#" a secas también): cambia location, llega
+  hashchange (HashChangeEvent con oldURL y newURL) y dashweb solo desplaza, como con un enlace.
+- WPT dom/events 370 → 413/618 (single-activation-behavior 49 → 86, dispatch-click 19 → 23,
+  detached-input-and-change 6 → 8; ningún fichero a peor). Lo medido de WPT: dom/ 47787/57588.
+- Tests: test_jsdom_activacion; jsdom, documento, formularios y acid sin red, todos.
+
+### 2026-11-07 — Tarea 41d: el corredor de WPT pasa también las .any.js y .window.js; url/ medido (2319/4319)
+- tools/wpt_js.py: casi todas las pruebas de JavaScript de WPT fuera de dom/ son x.any.js o x.window.js, que wptserve
+  envuelve en una página (x.any.html). Ahora el servidor del corredor hace esa página al vuelo (testharness.js, el
+  testharnessreport.js propio, los "// META: script=" y el .js; una por "// META: variant="; las de "// META:
+  global=" sin window, fuera). WPT en ~/.cache/dashweb/wpt con url/ y encoding/ (sparse-checkout add).
+- url/ (41 páginas con sus variantes; 34 dan resultado): 2319/4319 subpruebas (54 %). Lo que más falla: IDNA
+  (IdnaTestV2 1372/2676 y se corta por tiempo; toascii 469/784), url-setters-stripping 148/320, url-constructor
+  83/137 (la variante sin file, javascript ni mailto), urlencoded-parser 60/105, percent-encoding 1/17, y
+  javascript-urls y data-uri-fragment (no acaban). En docs/wpt/js_url.txt.
+
+### 2026-11-07 — Tarea 41d: URL como la máquina de estados del estándar, y más rápida que antes
+- lib/jsdom_preludio.js: el URL de antes (expresiones regulares que aproximaban) falla mucho en WPT url/ (file:,
+  IPv4 y IPv6, credenciales, setters...). Ahora es el "basic URL parser" de WHATWG con su registro (scheme, username,
+  password, host, port, path en lista u opaco, query, fragment), estado forzado para los setters (protocol, host,
+  hostname, port, pathname, search, hash) como dice el estándar, host parser con IPv4 (hex, octal, partes) e IPv6
+  (con IPv4 dentro, compresión al serializar), percent-encode por conjuntos, percent-decode a UTF-8 y domainToASCII
+  aproximado (NFKC, minúsculas, lo que UTS 46 quita o no deja, Punycode en las dos direcciones; sin sus tablas ni la
+  regla bidi). URLSearchParams con el application/x-www-form-urlencoded del estándar, USVString, iteradores vivos.
+- Probado primero en el PC con node contra los datos de WPT: urltestdata 896/896, setters_tests 278/278 (toascii
+  69/87: lo que falta es UTS 46 fino).
+- Velocidad (tests/pages/bench_url.html, máquina RTG con MUI 3.8, ms de 0.9.1 → máquina de estados carácter a
+  carácter → final): 500 absolutas 920 → 3380 → 320; 500 relativas 1220 → 4140 → 840; 300 con searchParams 880 →
+  2100 → 700; 300 con setters 640 → 1560 → 560. La primera versión no entró así: ahora va sobre el texto con
+  charCodeAt, salta de golpe los trozos de ruta, consulta, ancla, autoridad y host (y los codifica solo si hace
+  falta), lee el esquema con una expresión regular, no mira si el host es IPv4 cuando no puede serlo, URLSearchParams
+  no decodifica lo que no tiene % ni +, y una vía rápida (una expresión regular) para lo más común, una dirección
+  http(s) absoluta limpia, que da lo mismo que la máquina de estados.
+- Aviso: la herramienta Write cambió los \uXXXX del fichero por los caracteres; en el preludio van como \uXXXX
+  (comprobado: nada fuera de ASCII en su código, solo en comentarios).
+- WPT url/ 2319 → 2926/4319 (68 %): url-constructor 137+13+14 de 137+13+14, setters y setters-stripping enteros,
+  urlsearchparams casi enteros; ningún fichero a peor. Lo que queda: IDNA (IdnaTestV2, toascii; se cortan por tiempo),
+  percent-encoding (pide otras codificaciones), urlencoded-parser, javascript-urls y data-uri-fragment.
+- Tests: jsdom, documento y js sin red, todos (4 dieron TIMEOUT al final de una tanda de 33 y pasan sueltos);
+  jsdom_load_peticion, jsdom_scripts, jsdom_iframe y documento_tipo con red.
+
+### 2026-11-07 — Tarea 41d: TextDecoder con las etiquetas y las tablas de WHATWG (WPT encoding/ 3893 → 11085/12004)
+- Primera medida de encoding/ (46 páginas, con las .any.js): 3893/12004 (32 %). TextDecoder solo conocía 10
+  etiquetas, tomaba windows-1252 por Latin-1 (0x80-0x9F mal) y no sabía otras de un byte.
+- lib/jsdom_preludio.js: las 181 etiquetas de encodings.json de lo que se sabe leer (ENC_ETIQUETAS; sin las de
+  varios bytes de Asia ni "replacement", que dan RangeError) y las 27 tablas de un byte de indexes.json (ENC_UN_BYTE:
+  128 caracteres cada una, U+FFFF donde no hay; con fatal, TypeError ahí), sacadas de los recursos de WPT (son del
+  estándar). También utf-16be (con su BOM), los suplentes por pares en UTF-16 (uno suelto, error), x-user-defined, y
+  la etiqueta sin los blancos de HTML alrededor.
+- WPT encoding/ 3893 → 11085/12004 (92 %; ningún fichero a peor). Lo que queda: las de varios bytes (big5,
+  iso-2022-jp, gbk...), encodeInto con SharedArrayBuffer y otros detalles.
+- Coste: el preludio crece 26 KB de texto. Con todos los cambios de hoy en él, la segunda página con scripts tarda lo
+  mismo en prepararlos (237 → 240 ms) y la primera tras arrancar (la que compila el preludio) 1228 → 1353 ms.
+- Test test_js_textdecoder.

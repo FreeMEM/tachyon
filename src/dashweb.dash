@@ -1161,6 +1161,10 @@ func mostrar(w: Ventana, d: Documento, direccion: String)
     w.desde = 0
     ancho = mui_width(w.v.pagina)
     if ancho > 0
+        # (con el alto de la vista, como pinta_en: sin él, pinta_en la veía con otro alto y la maquetaba entera otra
+        # vez; cada página nueva se maquetaba dos veces desde el 2026-10-22: tarea 61)
+        estilo_vh = mui_height(w.v.pagina)
+        w.actual.vh = estilo_vh
         documento_maquetar(w.actual, ancho)
         y = documento_y_de(w.actual, documento_fragmento(direccion))
         if y > 0
@@ -1804,8 +1808,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.9.1-alfa"
-@version "Tachyon 0.9.1-alfa"
+const DASHWEB_VERSION = "0.9.2-alfa"
+@version "Tachyon 0.9.2-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)

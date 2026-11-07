@@ -1,4 +1,4 @@
-WPT TOTAL dom/nodes: 10470/12653 subpruebas en 246 de 246 ficheros
+WPT TOTAL dom/nodes: 10501/12653 subpruebas en 246 de 246 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
@@ -37,9 +37,9 @@ WPT FILE dom/nodes/Document-createTextNode.html 0/6 OK
 WPT FILE dom/nodes/Document-createTreeWalker.html 4/5 OK
 WPT FILE dom/nodes/Document-doctype.html 2/2 OK
 WPT FILE dom/nodes/Document-getElementById.html 14/18 OK
-WPT FILE dom/nodes/Document-getElementsByClassName.html 0/1 OK
-WPT FILE dom/nodes/Document-getElementsByTagName.html 2/18 OK
-WPT FILE dom/nodes/Document-getElementsByTagNameNS.html 10/14 OK
+WPT FILE dom/nodes/Document-getElementsByClassName.html 1/1 OK
+WPT FILE dom/nodes/Document-getElementsByTagName.html 8/18 OK
+WPT FILE dom/nodes/Document-getElementsByTagNameNS.html 11/14 OK
 WPT FILE dom/nodes/Document-implementation.html 0/2 OK
 WPT FILE dom/nodes/Document-importNode.html 4/5 OK
 WPT FILE dom/nodes/DocumentFragment-constructor.html 2/2 OK
@@ -52,16 +52,16 @@ WPT FILE dom/nodes/Element-childElementCount-dynamic-add.html 1/1 OK
 WPT FILE dom/nodes/Element-childElementCount-dynamic-remove.html 1/1 OK
 WPT FILE dom/nodes/Element-childElementCount-nochild.html 1/1 OK
 WPT FILE dom/nodes/Element-childElementCount.html 1/1 OK
-WPT FILE dom/nodes/Element-children.html 0/2 OK
+WPT FILE dom/nodes/Element-children.html 2/2 OK
 WPT FILE dom/nodes/Element-classlist.html 1415/1420 OK
 WPT FILE dom/nodes/Element-closest-null-selectors.html 2/2 OK
 WPT FILE dom/nodes/Element-closest.html 25/29 OK
 WPT FILE dom/nodes/Element-firstElementChild-namespace.html 1/1 OK
 WPT FILE dom/nodes/Element-firstElementChild.html 1/1 OK
-WPT FILE dom/nodes/Element-getElementsByClassName.html 1/3 OK
+WPT FILE dom/nodes/Element-getElementsByClassName.html 2/3 OK
 WPT FILE dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/Element-getElementsByTagName.html 3/19 OK
-WPT FILE dom/nodes/Element-getElementsByTagNameNS.html 12/16 OK
+WPT FILE dom/nodes/Element-getElementsByTagName.html 9/19 OK
+WPT FILE dom/nodes/Element-getElementsByTagNameNS.html 13/16 OK
 WPT FILE dom/nodes/Element-hasAttribute.html 2/2 OK
 WPT FILE dom/nodes/Element-hasAttributes.html 2/2 OK
 WPT FILE dom/nodes/Element-insertAdjacentElement.html 4/6 OK
@@ -137,9 +137,9 @@ WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html 0/1 TIM
 WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html 0/1 TIMEOUT 
 WPT FILE dom/nodes/NonDocumentTypeChildNode-sibling-element.html 6/6 OK
 WPT FILE dom/nodes/ParentNode-append.html 10/25 OK
-WPT FILE dom/nodes/ParentNode-children.html 0/1 OK
+WPT FILE dom/nodes/ParentNode-children.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-prepend.html 8/22 OK
-WPT FILE dom/nodes/ParentNode-properties.html 9/12 OK
+WPT FILE dom/nodes/ParentNode-properties.html 12/12 OK
 WPT FILE dom/nodes/ParentNode-querySelector-All-comma-selector.html 2/2 OK
 WPT FILE dom/nodes/ParentNode-querySelector-All-multiple-not.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-All-scope.html 2/8 OK
@@ -190,33 +190,33 @@ WPT FILE dom/nodes/Text-wholeText.html 0/1 OK
 WPT FILE dom/nodes/append-on-Document.html 2/5 OK
 WPT FILE dom/nodes/attach-shadow-realm-after-adoption.html 2/5 OK
 WPT FILE dom/nodes/attributes-namednodemap.html 6/8 OK
-WPT FILE dom/nodes/attributes.html 7/67 OK
+WPT FILE dom/nodes/attributes.html 8/67 OK
 WPT FILE dom/nodes/case.html 63/285 OK
 WPT FILE dom/nodes/create-element-realm-after-adoption.html 0/0 TIMEOUT 
 WPT FILE dom/nodes/getElementById-namespaced-id.html 0/4 OK
 WPT FILE dom/nodes/getElementsByClassName-01.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-02.htm 1/1 OK
-WPT FILE dom/nodes/getElementsByClassName-03.htm 0/1 OK
+WPT FILE dom/nodes/getElementsByClassName-03.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-04.htm 1/1 OK
-WPT FILE dom/nodes/getElementsByClassName-05.htm 0/1 OK
-WPT FILE dom/nodes/getElementsByClassName-06.htm 0/1 OK
+WPT FILE dom/nodes/getElementsByClassName-05.htm 1/1 OK
+WPT FILE dom/nodes/getElementsByClassName-06.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-07.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-08.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-09.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-12.htm 1/1 OK
-WPT FILE dom/nodes/getElementsByClassName-13.htm 0/1 OK
+WPT FILE dom/nodes/getElementsByClassName-13.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-14.htm 1/2 OK
 WPT FILE dom/nodes/getElementsByClassName-15.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-16.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-17.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-18.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-19.htm 1/1 OK
-WPT FILE dom/nodes/getElementsByClassName-20.htm 0/1 OK
-WPT FILE dom/nodes/getElementsByClassName-21.htm 0/1 OK
-WPT FILE dom/nodes/getElementsByClassName-22.htm 0/1 OK
+WPT FILE dom/nodes/getElementsByClassName-20.htm 1/1 OK
+WPT FILE dom/nodes/getElementsByClassName-21.htm 1/1 OK
+WPT FILE dom/nodes/getElementsByClassName-22.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-23.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-24.htm 1/1 OK
-WPT FILE dom/nodes/getElementsByClassName-25.htm 0/1 OK
+WPT FILE dom/nodes/getElementsByClassName-25.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-26.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-27.htm 1/1 OK
 WPT FILE dom/nodes/getElementsByClassName-28.htm 1/1 OK
@@ -1162,27 +1162,19 @@ WPT SUB FAIL dom/nodes/Document-getElementById.html | Calling document.getElemen
 WPT SUB FAIL dom/nodes/Document-getElementById.html | changing attribute's value via `Attr` gotten from `Element.attribute`. | assert_equals: should return null after updated id via Attr.value expected null but got Element node <div id="test7"></div>
 WPT SUB FAIL dom/nodes/Document-getElementById.html | add id attribute via outerHTML | assert_not_equals: should not be null got disallowed value null
 WPT SUB FAIL dom/nodes/Document-getElementById.html | remove id attribute via outerHTML | assert_equals: should be null. expected null but got Element node <div id="test11"></div>
-WPT SUB FAIL dom/nodes/Document-getElementsByClassName.html | getElementsByClassName() should be a live collection | 'HTMLCollection' is not defined
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Interfaces | 'NodeList' is not defined
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Shouldn't be able to set unsigned properties on a HTMLCollection (non-strict mode) | assert_equals: expected (undefined) undefined but got (string) "foopy"
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Shouldn't be able to set unsigned properties on a HTMLCollection (strict mode) | assert_throws_js: function "function() { "use strict"; l[5] = "foopy" }" did not throw
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Should be able to set expando shadowing a proto prop (item) | 'HTMLCollection' is not defined
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Should be able to set expando shadowing a proto prop (namedItem) | 'HTMLCollection' is not defined
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | hasOwnProperty, getOwnPropertyDescriptor, getOwnPropertyNames | assert_equals: expected (object) Element node <pre id="x"></pre> but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | HTML element with uppercase tagName never matches in HTML Documents | assert_equals: expected "I" but got "i"
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, no prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <st></st>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, no prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <ST></ST>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <st></st>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <ST></ST>] length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, no prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, no prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, no prefix, non-ascii characters in name | assert_equals: expected "aÇ" but got "aç"
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <AÇ></AÇ>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got [Element node <AÇ></AÇ>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | getElementsByTagName() should be a live collection | 'HTMLCollection' is not defined
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | Document.getElementsByTagNameNS | 'NodeList' is not defined
-WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <abc></abc>] length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | getElementsByTagNameNS() should be a live collection | 'HTMLCollection' is not defined
+WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
 WPT SUB FAIL dom/nodes/Document-implementation.html | Getting implementation off the same document | 'DOMImplementation' is not defined
 WPT SUB FAIL dom/nodes/Document-implementation.html | Getting implementation off different documents | assert_not_equals: got disallowed value object "[object Object]"
 WPT SUB FAIL dom/nodes/Document-importNode.html | Import an Attr node with namespace/prefix correctly. | not a function
@@ -1191,8 +1183,6 @@ WPT SUB FAIL dom/nodes/DocumentFragment-getElementById.html | It must return nul
 WPT SUB FAIL dom/nodes/DocumentFragment-getElementById.html | It must return the first element when there are matches | not a function
 WPT SUB FAIL dom/nodes/DocumentFragment-getElementById.html | Empty string ID values | not a function
 WPT SUB FAIL dom/nodes/DocumentFragment-getElementById.html | It must return the first element when there are matches, using a template | not a function
-WPT SUB FAIL dom/nodes/Element-children.html | HTMLCollection edge cases | not a function
-WPT SUB FAIL dom/nodes/Element-children.html | HTMLCollection edge cases 1 | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "foo", "bar", "baz"] length 9, got ["0", "1", "2", "3", "4", "5", "length"] l
 WPT SUB FAIL dom/nodes/Element-classlist.html | classList.replace(" ", "") with attribute value null (HTML node) | assert_throws_dom: function "function() { var list = e.classList; var res = list[funcName].apply(list, args); }" threw object "InvalidCharacterError: The token 
 WPT SUB FAIL dom/nodes/Element-classlist.html | classList.replace(" ", "") with attribute value null (XHTML node) | assert_throws_dom: function "function() { var list = e.classList; var res = list[funcName].apply(list, args); }" threw object "InvalidCharacterError: The token 
 WPT SUB FAIL dom/nodes/Element-classlist.html | classList.replace(" ", "") with attribute value null (MathML node) | assert_throws_dom: function "function() { var list = e.classList; var res = list[funcName].apply(list, args); }" threw object "InvalidCharacterError: The token 
@@ -1203,28 +1193,20 @@ WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 
 WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 'test4' and selector 'select > :scope' | assert_equals: select > :scope expected "test4" but got ""
 WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 'test4' and selector ':has(> :scope)' | assert_equals: :has(> :scope) expected "test3" but got ""
 WPT SUB FAIL dom/nodes/Element-getElementsByClassName.html | Interface should be correct. | 'NodeList' is not defined
-WPT SUB FAIL dom/nodes/Element-getElementsByClassName.html | getElementsByClassName() should be a live collection | 'HTMLCollection' is not defined
 WPT SUB NOTRUN dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html | Element-getElementsByTagName-change-document-HTMLNess | 
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Interfaces | 'NodeList' is not defined
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Shouldn't be able to set unsigned properties on a HTMLCollection (non-strict mode) | assert_equals: expected (undefined) undefined but got (string) "foopy"
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Shouldn't be able to set unsigned properties on a HTMLCollection (strict mode) | assert_throws_js: function "function() { "use strict"; l[5] = "foopy" }" did not throw
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Should be able to set expando shadowing a proto prop (item) | 'HTMLCollection' is not defined
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Should be able to set expando shadowing a proto prop (namedItem) | 'HTMLCollection' is not defined
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | hasOwnProperty, getOwnPropertyDescriptor, getOwnPropertyNames | assert_equals: expected (object) Element node <pre id="x"></pre> but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | HTML element with uppercase tagName never matches in HTML Documents | assert_equals: expected "I" but got "i"
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, no prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <st></st>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, no prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <ST></ST>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <st></st>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <ST></ST>] length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, no prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, no prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, no prefix, non-ascii characters in name | assert_equals: expected "aÇ" but got "aç"
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <AÇ></AÇ>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got [Element node <AÇ></AÇ>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | getElementsByTagName() should be a live collection | 'HTMLCollection' is not defined
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | Element.getElementsByTagNameNS | 'NodeList' is not defined
-WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got [Element node <abc></abc>] length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | getElementsByTagNameNS() should be a live collection | 'HTMLCollection' is not defined
+WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
 WPT SUB FAIL dom/nodes/Element-insertAdjacentElement.html | Inserting to an invalid location should cause a Syntax Error exception | assert_throws_dom: function "function() { target.insertAdjacentElement("test", document.getElementById("test1")) }" did not throw
 WPT SUB FAIL dom/nodes/Element-insertAdjacentElement.html | Adding more than one child to document should cause a HierarchyRequestError exception | assert_equals: expected null but got Element node <span id="test1"></span>
 WPT SUB FAIL dom/nodes/Element-insertAdjacentText.html | Inserting to an invalid location should cause a Syntax Error exception | assert_throws_dom: function "function() { target.insertAdjacentText("test", "text") }" did not throw
@@ -1595,7 +1577,6 @@ WPT SUB FAIL dom/nodes/ParentNode-append.html | Element.append() with null as an
 WPT SUB FAIL dom/nodes/ParentNode-append.html | DocumentFragment.append() with null as an argument, on a parent having no child. | insertBefore: not a node
 WPT SUB FAIL dom/nodes/ParentNode-append.html | DocumentFragment.append() with undefined as an argument, on a parent having no child. | insertBefore: not a node
 WPT SUB FAIL dom/nodes/ParentNode-append.html | DocumentFragment.append() with null as an argument, on a parent having a child. | insertBefore: not a node
-WPT SUB FAIL dom/nodes/ParentNode-children.html | ParentNode.children should be a live collection | 'HTMLCollection' is not defined
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | If node is a host-including inclusive ancestor of parent, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc.body, doc.body)" threw object "RangeError: insertBefore: cannot insert there" that is not a DOMException Hierarchy
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | If node is not a DocumentFragment, DocumentType, Element, Text, ProcessingInstruction, or Comment node, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc, doc2)" did not throw
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | If node is a Text node and parent is a document, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc, doc.createTextNode("text"))" did not throw
@@ -1610,9 +1591,6 @@ WPT SUB FAIL dom/nodes/ParentNode-prepend.html | Element.prepend() with null as 
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | DocumentFragment.prepend() with null as an argument, on a parent having no child. | insertBefore: not a node
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | DocumentFragment.prepend() with undefined as an argument, on a parent having no child. | insertBefore: not a node
 WPT SUB FAIL dom/nodes/ParentNode-prepend.html | DocumentFragment.prepend() with null as an argument, on a parent having a child. | insertBefore: not a node
-WPT SUB FAIL dom/nodes/ParentNode-properties.html | Document.children | not a function
-WPT SUB FAIL dom/nodes/ParentNode-properties.html | Element.children | not a function
-WPT SUB FAIL dom/nodes/ParentNode-properties.html | DocumentFragment.children | not a function
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-All-scope.html | querySelector | assert_equals: expected Element node <p><span>hello</span></p> but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-All-scope.html | querySelectorAll | assert_array_equals: lengths differ, expected array [Element node <p><span>hello</span></p>, Element node <p id="p2">hey</p>] length 2, got [] length 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-All-scope.html | querySelector comma separated | assert_equals: expected Element node <p><span>hello</span></p> but got null
@@ -2003,13 +1981,12 @@ WPT SUB FAIL dom/nodes/attributes.html | Basic functionality of removeAttributeN
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode on bound attribute should throw InUseAttributeError | assert_throws_dom: function "function(){el2.setAttributeNode(attrNode)}" did not throw
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode, if it fires mutation events, should fire one with the new node when resetting an existing attribute (outer shell) | assert_equals: Must return the old attr node from a setAttributeNode call expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | getAttributeNames tests | assert_equals: expected 4 but got 2
-WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with basic attributes | assert_array_equals: lengths differ, expected array ["0", "1"] length 2, got [] length 0
-WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with non-namespaced attribute before same-name namespaced one | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got [] length 0
-WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with namespaced attribute before same-name non-namespaced one | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got [] length 0
-WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with two namespaced attributes with the same name-with-prefix | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got [] length 0
-WPT SUB FAIL dom/nodes/attributes.html | Own property names should only include all-lowercase qualified names for an HTML element in an HTML document | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "g:h", "j"] length 8, got ["length"] length 1
-WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for a non-HTML element in an HTML document | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] length 12, got ["length"] length 1
-WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for an HTML element in a non-HTML document | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] length 12, got ["length"] length 1
+WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with non-namespaced attribute before same-name namespaced one | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got ["0", "1"] length 2
+WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with namespaced attribute before same-name non-namespaced one | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got ["0", "1"] length 2
+WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with two namespaced attributes with the same name-with-prefix | assert_array_equals: lengths differ, expected array ["0", "1", "2"] length 3, got ["0", "1"] length 2
+WPT SUB FAIL dom/nodes/attributes.html | Own property names should only include all-lowercase qualified names for an HTML element in an HTML document | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "g:h", "j"] length 8, got ["0", "1", "2", "3", "4", "5", "a:b", "c:d", "e:f",
+WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for a non-HTML element in an HTML document | assert_array_equals: expected property 6 to be "A:B" but got "a:b" (expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] got ["0"
+WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for an HTML element in a non-HTML document | assert_array_equals: expected property 6 to be "A:B" but got "a:b" (expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] got ["0"
 WPT SUB FAIL dom/nodes/case.html | setAttribute abc | assert_equals: expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
@@ -2020,11 +1997,11 @@ WPT SUB FAIL dom/nodes/case.html | setAttribute ABC | assert_equals: expected (s
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
 WPT SUB FAIL dom/nodes/case.html | setAttribute ä | assert_equals: expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>] length 4, got [] le
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>] length 4, got objec
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä
 WPT SUB FAIL dom/nodes/case.html | createElement Ä | assert_equals: expected "Ä" but got "ä"
 WPT SUB FAIL dom/nodes/case.html | setAttribute Ä | assert_equals: expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Ä | assert_array_equals: lengths differ, expected array [Element node <Ä></Ä>] length 1, got [Element node <ä></ä>, Element node <Ä></Ä>] length 2
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Ä | assert_array_equals: lengths differ, expected array [Element node <Ä></Ä>] length 1, got object "[object HTMLCollection]" length 2
 WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (object) null
 WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: expected (string) "test" but got (object) null
@@ -2236,39 +2213,31 @@ WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | append a namespaced I
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | change a namespaced ID preserves ID lookup and form association | assert_equals: expected Element node <form id="unrelated"></form> but got null
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | remove a namespaced ID preserves ID lookup and form association | assert_equals: expected Element node <form></form> but got null
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | replace a namespaced ID preserves ID lookup and form association | not a function
-WPT SUB FAIL dom/nodes/getElementsByClassName-03.htm | document.getElementsByClassName(): changing classes | assert_array_equals: lengths differ, expected array [Element node <html class="a"><head> <title>document.getElementsByCla...] length 1, got [Element node <html 
-WPT SUB FAIL dom/nodes/getElementsByClassName-05.htm | document.getElementsByClassName(): changing classes | assert_array_equals: lengths differ, expected array [Element node <html class="a"><head> <title>document.getElementsByCla...] length 1, got [Element node <html 
-WPT SUB FAIL dom/nodes/getElementsByClassName-06.htm | document.getElementsByClassName(): adding element with class | assert_array_equals: lengths differ, expected array [Element node <body class="a"> <div id="log"></div> <script> tes..., Element node <foo class="a"></foo>] len
-WPT SUB FAIL dom/nodes/getElementsByClassName-13.htm | element.getElementsByClassName(): adding an element | assert_array_equals: lengths differ, expected array [Element node <x-y-z class="a"></x-y-z>] length 1, got [] length 0
 WPT SUB FAIL dom/nodes/getElementsByClassName-14.htm | document.getElementsByClassName(): case-insensitive (quirks mode) | assert_array_equals: lengths differ, expected array [Element node <html class="a A"><head> <title>document.getElementsByC..., Element node <body class="a a"> <d
-WPT SUB FAIL dom/nodes/getElementsByClassName-20.htm | get elements in document then add element to collection | assert_equals: expected 5 but got 4
-WPT SUB FAIL dom/nodes/getElementsByClassName-21.htm | delete element from collection | assert_equals: expected 0 but got 1
-WPT SUB FAIL dom/nodes/getElementsByClassName-22.htm | move item in collection order | assert_equals: expected "TABLE" but got "TD"
-WPT SUB FAIL dom/nodes/getElementsByClassName-25.htm | verify spacing is handled correctly | assert_equals: expected "TABLE" but got "TD"
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a LINE TABULATION to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">LINE TABULATION</span>] length 1, got [Element node <span class="?">LINE TABUL
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a LINE TABULATION to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">LINE TABULATION</span>] length 1, got object "[object HTMLCollection]" length 
 WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a NEXT LINE to getElementsByClassName still finds the span | assert_equals: Sanity check: the class name was retrieved and is a single character expected 1 but got 3
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a OGHAM SPACE MARK to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">OGHAM SPACE MARK</span>] length 1, got [Element node <span class="?">LINE TABU
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EN QUAD to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">EN QUAD</span>] length 1, got [Element node <span class="?">LINE TABULATION</s
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EM QUAD to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">EM QUAD</span>] length 1, got [Element node <span class="?">LINE TABULATION</s
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EN SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">EN SPACE</span>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">EM SPACE</span>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a THREE-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">THREE-PER-EM SPACE</span>] length 1, got [Element node <span class="?">LINE TA
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a FOUR-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">FOUR-PER-EM SPACE</span>] length 1, got [Element node <span class="?">LINE TAB
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a SIX-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">SIX-PER-EM SPACE</span>] length 1, got [Element node <span class="?">LINE TABU
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a FIGURE SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">FIGURE SPACE</span>] length 1, got [Element node <span class="?">LINE TABULATI
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a PUNCTUATION SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">PUNCTUATION SPACE</span>] length 1, got [Element node <span class="?">LINE TAB
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a THIN SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">THIN SPACE</span>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a HAIR SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">HAIR SPACE</span>] length 1, got [Element node <span class="?">LINE TABULATION
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a LINE SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">LINE SEPARATOR</span>] length 1, got [Element node <span class="?">LINE TABULA
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a PARAGRAPH SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">PARAGRAPH SEPARATOR</span>] length 1, got [Element node <span class="?">LINE T
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a NARROW NO-BREAK SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">NARROW NO-BREAK SPACE</span>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a MEDIUM MATHEMATICAL SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">MEDIUM MATHEMATICAL SPACE</span>] length 1, got [] length 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a IDEOGRAPHIC SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">IDEOGRAPHIC SPACE</span>] length 1, got [Element node <span class="?">LINE TAB
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a MONGOLIAN VOWEL SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">MONGOLIAN VOWEL SEPARATOR</span>] length 1, got [Element node <span class="?">
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a OGHAM SPACE MARK to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">OGHAM SPACE MARK</span>] length 1, got object "[object HTMLCollection]" length
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EN QUAD to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">EN QUAD</span>] length 1, got object "[object HTMLCollection]" length 15
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EM QUAD to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">EM QUAD</span>] length 1, got object "[object HTMLCollection]" length 15
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EN SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">EN SPACE</span>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">EM SPACE</span>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a THREE-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">THREE-PER-EM SPACE</span>] length 1, got object "[object HTMLCollection]" leng
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a FOUR-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">FOUR-PER-EM SPACE</span>] length 1, got object "[object HTMLCollection]" lengt
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a SIX-PER-EM SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">SIX-PER-EM SPACE</span>] length 1, got object "[object HTMLCollection]" length
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a FIGURE SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">FIGURE SPACE</span>] length 1, got object "[object HTMLCollection]" length 15
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a PUNCTUATION SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">PUNCTUATION SPACE</span>] length 1, got object "[object HTMLCollection]" lengt
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a THIN SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">THIN SPACE</span>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a HAIR SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">HAIR SPACE</span>] length 1, got object "[object HTMLCollection]" length 15
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a LINE SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">LINE SEPARATOR</span>] length 1, got object "[object HTMLCollection]" length 1
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a PARAGRAPH SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">PARAGRAPH SEPARATOR</span>] length 1, got object "[object HTMLCollection]" len
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a NARROW NO-BREAK SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">NARROW NO-BREAK SPACE</span>] length 1, got object "[object HTMLCollection]" l
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a MEDIUM MATHEMATICAL SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class=" ">MEDIUM MATHEMATICAL SPACE</span>] length 1, got object "[object HTMLCollection
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a IDEOGRAPHIC SPACE to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">IDEOGRAPHIC SPACE</span>] length 1, got object "[object HTMLCollection]" lengt
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a MONGOLIAN VOWEL SEPARATOR to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">MONGOLIAN VOWEL SEPARATOR</span>] length 1, got object "[object HTMLCollection
 WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a ZERO WIDTH SPACE to getElementsByClassName still finds the span | assert_equals: Sanity check: the class name was retrieved and is a single character expected 1 but got 0
 WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a ZERO WIDTH NON-JOINER to getElementsByClassName still finds the span | assert_equals: Sanity check: the class name was retrieved and is a single character expected 1 but got 0
 WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a ZERO WIDTH JOINER to getElementsByClassName still finds the span | assert_equals: Sanity check: the class name was retrieved and is a single character expected 1 but got 0
-WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a WORD JOINER to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">WORD JOINER</span>] length 1, got [Element node <span class="?">LINE TABULATIO
+WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a WORD JOINER to getElementsByClassName still finds the span | assert_array_equals: lengths differ, expected array [Element node <span class="?">WORD JOINER</span>] length 1, got object "[object HTMLCollection]" length 15
 WPT SUB FAIL dom/nodes/getElementsByClassName-whitespace-class-names.html | Passing a ZERO WIDTH NON-BREAKING SPACE to getElementsByClassName still finds the span | assert_equals: Sanity check: the class name was retrieved and is a single character expected 1 but got 0
 WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid object argument insertAdjacentElement | assert_throws_js: function "function() { el.insertAdjacentElement('afterbegin', document.implementation.createDocumentType("html")) }" did not throw
 WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid caller object insertAdjacentElement | assert_throws_dom: function "function() { el.insertAdjacentElement('beforebegin', document.createElement('banane')) }" did not throw

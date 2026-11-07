@@ -1,0 +1,32 @@
+# Test: la activación de DOM (tarea 41d, WPT dom/events): un clic activa solo el primero del camino que tiene algo que
+# hacer (un submit dentro de un <label> envía su formulario y no marca la casilla del label); un clic en el texto de
+# un <label> hace clic en su control; cancelado, el checkbox vuelve; el <summary> abre su <details> y luego llega
+# toggle; reset vacía el formulario; un clic hecho con dispatchEvent también activa. location.hash cambia sin cargar
+# la página otra vez y llega hashchange.
+# memcheck
+# expect-out: submit: 1 false | label: true | cancelado: false
+# expect-out: details: true | reset: x | dispatchEvent: 2
+# expect-out: después: toggle 1 | hash: #aqui #aqui http://x.test/p.html#aqui
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><label><input type=checkbox id=c><form id=f><input type=submit id=s><input id=t value=x></form></label><label id=l2><input type=checkbox id=c2><span id=sp>texto</span></label><details id=d><summary id=su>s</summary>dentro</details></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_lugar('http://x.test/p.html'); var envios = 0, toggles = 0, cambios = []; document.getElementById('f').onsubmit = function () { envios++; return false; }; document.getElementById('d').ontoggle = function () { toggles++; }; window.onhashchange = function (e) { cambios.push(e.newURL); };", "t.js")
+    c = "document.getElementById('s').click(); var r = 'submit: ' + envios + ' ' + document.getElementById('c').checked;"
+    c = c + "document.getElementById('sp').click(); r += ' | label: ' + document.getElementById('c2').checked;"
+    c = c + "var c2 = document.getElementById('c2'); c2.addEventListener('click', function (e) { e.preventDefault(); }); c2.click(); r + ' | cancelado: ' + !c2.checked"
+    Print js_evaluar(js, c, "t.js")
+    c = "document.getElementById('su').click(); var t = document.getElementById('t'); t.value = 'cambiado'; document.getElementById('f').reset();"
+    c = c + "document.getElementById('s').dispatchEvent(new MouseEvent('click', {bubbles: true, cancelable: true}));"
+    c = c + "'details: ' + document.getElementById('d').hasAttribute('open') + ' | reset: ' + t.value + ' | dispatchEvent: ' + envios"
+    Print js_evaluar(js, c, "t.js")
+    js_evaluar(js, "location.hash = 'aqui'; var h1 = location.hash;", "t.js")
+    jsdom_temporizadores(js)
+    Print js_evaluar(js, "'después: toggle ' + toggles + ' | hash: ' + h1 + ' ' + location.hash + ' ' + cambios.join(',')", "t.js")
+    js_liberar(js)
+end

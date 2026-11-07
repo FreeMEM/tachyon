@@ -5717,3 +5717,16 @@ Formato:
   calcularlo (la maqueta o los formularios), por un camino que no sale buscando ".estilo[...] =". Deshecho.
 - Si se vuelve a intentar: primero encontrar esas escrituras (que cambien el estilo de un elemento sin copiarlo es
   también un riesgo con estilo_aplicar_partes, que compara el viejo con el nuevo).
+
+### 2026-11-07 — Tarea 61 (4): las sangrías de cada caja, guardadas en la maqueta
+- Lo que rompía el estilo compartido de la 61 (3): _flex_maquetar fuerza width, min-width, max-width, height,
+  min-height, max-height y box-sizing en el estilo del elemento mientras lo maqueta y los deja como estaban después
+  (lib/maqueta.dash), y la altura de algunos reemplazados también se escribe ahí. Es ese estilo, no una copia.
+- _sangrias (lo que dejan a izquierda y derecha los márgenes, bordes y rellenos de las cajas de n hacia arriba) se
+  llama por cada dibujo al medir anchos: 75.000 llamadas en gh_repo.html, cada una subiendo hasta arriba y leyendo los
+  textos del estilo de cada antepasado. Ahora cada nodo guarda lo suyo para la maqueta en curso (Nodo.sg_pase,
+  sg_izq, sg_der; con _maqueta_pase, que sube en cada maquetar: la época no siempre). Seguro dentro de una maqueta:
+  lo que se fuerza en flex no son márgenes, rellenos ni bordes.
+- gh_local.html en la máquina RTG con MUI 3.8: maqueta 8,7 s → 5,9 s; "Ready" a los ~15,3 s (unos 28 s con la 0.9.1).
+  Captura igual píxel a píxel (salvo el tiempo de la barra de estado). Memoria: 12 bytes más por nodo. Batería:
+  143/143.

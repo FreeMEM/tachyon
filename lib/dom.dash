@@ -78,6 +78,9 @@ struct Nodo
     orden: Int = 0            # lib/maqueta.dash: su orden en el árbol en la última maqueta (para pintar lo posicionado)
     cl: [Int] = nil           # márgenes, bordes y rellenos en px con el contenedor cl_cont en la maqueta cl_pase
     cl_pase: Int = 0
+    sg_pase: Int = 0          # lib/maqueta.dash _sangrias: lo que deja él a izquierda y derecha en la maqueta sg_pase
+    sg_izq: Int = 0
+    sg_der: Int = 0
     cl_cont: Int = 0
     cl_pct: Bool = false      # (alguno va en %: depende del contenedor)
     pal_clave: String = nil   # un texto: los anchos de sus palabras con esa letra (lib/maqueta.dash _palabras_texto: con sus palabras)

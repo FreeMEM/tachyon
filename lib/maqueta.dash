@@ -2806,15 +2806,30 @@ func _sangrias(n: Nodo, tope: Nodo)
     _sangria_der = 0
     p = n
     while p != nil and p != tope and (_sangria_corte == nil or p != _sangria_corte)
-        # (un flotante o un absoluto es un bloque aunque diga display: inline: el <span> flotante de Acid2; y un hijo de
-        # un flex o un grid también: el <a> con padding de cada <li> flex del menú de amigatronics.com medía su texto
-        # sin el relleno y "The Podcast" se partía en dos líneas; tarea 55)
-        if p.tipo == DOM_ELEMENTO and (_val(p.estilo, "display", "inline") != "inline" or _val(p.estilo, "float", "none") != "none" or _fuera_del_flujo(p) or _en_flex_o_grid(p))
-            e = p.estilo
-            _sangria_izq = _sangria_izq + _px(e, "margin-left", 0) + _borde(e, "left") + _px(e, "padding-left", 0)
-            _sangria_der = _sangria_der + _px(e, "margin-right", 0) + _borde(e, "right") + _px(e, "padding-right", 0)
+        if p.sg_pase != _maqueta_pase
+            _sangria_de(p)
         end
+        _sangria_izq = _sangria_izq + p.sg_izq
+        _sangria_der = _sangria_der + p.sg_der
         p = p.padre
+    end
+end
+
+# Lo que deja p (sus márgenes, bordes y rellenos a izquierda y derecha), guardado en él para esta maqueta: _sangrias se
+# llama por cada dibujo al medir y subía hasta arriba leyendo los textos del estilo cada vez (75.000 llamadas en
+# gh_repo.html; tarea 61). En una maqueta no cambian: _flex_maquetar solo fuerza width, height, sus min y max y
+# box-sizing
+func _sangria_de(p: Nodo)
+    p.sg_pase = _maqueta_pase
+    p.sg_izq = 0
+    p.sg_der = 0
+    # (un flotante o un absoluto es un bloque aunque diga display: inline: el <span> flotante de Acid2; y un hijo de
+    # un flex o un grid también: el <a> con padding de cada <li> flex del menú de amigatronics.com medía su texto
+    # sin el relleno y "The Podcast" se partía en dos líneas; tarea 55)
+    if p.tipo == DOM_ELEMENTO and (_val(p.estilo, "display", "inline") != "inline" or _val(p.estilo, "float", "none") != "none" or _fuera_del_flujo(p) or _en_flex_o_grid(p))
+        e = p.estilo
+        p.sg_izq = _px(e, "margin-left", 0) + _borde(e, "left") + _px(e, "padding-left", 0)
+        p.sg_der = _px(e, "margin-right", 0) + _borde(e, "right") + _px(e, "padding-right", 0)
     end
 end
 

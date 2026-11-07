@@ -5991,3 +5991,13 @@ Formato:
   RTG, dos pasadas): 500 despachos por 13 nodos con oyentes 1180-1240 → 1220-1280 ms, sin oyentes 1000-1060 →
   1040-1060, add/remove 220 → 220-240: lo mismo dentro del ruido (pasos de 20 ms). Lo caro es despachar en sí (2 ms
   cada uno sin oyentes): para la tarea 61.
+
+### 2026-11-07 — Tarea 61: despachar eventos más deprisa
+- Medido por partes (tests/pages/bench_eventos_partes.html, máquina RTG): de 1040 ms por 500 despachos sin oyentes
+  en un árbol de 13 nodos, crear los eventos se llevaba 240: el constructor recorría con forEach (y una función por
+  clave) las 29 claves que copia del diccionario. Ahora recorre solo las que trae (for-in contra EV_COPIA).
+- En la captura no se llama a avisar() en los nodos sin oyentes de ese tipo.
+- bench_eventos.html: con oyentes 1180-1240 → 1040 ms, sin oyentes 1000-1060 → 800-860, crear 500 eventos 240 →
+  80. dom/events igual (509/673, ningún fichero distinto); los de jsdom, documento y js pasan.
+- Lo que queda (unos 1,6 ms por despacho): los nodeType, parentNode y hasAttribute('on...') de cada nodo del camino
+  (llamadas a C).

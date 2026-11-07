@@ -11,6 +11,10 @@ Arranque (desde cualquier directorio):
 **Después (usuario, 2026-10-24): "que se vea bien la web de youtube sería un puntazo": la 38 va la siguiente, tras
 publicar la 0.7.2; luego la 53 (las webs de chat).**
 
+**Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
+carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
+pendiente del plan. Esto manda sobre los dos encargos de arriba.**
+
 ## Objetivo
 
 Un navegador ligero para AmigaOS 3.x escrito en Dash, con interfaz MUI 5: XHTML, CSS, JavaScript
@@ -589,6 +593,10 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
+      cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
+      Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
+      ficheros (ASL), y soltar el icono de un fichero en la ventana (AppWindow de Workbench) para abrirlo.
 - [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como

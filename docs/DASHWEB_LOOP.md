@@ -5772,3 +5772,19 @@ Formato:
 - Quedan en dom/lists: relList, htmlFor y sizes en elementos de otro espacio de nombres deberían ser undefined.
 - Tests: test_jsdom_classlist_iterable; jsdom y documento sin red 27/27. WPT dom/nodes 10470 → 10501/12653 (por la
   HTMLCollection viva y classList; ningún fichero a peor). Lo medido de WPT: dom/ 47744/57588 (83 %).
+
+### 2026-11-07 — Tarea 41d: la activación de DOM y los saltos dentro de la página (WPT dom/events 370 → 413/618)
+- Un clic (MouseEvent click, de click() o de dispatchEvent) activa el primero del camino con algo que hacer: él o,
+  si el evento sube, el primer antepasado (input checkbox/radio/submit/image/reset/button, button, a y area con href,
+  el primer <summary> de un <details>, label). Antes del evento, lo previo (el checkbox cambia, el radio se marca);
+  cancelado, vuelve (y el radio que estaba marcado en su grupo, otra vez marcado); si no: input y change, submit
+  (SubmitEvent con submitter) y form.submit(), form.reset() (el evento reset y cada control a su valor del HTML; antes
+  no hacía nada), abrir o cerrar el <details> (toggle después), seguir el enlace (no los de download, target a otra
+  ventana ni javascript:), o el clic en el control del <label> (no si el clic fue en algo interactivo de dentro).
+  click() dentro de su propio clic no hace nada (un WeakSet). Antes solo se activaba el propio elemento.
+- location: hash es un accesor (location.hash = 'x' no hacía nada) y una dirección que solo cambia el fragmento ya no
+  carga la página otra vez (location.href = '#x' la recargaba entera; con "#" a secas también): cambia location, llega
+  hashchange (HashChangeEvent con oldURL y newURL) y dashweb solo desplaza, como con un enlace.
+- WPT dom/events 370 → 413/618 (single-activation-behavior 49 → 86, dispatch-click 19 → 23,
+  detached-input-and-change 6 → 8; ningún fichero a peor). Lo medido de WPT: dom/ 47787/57588.
+- Tests: test_jsdom_activacion; jsdom, documento, formularios y acid sin red, todos.

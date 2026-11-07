@@ -5837,3 +5837,19 @@ Formato:
 - Coste: el preludio crece 26 KB de texto. Con todos los cambios de hoy en él, la segunda página con scripts tarda lo
   mismo en prepararlos (237 → 240 ms) y la primera tras arrancar (la que compila el preludio) 1228 → 1353 ms.
 - Test test_js_textdecoder.
+
+### 2026-11-07 — Publicada la v0.9.2-alfa
+- Usuario: "cuando creas conveniente puedes ir publicando un nuevo Tachyon". Versión 0.9.2-alfa (tareas 61 y 41d de
+  hoy), PR #22 de dev a main (df5996e), etiqueta v0.9.2-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.2-alfa con tachyon.lha, Tachyon.gz (SHA-256 41dcca2e...7e890b,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Antes de publicar: batería 144/146 (5599 s). Los dos que fallaron pasan sueltos: test_imagenes_carga no podía
+  arrancar su servidor (el puerto 40856 lo tenía una conexión de salida de Chrome del PC: pasa igual con otro puerto)
+  y test_guardar dio "SyntaxError: invalid assignment left-hand side" al compilar el preludio en una línea que está
+  bien, tras muchos tests en la misma sesión del A1200 de 8 MB (sin T:tachyon_preludio.bc, que solo se guarda con más
+  de 32 MB libres): parece falta de memoria al compilar el preludio, que hoy ha crecido (URL, tablas de codificaciones).
+  Aviso: vigilar el tamaño del preludio en máquinas de 8 MB.
+- Actualización de verdad desde el Tachyon.gz de la v0.9.1-alfa publicada (máquina RTG con MUI 3.8, GitHub de
+  mentira en el PC): icono verde, baja Tachyon.gz y los nueve catálogos, instalado idéntico al compilado, .old el de
+  antes, Reiniciar abre la 0.9.2. La 0.9.2 del paquete: Amiga+C/V/X, Ctrl+V y Amiga-S bien; cuatro ventanas (Acid3,
+  gh_local.html, estrellas.html y Acid2) unos 5 min sin colgarse y un clic al final que responde.

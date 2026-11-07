@@ -1,4 +1,4 @@
-WPT TOTAL url: 7242/8699 subpruebas en 41 de 41 ficheros
+WPT TOTAL url: 7277/8699 subpruebas en 41 de 41 ficheros
 
 WPT FILE url/IdnaTestV2-removed.any.html 1/21 OK
 WPT FILE url/IdnaTestV2.any.html 1536/2676 OK
@@ -29,7 +29,7 @@ WPT FILE url/url-setters.any.html 246/246 OK
 WPT FILE url/url-statics-canparse.any.html 8/8 OK
 WPT FILE url/url-statics-parse.any.html 8/8 OK
 WPT FILE url/url-tojson.any.html 1/1 OK
-WPT FILE url/urlencoded-parser.any.html 70/105 OK
+WPT FILE url/urlencoded-parser.any.html 105/105 OK
 WPT FILE url/urlsearchparams-append.any.html 4/4 OK
 WPT FILE url/urlsearchparams-constructor.any.html 24/27 OK
 WPT FILE url/urlsearchparams-delete.any.html 8/8 OK
@@ -1461,41 +1461,6 @@ WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.host) | assert_eq
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.hostname) | assert_equals: expected "xn--0.com" but got "x"
 WPT SUB FAIL url/url-constructor.any.html | Parsing: <??a=b&c=d> against <http://example.org/foo/bar> | assert_equals: searchParams expected "%3Fa=b&c=d" but got "a=b&c=d"
 WPT SUB FAIL url/url-searchparams.any.html | URL.searchParams and URL.search setters, update propagation | assert_equals: expected "%3Fa=b&c=d" but got "a=b&c=d"
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: test | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: test=  | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %EF%BB%BFtest=%EF%BB%BF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %EF%BF%BF=%EF%BF%BF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %FE%FF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %FF%FE | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: +&+=x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %C2 | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %C2x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: _charset_=windows-1252&test=%C2x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input:  | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a= | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: =b | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: & | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: &a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a&a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a&b&c | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b&c=d | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b&c=d& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: &&&a=b&&&&c=d& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=a&a=b&a=c | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a==a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=a+b+c+d | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %a=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %a_=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %61=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %61+%4d%4D= | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: id=0&value=% | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%2sf%2a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%2%2af%2a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%%2a | not a function
 WPT SUB FAIL url/urlsearchparams-constructor.any.html | URLSearchParams constructor, DOMException as argument | assert_throws_js: Constructing a URLSearchParams from DOMException.prototype should throw due to branding checks function "() => new URLSearchParams(DOMExceptio
 WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 2 unpaired surrogates (no trailing) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["\ufffdx", "3"] got ["\ufffdx", "1"])
 WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 3 unpaired surrogates (no leading) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["x\ufffd", "3"] got ["x\ufffd", "1"])

@@ -5960,3 +5960,10 @@ Formato:
   Clipboards/, ENV/ y T/. Para repetirlo:
       medir_visor.py --maquina rtg --sistema ~/.cache/dash-emu/sys32rtg38 --programa src/dashweb.dash --workbench
                      --pagina bench_url.html --acciones 'Tachyon e 500 i e 500' --captura x.png
+
+### 2026-11-07 — Tarea 41d: formData() de Request y Response como dice Fetch (url/urlencoded-parser 70 → 105/105)
+- Request no tenía formData, arrayBuffer, bytes, blob ni bodyUsed; ahora sí, y pone el Content-Type de su cuerpo si
+  no lo traía. aFormData() (las dos): urlencoded, multipart/form-data (con sus ficheros como Blob) y, con otro tipo,
+  TypeError (antes, Response lo leía siempre como urlencoded).
+- url/ 41/41: 7277/8699 (84 %), ningún fichero peor. Pasan los de jsdom, documento y js sin red, js_fetch y
+  jsdom_load_peticion.

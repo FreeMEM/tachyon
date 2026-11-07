@@ -5860,3 +5860,11 @@ Formato:
 - Ahora van comprimidas (cada código en base 36, "+k" para los k siguientes de uno en uno, "-" sin carácter) y
   encTabla abre cada una la primera vez que una página la usa: 6,7 KB. Preludio: 219 KB. Comprobado en node que cada
   tabla sale igual; WPT encoding/ sigue en 11085/12004 y test_js_textdecoder pasa.
+
+### 2026-11-07 — Tarea 41d: WPT dom/traversal 42/53 → 1590/1608
+- Medida otra vez (la anterior era del 2026-11-04): NodeIterator.html, TreeWalker.html y NodeIterator-removal.html ya
+  no se paran al empezar ("TypeError: not a function" en el setup de dom/common.js) con lo de hoy: 1585/1608. Una copia
+  de la página con un oyente de error lo confirmó (762/766) antes de medir otra vez.
+- TreeWalker y NodeIterator: [Symbol.toStringTag], root/whatToShow/filter de solo lectura, whatToShow como entero
+  sin signo (null es 0), la raíz tiene que ser un nodo (TypeError) y currentNode solo acepta nodos.
+- WPT dom/traversal 1590/1608 (ningún fichero a peor). Tests: acid, jsdom_rango, jsdom_interfaces, jsdom_wpt_dom.

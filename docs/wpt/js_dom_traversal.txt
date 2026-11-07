@@ -1,14 +1,15 @@
-WPT TOTAL dom/traversal: 42/53 subpruebas en 17 de 17 ficheros
+WPT TOTAL dom/traversal: 1590/1608 subpruebas en 18 de 18 ficheros
 
 WPT FILE dom/traversal/NodeFilter-constants.html 2/2 OK
 WPT FILE dom/traversal/NodeIterator-removal-during-filtering.html 4/4 OK
-WPT FILE dom/traversal/NodeIterator-removal.html 0/0 ERROR TypeError: not a function
-WPT FILE dom/traversal/NodeIterator.html 0/0 ERROR TypeError: not a function
+WPT FILE dom/traversal/NodeIterator-removal.html 18/25 OK
+WPT FILE dom/traversal/NodeIterator.html 762/766 OK
 WPT FILE dom/traversal/TreeWalker-acceptNode-filter-cross-realm-null-browsing-context.html 0/1 OK
 WPT FILE dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html 0/5 OK
 WPT FILE dom/traversal/TreeWalker-acceptNode-filter.html 12/12 OK
-WPT FILE dom/traversal/TreeWalker-basic.html 2/6 OK
-WPT FILE dom/traversal/TreeWalker-currentNode.html 3/4 OK
+WPT FILE dom/traversal/TreeWalker-basic.html 6/6 OK
+WPT FILE dom/traversal/TreeWalker-currentNode.html 4/4 OK
+WPT FILE dom/traversal/TreeWalker-nextNode-detached-currentNode.window.html 3/3 OK
 WPT FILE dom/traversal/TreeWalker-previousNodeLastChildReject.html 1/1 OK
 WPT FILE dom/traversal/TreeWalker-previousSiblingLastChildSkip.html 1/1 OK
 WPT FILE dom/traversal/TreeWalker-realm.html 2/2 OK
@@ -16,16 +17,23 @@ WPT FILE dom/traversal/TreeWalker-traversal-reject.html 6/6 OK
 WPT FILE dom/traversal/TreeWalker-traversal-skip-most.html 2/2 OK
 WPT FILE dom/traversal/TreeWalker-traversal-skip.html 6/6 OK
 WPT FILE dom/traversal/TreeWalker-walking-outside-a-tree.html 1/1 OK
-WPT FILE dom/traversal/TreeWalker.html 0/0 ERROR TypeError: not a function
+WPT FILE dom/traversal/TreeWalker.html 760/761 OK
 
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node paras[0] | assert_equals: .referenceNode of document.createNodeIterator(paras[0].firstChild) advanced 0 times expected Text node "A?b?c?d?e?f?g?h? " but got Element node <
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node foreignPara1 | assert_equals: .referenceNode of document.createNodeIterator(foreignPara1.firstChild) advanced 0 times expected Text node "Efghijkl" but got Element node <p>Mno
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node detachedPara1 | assert_equals: .referenceNode of document.createNodeIterator(detachedPara1.firstChild) advanced 0 times expected Text node "Opqrstuv" but got Element node <p>Wx
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node xmlElement | assert_equals: .referenceNode of document.createNodeIterator(xmlTextNode) advanced 0 times expected Text node "do re mi fa so la ti" but got Node object of unkn
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node paras[1] | assert_equals: .referenceNode of document.createNodeIterator(paras[1].firstChild) advanced 0 times expected Text node "Ijklmnop " but got Element node <p id="c"
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node detachedPara2 | assert_equals: .referenceNode of document.createNodeIterator(detachedPara2.firstChild) advanced 0 times expected Text node "Wxyzabcd" but got Element node <div>
+WPT SUB FAIL dom/traversal/NodeIterator-removal.html | Test removing node testDiv | assert_equals: .referenceNode of document.createNodeIterator(paras[5].firstChild) advanced 0 times expected Node object of unknown type but got Element node <di
+WPT SUB FAIL dom/traversal/NodeIterator.html | createNodeIterator() parameter defaults | assert_readonly: descriptor [[Writable]] expected false got true
+WPT SUB FAIL dom/traversal/NodeIterator.html | createNodeIterator() with null as arguments | assert_readonly: descriptor [[Writable]] expected false got true
+WPT SUB FAIL dom/traversal/NodeIterator.html | createNodeIterator() with undefined as arguments | assert_readonly: descriptor [[Writable]] expected false got true
+WPT SUB FAIL dom/traversal/NodeIterator.html | Recursive filters need to throw | assert_throws_dom: function "function() { iter.nextNode() }" did not throw
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm-null-browsing-context.html | TreeWalker: NodeFilter from detached iframe doesn't get called | not a function
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object without 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object with non-callable 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm plain object with revoked Proxy as 'acceptNode' property | 'nodeFilterGlobalObject' is not defined
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm non-callable revoked Proxy | 'nodeFilterGlobalObject' is not defined
 WPT SUB FAIL dom/traversal/TreeWalker-acceptNode-filter-cross-realm.html | NodeFilter is cross-realm callable revoked Proxy | 'nodeFilterGlobalObject' is not defined
-WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
-WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root, null, null). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
-WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Construct a TreeWalker by document.createTreeWalker(root, undefined, undefined). | assert_equals: toString expected "[object TreeWalker]" but got "[object Object]"
-WPT SUB FAIL dom/traversal/TreeWalker-basic.html | Give an invalid root node to document.createTreeWalker(). | assert_throws_js: function "function () { document.createTreeWalker(); }" did not throw
-WPT SUB FAIL dom/traversal/TreeWalker-currentNode.html | Test that setting currentNode to non-Node values throws. | assert_throws_js: function "function() { w.currentNode = null; }" did not throw
+WPT SUB FAIL dom/traversal/TreeWalker.html | Recursive filters need to throw | assert_throws_dom: function "function() { walker.parentNode() }" did not throw

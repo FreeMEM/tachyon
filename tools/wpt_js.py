@@ -146,7 +146,7 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
             pass
 
     u = urllib.parse.urlsplit("http://127.0.0.1:%d%s" % (PUERTO, camino))
-    peticion = types.SimpleNamespace(method=metodo, GET=Tabla(urllib.parse.parse_qsl(consulta, keep_blank_values=True)),
+    peticion = types.SimpleNamespace(method=metodo, GET=Tabla(urllib.parse.parse_qsl(consulta, keep_blank_values=True, encoding="latin-1")),
                                      POST=Tabla(post), headers=cab, body=cuerpo, url=u.geturl(), url_parts=u,
                                      raw_headers=types.SimpleNamespace(raw_items=lambda: list((cabeceras or {}).items())),
                                      cookies={}, server=types.SimpleNamespace(stash=None))

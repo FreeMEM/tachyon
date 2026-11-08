@@ -6337,3 +6337,15 @@ Formato:
   pantalla se llama TACHYON y la ventana va en ella. Fallo de Dash: en esa pantalla el título de la ventana sale con
   la letra de la página (font_use), no en la del Workbench; pasado a la sesión del lienzo. Soltar iconos solo va en
   la del Workbench (ya dicho en las notas).
+
+### 2026-11-08 — Tarea 41d: el texto de la respuesta de XMLHttpRequest como dice la norma (xhr 601 → 643/1112)
+- tools/wpt_js.py: la consulta de la dirección se lee en Latin-1 (bytes, como wptserve); con %e6 y compañía el
+  manejador .py fallaba y la prueba entera se quedaba esperando (responsetext-decoding salía TIMEOUT). Era del banco.
+- Preludio, xhrTexto ("text response"): la BOM manda (UTF-8, UTF-16BE o LE); si no, el charset del tipo (el de
+  overrideMimeType o el de Content-Type); con responseType "" y un tipo XML, el encoding de <?xml ...?>; si no, UTF-8.
+  Con responseType json, solo UTF-8 (sin su BOM). Lo de siempre (UTF-8 sin BOM) es el texto que ya da C, sin
+  decodificarlo otra vez: la velocidad no cambia; solo otro charset o una BOM pasan por TextDecoder.
+- overrideMimeType, que no hacía nada: guarda el tipo (uno que no lo es, application/octet-stream; en LOADING o DONE,
+  InvalidStateError) y vale para el texto y el tipo del Blob.
+- WPT xhr 601 → 643: responsetext-decoding 0 → 37/37, overridemimetype-edge-cases 3/4, overridemimetype-done-state y
+  response-json-bom enteros; ninguno peor. test_jsdom_xhr_sinc y el de fetch pasan.

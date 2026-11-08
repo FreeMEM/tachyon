@@ -1,4 +1,4 @@
-WPT TOTAL xhr: 601/1112 subpruebas en 306 de 306 ficheros
+WPT TOTAL xhr: 643/1112 subpruebas en 306 de 306 ficheros
 
 WPT FILE xhr/XMLHttpRequest-withCredentials.any.html 3/5 OK
 WPT FILE xhr/abort-after-receive.any.html 0/1 OK
@@ -152,10 +152,10 @@ WPT FILE xhr/open-user-password-non-same-origin.htm 1/1 OK
 WPT FILE xhr/over-1-meg.any.html 1/1 OK
 WPT FILE xhr/overridemimetype-blob.html 0/3 OK
 WPT FILE xhr/overridemimetype-chunked-response.window.html 0/4 OK
-WPT FILE xhr/overridemimetype-done-state.any.html 0/1 OK
-WPT FILE xhr/overridemimetype-edge-cases.window.html 0/4 TIMEOUT 
+WPT FILE xhr/overridemimetype-done-state.any.html 1/1 OK
+WPT FILE xhr/overridemimetype-edge-cases.window.html 3/4 OK
 WPT FILE xhr/overridemimetype-headers-received-state-force-shiftjis.htm 0/1 OK
-WPT FILE xhr/overridemimetype-invalid-mime-type.htm 1/3 TIMEOUT 
+WPT FILE xhr/overridemimetype-invalid-mime-type.htm 1/3 OK
 WPT FILE xhr/overridemimetype-loading-state.htm 1/1 OK
 WPT FILE xhr/overridemimetype-open-state-force-utf-8.htm 1/1 OK
 WPT FILE xhr/overridemimetype-open-state-force-xml.htm 0/1 ERROR assert_unreached: Exception when reading responseXML Reached unreachable code
@@ -173,7 +173,7 @@ WPT FILE xhr/response-data-gzip.htm 1/1 OK
 WPT FILE xhr/response-data-progress.htm 0/2 OK
 WPT FILE xhr/response-invalid-responsetype.htm 5/5 OK
 WPT FILE xhr/response-invalid-utf8.html 1/1 OK
-WPT FILE xhr/response-json-bom.html 0/1 OK
+WPT FILE xhr/response-json-bom.html 1/1 OK
 WPT FILE xhr/response-json-during-loading.html 0/1 OK
 WPT FILE xhr/response-json.htm 4/4 OK
 WPT FILE xhr/response-method.htm 1/3 OK
@@ -181,8 +181,8 @@ WPT FILE xhr/responseText-status.html 1/1 OK
 WPT FILE xhr/responseType-document-in-worker.html 0/0 TIMEOUT 
 WPT FILE xhr/responseXML-unavailable-in-worker.html 0/0 TIMEOUT 
 WPT FILE xhr/responseXML-xml-scripting-support-disabled.html 0/5 OK
-WPT FILE xhr/responsedocument-decoding.htm 0/6 TIMEOUT 
-WPT FILE xhr/responsetext-decoding.htm 0/37 TIMEOUT 
+WPT FILE xhr/responsedocument-decoding.htm 0/6 OK
+WPT FILE xhr/responsetext-decoding.htm 37/37 OK
 WPT FILE xhr/responsetype.any.html 46/50 OK
 WPT FILE xhr/responseurl-after-abort.any.html 1/5 OK
 WPT FILE xhr/responseurl.html 2/2 OK
@@ -235,7 +235,7 @@ WPT FILE xhr/send-no-response-event-loadend.htm 1/1 OK
 WPT FILE xhr/send-no-response-event-loadstart.htm 1/1 OK
 WPT FILE xhr/send-no-response-event-order.htm 0/1 ERROR 'XMLHttpRequestUpload' is not defined
 WPT FILE xhr/send-non-same-origin.htm 0/7 OK
-WPT FILE xhr/send-receive-utf16.htm 0/3 TIMEOUT 
+WPT FILE xhr/send-receive-utf16.htm 0/3 OK
 WPT FILE xhr/send-redirect-infinite-sync.htm 0/1 OK
 WPT FILE xhr/send-redirect-infinite.htm 1/1 OK
 WPT FILE xhr/send-redirect-no-location.htm 0/4 OK
@@ -342,10 +342,10 @@ WPT SUB FAIL xhr/access-control-basic-allow-access-control-origin-header.any.htm
 WPT SUB FAIL xhr/access-control-basic-allow-async.any.html | Basic async cross-origin XHR request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow.py'
 WPT SUB FAIL xhr/access-control-basic-allow-non-cors-safelisted-method-async.any.html | Allow async PUT request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-put-allow.py'
 WPT SUB FAIL xhr/access-control-basic-allow-non-cors-safelisted-method.any.html | Allow PUT request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-put-allow.py'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-header.any.html | Preflight cache should be invalidated in presence of custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=2d25c0ac-1ad2-4afe-adf1-a5befce4129b'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-method.any.html | Preflight cache should be invalidated by changed method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=48f1e79f-d745-4f2f-94e9-a1530ceb00ff'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-timeout.any.html | Preflight cache should be invalidated on timeout | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=35a7f487-7868-4533-ba3d-9aecd54ead05'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache.any.html | Preflight cache should allow second request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=4c998447-8eda-40b2-8272-1c51e2bbd945'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-header.any.html | Preflight cache should be invalidated in presence of custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=dc1b0747-f0d9-42b9-8cf8-e1f715c7fab3'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-method.any.html | Preflight cache should be invalidated by changed method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=540f19e7-9f1f-465b-bb42-075a637aa606'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-timeout.any.html | Preflight cache should be invalidated on timeout | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=34e6941c-bd0f-44ab-bbb0-dd6f750bf968'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache.any.html | Preflight cache should allow second request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=cc1fc3d8-7caf-4216-ae13-93368aebfc42'
 WPT SUB FAIL xhr/access-control-basic-allow-star.any.html | Allow star | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow-star.py'
 WPT SUB FAIL xhr/access-control-basic-allow.any.html | Allow basic | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow.py'
 WPT SUB FAIL xhr/access-control-basic-cors-safelisted-request-headers.htm | Request with CORS-safelisted headers | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-cors-safelisted-request-headers.py'
@@ -359,13 +359,13 @@ WPT SUB FAIL xhr/access-control-basic-post-with-non-cors-safelisted-content-type
 WPT SUB FAIL xhr/access-control-basic-post-with-non-cors-safelisted-content-type.htm | CORS request with non-safelisted content type sends preflight and fails | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-options-not-supported.py'
 WPT SUB FAIL xhr/access-control-basic-preflight-denied.htm | Tests async XHR preflight denial due to lack of CORS headers | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-denied.py'
 WPT SUB FAIL xhr/access-control-expose-headers-on-redirect.html | XHR should respect access-control-expose-headers header on redirect | assert_unreached: Unexpected error. Reached unreachable code
-WPT SUB FAIL xhr/access-control-preflight-async-header-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=89dbc54c-a900-47f3-a311-9877193754e8&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-async-method-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=fd10a9ce-f1f9-43d4-9f34-51f78a64a330&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-async-not-supported.htm | Async PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=253edbf5-daed-4cbd-ab2d-467f64b0f6a6&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-header-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=3f57986c-e30a-4b3e-9fe9-0b26ad6fa6e1&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-method-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=d3957c7b-d079-4783-a9eb-e5651d80d8d8&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-not-supported.htm | Async PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=a85cfd14-07ca-4988-8307-92c0a454f894&command=reset'
 WPT SUB FAIL xhr/access-control-preflight-credential-async.htm | CORS async request with URL credentials | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-auth-basic.py?uid=fooUser'
 WPT SUB FAIL xhr/access-control-preflight-credential-sync.htm | CORS sync request with URL credentials | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-auth-basic.py?uid=fooUser'
-WPT SUB FAIL xhr/access-control-preflight-headers-async.htm | Preflighted async request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=1af981f2-8e71-411f-b4e4-82cc93b52189'
-WPT SUB FAIL xhr/access-control-preflight-headers-sync.htm | Preflighted sync request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=e1fc81a4-a858-4889-b6a7-a6e10c1c441f'
+WPT SUB FAIL xhr/access-control-preflight-headers-async.htm | Preflighted async request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=e90d44ef-6399-4bab-8378-10a7631f4259'
+WPT SUB FAIL xhr/access-control-preflight-headers-sync.htm | Preflighted sync request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=b15fcd1a-4af3-4be2-bd45-3a10d5da4ef6'
 WPT SUB FAIL xhr/access-control-preflight-request-allow-headers-returns-star.any.html | Access-Control-Allow-Headers supports * | assert_unreached: Error occurred. Reached unreachable code
 WPT SUB FAIL xhr/access-control-preflight-request-header-lowercase.htm | Request with uppercase header set | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-header-lowercase.py'
 WPT SUB FAIL xhr/access-control-preflight-request-header-returns-origin.any.html | Access-Control-Request-Origin accept different origin between preflight and actual request | assert_unreached: Error occurred. Reached unreachable code
@@ -375,9 +375,9 @@ WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-301.htm | Reque
 WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-400.htm | Request with 400 preflight response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-invalid-status.py?code=400'
 WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-501.htm | Request with 501 preflight response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-invalid-status.py?code=501'
 WPT SUB FAIL xhr/access-control-preflight-request-must-not-contain-cookie.htm | Preflight request must not contain any cookie header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-cookie.py?cookie_name=foo'
-WPT SUB FAIL xhr/access-control-preflight-sync-header-denied.htm | Sync request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=e1b576fe-0fbd-46cc-b8b5-9975a0570593&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-sync-method-denied.htm | Sync request denied at preflight because of non-CORS-safelisted method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=95765004-ae22-420c-82f3-ba4f19016bdb&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-sync-not-supported.htm | Sync PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=5560937b-fd3e-4f3f-a86b-3ab5f73f6d40&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-header-denied.htm | Sync request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=3082f424-5011-49de-acb6-6eede7433d32&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-method-denied.htm | Sync request denied at preflight because of non-CORS-safelisted method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=7d1c0360-c1d1-4f72-bcd0-23cce1a1e0e3&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-not-supported.htm | Sync PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=3b5b4ff3-599f-4a8a-906b-d89dcbbeece0&command=reset'
 WPT SUB FAIL xhr/access-control-recursive-failed-request.htm | Recursively repeated CORS requests with failed preflights should never result in unexpected behavior | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-denied.py'
 WPT SUB FAIL xhr/access-control-response-with-body-sync.htm | Tests body from CORS preflight response and actual response with sync request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-allow-with-body.py'
 WPT SUB FAIL xhr/access-control-response-with-body.htm | Tests that XHR doesn't prepend the body from CORS preflight response to the actual response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-allow-with-body.py'
@@ -448,12 +448,12 @@ WPT SUB FAIL xhr/formdata.html | |new FormData()| in formdata event handler shou
 WPT SUB FAIL xhr/getallresponseheaders-after-reuse.html | getAllResponseHeaders() must not return the previous response's headers | assert_equals: first response expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 1
 WPT SUB FAIL xhr/getallresponseheaders-cookies.htm | XMLHttpRequest: getAllResponseHeaders() excludes cookies | assert_true: x-custom-header expected true got false
 WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() | assert_equals: expected "also-here: Mr. PB\r\newok: lego\r\nfoo-test: 1, 2\r\n__custom: token\r\n" but got "content-length: 91\r\ncontent-type: application/octe
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 1 | assert_equals: expected "content-length: 0\r\n" but got "content-length: 39\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56:29 GMT\r\n
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 2 | assert_equals: expected "content-length: 0, 0\r\n" but got "content-length: 58\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56:29 GMT\
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 3 | assert_equals: expected "double-trouble: , \r\n" but got "content-length: 48\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56:29 GMT\r\
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 4 | assert_equals: expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56:29 GMT\r\n
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 5 | assert_equals: expected "heya: , \v\f, 1, , , 2\r\n" but got "content-length: 65\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56:29 GM
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 6 | assert_equals: expected "www-authenticate: 1, 2, 3, 4\r\n" but got "content-length: 82\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 16:56
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 1 | assert_equals: expected "content-length: 0\r\n" but got "content-length: 39\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02:20 GMT\r\n
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 2 | assert_equals: expected "content-length: 0, 0\r\n" but got "content-length: 58\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02:20 GMT\
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 3 | assert_equals: expected "double-trouble: , \r\n" but got "content-length: 48\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02:20 GMT\r\
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 4 | assert_equals: expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02:20 GMT\r\n
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 5 | assert_equals: expected "heya: , \v\f, 1, , , 2\r\n" but got "content-length: 65\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02:20 GM
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 6 | assert_equals: expected "www-authenticate: 1, 2, 3, 4\r\n" but got "content-length: 82\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 18:02
 WPT SUB FAIL xhr/getresponseheader-case-insensitive.htm | XMLHttpRequest: getResponseHeader() case-insensitive matching | assert_equals: expected (string) "test" but got (object) null
 WPT SUB FAIL xhr/getresponseheader-chunked-trailer.htm | XMLHttpRequest: getResponseHeader() and HTTP trailer | assert_equals: expected (string) "X-Test-Me" but got (object) null
 WPT SUB FAIL xhr/getresponseheader-cookies-and-more.htm | XMLHttpRequest: getResponseHeader() custom/non-existent headers and cookies | assert_equals: expected (string) "test" but got (object) null
@@ -507,16 +507,12 @@ WPT SUB FAIL xhr/overridemimetype-chunked-response.window.html | overrideMimeTyp
 WPT SUB FAIL xhr/overridemimetype-chunked-response.window.html | overrideMimeType() charset overrides the response charset for every chunk of a chunked response | assert_equals: expected "???" but got "manejador: 'types.SimpleNamespace' object has no attribute 'write_status_headers'"
 WPT SUB FAIL xhr/overridemimetype-chunked-response.window.html | Response charset is used for every chunk of a chunked response when overrideMimeType() has no charset | assert_equals: expected "???" but got "manejador: 'types.SimpleNamespace' object has no attribute 'write_status_headers'"
 WPT SUB FAIL xhr/overridemimetype-chunked-response.window.html | Response charset is used for every chunk of a chunked response | assert_equals: expected "aéb" but got "manejador: 'types.SimpleNamespace' object has no attribute 'write_status_headers'"
-WPT SUB FAIL xhr/overridemimetype-done-state.any.html | overridemimetype-done-state.any.js | assert_not_equals: got disallowed value ""
-WPT SUB TIMEOUT xhr/overridemimetype-edge-cases.window.html | overrideMimeType() is not reset by open(), basic | Test timed out
-WPT SUB TIMEOUT xhr/overridemimetype-edge-cases.window.html | overrideMimeType() is not reset by open() | Test timed out
-WPT SUB TIMEOUT xhr/overridemimetype-edge-cases.window.html | If charset is not overridden by overrideMimeType() the original continues to be used | Test timed out
-WPT SUB TIMEOUT xhr/overridemimetype-edge-cases.window.html | Charset can be overridden by overrideMimeType() with a bogus charset | Test timed out
-WPT SUB FAIL xhr/overridemimetype-headers-received-state-force-shiftjis.htm | XMLHttpRequest: overrideMimeType() in HEADERS RECEIVED state, enforcing Shift-JIS encoding | assert_equals: readyState = 2 event fired expected true but got false
-WPT SUB TIMEOUT xhr/overridemimetype-invalid-mime-type.htm | Bogus MIME type does not override encoding | Test timed out
-WPT SUB TIMEOUT xhr/overridemimetype-invalid-mime-type.htm | Bogus MIME type does not override encoding, 2 | Test timed out
+WPT SUB FAIL xhr/overridemimetype-edge-cases.window.html | If charset is not overridden by overrideMimeType() the original continues to be used | assert_equals: expected "Âð" but got "\ufffd\ufffd"
+WPT SUB FAIL xhr/overridemimetype-headers-received-state-force-shiftjis.htm | XMLHttpRequest: overrideMimeType() in HEADERS RECEIVED state, enforcing Shift-JIS encoding | assert_equals: overrideMimeType() in HEADERS RECEIVED state set encoding expected "???" but got "\ufffdX\ufffd"
+WPT SUB FAIL xhr/overridemimetype-invalid-mime-type.htm | Bogus MIME type does not override encoding | assert_equals: expected "ÿ" but got "\ufffd"
+WPT SUB FAIL xhr/overridemimetype-invalid-mime-type.htm | Bogus MIME type does not override encoding, 2 | assert_equals: expected "ÿ" but got "\ufffd"
 WPT SUB TIMEOUT xhr/overridemimetype-open-state-force-xml.htm | XMLHttpRequest: overrideMimeType() in open state, XML MIME type with UTF-8 charset | Test timed out
-WPT SUB FAIL xhr/overridemimetype-unsent-state-force-shiftjis.any.html | XMLHttpRequest: overrideMimeType() in unsent state, enforcing Shift-JIS encoding | assert_equals: expected "???" but got ""
+WPT SUB FAIL xhr/overridemimetype-unsent-state-force-shiftjis.any.html | XMLHttpRequest: overrideMimeType() in unsent state, enforcing Shift-JIS encoding | assert_equals: expected "???" but got "\ufffdX\ufffd"
 WPT SUB FAIL xhr/preserve-ua-header-on-redirect.htm | XMLHttpRequest: User-Agent header is preserved on redirect | assert_equals: expected "User-Agent: Mozilla/5.0 (AmigaOS; m68k) Tachyon/0.7\n" but got "User-Agent: Tachyon/0.7 (AmigaOS)\n"
 WPT SUB FAIL xhr/preserve-ua-header-on-redirect.htm | XMLHttpRequest: User-Agent header is preserved on redirect 1 | assert_equals: expected "User-Agent: TEST\n" but got "User-Agent: Tachyon/0.7 (AmigaOS)\n"
 WPT SUB FAIL xhr/progress-events-response-data-gzip.htm | XMLHttpRequest: progress events and GZIP encoding | assert_true: event.loaded should be set even if total is not computable expected true got false
@@ -534,7 +530,6 @@ WPT SUB FAIL xhr/response-body-errors.any.html | Asynchronous XMLHttpRequest sho
 WPT SUB FAIL xhr/response-data-blob.htm | XMLHttpRequest: The response attribute: Blob data | 'FileReader' is not defined
 WPT SUB FAIL xhr/response-data-progress.htm | XMLHttpRequest: progress events grow response body size, unknown content-length | assert_unreached: onprogress not called multiple times, or response body did not grow. Reached unreachable code
 WPT SUB FAIL xhr/response-data-progress.htm | XMLHttpRequest: progress events grow response body size, known content-length | assert_equals: expected 78 but got 0
-WPT SUB FAIL xhr/response-json-bom.html | JSON response with UTF-8 BOM should be parsed correctly | assert_not_equals: Response should not be null (BOM should be stripped) got disallowed value null
 WPT SUB FAIL xhr/response-json-during-loading.html | xhr.response must be null during LOADING state for responseType json | assert_equals: response must be null during LOADING for json responseType expected (object) null but got (string) ""
 WPT SUB FAIL xhr/response-method.htm | GET | assert_equals: expected "GET" but got "HTTP/1.1 200 OK\nContent-type: text/plain\nContent-Length: 3\n\nGET"
 WPT SUB FAIL xhr/response-method.htm | POST | assert_equals: expected "POST" but got "HTTP/1.1 200 OK\nContent-type: text/plain\nContent-Length: 4\n\nPOST"
@@ -543,49 +538,12 @@ WPT SUB FAIL xhr/responseXML-xml-scripting-support-disabled.html | XMLHttpReques
 WPT SUB FAIL xhr/responseXML-xml-scripting-support-disabled.html | XMLHttpRequest responseXML, svg script, append adoptNode result | assert_not_equals: got disallowed value null
 WPT SUB FAIL xhr/responseXML-xml-scripting-support-disabled.html | XMLHttpRequest responseXML, xhtml script, append importNode result | assert_not_equals: got disallowed value null
 WPT SUB FAIL xhr/responseXML-xml-scripting-support-disabled.html | XMLHttpRequest responseXML, xhtml script, append adoptNode result | assert_not_equals: got disallowed value null
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | Test timed out
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml;charset=utf-8 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3 | Test timed out
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml;charset=windows-1252 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3 | Test timed out
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | Test timed out
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html;charset=utf-8 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | Test timed out
-WPT SUB TIMEOUT xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html;charset=windows-1252 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml;charset=utf-8 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E emp | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml;charset=windows-1252 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html;charset=utf-8 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html;charset=windows-1252 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain;charset=windows-1252 %FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FE%FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FE%FF%FE%FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %EF%BB%BF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %EF%BB%BF%EF%BB%BF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %C2 empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %FE%FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %FE%FF%FE%FF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %EF%BB%BF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %EF%BB%BF%EF%BB%BF empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %E3%81%B2 empty) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml;charset=utf-8 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E tex | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (application/xml;charset=windows-1252 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html;charset=utf-8 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/html;charset=windows-1252 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain;charset=windows-1252 %FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FE%FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %FE%FF%FE%FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %EF%BB%BF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %EF%BB%BF%EF%BB%BF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %C2 text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain;charset=bogus %C2 text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %FE%FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %FE%FF%FE%FF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %EF%BB%BF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/xml %EF%BB%BF%EF%BB%BF text) | Test timed out
-WPT SUB TIMEOUT xhr/responsetext-decoding.htm | XMLHttpRequest: responseText decoding (text/plain %E3%81%B2 text) | Test timed out
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | cannot read property 'querySelector' of null
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml;charset=utf-8 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3 | cannot read property 'querySelector' of null
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (application/xml;charset=windows-1252 %3C%3Fxml%20version%3D'1.0'%20encoding%3D'windows-1252'%3F%3E%3Cx%3E%e6%a9%9f%3 | cannot read property 'querySelector' of null
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | cannot read property 'querySelector' of null
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html;charset=utf-8 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | cannot read property 'querySelector' of null
+WPT SUB FAIL xhr/responsedocument-decoding.htm | XMLHttpRequest: response document decoding (text/html;charset=windows-1252 %3C!doctype%20html%3E%3Cmeta%20charset%3Dwindows-1252%3E%3Cx%3E%e6%a9%9f%3C%2Fx%3E) | cannot read property 'querySelector' of null
 WPT SUB FAIL xhr/responsetype.any.html | Set responseType to "nosuchtype" when readyState is LOADING. | Failed to set the 'responseType' property: the response is already loading or done.
 WPT SUB FAIL xhr/responsetype.any.html | Set responseType to "nosuchtype" when readyState is DONE. | Failed to set the 'responseType' property: the response is already loading or done.
 WPT SUB FAIL xhr/responsetype.any.html | Set responseType to "nosuchtype" when readyState is OPENED and the sync flag is set. | Failed to set the 'responseType' property: not for synchronous requests.
@@ -615,24 +573,24 @@ WPT SUB FAIL xhr/responsexml-non-document-types.htm | XMLHttpRequest: responseXM
 WPT SUB FAIL xhr/send-accept-language.htm | Send "sensible" default value, whatever that means | assert_regexp_match: expected object "/Accept-Language:\s.+/" but got ""
 WPT SUB FAIL xhr/send-authentication-basic-cors-not-enabled.htm | XMLHttpRequest: send() - "Basic" authenticated CORS requests with user name and password passed to open() (asserts failure) | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth10/auth.py'
 WPT SUB FAIL xhr/send-authentication-basic-cors.htm | XMLHttpRequest: send() - "Basic" authenticated CORS requests with user name and password passed to open() (asserts failure) | Invalid URL 'http://www1.127.0.0.1:40881/xhr/resources/auth1/corsenabled.py'
-WPT SUB FAIL xhr/send-authentication-basic-repeat-no-args.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() in first request, without in second | assert_equals: expected "3ac539b4-12fa-4eff-839b-8a254c3a328e\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-and-arguments.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() and open() arguments (asserts header wins) | assert_equals: expected "8ab0dd4f-0188-42e7-ac52-f19a783edc10\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic-repeat-no-args.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() in first request, without in second | assert_equals: expected "37264dbd-92a7-4f9e-bedb-b0b597e2d790\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-and-arguments.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() and open() arguments (asserts header wins) | assert_equals: expected "2f504e20-96ea-4c44-868a-0062e75aba13\npass" but got "manejador: No module named 'tools'"
 WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-existing-session.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() when there is an existing session | assert_true: responseText should contain the right user and password expected true got false
-WPT SUB FAIL xhr/send-authentication-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() | assert_equals: expected "10266fcd-11bd-4b67-b4ee-217509394518\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-basic.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() | assert_equals: expected "c4fe8eec-9a59-433a-a1b1-70da296cb4b7\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in open() | assert_equals: responseText should contain the right user and password expected "644f486e-7819-4328-a536-df1380e253ec\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in open() | assert_equals: responseText should contain the right user and password expected "d5346d2b-d7c5-4732-82e2-aec7cfdedaf3\n3c869bc4-52f1-455b-9a4c-02a2038b52b1" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: another user/pass in open(); must override cached credentials from previous test | assert_equals: responseText should contain the right user and password expected "16e4511d-4c3d-4402-8627-0187a0395d8f\n10d89b2d-c2a2-4f5d-94d7-5d7769df6200" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user in open() | assert_equals: responseText should contain the right user and password expected "7b2e992d-7304-4ba2-b793-dfb4363baae9\n3b6d1a4c-4117-41f0-a03e-ae2404f59442" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user/pass in open() | assert_equals: responseText should contain the right user and password expected "e130ceda-f04e-42ee-892b-ad83b4e0a16c\nf159c544-581f-4e8a-9bac-9b9b0e04a8dc" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL | assert_equals: responseText should contain the right user and password expected "aa636fff-0c11-45d5-876f-94345be9f71e\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL, pass in open() | assert_equals: responseText should contain the right user and password expected "cad9947d-8bdc-4cc4-aed2-2032231e00d4\nfc78238d-9895-4563-9d9f-9ff31129d013" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL | assert_equals: responseText should contain the right user and password expected "08ca3e3c-df00-4880-b8d9-80df1119eddc\n5ac624f0-31e6-4132-bed4-9e13b9ef1d3c" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL and open() | assert_equals: responseText should contain the right user and password expected "afcba51b-792f-4bf4-a56a-1af4c0157919\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL; user/pass in open() | assert_equals: responseText should contain the right user and password expected "c2e34875-1b31-424b-9c90-fb44893c08a4\n3edf729b-fa79-4f52-96b7-59b582ff67a5" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; user in open() | assert_equals: responseText should contain the right user and password expected "00609b27-1d6f-4b35-b045-2de52098d0e5\n226e63c4-be83-406a-ae94-bd3912e8baec" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; pass in open() | assert_equals: responseText should contain the right user and password expected "5463e1c7-d934-4e5d-aec2-19e408c693a4\n51279571-1a15-43cb-8877-1a485385f4f1" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL and open() | assert_equals: responseText should contain the right user and password expected "f6faac41-cdd7-411d-9b1e-b4eec61bbe4c\n08f51102-c9ec-4dfa-8416-b89ef1ebb0cc" but
+WPT SUB FAIL xhr/send-authentication-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() | assert_equals: expected "226e7caf-ca32-4b95-a5b0-1a2835a2e125\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() | assert_equals: expected "7da36f4b-f450-4ff0-b977-173a5707c415\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in open() | assert_equals: responseText should contain the right user and password expected "235cc0bd-79e4-41c0-8483-f2d35c10da14\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in open() | assert_equals: responseText should contain the right user and password expected "bc634691-3146-4c53-b28d-392a702cc69a\n06523527-5c9d-4d4c-9eae-3382ce57b921" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: another user/pass in open(); must override cached credentials from previous test | assert_equals: responseText should contain the right user and password expected "d6383339-d0e9-4e76-8935-a75bb5583ee3\n41e6bb97-eba4-49f0-82b3-6c8cd18c5a3c" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user in open() | assert_equals: responseText should contain the right user and password expected "2b5234d4-d13d-4dc1-9429-16f94c58e201\n5193a51c-8def-4340-adec-a0517331a951" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user/pass in open() | assert_equals: responseText should contain the right user and password expected "6327f93e-0480-4939-9a08-a4585a4c98d3\nd382f3a6-3bd9-44d2-9c35-9664e3486ec4" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL | assert_equals: responseText should contain the right user and password expected "400994ef-5829-4756-86c0-fc782facc845\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL, pass in open() | assert_equals: responseText should contain the right user and password expected "5894e8d2-5ab6-4df6-9d87-1f98c8974a57\n9a16f683-c58f-46f2-bf17-0556404296a4" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL | assert_equals: responseText should contain the right user and password expected "668dc6a1-4647-4c35-a078-8e12546e30ff\na1cfb287-d7d6-4d17-969e-06efc1b3a372" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL and open() | assert_equals: responseText should contain the right user and password expected "989f8344-4b18-4f69-9832-a287cdc4107d\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL; user/pass in open() | assert_equals: responseText should contain the right user and password expected "1cdcd1d5-a008-4d39-b44b-998019cb87f0\na4e7c99b-5afa-42c8-b4f8-5d1bd679024c" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; user in open() | assert_equals: responseText should contain the right user and password expected "679fc88d-32d0-47b0-a8d1-aa9311eb9d24\n9b56e4e6-c09b-44b1-ad76-4aa5469978b1" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; pass in open() | assert_equals: responseText should contain the right user and password expected "d9c327d2-280b-41e8-9544-7c2572169c7d\n63f5cc33-3262-40cc-bef3-2894170c972f" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL and open() | assert_equals: responseText should contain the right user and password expected "47a379df-b880-4042-94ef-5cb6fb5fb78e\n522acb2d-bf7f-4c95-8fa8-fb70b299ab88" but
 WPT SUB FAIL xhr/send-authentication-cors-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated CORS request using setRequestHeader() (expects to succeed) | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth2/corsenabled.py'
 WPT SUB FAIL xhr/send-authentication-cors-setrequestheader-no-cred.htm | CORS request with setRequestHeader auth to URL accepting Authorization header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth7/corsenabled.py'
 WPT SUB FAIL xhr/send-authentication-cors-setrequestheader-no-cred.htm | CORS request with setRequestHeader auth to URL NOT accepting Authorization header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth8/corsenabled-no-authorize.py'
@@ -707,9 +665,9 @@ WPT SUB FAIL xhr/send-non-same-origin.htm | XMLHttpRequest: send() - non same-or
 WPT SUB FAIL xhr/send-non-same-origin.htm | XMLHttpRequest: send() - non same-origin (folder.txt) | assert_throws_dom: function "function() { client.send() }" did not throw
 WPT SUB FAIL xhr/send-non-same-origin.htm | XMLHttpRequest: send() - non same-origin (about:blank) | assert_throws_dom: function "function() { client.send() }" did not throw
 WPT SUB FAIL xhr/send-non-same-origin.htm | XMLHttpRequest: send() - non same-origin (blob:bogusidentifier) | assert_throws_dom: function "function() { client.send() }" did not throw
-WPT SUB FAIL xhr/send-receive-utf16.htm | UTF-16 with BOM, no encoding in content-type | assert_equals: expected "æøå\n???\n" but got "\ufffd\ufffd\ufffd \ufffd \ufffd \n \ufffd0\ufffd\ufffd0\n "
-WPT SUB TIMEOUT xhr/send-receive-utf16.htm | UTF-16 without BOM, with charset label in content-type | Test timed out
-WPT SUB TIMEOUT xhr/send-receive-utf16.htm | UTF-16 without BOM, mislabelled as UTF-8 in content-type | Test timed out
+WPT SUB FAIL xhr/send-receive-utf16.htm | UTF-16 with BOM, no encoding in content-type | assert_equals: expected "æøå\n???\n" but got "??? ??? "
+WPT SUB FAIL xhr/send-receive-utf16.htm | UTF-16 without BOM, with charset label in content-type | assert_equals: expected "æøå\n???\n" but got "??? ??? "
+WPT SUB FAIL xhr/send-receive-utf16.htm | UTF-16 without BOM, mislabelled as UTF-8 in content-type | assert_equals: expected "\ufffd\0\ufffd\0\ufffd\0\n\0\ufffd0\ufffd0\ufffd0\n\0" but got "\ufffd \ufffd \ufffd \n \ufffd0\ufffd\ufffd0\n "
 WPT SUB FAIL xhr/send-redirect-infinite-sync.htm | XMLHttpRequest: send() - Redirects (infinite loop; sync) (301) | assert_throws_dom: function "function() { client.send(null) }" did not throw
 WPT SUB FAIL xhr/send-redirect-no-location.htm | XMLHttpRequest: send() - Redirects (no Location header) (301) | cannot read property 'documentElement' of null
 WPT SUB FAIL xhr/send-redirect-no-location.htm | XMLHttpRequest: send() - Redirects (no Location header) (302) | cannot read property 'documentElement' of null
@@ -807,7 +765,7 @@ WPT SUB FAIL xhr/template-element.html | XMLHttpRequest: template element parsin
 WPT SUB FAIL xhr/template-element.html | XMLHttpRequest: template element parsing 2 | cannot read property 'documentElement' of null
 WPT SUB NOTRUN xhr/timeout-cors-async.htm | XMLHttpRequest: timeout event and cross-origin request | 
 WPT SUB FAIL xhr/timeout-multiple-fetches.html | Redirects should not reset the timer | assert_unreached: load event fired Reached unreachable code
-WPT SUB FAIL xhr/timeout-multiple-fetches.html | CORS preflights should not reset the timer | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/delay.py?uuid=b9b6dd89-adcc-42af-983a-2421e6e3d017'
+WPT SUB FAIL xhr/timeout-multiple-fetches.html | CORS preflights should not reset the timer | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/delay.py?uuid=fa37433c-9912-4ea8-b5a4-aebe4cd64603'
 WPT SUB FAIL xhr/timeout-sync.htm | setting timeout attribute on sync request | assert_throws_dom: function "function() { client.timeout = 1000 }" did not throw
 WPT SUB FAIL xhr/timeout-sync.htm | open() with async false when timeout is set | assert_throws_dom: function "function() { client.open('GET', 'folder.txt', false) }" did not throw
 WPT SUB FAIL xhr/xhr-authorization-redirect.any.html | getAuthorizationHeaderValue - no redirection | assert_equals: expected "Basic dXNlcjpwYXNz" but got "<!DOCTYPE HTML>\n<html lang=\"en\">\n <head>\n <meta charset=\"utf-8\">\n <style type=\"text/css\">\n :roo

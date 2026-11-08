@@ -48,5 +48,6 @@ Regla del usuario (2026-11-08). Cada arreglo o novedad que venga de una persona 
 
 - En el mensaje del commit. Por ejemplo: "(idea de Ferrán García)" o "(lo contó David Martínez)".
 - En las notas de la versión, el CHANGELOG y la documentación donde se describa el cambio.
+- En la web del proyecto: sección "Gracias", datos en `~/Projects/webs-freemem/paquetes/retro/src/reconocimientos.ts`. Se añade al publicar la versión.
 - Se usa el nombre con el que se presenta en el grupo. Nunca datos de contacto: ni teléfono, ni correo.
 - Si no se sabe quién lo pidió, preguntar a la sesión "telegram" o al usuario.

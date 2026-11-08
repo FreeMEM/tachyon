@@ -6195,3 +6195,11 @@ Formato:
   un clic al final que responde; copiar y pegar, Amiga-S ("Saved in RAM:pegar.html") y Amiga-O abre el selector.
 - Notas de la versión en castellano e inglés, con las cifras de WPT comprobadas contra la 0.9.2 publicada. Sin
   publicar: el usuario da el visto bueno antes.
+
+### 2026-11-08 — Publicada la v0.9.3-alfa
+- Usuario: "Publica". PR #23 de dev a main (54aaae2), etiqueta v0.9.3-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.3-alfa con tachyon.lha, Tachyon.gz (SHA-256 ac46609f...8968,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Gracias en la web: Ferrán García (abrir ficheros del disco, idea suya) en webs-freemem
+  paquetes/retro/src/reconocimientos.ts, commit local 7d58fdb, sin subir (subir publica la web; allí había un cambio
+  de otra sesión en sitios/tachyon/src/version.json, sin tocar).

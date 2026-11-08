@@ -6315,3 +6315,13 @@ Formato:
   manda (_http_peticion solo pone Content-Type con POST o con cuerpo: llevarlo como extra en jsdom_pedir si es GET o
   HEAD); (2) con HEAD llega sin cabeceras (status 0): lib/http.dash espera el cuerpo de un HEAD (líneas 319 y 953 solo
   saltan el cuerpo con 204, 304 y 1xx). Siguiente vuelta.
+
+### 2026-11-08 — Tarea 41d: HEAD sin cuerpo y Content-Type en GET (xhr 576 → 601/1112)
+- lib/http.dash: la respuesta a un HEAD acaba con las cabeceras (_http_leer_respuesta y _carga_total con el indicador
+  cabeza); antes esperaba el cuerpo que no llega y se quedaba sin respuesta (status 0, "timed out"). Vale para todo
+  HEAD del navegador, no solo los de JavaScript.
+- lib/jsdom.dash (jsdom_pedir): un Content-Type que la página pone en un GET o un HEAD va como cabecera de más (antes
+  se perdía: _http_peticion solo lo pone con POST o con cuerpo).
+- Velocidad y memoria: lo mismo (una comparación por respuesta).
+- WPT xhr 576 → 601: send-redirect 17 → 28/34, status-basic y status-async 19 → 25/27, send-usp 134/135,
+  send-entity-body-none 4/6; ninguno peor. test_http* (7) y test_jsdom_xhr_sinc pasan.

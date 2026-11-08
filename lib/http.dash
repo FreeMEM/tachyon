@@ -207,12 +207,12 @@ end
 
 # Lee la respuesta (estado, cabeceras y cuerpo, a r.cuerpo o al fichero) y cierra la conexión
 func _http_leer(c: Conexion, r: Respuesta, fichero: String)
-    _http_leer_respuesta(c, r, fichero)
+    _http_leer_respuesta(c, r, fichero, false)
     red_cerrar(c)
 end
 
-# Lo mismo sin cerrarla
-func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String)
+# Lo mismo sin cerrarla. cabeza: la respuesta a un HEAD, que no trae cuerpo aunque diga su Content-Length
+func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String, cabeza: Bool)
     _leer_estado(c, r)
     if r.error == ""
         _leer_cabeceras(c, r)
@@ -225,7 +225,7 @@ func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String)
                 r.error = hueco(tr(410, "can't write %1"), fichero)
             end
         end
-        if r.error == ""
+        if r.error == "" and not cabeza
             _leer_cuerpo(c, r, f)
         end
         if f != 0
@@ -737,7 +737,7 @@ func http_avanzar(c: Carga) -> Bool
         return _carga_volcar(c, n < 0)
     end
     if c.total == -1
-        c.total = _carga_total(c.conexion)
+        c.total = _carga_total(c.conexion, c.metodo == "HEAD")
     end
     if c.total == -3
         # chunked: entera cuando ha llegado el trozo de tamaño 0 y sus cabeceras finales
@@ -756,7 +756,7 @@ func http_avanzar(c: Carga) -> Bool
         end
         return false
     end
-    _http_leer_respuesta(c.conexion, c.respuesta, c.fichero)
+    _http_leer_respuesta(c.conexion, c.respuesta, c.fichero, c.metodo == "HEAD")
     _http_cookies(c.actual, c.respuesta)
     r = c.respuesta
     _http_soltar(c.conexion, r, n < 0)
@@ -942,15 +942,16 @@ func _carga_cabecera(c: Conexion) -> Int
 end
 
 # Cabeceras + Content-Length cuando ya llegaron las cabeceras: el tamaño de la respuesta entera;
-# -1 si aún no han llegado, -2 si no lo dicen (hasta el cierre), -3 chunked (_chunked_fin)
-func _carga_total(c: Conexion) -> Int
+# -1 si aún no han llegado, -2 si no lo dicen (hasta el cierre), -3 chunked (_chunked_fin). cabeza: la respuesta a
+# un HEAD, sin cuerpo aunque diga su Content-Length (antes se esperaba hasta el plazo y daba "timed out"; WPT xhr)
+func _carga_total(c: Conexion, cabeza: Bool) -> Int
     n = red_pendientes(c)
     i = 0
     while i + 3 < n
         if buffer_get_byte(c.buf, c.ini + i) == 13 and buffer_get_byte(c.buf, c.ini + i + 1) == 10 and buffer_get_byte(c.buf, c.ini + i + 2) == 13 and buffer_get_byte(c.buf, c.ini + i + 3) == 10
             cabeceras = str_lower(str_from_buffer(c.buf, c.ini, i))
             estado = Int(cabeceras[9:12])
-            if estado == 204 or estado == 304 or (estado >= 100 and estado < 200)
+            if cabeza or estado == 204 or estado == 304 or (estado >= 100 and estado < 200)
                 return i + 4          # sin cuerpo
             end
             if str_find(cabeceras, "\ntransfer-encoding:") >= 0 and str_find(cabeceras, "chunked") >= 0

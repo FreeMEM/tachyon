@@ -6058,3 +6058,15 @@ Formato:
   1,94 MB; las siguientes 14,79 s → 14,80 s, 1,94 MB las dos. test_js_crypto y test_jsdom_custom pasan.
 - Batería entera con esto: 150/151 (5760 s); el que falta, test_imagenes_carga, por el puerto 40856 de Chrome: con
   40859 pasa.
+
+### 2026-11-08 — La 0.9.3-alfa lista, a falta del visto bueno del usuario para publicar
+- Versión 0.9.3-alfa (ab2db41), tools/paquete.sh: tachyon.lha 2,1 MB, Tachyon.gz 1,9 MB y los nueve catálogos.
+- Batería entera 150/151 (5760 s; test_imagenes_carga, el puerto de Chrome: con otro, pasa).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.2-alfa publicada (SHA-256 41dcca2e..., el de GitHub), en la
+  máquina RTG con MUI 3.8 (sys32rtg38) y un GitHub de mentira en el PC: baja Tachyon.gz y los nueve catálogos, el
+  instalado es idéntico al compilado, .old el de antes, y Reiniciar abre la 0.9.3 (su versión en la portada).
+- La 0.9.3 del paquete con MUI 3.8: cuatro ventanas (Acid3, gh_local.html, estrellas.html y Acid2) 300 s sin colgarse y
+  un clic al final que responde; copiar y pegar (Amiga+C/V/X, Ctrl+V), Amiga-S ("Saved in RAM:pegar.html") y Amiga-O
+  abre el selector "Open file". Soltar iconos se probó con la tarea 60 (sin cambios desde entonces).
+- Notas de la versión en castellano e inglés preparadas. Sin publicar: el usuario da el visto bueno antes (PR de dev a
+  main, etiqueta y pre-release).

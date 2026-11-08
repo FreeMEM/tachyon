@@ -6338,8 +6338,8 @@ Formato:
   la letra de la página (font_use), no en la del Workbench; pasado a la sesión del lienzo. Soltar iconos solo va en
   la del Workbench (ya dicho en las notas).
 - El fallo del título lo arregla Dash en la rama clon-letra (PR #134: font_use y font_style ya no cambian la letra
-  del RastPort de la pantalla pública del programa): probado con Tachyon, el título sale bien. Hace falta que se
-  fusione en Dash antes de dar una versión con esta opción.
+  del RastPort de la pantalla pública del programa): probado con Tachyon, el título sale bien. Fusionado en Dash main
+  (caebe70, con el visto bueno del usuario) y probado otra vez con main: bien.
 
 ### 2026-11-08 — Tarea 41d: el texto de la respuesta de XMLHttpRequest como dice la norma (xhr 601 → 643/1112)
 - tools/wpt_js.py: la consulta de la dirección se lee en Latin-1 (bytes, como wptserve); con %e6 y compañía el
@@ -6365,3 +6365,22 @@ Formato:
 - WPT xhr 643 → 681: blob-range 0 → 27/27, json 2 → 6/6, send-non-same-origin 0 → 5/7,
   send-redirect-infinite-sync y xmlhttprequest-network-error-sync enteros; ninguno peor. test_jsdom_xhr_sinc, fetch
   y peticion pasan.
+
+### 2026-11-08 — Tarea 41d: el Content-Type de las peticiones como dice la norma, FormData en partes (xhr 681 → 714/1112)
+- send(): el Content-Type que pone la página manda, también vacío ("Content-Type: " se manda); con un cuerpo de texto,
+  un documento o URLSearchParams, su charset pasa a UTF-8 (el cuerpo va en UTF-8). Sin el de la página, el del
+  cuerpo: un Blob sin tipo o un ArrayBuffer, ninguno (antes text/plain).
+- FormData va en partes (multipart/form-data; boundary=...), como lo esperan los servidores; antes iba como
+  urlencoded, y un archivo (Blob) se perdía. Los Blob van como texto UTF-8: el cuerpo llega a C como texto (los
+  bytes que no son UTF-8 aún no se pueden subir).
+- Un documento como cuerpo: el XML con XMLSerializer (application/xml;charset=UTF-8), el HTML con su doctype y
+  outerHTML (text/html;charset=UTF-8).
+- lib/jsdom.dash (jsdom_pedir): un Content-Type vacío va como cabecera de más, y ya no pone text/plain por su cuenta
+  (lo decide el JavaScript).
+- tools/wpt_js.py lee también los cuerpos multipart/form-data (como wptserve; send-data-formdata, repetido suelto
+  tras arreglarlo: 1/1, cambiado a mano en el informe). tests/servers/http.py: quitado el /eco de la vuelta de
+  send-redirect, que tapaba el de siempre (test_formularios_post fallaba desde entonces; ahora pasa, y test_http).
+- Velocidad: lo de siempre igual (una búsqueda en las cabeceras al enviar).
+- WPT xhr 681 → 714: setrequestheader-content-type 16 → 34/34, send-entity-body-document 0 → 4/7,
+  send-entity-body-document-bogus 0 → 3/4, send-blob-with-no-mime-type 0 → 4/8, send-content-type-string 3/3,
+  send-usp 135/135; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion, formularios (4) y test_http (7) pasan.

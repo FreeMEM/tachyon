@@ -101,10 +101,6 @@ class Handler(socketserver.StreamRequestHandler):
             codigo = path[2:]
             self.wfile.write(reply(codigo + " Redirect", [("Location", "/eco"), ("Content-Length", "0")]))
             return
-        if path == "/eco":          # el método y el cuerpo que llegaron
-            data = line.split(" ")[0].encode() + b" " + body
-            self.wfile.write(reply("200 OK", [("Content-Type", "text/plain"), ("Content-Length", str(len(data)))], data))
-            return
         if path == "/cerrar":       # no length: the body ends when the connection closes
             self.wfile.write(b"HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n" + b"z" * 5000)
             return

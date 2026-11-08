@@ -110,6 +110,17 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
     cab = Cabeceras(list((cabeceras or {}).items()))
     tipo = t(cab.first("content-type", b""))
     post = urllib.parse.parse_qsl(cuerpo.decode("latin-1"), keep_blank_values=True) if "urlencoded" in tipo else []
+    if "multipart/form-data" in tipo:
+        # (como wptserve: cada parte con su name; el valor tal cual, sin el CRLF del final)
+        import re as _re
+        m = _re.search(r'boundary="?([^";]+)"?', tipo)
+        for parte in (cuerpo.split(b"--" + m.group(1).encode("latin-1"))[1:] if m else []):
+            if parte.startswith(b"--") or b"\r\n\r\n" not in parte:
+                continue
+            cab_p, valor = parte.split(b"\r\n\r\n", 1)
+            nombre = _re.search(rb'name="([^"]*)"', cab_p)
+            if nombre:
+                post.append((nombre.group(1).decode("latin-1"), valor[:-2] if valor.endswith(b"\r\n") else valor))
 
     class Respuesta(list):
         def set(self, k, v):

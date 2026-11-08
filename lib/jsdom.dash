@@ -825,7 +825,7 @@ var jsdom_peticiones: [PeticionJS] = []
         end
         nombre = str_lower(str_trim(linea[:p]))
         valor = str_trim(linea[p + 1:])
-        if nombre == "content-type" and metodo != "GET" and metodo != "HEAD"
+        if nombre == "content-type" and metodo != "GET" and metodo != "HEAD" and valor != ""
             tipo = valor
         elif nombre == "host" or nombre == "content-length" or nombre == "cookie" or nombre == "connection" or nombre == "user-agent" or nombre == "accept-encoding" or str_starts(nombre, "sec-") or str_starts(nombre, "proxy-")
             continue
@@ -835,9 +835,6 @@ var jsdom_peticiones: [PeticionJS] = []
             end
             extra = extra + str_trim(linea[:p]) + ": " + valor
         end
-    end
-    if tipo == "" and cuerpo != "" and metodo != "GET"
-        tipo = "text/plain;charset=UTF-8"
     end
     if URL_RASTREO_BLOQUEAR and url_rastreador(url)
         # (un rastreador: no se pide; en el siguiente avance, un error de red; también los <script> que mete el

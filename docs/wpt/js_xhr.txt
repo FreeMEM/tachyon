@@ -1,4 +1,4 @@
-WPT TOTAL xhr: 681/1112 subpruebas en 306 de 306 ficheros
+WPT TOTAL xhr: 714/1112 subpruebas en 306 de 306 ficheros
 
 WPT FILE xhr/XMLHttpRequest-withCredentials.any.html 3/5 OK
 WPT FILE xhr/abort-after-receive.any.html 0/1 OK
@@ -209,11 +209,11 @@ WPT FILE xhr/send-authentication-cors-setrequestheader-no-cred.htm 0/2 OK
 WPT FILE xhr/send-authentication-existing-session-manual.htm 0/0 TIMEOUT 
 WPT FILE xhr/send-authentication-prompt-2-manual.htm 0/1 OK
 WPT FILE xhr/send-authentication-prompt-manual.htm 0/1 OK
-WPT FILE xhr/send-blob-with-no-mime-type.html 0/8 OK
+WPT FILE xhr/send-blob-with-no-mime-type.html 4/8 OK
 WPT FILE xhr/send-conditional-cors.htm 0/2 OK
 WPT FILE xhr/send-conditional.htm 2/2 OK
-WPT FILE xhr/send-content-type-charset.htm 12/19 OK
-WPT FILE xhr/send-content-type-string.htm 1/3 OK
+WPT FILE xhr/send-content-type-charset.htm 13/19 OK
+WPT FILE xhr/send-content-type-string.htm 3/3 OK
 WPT FILE xhr/send-data-arraybuffer.any.html 1/1 OK
 WPT FILE xhr/send-data-arraybufferview.any.html 1/1 OK
 WPT FILE xhr/send-data-blob.htm 1/1 OK
@@ -225,8 +225,8 @@ WPT FILE xhr/send-data-string-invalid-unicode.any.html 0/9 OK
 WPT FILE xhr/send-data-unexpected-tostring.htm 2/3 OK
 WPT FILE xhr/send-document-lone-surrogate.html 0/1 OK
 WPT FILE xhr/send-entity-body-basic.htm 5/6 OK
-WPT FILE xhr/send-entity-body-document-bogus.htm 0/4 OK
-WPT FILE xhr/send-entity-body-document.htm 0/7 OK
+WPT FILE xhr/send-entity-body-document-bogus.htm 3/4 OK
+WPT FILE xhr/send-entity-body-document.htm 4/7 OK
 WPT FILE xhr/send-entity-body-empty.htm 2/3 OK
 WPT FILE xhr/send-entity-body-get-head-async.htm 2/2 OK
 WPT FILE xhr/send-entity-body-get-head.htm 2/2 OK
@@ -255,7 +255,7 @@ WPT FILE xhr/send-sync-no-response-event-order.htm 1/1 OK
 WPT FILE xhr/send-sync-response-event-order.htm 0/1 ERROR 'XMLHttpRequestUpload' is not defined
 WPT FILE xhr/send-sync-timeout.htm 1/1 OK
 WPT FILE xhr/send-timeout-events.htm 0/1 OK
-WPT FILE xhr/send-usp.any.html 134/135 OK
+WPT FILE xhr/send-usp.any.html 135/135 OK
 WPT FILE xhr/setrequestheader-after-send.htm 1/1 OK
 WPT FILE xhr/setrequestheader-allow-empty-value.htm 3/3 OK
 WPT FILE xhr/setrequestheader-allow-whitespace-in-value.htm 4/4 OK
@@ -264,7 +264,7 @@ WPT FILE xhr/setrequestheader-bogus-name.htm 69/71 OK
 WPT FILE xhr/setrequestheader-bogus-value.htm 4/5 OK
 WPT FILE xhr/setrequestheader-case-insensitive.htm 0/2 OK
 WPT FILE xhr/setrequestheader-combining.window.html 0/1 OK
-WPT FILE xhr/setrequestheader-content-type.htm 16/34 OK
+WPT FILE xhr/setrequestheader-content-type.htm 34/34 OK
 WPT FILE xhr/setrequestheader-header-allowed.htm 0/10 OK
 WPT FILE xhr/setrequestheader-header-forbidden.htm 2/2 OK
 WPT FILE xhr/setrequestheader-open-setrequestheader.htm 1/1 OK
@@ -342,10 +342,10 @@ WPT SUB FAIL xhr/access-control-basic-allow-access-control-origin-header.any.htm
 WPT SUB FAIL xhr/access-control-basic-allow-async.any.html | Basic async cross-origin XHR request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow.py'
 WPT SUB FAIL xhr/access-control-basic-allow-non-cors-safelisted-method-async.any.html | Allow async PUT request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-put-allow.py'
 WPT SUB FAIL xhr/access-control-basic-allow-non-cors-safelisted-method.any.html | Allow PUT request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-put-allow.py'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-header.any.html | Preflight cache should be invalidated in presence of custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=62b387b8-ceab-44e4-8655-a9a388fca653'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-method.any.html | Preflight cache should be invalidated by changed method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=7de4cf8f-bd51-4bea-872f-a3b2d4f35a11'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-timeout.any.html | Preflight cache should be invalidated on timeout | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=750cfb9d-9549-4628-a92e-1449f5f462ca'
-WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache.any.html | Preflight cache should allow second request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=632f8b31-6ccc-45c6-ae7c-fb7b75addf58'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-header.any.html | Preflight cache should be invalidated in presence of custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=a269b9e3-c4af-4425-bbde-ff25300c9730'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-invalidation-by-method.any.html | Preflight cache should be invalidated by changed method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=f79429f7-6795-4f30-963f-3b79a6eda16b'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache-timeout.any.html | Preflight cache should be invalidated on timeout | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=7b6ad0b2-058e-48a3-a4a5-649f2fdc914e'
+WPT SUB FAIL xhr/access-control-basic-allow-preflight-cache.any.html | Preflight cache should allow second request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=b719cee4-78ad-45ef-a246-f0c2a1aa3670'
 WPT SUB FAIL xhr/access-control-basic-allow-star.any.html | Allow star | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow-star.py'
 WPT SUB FAIL xhr/access-control-basic-allow.any.html | Allow basic | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-allow.py'
 WPT SUB FAIL xhr/access-control-basic-cors-safelisted-request-headers.htm | Request with CORS-safelisted headers | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-cors-safelisted-request-headers.py'
@@ -359,13 +359,13 @@ WPT SUB FAIL xhr/access-control-basic-post-with-non-cors-safelisted-content-type
 WPT SUB FAIL xhr/access-control-basic-post-with-non-cors-safelisted-content-type.htm | CORS request with non-safelisted content type sends preflight and fails | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-options-not-supported.py'
 WPT SUB FAIL xhr/access-control-basic-preflight-denied.htm | Tests async XHR preflight denial due to lack of CORS headers | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-denied.py'
 WPT SUB FAIL xhr/access-control-expose-headers-on-redirect.html | XHR should respect access-control-expose-headers header on redirect | assert_unreached: Unexpected error. Reached unreachable code
-WPT SUB FAIL xhr/access-control-preflight-async-header-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=4e3111a1-00d9-4bfc-9488-38cbc540e4fe&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-async-method-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=47d140ae-e6b8-4a00-b077-c9d2e7916299&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-async-not-supported.htm | Async PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=a955b34d-0f84-4709-8708-c4ca9150a312&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-header-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=212f8eb2-34e5-4126-8605-87dc539ddc94&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-method-denied.htm | Async request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=3e7eacde-07c4-49e0-9e31-3a5d2f8b48eb&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-async-not-supported.htm | Async PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=d9a712e0-0b2f-4131-9622-dc8648625a5b&command=reset'
 WPT SUB FAIL xhr/access-control-preflight-credential-async.htm | CORS async request with URL credentials | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-auth-basic.py?uid=fooUser'
 WPT SUB FAIL xhr/access-control-preflight-credential-sync.htm | CORS sync request with URL credentials | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-auth-basic.py?uid=fooUser'
-WPT SUB FAIL xhr/access-control-preflight-headers-async.htm | Preflighted async request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=b45f8d63-1f97-4f72-8afb-f2f1ed3e97cf'
-WPT SUB FAIL xhr/access-control-preflight-headers-sync.htm | Preflighted sync request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=1da266e9-1707-4e18-a023-bdc9d5e4de87'
+WPT SUB FAIL xhr/access-control-preflight-headers-async.htm | Preflighted async request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=e707f02e-4ce5-4eba-92e8-8a0a27217a9f'
+WPT SUB FAIL xhr/access-control-preflight-headers-sync.htm | Preflighted sync request with custom header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/reset-token.py?token=703afc26-74a6-427d-b103-bcef2e2d4b99'
 WPT SUB FAIL xhr/access-control-preflight-request-allow-headers-returns-star.any.html | Access-Control-Allow-Headers supports * | assert_unreached: Error occurred. Reached unreachable code
 WPT SUB FAIL xhr/access-control-preflight-request-header-lowercase.htm | Request with uppercase header set | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-header-lowercase.py'
 WPT SUB FAIL xhr/access-control-preflight-request-header-returns-origin.any.html | Access-Control-Request-Origin accept different origin between preflight and actual request | assert_unreached: Error occurred. Reached unreachable code
@@ -375,9 +375,9 @@ WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-301.htm | Reque
 WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-400.htm | Request with 400 preflight response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-invalid-status.py?code=400'
 WPT SUB FAIL xhr/access-control-preflight-request-invalid-status-501.htm | Request with 501 preflight response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-request-invalid-status.py?code=501'
 WPT SUB FAIL xhr/access-control-preflight-request-must-not-contain-cookie.htm | Preflight request must not contain any cookie header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-cookie.py?cookie_name=foo'
-WPT SUB FAIL xhr/access-control-preflight-sync-header-denied.htm | Sync request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=2acce650-d5bb-4b11-bcdd-7df74e48ca84&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-sync-method-denied.htm | Sync request denied at preflight because of non-CORS-safelisted method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=f04aaf10-233a-45cd-86e9-cfd5f8047602&command=reset'
-WPT SUB FAIL xhr/access-control-preflight-sync-not-supported.htm | Sync PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=04937cfb-a70c-40bd-ad89-75de9ccd0fe6&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-header-denied.htm | Sync request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=2727a7b9-d87a-446d-9e51-729016f5bb78&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-method-denied.htm | Sync request denied at preflight because of non-CORS-safelisted method | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=ed3c7c03-c347-41f1-ac2a-86c6412979d6&command=reset'
+WPT SUB FAIL xhr/access-control-preflight-sync-not-supported.htm | Sync PUT request denied at preflight | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-preflight-denied.py?token=d1df8fd1-aa77-45a3-89cf-c242920d8da1&command=reset'
 WPT SUB FAIL xhr/access-control-recursive-failed-request.htm | Recursively repeated CORS requests with failed preflights should never result in unexpected behavior | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-basic-denied.py'
 WPT SUB FAIL xhr/access-control-response-with-body-sync.htm | Tests body from CORS preflight response and actual response with sync request | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-allow-with-body.py'
 WPT SUB FAIL xhr/access-control-response-with-body.htm | Tests that XHR doesn't prepend the body from CORS preflight response to the actual response | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/access-control-allow-with-body.py'
@@ -411,22 +411,22 @@ WPT SUB TIMEOUT xhr/event-upload-progress.any.html | Upload events registered on
 WPT SUB FAIL xhr/event-upload-progress.any.html | Upload events registered too late (http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/corsenabled.py) | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/corsenabled.py'
 WPT SUB TIMEOUT xhr/event-upload-progress.any.html | Upload events registered too late (resources/redirect.py?code=307&location=http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/corsenabled.py) | Test timed out
 WPT SUB FAIL xhr/firing-events-http-content-length.html | ProgressEvent: firing events for HTTP with Content-Length | assert_true: lengthComputable expected true got false
-WPT SUB FAIL xhr/formdata.html | formdata with string | assert_equals: expected "key=value,\n" but got "manejador: %b requires a bytes-like object, or an object that implements __bytes__, not 'int'"
-WPT SUB FAIL xhr/formdata.html | formdata with named string | assert_equals: expected "\nkey=kv.txt:text/plain:5," but got "manejador: index out of range"
-WPT SUB FAIL xhr/formdata.html | formdata from form | assert_equals: expected "key=value,\n" but got "manejador: %b requires a bytes-like object, or an object that implements __bytes__, not 'int'"
-WPT SUB FAIL xhr/formdata.html | formdata with blob | assert_equals: expected "\nkey=blob:text/x-value:5," but got "manejador: index out of range"
-WPT SUB FAIL xhr/formdata.html | formdata with named blob | assert_equals: expected "\nkey=blob.txt:text/x-value:5," but got "manejador: index out of range"
+WPT SUB FAIL xhr/formdata.html | formdata with string | assert_equals: expected "key=value,\n" but got "\n"
+WPT SUB FAIL xhr/formdata.html | formdata with named string | assert_equals: expected "\nkey=kv.txt:text/plain:5," but got "\n"
+WPT SUB FAIL xhr/formdata.html | formdata from form | assert_equals: expected "key=value,\n" but got "\n"
+WPT SUB FAIL xhr/formdata.html | formdata with blob | assert_equals: expected "\nkey=blob:text/x-value:5," but got "\n"
+WPT SUB FAIL xhr/formdata.html | formdata with named blob | assert_equals: expected "\nkey=blob.txt:text/x-value:5," but got "\n"
 WPT SUB FAIL xhr/formdata.html | Newly created FormData contains entries added to "formData" IDL attribute of FormDataEvent. | 'populateForm' is not defined
 WPT SUB FAIL xhr/formdata.html | |new FormData()| in formdata event handler should throw | 'populateForm' is not defined
-WPT SUB FAIL xhr/getallresponseheaders-after-reuse.html | getAllResponseHeaders() must not return the previous response's headers | assert_equals: first response expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 1
+WPT SUB FAIL xhr/getallresponseheaders-after-reuse.html | getAllResponseHeaders() must not return the previous response's headers | assert_equals: first response expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 2
 WPT SUB FAIL xhr/getallresponseheaders-cookies.htm | XMLHttpRequest: getAllResponseHeaders() excludes cookies | assert_true: x-custom-header expected true got false
 WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() | assert_equals: expected "also-here: Mr. PB\r\newok: lego\r\nfoo-test: 1, 2\r\n__custom: token\r\n" but got "content-length: 91\r\ncontent-type: application/octe
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 1 | assert_equals: expected "content-length: 0\r\n" but got "content-length: 39\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20:33 GMT\r\n
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 2 | assert_equals: expected "content-length: 0, 0\r\n" but got "content-length: 58\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20:33 GMT\
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 3 | assert_equals: expected "double-trouble: , \r\n" but got "content-length: 48\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20:33 GMT\r\
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 4 | assert_equals: expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20:33 GMT\r\n
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 5 | assert_equals: expected "heya: , \v\f, 1, , , 2\r\n" but got "content-length: 65\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20:33 GM
-WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 6 | assert_equals: expected "www-authenticate: 1, 2, 3, 4\r\n" but got "content-length: 82\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 19:20
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 1 | assert_equals: expected "content-length: 0\r\n" but got "content-length: 39\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08:32 GMT\r\n
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 2 | assert_equals: expected "content-length: 0, 0\r\n" but got "content-length: 58\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08:32 GMT\
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 3 | assert_equals: expected "double-trouble: , \r\n" but got "content-length: 48\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08:32 GMT\r\
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 4 | assert_equals: expected "foo-test: 1, 2, 3\r\n" but got "content-length: 55\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08:32 GMT\r\n
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 5 | assert_equals: expected "heya: , \v\f, 1, , , 2\r\n" but got "content-length: 65\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08:32 GM
+WPT SUB FAIL xhr/getallresponseheaders.htm | XMLHttpRequest: getAllResponseHeaders() 6 | assert_equals: expected "www-authenticate: 1, 2, 3, 4\r\n" but got "content-length: 82\r\ncontent-type: application/octet-stream\r\ndate: Sun, 08 Nov 2026 21:08
 WPT SUB FAIL xhr/getresponseheader-case-insensitive.htm | XMLHttpRequest: getResponseHeader() case-insensitive matching | assert_equals: expected (string) "test" but got (object) null
 WPT SUB FAIL xhr/getresponseheader-chunked-trailer.htm | XMLHttpRequest: getResponseHeader() and HTTP trailer | assert_equals: expected (string) "X-Test-Me" but got (object) null
 WPT SUB FAIL xhr/getresponseheader-cookies-and-more.htm | XMLHttpRequest: getResponseHeader() custom/non-existent headers and cookies | assert_equals: expected (string) "test" but got (object) null
@@ -542,48 +542,41 @@ WPT SUB FAIL xhr/responsexml-non-document-types.htm | XMLHttpRequest: responseXM
 WPT SUB FAIL xhr/send-accept-language.htm | Send "sensible" default value, whatever that means | assert_regexp_match: expected object "/Accept-Language:\s.+/" but got ""
 WPT SUB FAIL xhr/send-authentication-basic-cors-not-enabled.htm | XMLHttpRequest: send() - "Basic" authenticated CORS requests with user name and password passed to open() (asserts failure) | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth10/auth.py'
 WPT SUB FAIL xhr/send-authentication-basic-cors.htm | XMLHttpRequest: send() - "Basic" authenticated CORS requests with user name and password passed to open() (asserts failure) | Invalid URL 'http://www1.127.0.0.1:40881/xhr/resources/auth1/corsenabled.py'
-WPT SUB FAIL xhr/send-authentication-basic-repeat-no-args.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() in first request, without in second | assert_equals: expected "765329f4-fd28-4a31-8717-0905c84c5781\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-and-arguments.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() and open() arguments (asserts header wins) | assert_equals: expected "b31db826-4d02-4aae-a072-2384326ca6bb\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic-repeat-no-args.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() in first request, without in second | assert_equals: expected "b9ac3558-1c9e-495b-b6be-48163280a476\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-and-arguments.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() and open() arguments (asserts header wins) | assert_equals: expected "3725d78b-af9f-43f0-ba5c-aa938abf3cc1\npass" but got "manejador: No module named 'tools'"
 WPT SUB FAIL xhr/send-authentication-basic-setrequestheader-existing-session.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() when there is an existing session | assert_true: responseText should contain the right user and password expected true got false
-WPT SUB FAIL xhr/send-authentication-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() | assert_equals: expected "24de5f01-f8ff-4212-8035-f14e5fb3c8d0\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-basic.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() | assert_equals: expected "a1cd40ba-a446-45df-9746-237431d19ce1\npass" but got "manejador: No module named 'tools'"
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in open() | assert_equals: responseText should contain the right user and password expected "0a106fe6-0410-4a2d-b9a5-8b5ae4c92276\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in open() | assert_equals: responseText should contain the right user and password expected "4ab29ac3-db42-4784-b6c1-8a4a11110b23\nfcd3aeae-8870-4ab6-9502-4da5f2928081" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: another user/pass in open(); must override cached credentials from previous test | assert_equals: responseText should contain the right user and password expected "eb13b3d1-90d4-426d-975b-ee9ce40f016b\n95600b62-7ab5-492f-a0e1-8d0809bbc8ba" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user in open() | assert_equals: responseText should contain the right user and password expected "848c27a5-53af-4393-91ed-0a2990b0fe75\n53d72371-ae49-41ca-8625-86ecd23e49ed" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user/pass in open() | assert_equals: responseText should contain the right user and password expected "ab088ef0-37b2-4e7b-b52e-157544046090\n4824d794-010a-4107-8fd7-21dd1bcf2139" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL | assert_equals: responseText should contain the right user and password expected "8ea713be-6ca3-4325-992e-fba7e51c8762\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL, pass in open() | assert_equals: responseText should contain the right user and password expected "fd45db6d-cda3-4921-9c33-f867d01edbf7\nf5166adc-c5f6-41e9-8147-7b3bd6c09985" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL | assert_equals: responseText should contain the right user and password expected "27965b2b-7798-41e8-a4d0-35503c183a97\n446af962-8110-47b3-8d80-f08e3199ad1e" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL and open() | assert_equals: responseText should contain the right user and password expected "87ecdf57-4e58-4691-9581-19b5a64d4870\n" but got "manejador: 'types.SimpleNamesp
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL; user/pass in open() | assert_equals: responseText should contain the right user and password expected "4d63276a-44a3-4e18-a953-b341b844387c\n259349b1-cd20-4c37-9fc5-d5202742a845" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; user in open() | assert_equals: responseText should contain the right user and password expected "1c751a83-28d3-4841-a327-ab07b1c00f9d\n71c17991-b861-450b-9d84-e5f1121fdc82" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; pass in open() | assert_equals: responseText should contain the right user and password expected "13690a69-39f1-445c-89e1-3d96464ddc7a\na389d071-c50c-41f7-9bf6-4c8aa3c636cc" but
-WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL and open() | assert_equals: responseText should contain the right user and password expected "f032f912-c19f-4cad-9b70-84feb1330c06\n73d46577-3e26-4b7e-87d2-23d11dcfcc05" but
+WPT SUB FAIL xhr/send-authentication-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated request using setRequestHeader() | assert_equals: expected "42639c23-d667-43ad-b8f5-09f8ebec5459\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-basic.htm | XMLHttpRequest: send() - "Basic" authenticated requests with user name and password passed to open() | assert_equals: expected "1ffddbf6-d675-4525-8a60-6163d887347d\npass" but got "manejador: No module named 'tools'"
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in open() | assert_equals: responseText should contain the right user and password expected "3cf78495-54c4-4a77-9e09-a620941b37ac\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in open() | assert_equals: responseText should contain the right user and password expected "b2a9327e-e1e7-465c-8bd9-09ad030a7562\n39056c57-5eec-4868-a3d0-1ce8c889baad" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: another user/pass in open(); must override cached credentials from previous test | assert_equals: responseText should contain the right user and password expected "0ed654c0-fad6-42dd-be9f-5f6cc648aafb\n9942299d-fc04-4580-bc01-f32d24326fdf" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user in open() | assert_equals: responseText should contain the right user and password expected "827e4a93-586c-4057-a5a9-05160bd331cb\n4aff8416-93b6-41d0-89c4-aa4743324a71" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: pass in URL, user/pass in open() | assert_equals: responseText should contain the right user and password expected "e5abc8d9-6c6d-442f-b751-e5c83217662b\ndda9cd78-fbbf-4f73-80e2-b86197e9f969" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL | assert_equals: responseText should contain the right user and password expected "293eb252-dc89-486e-b783-a7f2f25d7579\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL, pass in open() | assert_equals: responseText should contain the right user and password expected "fd640bae-db7c-4de2-9a74-69f5db2da09e\n76d29d91-e6b9-4ae5-8354-5477d3e24c3a" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL | assert_equals: responseText should contain the right user and password expected "1ebdcf2b-c7cc-4c34-89c5-3f47618cc221\nead5d54a-10ea-4ed0-aead-dad129f06ec3" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL and open() | assert_equals: responseText should contain the right user and password expected "c49bebdc-cdfe-417d-a479-444d2b9901eb\n" but got "manejador: 'types.SimpleNamesp
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user in URL; user/pass in open() | assert_equals: responseText should contain the right user and password expected "91729c11-09cf-49af-83e7-236c70e6e75e\n9f3b359d-df49-45f3-9033-464b56816fe7" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; user in open() | assert_equals: responseText should contain the right user and password expected "c9223c66-4982-4285-99b9-44e86a13eb9f\n189f29d8-11f9-46c0-947e-9d258d58261b" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL; pass in open() | assert_equals: responseText should contain the right user and password expected "65195478-ddf9-470d-9f3c-764f52aa44bf\n56ad550b-30cd-4ec1-8883-44770db3ead1" but
+WPT SUB FAIL xhr/send-authentication-competing-names-passwords.htm | XMLHttpRequest user/pass options: user/pass in URL and open() | assert_equals: responseText should contain the right user and password expected "9bec8668-a19a-4f69-8d11-04af7f05f241\n07781fde-d903-4d35-b4f6-02d95f151062" but
 WPT SUB FAIL xhr/send-authentication-cors-basic-setrequestheader.htm | XMLHttpRequest: send() - "Basic" authenticated CORS request using setRequestHeader() (expects to succeed) | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth2/corsenabled.py'
 WPT SUB FAIL xhr/send-authentication-cors-setrequestheader-no-cred.htm | CORS request with setRequestHeader auth to URL accepting Authorization header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth7/corsenabled.py'
 WPT SUB FAIL xhr/send-authentication-cors-setrequestheader-no-cred.htm | CORS request with setRequestHeader auth to URL NOT accepting Authorization header | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/auth8/corsenabled-no-authorize.py'
 WPT SUB FAIL xhr/send-authentication-prompt-2-manual.htm | XMLHttpRequest: WWW-Authenticate challenge when user,pass are not passed to open() | assert_equals: expected "usr\nsecret" but got "manejador: 'types.SimpleNamespace' object has no attribute 'auth'"
 WPT SUB FAIL xhr/send-authentication-prompt-manual.htm | XMLHttpRequest: send() - "Basic" authentication gets 401 response | assert_equals: expected "usr\nsecret" but got "manejador: 'types.SimpleNamespace' object has no attribute 'auth'"
-WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Synchronous blob loading with no mime type [POST] | assert_equals: expected "NO" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Asynchronous blob loading with no mime type [POST] | assert_equals: expected "NO" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Synchronous blob loading with no mime type [PUT] | assert_equals: expected "NO" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Asynchronous blob loading with no mime type [PUT] | assert_equals: expected "NO" but got "text/plain;charset=UTF-8"
 WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Synchronous blob loading with invalid mime type [POST] | assert_equals: expected "NO" but got "invalid"
 WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Asynchronous blob loading with invalid mime type [POST] | assert_equals: expected "NO" but got "invalid"
 WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Synchronous blob loading with invalid mime type [PUT] | assert_equals: expected "NO" but got "invalid"
 WPT SUB FAIL xhr/send-blob-with-no-mime-type.html | Asynchronous blob loading with invalid mime type [PUT] | assert_equals: expected "NO" but got "invalid"
 WPT SUB FAIL xhr/send-conditional-cors.htm | 304 without appropriate CORS header | 'CROSSDOMAIN' is not defined
 WPT SUB FAIL xhr/send-conditional-cors.htm | 304 with appropriate CORS header | 'CROSSDOMAIN' is not defined
-WPT SUB FAIL xhr/send-content-type-charset.htm | header with invalid MIME type (empty string) is not changed | assert_equals: expected "" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-content-type-charset.htm | charset given but wrong, fix it (unknown MIME, bogus charset) | assert_equals: expected "text/x-thepiano;charset=UTF-8" but got "text/x-thepiano;charset= waddup"
-WPT SUB FAIL xhr/send-content-type-charset.htm | charset given but wrong, fix it (known MIME, actual charset) | assert_equals: expected "text/plain;charset=UTF-8" but got "text/plain;charset=shift-jis"
-WPT SUB FAIL xhr/send-content-type-charset.htm | Multiple non-UTF-8 charset parameters deduplicate, bogus parameter dropped | assert_equals: expected "text/x-pink-unicorn;charset=UTF-8" but got "text/x-pink-unicorn; charset=windows-1252; charset=bogus; notrelated; charset=ascii"
+WPT SUB FAIL xhr/send-content-type-charset.htm | header with invalid MIME type is not changed | assert_equals: expected "text; charset=ascii" but got "text;charset=UTF-8"
+WPT SUB FAIL xhr/send-content-type-charset.htm | If charset= param is UTF-8 (case-insensitive), it should not be changed (bogus charset) | assert_equals: expected "text/plain;charset=utf-8;charset=waddup" but got "text/plain;charset=utf-8;charset=UTF-8"
+WPT SUB FAIL xhr/send-content-type-charset.htm | Multiple non-UTF-8 charset parameters deduplicate, bogus parameter dropped | assert_equals: expected "text/x-pink-unicorn;charset=UTF-8" but got "text/x-pink-unicorn;charset=UTF-8;charset=UTF-8; notrelated;charset=UTF-8"
 WPT SUB FAIL xhr/send-content-type-charset.htm | charset with leading space that is UTF-8 does change | assert_equals: expected "text/plain;charset=UTF-8" but got "text/plain;charset= utf-8"
-WPT SUB FAIL xhr/send-content-type-charset.htm | charset in double quotes with space | assert_equals: expected "text/plain;charset=UTF-8" but got "text/plain;charset=\" utf-8\""
-WPT SUB FAIL xhr/send-content-type-charset.htm | unknown parameters need to be preserved | assert_equals: expected "yo/yo;charset=UTF-8;yo=YO;x=y" but got "YO/yo;charset=x;yo=YO; X=y"
-WPT SUB FAIL xhr/send-content-type-string.htm | XMLHttpRequest: send() - Content-Type 1 | assert_equals: expected "application/xml;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-content-type-string.htm | XMLHttpRequest: send() - Content-Type 2 | assert_equals: expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
+WPT SUB FAIL xhr/send-content-type-charset.htm | charset in double quotes with backslashes that is UTF-8 does not change | assert_equals: expected "text/plain;charset=\"u\\t\\f-8\"" but got "text/plain;charset=UTF-8"
+WPT SUB FAIL xhr/send-content-type-charset.htm | unknown parameters need to be preserved | assert_equals: expected "yo/yo;charset=UTF-8;yo=YO;x=y" but got "YO/yo;charset=UTF-8;yo=YO; X=y"
 WPT SUB FAIL xhr/send-data-es-object.any.html | sending a new XHR instance | assert_equals: expected "[object XMLHttpRequest]" but got "[object Object]"
 WPT SUB FAIL xhr/send-data-es-object.any.html | sending a new ReadableStream instance | assert_equals: expected "[object ReadableStream]" but got "[object Object]"
 WPT SUB FAIL xhr/send-data-sharedarraybuffer.any.html | sending a SharedArrayBuffer | 'WebAssembly' is not defined
@@ -612,17 +605,10 @@ WPT SUB FAIL xhr/send-data-string-invalid-unicode.any.html | valid unicode shoul
 WPT SUB FAIL xhr/send-data-unexpected-tostring.htm | send() called from data stringification | assert_throws_dom: function "function(){ client.send(objSendsOnStringification) }" did not throw
 WPT SUB FAIL xhr/send-document-lone-surrogate.html | send() with Document containing lone surrogate should not throw | assert_true: Response should contain the text expected true got false
 WPT SUB FAIL xhr/send-entity-body-basic.htm | XMLHttpRequest: send() - data argument (A A) | assert_equals: expected "A\0A" but got "A"
-WPT SUB FAIL xhr/send-entity-body-document-bogus.htm | Serializing documents through XMLHttpRequest: '' | assert_equals: expected "" but got "[object Object]"
-WPT SUB FAIL xhr/send-entity-body-document-bogus.htm | Serializing documents through XMLHttpRequest: '<test:test/>' | assert_equals: expected "<test:test/>" but got "[object Object]"
-WPT SUB FAIL xhr/send-entity-body-document-bogus.htm | Serializing documents through XMLHttpRequest: '<test:test test:test="gee"/>' | assert_equals: expected "<test:test test:test=\"gee\"/>" but got "[object Object]"
-WPT SUB FAIL xhr/send-entity-body-document-bogus.htm | Serializing documents through XMLHttpRequest: '<test:test test:test="gee" x="?"/>' | assert_equals: expected "<test:test test:test=\"gee\" x=\"\ufffd\"/>" but got "[object Object]"
-WPT SUB FAIL xhr/send-entity-body-document.htm | XML document, windows-1252 | assert_equals: document should be serialized and sent as application/xml;charset=UTF-8 expected "application/xml;charset=UTF-8" but got "text/plain;charset=UTF-
-WPT SUB FAIL xhr/send-entity-body-document.htm | HTML document, invalid UTF-8 | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-entity-body-document.htm | HTML document, shift-jis | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-entity-body-document.htm | plain text file | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-entity-body-document.htm | image file | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-entity-body-document.htm | img tag | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
-WPT SUB FAIL xhr/send-entity-body-document.htm | empty div | assert_equals: document should be serialized and sent as text/html;charset=UTF-8 expected "text/html;charset=UTF-8" but got "text/plain;charset=UTF-8"
+WPT SUB FAIL xhr/send-entity-body-document-bogus.htm | Serializing documents through XMLHttpRequest: '<test:test test:test="gee" x="?"/>' | assert_equals: expected "<test:test test:test=\"gee\" x=\"\ufffd\"/>" but got "<test:test test:test=\"gee\" x=\"\"/>"
+WPT SUB FAIL xhr/send-entity-body-document.htm | XML document, windows-1252 | assert_true: "<ÿ/>" not in "<?/>" expected true got false
+WPT SUB FAIL xhr/send-entity-body-document.htm | HTML document, invalid UTF-8 | assert_true: "<body>?</body>" not in "<html><head></head><body>?</body></html>" expected true got false
+WPT SUB FAIL xhr/send-entity-body-document.htm | HTML document, shift-jis | assert_true: "<body>???</body>" not in "<html><head></head><body>?X?</body></html>" expected true got false
 WPT SUB FAIL xhr/send-entity-body-empty.htm | XMLHttpRequest: send("") - empty entity body (PUT) | assert_equals: expected "0" but got "NO"
 WPT SUB FAIL xhr/send-entity-body-none.htm | No content type (PUT) | assert_equals: expected "0" but got "NO"
 WPT SUB FAIL xhr/send-entity-body-none.htm | Explicit content type (PUT) | assert_equals: expected "0" but got "NO"
@@ -672,31 +658,12 @@ WPT SUB TIMEOUT xhr/send-response-upload-event-progress.htm | XMLHttpRequest: Th
 WPT SUB FAIL xhr/send-send.any.html | XMLHttpRequest: send() - send() | assert_throws_dom: function "function() { client.send(null) }" did not throw
 WPT SUB FAIL xhr/send-sync-response-event-order.htm | XMLHttpRequest: The send() method: event order when synchronous flag is set |  Expected more events: load(12,12,true), loadend(12,12,true)
 WPT SUB FAIL xhr/send-timeout-events.htm | XMLHttpRequest: The send() method: timeout is not 0  | assert_array_equals: lengths differ, expected array [4, "", "upload.timeout", "upload.loadend", "timeout", "loadend"] length 6, got [4, "manejador: 'types.Simpl
-WPT SUB FAIL xhr/send-usp.any.html | XMLHttpRequest.send(URLSearchParams): POST replaces the charset parameter of an author-set Content-Type | assert_equals: Content-Type request header expected "text/plain;charset=UTF-8" but got "text/plain;charset=windows-1252"
 WPT SUB FAIL xhr/setrequestheader-bogus-name.htm | setRequestHeader should throw with header name "???". | assert_throws_js: function "function() { client.setRequestHeader(name, 'x-value') }" threw object "SyntaxError: '???' is not a valid HTTP header field name." ("
 WPT SUB FAIL xhr/setrequestheader-bogus-name.htm | setRequestHeader should throw with header name "X-???". | assert_throws_js: function "function() { client.setRequestHeader(name, 'x-value') }" threw object "SyntaxError: 'X-???' is not a valid HTTP header field name." 
 WPT SUB FAIL xhr/setrequestheader-bogus-value.htm | XMLHttpRequest: setRequestHeader() value argument checks 3 | assert_throws_js: given value ???, function "function() { client.setRequestHeader("x-test", "???") }" did not throw
 WPT SUB FAIL xhr/setrequestheader-case-insensitive.htm | XMLHttpRequest: setRequestHeader() - headers that differ in case | assert_equals: expected "x-test," but got ""
 WPT SUB FAIL xhr/setrequestheader-case-insensitive.htm | XMLHttpRequest: setRequestHeader() - headers that differ in case 1 | assert_array_equals: value is null, expected array
 WPT SUB FAIL xhr/setrequestheader-combining.window.html | setRequestHeader() combining header values | assert_equals: expected "test-me: , , , , x\tx, \n" but got "test-me: \n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | setRequestHeader("") sends a blank string | assert_equals: expected "Content-Type: \n" but got ""
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | setRequestHeader(" ") sends the string " " | assert_equals: expected "Content-Type: \n" but got ""
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | String request keeps setRequestHeader() Content-Type, with charset adjusted to UTF-8 | assert_equals: expected "Content-Type: text/javascript;charset=UTF-8\n" but got "Content-Type: text/javascript;charset=ASCII\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | XML Document request respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | XML Document request has correct default Content-Type of "application/xml;charset=UTF-8" | assert_equals: expected "Content-Type: application/xml;charset=UTF-8\n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | XML Document request keeps setRequestHeader() Content-Type, with charset adjusted to UTF-8 | assert_equals: expected "Content-Type: application/xhtml+xml;charset=UTF-8\n" but got "Content-Type: application/xhtml+xml;charset=ASCII\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | HTML Document request respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | HTML Document request has correct default Content-Type of "text/html;charset=UTF-8" | assert_equals: expected "Content-Type: text/html;charset=UTF-8\n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | HTML Document request keeps setRequestHeader() Content-Type, with charset adjusted to UTF-8 | assert_equals: expected "Content-Type: text/html+junk;charset=UTF-8\n" but got "Content-Type: text/html+junk;charset=ASCII\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | Blob request respects setRequestHeader("") to be specified | assert_equals: expected "Content-Type: \n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | Blob request with unset type sends no Content-Type without setRequestHeader() call | assert_equals: expected "" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | Blob request with set type respects setRequestHeader("") to be specified | assert_equals: expected "Content-Type: \n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | ArrayBuffer request respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got ""
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | ArrayBufferView request respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got ""
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | FormData request respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got ""
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | FormData request has correct default Content-Type of "multipart/form-data; boundary=_" | assert_regexp_match: expected object "/multipart\/form-data; boundary=(.*)/" but got "Content-Type: application/x-www-form-urlencoded;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | URLSearchParams respects setRequestHeader("") | assert_equals: expected "Content-Type: \n" but got "Content-Type: text/plain;charset=UTF-8\n"
-WPT SUB FAIL xhr/setrequestheader-content-type.htm | URLSearchParams request keeps setRequestHeader() Content-Type, with charset adjusted to UTF-8 | assert_equals: expected "Content-Type: application/xml;charset=UTF-8\n" but got "Content-Type: application/xml;charset=ASCII\n"
 WPT SUB FAIL xhr/setrequestheader-header-allowed.htm | XMLHttpRequest: setRequestHeader() - headers that are allowed (Authorization) | assert_equals: expected "Authorization," but got ""
 WPT SUB FAIL xhr/setrequestheader-header-allowed.htm | XMLHttpRequest: setRequestHeader() - headers that are allowed (Pragma) | assert_equals: expected "Pragma," but got ""
 WPT SUB FAIL xhr/setrequestheader-header-allowed.htm | XMLHttpRequest: setRequestHeader() - headers that are allowed (User-Agent) | assert_equals: expected "User-Agent," but got ""
@@ -728,7 +695,7 @@ WPT SUB FAIL xhr/template-element.html | XMLHttpRequest: template element parsin
 WPT SUB FAIL xhr/template-element.html | XMLHttpRequest: template element parsing 2 | cannot read property 'documentElement' of null
 WPT SUB NOTRUN xhr/timeout-cors-async.htm | XMLHttpRequest: timeout event and cross-origin request | 
 WPT SUB FAIL xhr/timeout-multiple-fetches.html | Redirects should not reset the timer | assert_unreached: load event fired Reached unreachable code
-WPT SUB FAIL xhr/timeout-multiple-fetches.html | CORS preflights should not reset the timer | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/delay.py?uuid=62fa48b2-2925-4ddd-8c3a-d2b9338b71f9'
+WPT SUB FAIL xhr/timeout-multiple-fetches.html | CORS preflights should not reset the timer | Invalid URL 'http://www1.{{host}}:{{ports[http][0]}}/xhr/resources/delay.py?uuid=afa0db34-7e4b-441e-afcf-1c699a4da3a0'
 WPT SUB FAIL xhr/timeout-sync.htm | setting timeout attribute on sync request | assert_throws_dom: function "function() { client.timeout = 1000 }" did not throw
 WPT SUB FAIL xhr/timeout-sync.htm | open() with async false when timeout is set | assert_throws_dom: function "function() { client.open('GET', 'folder.txt', false) }" did not throw
 WPT SUB FAIL xhr/xhr-authorization-redirect.any.html | getAuthorizationHeaderValue - no redirection | assert_equals: expected "Basic dXNlcjpwYXNz" but got "<!DOCTYPE HTML>\n<html lang=\"en\">\n <head>\n <meta charset=\"utf-8\">\n <style type=\"text/css\">\n :roo

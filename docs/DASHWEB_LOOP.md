@@ -6139,3 +6139,13 @@ Formato:
   por el tiempo de la tanda filtrada, 600 + 45 s por test; sueltos, pasan).
 - Queda de querySelector-All: ids y clases con caracteres fuera de Latin-1 (el DOM va en Latin-1), :link/:visited,
   :target y los selectores con espacio de nombres de elemento (*|div, |div).
+
+### 2026-11-08 — Tarea 41d: createElementNS con prefijo en XHTML y SVG; Acid3 frente a los nombres de DOM de ahora (pendiente del usuario)
+- createElementNS(XHTML o SVG, "p:x") daba un elemento sin prefijo: ahora prefix "p" y tagName con él (en XHTML, en
+  mayúsculas). WPT dom/nodes case.html 63 → 84/285 (pasado suelto; el resumen de la carpeta, en la próxima pasada).
+- Probado y quitado (en espera del usuario): los nombres como dice DOM desde 2025 (más laxos que el Name de XML:
+  "f}oo", "f<oo" o "￿foo" valen en createElement; ":div" da InvalidCharacterError y no NamespaceError; un
+  doctype "a:" vale). WPT lo pide (createElementNS, createDocument, createDocumentType, case: unas 300 subpruebas),
+  pero Acid3 (pruebas 23 a 25, tests/pages/acid3) pide lo de antes: 'di<v' con error 5, ':div' con 14 y
+  createDocumentType('a:') con NAMESPACE_ERR; test_jsdom_excepciones (de esas pruebas) fallaba. La versión con los
+  nombres nuevos, en el scratchpad de la sesión (prel_nombres_nuevos.js). Decide el usuario.

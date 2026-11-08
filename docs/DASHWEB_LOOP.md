@@ -6203,3 +6203,8 @@ Formato:
 - Gracias en la web: Ferrán García (abrir ficheros del disco, idea suya) en webs-freemem
   paquetes/retro/src/reconocimientos.ts, commit local 7d58fdb, sin subir (subir publica la web; allí había un cambio
   de otra sesión en sitios/tachyon/src/version.json, sin tocar).
+- Usuario: "Acid3" a lo de los nombres de elementos: se quedan los de antes (el Name de XML), que pide Acid3 (pruebas
+  23 a 25), y no los de DOM de 2025 que pide WPT (unas 300 subpruebas de createElementNS, createDocument,
+  createDocumentType y case). Acid3 sigue en 100/100; no volver a cambiarlos sin preguntar.
+- Y "sube los agradecimientos": webs-freemem 7d58fdb subido a origin/main (el servidor lo trae cada 5 minutos y
+  rehace la web).

@@ -6180,3 +6180,18 @@ Formato:
   notas de la versión, el CHANGELOG y la documentación ("(idea de Ferrán García)"), con el nombre con el que se
   presenta en el grupo y nunca datos de contacto; si no se sabe, preguntar a telegram o al usuario. En AGENTS.md.
 - En la 0.9.3: abrir ficheros del disco y soltar iconos (tarea 60) es idea de Ferrán García; las notas ya lo dicen.
+
+### 2026-11-08 — La 0.9.3-alfa rehecha con lo de hoy, lista a falta del visto bueno del usuario
+- Usuario: "Si" a preparar la 0.9.3 con todo lo de hoy (localStorage que dura, NodeList, selectores, atributos con
+  espacio de nombres, dom/ranges y dom/nodes, domparsing) en vez de la de ayer (60736ce).
+- Batería entera 153/154 (6380 s; test_imagenes_carga, el puerto 40856 de Chrome: con 40859 pasa). tools/paquete.sh:
+  tachyon.lha 2,1 MB, Tachyon.gz 1,9 MB y los nueve catálogos.
+- Actualización de verdad desde el Tachyon.gz de la v0.9.2-alfa publicada (máquina RTG, MUI 3.8, GitHub de mentira en
+  el PC): baja Tachyon.gz y los nueve catálogos, el instalado es idéntico al compilado, .old el de antes, y Reiniciar
+  abre la 0.9.3.
+- localStorage entre dos arranques (tests/pages/visitas.html, el Tachyon del paquete, MUI 3.8): el primero abre la
+  página y sale con Amiga-Q, y deja Tachyon.almacen con ["visitas","1"]; el segundo, con ese fichero, dice "visitas 2".
+- La 0.9.3 del paquete con MUI 3.8: cuatro ventanas (Acid3, gh_local.html, estrellas.html y Acid2) 300 s sin colgarse y
+  un clic al final que responde; copiar y pegar, Amiga-S ("Saved in RAM:pegar.html") y Amiga-O abre el selector.
+- Notas de la versión en castellano e inglés, con las cifras de WPT comprobadas contra la 0.9.2 publicada. Sin
+  publicar: el usuario da el visto bueno antes.

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head><title>Visitas</title>
+<style>body { margin: 10px; font-size: 32px }</style>
+</head><body>
+<!-- localStorage que dura (tarea 41d): cuenta las visitas de este origen; la prueba a mano abre Tachyon dos veces -->
+<p id=r>?</p>
+<script>
+var v = (+localStorage.getItem('visitas') || 0) + 1;
+localStorage.setItem('visitas', v);
+document.getElementById('r').textContent = 'visitas ' + v;
+document.title = 'visitas ' + v;
+</script>
+</body></html>

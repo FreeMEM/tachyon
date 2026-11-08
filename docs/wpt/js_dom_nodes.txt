@@ -1,4 +1,4 @@
-WPT TOTAL dom/nodes: 11632/13044 subpruebas en 263 de 263 ficheros
+WPT TOTAL dom/nodes: 11634/13044 subpruebas en 263 de 263 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
@@ -173,7 +173,7 @@ WPT FILE dom/nodes/ParentNode-querySelector-is-nested-pseudo-class.html 2/2 OK
 WPT FILE dom/nodes/ParentNode-querySelector-is-not.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-last-child-combinator.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-matches.html 4/4 OK
-WPT FILE dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html 3/8 OK
+WPT FILE dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html 4/8 OK
 WPT FILE dom/nodes/ParentNode-querySelector-nested-nth-child.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-nested.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-nth-of-type-complex.html 1/1 OK
@@ -186,7 +186,7 @@ WPT FILE dom/nodes/ParentNode-querySelector-svg-not-root.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-tag-case.html 6/6 OK
 WPT FILE dom/nodes/ParentNode-querySelector-xml-capitalization.window.html 2/3 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-case-insensitive-attribute-flag.html 2/2 OK
-WPT FILE dom/nodes/ParentNode-querySelectorAll-namespace.html 0/1 OK
+WPT FILE dom/nodes/ParentNode-querySelectorAll-namespace.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-nested-not-has.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-not-descendant.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-removed-elements.html 1/1 OK
@@ -1046,9 +1046,9 @@ WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes on a Document. | a
 WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes should be a live collection | assert_equals: expected 5 but got 4
 WPT SUB FAIL dom/nodes/Node-cloneNode-XMLDocument.html | Created with createDocument | assert_equals: Precondition check: document.implementation.createDocument() creates an XMLDocument expected function "function XMLDocument() { [native code] }" 
 WPT SUB FAIL dom/nodes/Node-cloneNode-document-allow-declarative-shadow-roots.window.html | cloneNode() and document's allow declarative shadow roots | not a function
-WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
+WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg> should have the right properties | assert_equals: expected "svg" but got "SVG"
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg>'s xmlns:xlink attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/2000/xmlns/" but got (object) null
-WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
+WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use> should have the right properties | assert_equals: expected "use" but got "USE"
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use>'s xlink:href attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/1999/xlink" but got (object) null
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(dir) | assert_true: HTMLDirectoryElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(font) | assert_true: HTMLFontElement is not supported expected true got false
@@ -1358,17 +1358,15 @@ WPT SUB FAIL dom/nodes/ParentNode-querySelector-escapes.html | "?" should match 
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-escapes.html | "?" should match with "#\u0000" | '#' is not a valid selector
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-escapes.html | "ab?c" should match with "#ab\u0000c" | assert_equals: expected Element node <span id="ab?c"></span> but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-host-pseudo-class.html | Using :host pseudo-class selector in shadow DOM | ':host > article' is not a valid selector
-WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | match selector without prefix | assert_equals: expected Element node <cp:coreproperties xmlns:cp="http://schemas.openxmlformat... but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | match namespace selector with universal prefix | '*|coreProperties' is not a valid selector
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | does not throw on specified namespace selector if forgiven | ':is(cp|coreProperties)' is not a valid selector
-WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | match namespace attriubte selector with universal prefix | assert_equals: expected Element node <cp:coreproperties xmlns:cp="http://schemas.openxmlformat... but got null
+WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | match namespace attriubte selector with universal prefix | assert_equals: expected Element node <coreProperties xmlns:cp="http://schemas.openxmlformats.o... but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-namespace-tagname-attribute.html | does not throw on specified namespace attriubte selector if forgiven | ':is([xml|lang])' is not a valid selector
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope-in-not.html | :scope nested in :not should select one element per [data-main] scope | assert_equals: expected 1 but got 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope.html | querySelector with :scope | assert_equals: expected Element node <p><span>hello</span></p> but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope.html | querySelectorAll with :scope | assert_array_equals: lengths differ, expected array [Element node <p><span>hello</span></p>] length 1, got [] length 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-shadowroot-nth-child.html | div:nth-child(2) should select #first when preceded by a style inside shadow root | cannot read property 'id' of null
-WPT SUB FAIL dom/nodes/ParentNode-querySelector-xml-capitalization.window.html | Child combinator | assert_equals: test expected null but got Element node <test> content <my-tag>abc</my-tag> <...
-WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-namespace.html | querySelectorAll with namespaced XML elements | assert_equals: entries length expected 2 but got 0
+WPT SUB FAIL dom/nodes/ParentNode-querySelector-xml-capitalization.window.html | Child combinator | assert_equals: test expected null but got Element node <Test> content <my-tag>abc</my-tag> <...
 WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-scope-change.html | Change the scope of querySelectorAll | not a function
 WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-scope-colon-id-class.html | :scope child selector on element with colon-prefixed class | assert_array_equals: lengths differ, expected array [Element node <span id="targetSpan"></span>] length 1, got [] length 0
 WPT SUB FAIL dom/nodes/ParentNode-replaceChildren.html | If node is a host-including inclusive ancestor of parent, then throw a HierarchyRequestError DOMException. | assert_throws_dom: function "() => insert(doc.body, doc.documentElement)" threw object "TypeError: cannot read property of null" that is not a DOMException Hier
@@ -1450,9 +1448,9 @@ WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all q
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:abc | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:Abc | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <Abc></Abc>] len
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ABC | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <ABC></ABC>] len
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä
 WPT SUB FAIL dom/nodes/case.html | createElement Ä | assert_equals: expected "Ä" but got "ä"
 WPT SUB FAIL dom/nodes/case.html | setAttribute Ä | assert_equals: expected "Ä" but got "ä"

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta leer un RSS de 100 noticias con DOMParser (con atom:link y espacios de nombres) y
+     serializarlo con XMLSerializer; el resultado en la página y en el título -->
+<p id=r>midiendo...</p>
+<script>
+var x = '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Uno</title><atom:link href="https://x.com/feed" rel="self"/>';
+for (var i = 0; i < 100; i++) x += '<item><title>Noticia ' + i + '</title><link>https://x.com/' + i + '</link><dc:creator>Ana</dc:creator><description>Texto &amp; más</description><guid isPermaLink="false">g' + i + '</guid></item>';
+x += '</channel></rss>';
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var d, n = 0;
+var r1 = medir(function () { for (var k = 0; k < 2; k++) { d = new DOMParser().parseFromString(x, 'application/xml'); n += d.getElementsByTagName('item').length; } });
+var r2 = medir(function () { n += new XMLSerializer().serializeToString(d).length; });
+var s = 'leer ' + r1 + ' serializar ' + r2 + ' (' + n + ')';
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

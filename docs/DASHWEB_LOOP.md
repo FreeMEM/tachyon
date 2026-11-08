@@ -6221,3 +6221,23 @@ Formato:
   usuario lo que dice TRAZA ("llega ...: código error").
 - src/dashweb.dash: "No se pudo bajar la versión nueva" y "No se pudo mirar si hay versiones nuevas" dicen ya el porqué
   (el error de la red o el código HTTP) entre paréntesis.
+
+### 2026-11-08 — Tarea 41d: XMLSerializer de DOM Parsing, xmlns en DOMParser y namespaceURI de verdad (domparsing 608, dom/nodes 11634)
+- XMLSerializer daba el outerHTML. Ahora la serialización XML de DOM Parsing: mapa de prefijos, los xmlns que hacen
+  falta, prefijos ns1, ns2... generados, <a/> sin hijos (en XHTML, solo los vacíos de HTML), &#x9; y compañía en los
+  valores. XMLSerializer-serializeToString 3 → 30/33.
+- El analizador de XML de DOMParser resuelve los xmlns (una pila de ámbitos al lado de la de elementos): elementos y
+  atributos con prefijo o espacio de nombres por createElementNS y setAttributeNS (con mayúsculas); lo de siempre (sin
+  espacio de nombres ni prefijo, en minúsculas) por el camino corto de antes. Un prefijo sin declarar, como antes, sin
+  espacio de nombres (los RSS de verdad).
+- namespaceURI era un valor fijo (XHTML) en el prototipo de todos los nodos: un elemento de un <svg> decía XHTML (D3 y
+  otras crean los hijos con createElementNS(padre.namespaceURI, ...)). Ahora un getter: undefined si no es un
+  elemento, null en un XML sin espacio de nombres, SVG dentro de un <svg>, si no XHTML; createElementNS(SVG) y
+  createElement("svg"/"math") llevan el suyo.
+- Probado y quitado: copiar el mapa de prefijos en cada elemento (lo hace solo el que lo cambia); un namespaceURI y un
+  ámbito propios en cada elemento leído (ahora el getter y la pila).
+- Medido (tests/pages/bench_xml.html, máquina RTG, dos pasadas; antes → después): leer un RSS de 100 noticias dos veces
+  2060-2180 → 2340-2420 ms (un 12 % más: los 200 nodos con prefijo o mayúsculas, dc:creator e isPermaLink, ahora se
+  crean con su espacio de nombres); serializarlo 20 → 520 ms (antes era el outerHTML de C, rápido y mal).
+- WPT: domparsing 573 → 608/1090, dom/nodes 11632 → 11634 (querySelector con espacios de nombres; createElement("svg")
+  bajaba una y se arregló). jquery, svg_dom, domparser, interfaces, wpt_dom, lienzo y test_jsdom_xml_ns (nuevo) pasan.

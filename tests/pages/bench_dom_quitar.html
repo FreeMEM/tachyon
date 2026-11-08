@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px } [data-k~=b] { color: red } [data-k^=a] { font-weight: bold }</style>
+</head><body>
+<!-- tarea 41d: lo que cuestan removeChild (con su comprobación de hijo) y querySelectorAll con selectores de
+     atributo (=, ~=, ^=) sobre 200 elementos; el resultado en la página y en el título -->
+<p id=r>midiendo...</p>
+<div id=c></div>
+<script>
+var c = document.getElementById('c');
+for (var i = 0; i < 200; i++) { var d = document.createElement('span'); d.setAttribute('data-k', 'a' + (i % 7) + ' b'); c.appendChild(d); }
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var p = document.createElement('i');
+var r1 = medir(function () { for (var i = 0; i < 2000; i++) { c.appendChild(p); c.removeChild(p); } });
+var n = 0;
+var r2 = medir(function () { for (var i = 0; i < 20; i++) n += c.querySelectorAll('[data-k~=b]').length + c.querySelectorAll('[data-k^=a3]').length + c.querySelectorAll('span[data-k="a1 b"]').length; });
+var s = 'quitar ' + r1 + ' selectores ' + r2 + ' (' + n + ')';
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

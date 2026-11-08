@@ -497,17 +497,25 @@ func _cumple_atributo(n: Nodo, a: SelAtributo) -> Bool
     v = dom_atributo(n, a.nombre)
     if a.op == ""
         return true
-    elif a.op == "="
+    end
+    op = a.op
+    # (bandera i: sin distinguir mayúsculas; el valor ya va en minúsculas, css.dash _css_sel_atributo)
+    if str_ends(op, "i")
+        op = op[:op.length - 1]
+        v = str_lower(v)
+    end
+    if op == "="
         return v == a.valor
-    elif a.op == "~="
-        return str_find(" " + v + " ", " " + a.valor + " ") >= 0
-    elif a.op == "|="
+    elif op == "~="
+        # (una palabra: "" o con espacios no es ninguna; Selectors, WPT dom/nodes)
+        return a.valor != "" and str_find(a.valor, " ") < 0 and str_find(" " + v + " ", " " + a.valor + " ") >= 0
+    elif op == "|="
         return v == a.valor or str_starts(v, a.valor + "-")
-    elif a.op == "^="
+    elif op == "^="
         return a.valor != "" and str_starts(v, a.valor)
-    elif a.op == "$="
+    elif op == "$="
         return a.valor != "" and str_ends(v, a.valor)
-    elif a.op == "*="
+    elif op == "*="
         return a.valor != "" and str_find(v, a.valor) >= 0
     end
     return false

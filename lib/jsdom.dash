@@ -38,7 +38,7 @@ end
             # (uno que no se entiende no casa con nada: getElementsByClassName("\u212a") llega como ".?" y era un
             # selector nil que tiraba el programa; WPT dom/nodes/getElementsByClassName-14)
             sel = css_selector(t)
-            if sel != nil
+            if sel != nil and not _jsdom_con_pseudo_elemento(sel)
                 sels.push(sel)
             end
         end
@@ -476,7 +476,8 @@ func _jsdom_raiz_de(n: Nodo) -> Nodo
 end
 
 # ¿Se entiende el selector? (si no, querySelector y matches dan un SyntaxError, como en los
-# navegadores, y jQuery usa su propio buscador)
+# navegadores, y jQuery usa su propio buscador). Con un pseudo-elemento que se conoce (::before, :after...) en el
+# último compuesto vale y no casa con nada (Selectors; WPT dom/nodes)
 @export func jsdom_selector_valido(texto: String) -> Bool
     hay = false
     for t in css_partir(texto, 44)
@@ -484,19 +485,47 @@ end
             return false
         end
         sel = css_selector(t)
-        if sel == nil or not estilo_puede_cumplirse(sel)
+        if sel == nil
             return false
+        end
+        ultima = sel.partes.length - 1
+        i = 0
+        for parte in sel.partes
+            pe = parte.simple.pseudo_elemento
+            if pe != "" and (i != ultima or not _jsdom_pseudo_elemento(pe))
+                return false
+            end
+            for p in parte.simple.pseudo
+                if not css_pseudo_conocida(p)
+                    return false
+                end
+            end
+            i = i + 1
         end
         hay = true
     end
     return hay
 end
 
+func _jsdom_pseudo_elemento(pe: String) -> Bool
+    return pe == "before" or pe == "after" or pe == "first-line" or pe == "first-letter" or pe == "marker" or pe == "placeholder" or pe == "selection" or pe == "backdrop" or pe == "file-selector-button" or pe == "cue" or pe == "grammar-error" or pe == "spelling-error" or str_starts(pe, "part(") or str_starts(pe, "slotted(") or str_starts(pe, "highlight(")
+end
+
+# ¿Lleva un pseudo-elemento? (no casa con ningún elemento)
+func _jsdom_con_pseudo_elemento(sel: Selector) -> Bool
+    for parte in sel.partes
+        if parte.simple.pseudo_elemento != ""
+            return true
+        end
+    end
+    return false
+end
+
 # matches(): ¿n cumple alguno de los selectores?
 @export func jsdom_cumple(n: Nodo, texto: String) -> Bool
     for t in css_partir(texto, 44)
         sel = css_selector(t)
-        if sel != nil and estilo_cumple(n, sel)
+        if sel != nil and not _jsdom_con_pseudo_elemento(sel) and estilo_cumple(n, sel)
             return true
         end
     end

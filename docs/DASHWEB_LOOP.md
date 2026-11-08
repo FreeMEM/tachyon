@@ -6116,3 +6116,26 @@ Formato:
 - tools/wpt_js.py ejecuta los manejadores .py de wptserve de la copia de WPT (main(request, response), con lo poco
   que usan: GET.first, headers.set y lo que devuelven); estos dos pedían encoding.py?label=.
 - Queda: el characterSet de la página misma (siempre UTF-8; Dash sabe el de verdad).
+
+### 2026-11-08 — Tarea 41d: NodeList, selectores de atributo y pseudo-elementos en querySelector, removeChild (dom/nodes 11219 → 11432/13044)
+- NodeList no existía: el polyfill de siempre ("if (window.NodeList && !NodeList.prototype.forEach)") y quien pregunta
+  instanceof NodeList daban ReferenceError. Ahora una interfaz con prototipo que hereda de Array.prototype (las listas
+  de childNodes y querySelectorAll son Arrays: instanceof dice true con ellos), item y toStringTag.
+- lib/css.dash, selectores de atributo: [*=x] (sin nombre), un operador raro o un valor sin comillas con espacios sin
+  escapar ([a= b c ]) no valen (SyntaxError en querySelector, regla ignorada en una hoja); "second\ two" sigue valiendo
+  (Acid2). *|a y |a son a (los atributos de HTML no tienen espacio de nombres). La bandera i: sin distinguir
+  mayúsculas (op con "i" detrás y el valor en minúsculas); s, como sin bandera. Un [ sin cerrar llega hasta el final
+  (CSS cierra lo abierto). ":" o "::" sin nombre no vale. css_selector_texto pone el valor entre comillas, como CSSOM.
+- lib/estilo.dash: [a~=""] y [a~="b c"] no casan (una palabra no es vacía ni tiene espacios).
+- lib/jsdom.dash: un pseudo-elemento que se conoce (::before, :after, ::marker, ::slotted()...) en el último compuesto
+  vale en querySelector y matches y no casa con nada.
+- removeChild de algo que no es hijo: NotFoundError; de algo que no es un nodo, TypeError (antes, el RangeError de C).
+- Medido (tests/pages/bench_dom_quitar.html, máquina RTG, dos pasadas; antes → después): 2000 appendChild+removeChild
+  2500-2520 → 2440-2480 ms; 60 querySelectorAll con [=], [~=] y [^=] sobre 200 elementos 140-160 → 160-180 (pasos de
+  20 ms): igual dentro del ruido.
+- WPT dom/nodes: querySelector-All 1693 → 1849/1975, matches 616 → 630/669, Node-removeChild 0 → 19/28, los de
+  case-insensitive y namespaces enteros; ninguno peor. test_jsdom_selectores_wpt (nuevo); test_css con la nueva
+  serialización; css, estilo, selectores4, Acid2 y los de jsdom pasan (los 8 últimos de la tanda de jsdom dan TIMEOUT
+  por el tiempo de la tanda filtrada, 600 + 45 s por test; sueltos, pasan).
+- Queda de querySelector-All: ids y clases con caracteres fuera de Latin-1 (el DOM va en Latin-1), :link/:visited,
+  :target y los selectores con espacio de nombres de elemento (*|div, |div).

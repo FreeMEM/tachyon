@@ -6384,3 +6384,12 @@ Formato:
 - WPT xhr 681 → 714: setrequestheader-content-type 16 → 34/34, send-entity-body-document 0 → 4/7,
   send-entity-body-document-bogus 0 → 3/4, send-blob-with-no-mime-type 0 → 4/8, send-content-type-string 3/3,
   send-usp 135/135; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion, formularios (4) y test_http (7) pasan.
+
+### 2026-11-09 — Tarea 41d: cabeceras repetidas y el User-Agent de la página (xhr 714 → 726/1112)
+- setRequestHeader con una cabecera que ya estaba junta los valores en una línea ("a, b"), como dice la norma; antes
+  iban dos líneas.
+- El User-Agent que pone la página se manda (ya no es cabecera prohibida): lib/jsdom.dash lo lleva en
+  PeticionJS.agente y lo pone con http_con_agente; sin él, el de Tachyon.
+- Velocidad: lo de siempre igual (una vuelta por las cabeceras de la página al ponerlas).
+- WPT xhr 714 → 726: setrequestheader-header-allowed 0 → 10/10, setrequestheader-case-insensitive 0 → 1/2,
+  preserve-ua-header-on-redirect 0 → 1/2; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion y test_http (7) pasan.

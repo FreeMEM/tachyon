@@ -781,6 +781,7 @@ struct PeticionJS
     cuerpo: String = ""
     tipo: String = ""
     extra: String = ""
+    agente: String = ""    # el User-Agent que puso la página ("" el de Tachyon)
 end
 
 # Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
@@ -806,7 +807,7 @@ func _jsdom_peticiones_empezar(js: Int)
         end
         if p.js == js and p.en_cola
             p.en_cola = false
-            p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+            p.carga = http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente)
             activas = activas + 1
         end
     end
@@ -818,6 +819,7 @@ var jsdom_peticiones: [PeticionJS] = []
 @export func jsdom_pedir(js: Int, id: Int, metodo: String, url: String, cabeceras: String, cuerpo: String)
     tipo = ""
     extra = ""
+    agente = ""
     for linea in str_split(cabeceras, "\n")
         p = str_find(linea, ":")
         if p <= 0
@@ -827,7 +829,10 @@ var jsdom_peticiones: [PeticionJS] = []
         valor = str_trim(linea[p + 1:])
         if nombre == "content-type" and metodo != "GET" and metodo != "HEAD" and valor != ""
             tipo = valor
-        elif nombre == "host" or nombre == "content-length" or nombre == "cookie" or nombre == "connection" or nombre == "user-agent" or nombre == "accept-encoding" or str_starts(nombre, "sec-") or str_starts(nombre, "proxy-")
+        elif nombre == "user-agent"
+            # (ya no es una cabecera prohibida en Fetch: la página puede poner la suya)
+            agente = valor
+        elif nombre == "host" or nombre == "content-length" or nombre == "cookie" or nombre == "connection" or nombre == "accept-encoding" or str_starts(nombre, "sec-") or str_starts(nombre, "proxy-")
             continue
         else
             if extra != ""
@@ -851,6 +856,7 @@ var jsdom_peticiones: [PeticionJS] = []
     p.cuerpo = cuerpo
     p.tipo = tipo
     p.extra = extra
+    p.agente = agente
     jsdom_peticiones.push(p)
     _jsdom_peticiones_empezar(js)
 end
@@ -865,7 +871,7 @@ end
         if p.js == js and p.id == id
             if p.en_cola
                 p.en_cola = false
-                p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+                p.carga = http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente)
             end
             if p.carga == nil
                 jsdom_peticiones.remove(i)

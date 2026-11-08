@@ -6349,3 +6349,16 @@ Formato:
   InvalidStateError) y vale para el texto y el tipo del Blob.
 - WPT xhr 601 → 643: responsetext-decoding 0 → 37/37, overridemimetype-edge-cases 3/4, overridemimetype-done-state y
   response-json-bom enteros; ninguno peor. test_jsdom_xhr_sinc y el de fetch pasan.
+
+### 2026-11-08 — Tarea 41d: direcciones blob: en XMLHttpRequest y fetch, y NetworkError síncrono (xhr 643 → 681/1112)
+- URL.createObjectURL guarda el Blob (Map de la dirección; revokeObjectURL lo quita); antes daba una dirección que no
+  llevaba a nada. XMLHttpRequest (y fetch, que va por él) la lee sin red, como data: (datosDeBlobUrl): 200 con
+  Content-Type y Content-Length del Blob; con una cabecera Range de un trozo (bytes=a-b, a- o -n, con espacios), 206 y
+  Content-Range; otro método que GET, un Range que no vale o uno que empieza pasado el final, error de red.
+- Un XMLHttpRequest síncrono que acaba en error de red lanza NetworkError, sin eventos (antes acababa sin más, con
+  status 0), como en los demás navegadores.
+- Velocidad y memoria: lo de siempre igual; los Blob de createObjectURL viven hasta revokeObjectURL o hasta dejar la
+  página (como en la norma).
+- WPT xhr 643 → 681: blob-range 0 → 27/27, json 2 → 6/6, send-non-same-origin 0 → 5/7,
+  send-redirect-infinite-sync y xmlhttprequest-network-error-sync enteros; ninguno peor. test_jsdom_xhr_sinc, fetch
+  y peticion pasan.

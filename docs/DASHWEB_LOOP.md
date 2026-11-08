@@ -6149,3 +6149,14 @@ Formato:
   pero Acid3 (pruebas 23 a 25, tests/pages/acid3) pide lo de antes: 'di<v' con error 5, ':div' con 14 y
   createDocumentType('a:') con NAMESPACE_ERR; test_jsdom_excepciones (de esas pruebas) fallaba. La versión con los
   nombres nuevos, en el scratchpad de la sesión (prel_nombres_nuevos.js). Decide el usuario.
+
+### 2026-11-08 — Tarea 41d: WPT domparsing, carpeta nueva (129 → 573/1090)
+- git sparse-checkout add domparsing; primera pasada: 129/1090.
+- append, prepend, before, after y replaceWith con HTML y HTMLUnsafe (HTML, 2025): el HTML en un fragmento como el de
+  un <template>; las seguras quitan <script>, on... y lo de sanitizer.removeElements; las Unsafe con runScripts
+  ejecutan los scripts; con un documento, un fragmento suelto o <html> de padre, HierarchyRequestError (el fragmento
+  de template.content lleva __plantilla para distinguirlo). positional-methods 6 → 396/480.
+- El documento de DOMParser.parseFromString lleva la dirección del de la ventana (URL, documentURI), no about:blank.
+- Sin coste en lo de antes: métodos nuevos, dos defineProperty por parseFromString y uno por <template>.
+- Queda: XMLSerializer y los atributos con espacio de nombres (el mismo modelo que falta en dom/nodes), y lo que pide
+  el DOMParser de otro iframe (un motor por iframe).

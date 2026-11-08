@@ -6254,3 +6254,11 @@ Formato:
 - Sin coste en las direcciones de siempre: solo se mira en etiquetas con algo de fuera de ASCII.
 - IdnaTestV2 1536 → 2590/2676, IdnaTestV2-removed 1 → 21/21, toascii 616 → 665/784, percent-encoding 1 → 3/17;
   ninguno peor. test_js_idna (nuevo), test_js_url y test_url pasan.
+
+### 2026-11-08 — Tarea 41d: ISO-8859-8-I y encodeInto con su TypeError (WPT encoding 11101 → 11547/12004, 92 → 96 %)
+- ISO-8859-8-I (csiso88598i, iso-8859-8-i, logical) no era una etiqueta de TextDecoder: es ISO-8859-8 con otro nombre
+  (el mismo índice). textdecoder-fatal-single-byte entero, single-byte-decoder 165 → 168, textdecoder-labels 181 → 184.
+- encodeInto con un destino que no es Uint8Array: TypeError (encodeInto 43 → 56/111; lo que queda es SharedArrayBuffer,
+  que no hay: QuickJS va sin hilos).
+- Queda: los decodificadores de chino, japonés y coreano (GBK, Big5, EUC-JP, Shift_JIS, EUC-KR, ISO-2022-JP), con
+  tablas de cientos de KB que no caben en un Amiga; y los iframes de single-byte-decoder-iframe.

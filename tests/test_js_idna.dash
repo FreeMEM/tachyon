@@ -1,0 +1,20 @@
+# Test: dominios con letras de fuera de ASCII (tarea 41d, WPT url/IdnaTestV2): a Punycode con NFKC y minúsculas, y
+# las reglas de validez de UTS 46 que pide URL: no empezar por una marca combinante (V6), ZWJ solo tras un virama y
+# ZWNJ solo entre letras que se unen (C1, C2), sin lo no asignado ni lo de control (V7); lo que ya llega en Punycode
+# se deja como viene.
+# memcheck
+# expect-out: idna: xn--fa-hia.de | V6 TypeError | C2 TypeError | C1 TypeError | virama xn--11b2ezcw70k | xn xn--ab-j1t
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "function h(s) { try { return new URL('https://' + s + '/').host; } catch (e) { return e.name; } }"
+    c = c + "'idna: ' + h('Fa\\u00df.de') + ' | V6 ' + h('\\u0301a.de') + ' | C2 ' + h('a\\u200db') + ' | C1 ' + h('a\\u200cb') + ' | virama ' + h('\\u0915\\u094d\\u200d\\u0937') + ' | xn ' + h('xn--ab-j1t')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

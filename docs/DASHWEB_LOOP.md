@@ -6241,3 +6241,16 @@ Formato:
   crean con su espacio de nombres); serializarlo 20 → 520 ms (antes era el outerHTML de C, rápido y mal).
 - WPT: domparsing 573 → 608/1090, dom/nodes 11632 → 11634 (querySelector con espacios de nombres; createElement("svg")
   bajaba una y se arregló). jquery, svg_dom, domparser, interfaces, wpt_dom, lienzo y test_jsdom_xml_ns (nuevo) pasan.
+
+### 2026-11-08 — Tarea 41d: las reglas de validez de UTS 46 en los dominios (WPT url 7283 → 8408/8699, 84 → 97 %)
+- Lo que quedaba de url era casi todo IDNA (IdnaTestV2: 1536/2676): nombres que había que rechazar y se aceptaban.
+  Sin las tablas de UTS 46 (no caben en un Amiga), con las propiedades Unicode de las expresiones regulares de QuickJS
+  (comprobadas en el PC): V6, una etiqueta no empieza por una marca combinante (\p{M}); C1 y C2 (CheckJoiners), ZWJ
+  solo tras un virama (una lista de 35) y ZWNJ tras un virama o entre letras de las escrituras que se unen (árabe,
+  siríaca, n'ko, mongol...: aproximado); V7, sin lo no asignado, de uso privado, de control ni de formato (aproximado).
+  No hay casos de bidi: URL no lo pide.
+- Probado y quitado: aplicarlas también a lo que llega en Punycode (xn--): el test lo acepta como viene, y se
+  rechazaban 700 nombres buenos.
+- Sin coste en las direcciones de siempre: solo se mira en etiquetas con algo de fuera de ASCII.
+- IdnaTestV2 1536 → 2590/2676, IdnaTestV2-removed 1 → 21/21, toascii 616 → 665/784, percent-encoding 1 → 3/17;
+  ninguno peor. test_js_idna (nuevo), test_js_url y test_url pasan.

@@ -134,7 +134,7 @@ def main():
     ap.add_argument("filter", nargs="?")
     ap.add_argument("--no-emu", action="store_true")
     ap.add_argument("--memcheck", action="store_true")
-    # (the tests with the same emulator config run in one session: it gets this plus 20 s per test)
+    # (the tests with the same emulator config run in one session: it gets this plus 75 s per test)
     ap.add_argument("--timeout", type=float, default=600)
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
@@ -207,9 +207,10 @@ def main():
         if servers:
             time.sleep(1)       # let them listen
         try:
-            # (los de una misma configuración van en una sola sesión del emulador: 45 s por test; con 20, al crecer los de
-            # JavaScript, los últimos del grupo se quedaban sin tiempo y daban TIMEOUT en cada batería entera)
-            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 45 * len(group),
+            # (los de una misma configuración van en una sola sesión del emulador: 75 s por test; con 20, al crecer los de
+            # JavaScript, los últimos del grupo se quedaban sin tiempo y daban TIMEOUT en cada batería entera, y con 45,
+            # en una tanda filtrada de los de jsdom, que tardan 60-90 s cada uno)
+            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 75 * len(group),
                                 kickstart=os.environ.get("DASH_KICKSTART"), extra_config=cfg, system=system or None)
         except RuntimeError as e:
             for src, _, _ in group:

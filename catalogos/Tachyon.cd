@@ -102,6 +102,8 @@ MSG_50 (50//)
 Page
 MSG_51 (51//)
 Open file...
+MSG_52 (52//)
+Open on its own screen
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -234,6 +236,10 @@ MSG_166 (166//)
 Not saved: %1
 MSG_167 (167//)
 Saved in %1
+MSG_168 (168//)
+Tachyon will open on its own screen next time
+MSG_169 (169//)
+Tachyon will open on the Workbench screen next time
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)

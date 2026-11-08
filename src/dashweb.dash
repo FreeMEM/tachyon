@@ -68,6 +68,7 @@ const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
 const ID_CERRAR_PESTANA = 50   # (Amiga-W)
+const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
 const MAX_PESTANAS = 8
 # y los del programa
 const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeout/setInterval de las páginas
@@ -212,6 +213,10 @@ var dw_cat_propio: Carga = nil
 var dw_cat_propio_url: String = ""
 var dw_act_lista: Bool = false      # ya instalada: el botón reinicia
 var dw_reiniciar: Bool = false
+# Su propia pantalla (preferencia "pantalla=si", como Forja): un clon público del Workbench con este nombre, abierto
+# al empezar; sus ventanas se abren en ella. "" si va en la del Workbench
+const PANTALLA = "TACHYON"
+var dw_pantalla: String = ""
 
 func versiones_mirar(manual: Bool)
     if dw_act_carga != nil or dw_act_bajada != nil or dw_act_lista
@@ -2142,6 +2147,10 @@ func nueva_ventana(direccion: String) -> Ventana
         return nada
     end
     v = Navegador_create()
+    if dw_pantalla != ""
+        mui_window_screen(v.window, dw_pantalla)
+    end
+    mui_set_value(v.propia_pantalla, preferencia(FICHERO_PREFERENCIAS, "pantalla") == "si")
     w = Ventana(v, k)
     var sin_pasos: [String] = []
     w.pasos = sin_pasos
@@ -2276,7 +2285,15 @@ Main
     if mui_app_begin("Tachyon", "TACHYON") == 0
         Print "Tachyon necesita MUI (3.8 o 5) y un 68020"
     else
+        # en su propia pantalla (preferencia): antes de abrir ninguna ventana. No pasa a ser la pública por defecto:
+        # un navegador no lanza programas que deban salir en ella (Forja sí)
+        if preferencia(FICHERO_PREFERENCIAS, "pantalla") == "si" and screen_clone_wb(PANTALLA)
+            dw_pantalla = PANTALLA
+        end
         a = Acerca_create()
+        if dw_pantalla != ""
+            mui_window_screen(a.window, dw_pantalla)
+        end
         mui_set_text(a.version, texto_version(DASHWEB_VERSION) + hueco2(tr(159, "built on %1 at %2"), compilado_fecha(), compilado_hora()))
         # cada argumento en su ventana (hasta 4); sin argumentos, la página de inicio
         # TRAZA: la línea de tiempo de las cargas por la salida (lib/traza.dash)
@@ -2588,6 +2605,21 @@ Main
                 dw_estado(w, tr(125, "Checking for a new version..."))
                 versiones_mirar(true)
             end
+            if ev == ID_PANTALLA
+                si = mui_get_value(w.v.propia_pantalla) != 0
+                if si
+                    preferencia_poner(FICHERO_PREFERENCIAS, "pantalla", "si")
+                    dw_estado(w, tr(168, "Tachyon will open on its own screen next time"))
+                else
+                    preferencia_poner(FICHERO_PREFERENCIAS, "pantalla", "no")
+                    dw_estado(w, tr(169, "Tachyon will open on the Workbench screen next time"))
+                end
+                for o in dw_ventanas
+                    if o.abierta
+                        mui_set_value(o.v.propia_pantalla, si)
+                    end
+                end
+            end
             if ev == ID_NO_AVISAR
                 preferencia_poner(FICHERO_PREFERENCIAS, "avisar_versiones", "no")
                 dw_estado(w, tr(126, "Won't tell you about new versions"))
@@ -2613,6 +2645,10 @@ Main
         cookies_guardar(FICHERO_COOKIES)
         almacen_guardar(FICHERO_ALMACEN)
         mui_app_end()
+        # (la pantalla, cerrada antes de abrir la versión nueva, que querrá la suya con el mismo nombre)
+        if dw_pantalla != ""
+            screen_close()
+        end
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"
         end

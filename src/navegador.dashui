@@ -179,6 +179,16 @@
               "label": "Don't tell me about new versions",
               "event": 23,
               "tr": 23
+            },
+            {
+              "separator": true
+            },
+            {
+              "label": "Open on its own screen",
+              "name": "propia_pantalla",
+              "check": true,
+              "event": 51,
+              "tr": 52
             }
           ],
           "tr": 18

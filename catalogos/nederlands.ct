@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (08.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -155,6 +155,9 @@ Pagina
 MSG_51
 Bestand openen...
 ; Open file...
+MSG_52
+Op eigen scherm openen
+; Open on its own screen
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -353,6 +356,12 @@ Niet opgeslagen: %1
 MSG_167
 Opgeslagen in %1
 ; Saved in %1
+MSG_168
+Tachyon opent de volgende keer op een eigen scherm
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon opent de volgende keer op het Workbench-scherm
+; Tachyon will open on the Workbench screen next time
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

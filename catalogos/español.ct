@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (08.11.2026)
 ## language español
 ## codeset 0
 ;
@@ -155,6 +155,9 @@ Página
 MSG_51
 Abrir fichero...
 ; Open file...
+MSG_52
+En su propia pantalla
+; Open on its own screen
 MSG_100
 Esta página no se guarda en marcadores
 ; This page can't be bookmarked
@@ -353,6 +356,12 @@ Sin guardar: %1
 MSG_167
 Guardada en %1
 ; Saved in %1
+MSG_168
+Tachyon se abrirá en su propia pantalla la próxima vez
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon se abrirá en la pantalla del Workbench la próxima vez
+; Tachyon will open on the Workbench screen next time
 MSG_300
 Su versión sin JavaScript: ligera, la que mejor va en un Amiga. Privado.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

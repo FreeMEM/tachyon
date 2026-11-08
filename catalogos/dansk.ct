@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (08.11.2026)
 ## language dansk
 ## codeset 0
 ;
@@ -155,6 +155,9 @@ Side
 MSG_51
 Åbn fil...
 ; Open file...
+MSG_52
+Åbn på egen skærm
+; Open on its own screen
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -353,6 +356,12 @@ Ikke gemt: %1
 MSG_167
 Gemt i %1
 ; Saved in %1
+MSG_168
+Tachyon åbnes på sin egen skærm næste gang
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon åbnes på Workbench-skærmen næste gang
+; Tachyon will open on the Workbench screen next time
 MSG_300
 Udgaven uden JavaScript: let, den der kører bedst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

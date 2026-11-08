@@ -6325,3 +6325,15 @@ Formato:
 - Velocidad y memoria: lo mismo (una comparación por respuesta).
 - WPT xhr 576 → 601: send-redirect 17 → 28/34, status-basic y status-async 19 → 25/27, send-usp 134/135,
   send-entity-body-none 4/6; ninguno peor. test_http* (7) y test_jsdom_xhr_sinc pasan.
+
+### 2026-11-08 — En su propia pantalla (petición del usuario, por la sesión de Dash del lienzo)
+- Menú Herramientas, "Open on its own screen" (con marca; textos 52, 168 y 169 en los nueve catálogos): guarda
+  pantalla=si/no en PROGDIR:Tachyon.prefs (como las demás preferencias de Tachyon; Forja usa ENV:Forja/pantalla) y vale
+  la próxima vez que se abra. Con ella, al empezar, screen_clone_wb("TACHYON") y mui_window_screen en cada ventana
+  (las del navegador y Acerca de) antes de abrirla; screen_close al salir, antes de abrir la versión nueva tras
+  actualizar (querrá una pantalla con el mismo nombre). Sin screen_make_default: un navegador no lanza programas que
+  deban salir en ella. La del vídeo sigue a pantalla completa, en la suya.
+- Probado en el emulador (rtg, scratchpad medir_prefs.py pone el Tachyon.prefs: emu_run solo copia carpetas): la
+  pantalla se llama TACHYON y la ventana va en ella. Fallo de Dash: en esa pantalla el título de la ventana sale con
+  la letra de la página (font_use), no en la del Workbench; pasado a la sesión del lienzo. Soltar iconos solo va en
+  la del Workbench (ya dicho en las notas).

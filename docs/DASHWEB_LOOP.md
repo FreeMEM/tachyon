@@ -6262,3 +6262,20 @@ Formato:
   que no hay: QuickJS va sin hilos).
 - Queda: los decodificadores de chino, japonés y coreano (GBK, Big5, EUC-JP, Shift_JIS, EUC-KR, ISO-2022-JP), con
   tablas de cientos de KB que no caben en un Amiga; y los iframes de single-byte-decoder-iframe.
+
+### 2026-11-08 — Tarea 41d: WPT xhr, carpeta nueva (307 → 525/1112): XHR síncrono, setRequestHeader y responseType
+- git sparse-checkout add xhr; tools/wpt_js.py hace de wptserve para más manejadores .py: POST, PUT, DELETE, OPTIONS y
+  HEAD, request.method/headers/body/POST/raw_headers, response.writer y el texto del estado. Primera pasada: 307/1112.
+- XMLHttpRequest síncrono (open(..., false)): no lo había, y status quedaba en 0. Ahora send() espera:
+  __dashweb_esperar(id) -> jsdom_esperar_peticion (lib/jsdom.dash) empieza la petición sin esperar turno, la avanza
+  hasta el final y la entrega al JavaScript antes de volver; sin loadstart ni los readystatechange de en medio. Algunas
+  webs y librerías viejas aún lo usan.
+- setRequestHeader: solo con OPENED (InvalidStateError), el nombre un token de HTTP y el valor sin NUL ni saltos de
+  línea (SyntaxError), y las cabeceras prohibidas de Fetch (Referer, Date, Via, Transfer-Encoding, sec-...; y
+  x-http-method-override con CONNECT, TRACE o TRACK) no se mandan: antes iban.
+- responseType: solo '' y los cinco suyos (otro se ignora); con LOADING o DONE, InvalidStateError; en uno síncrono,
+  InvalidAccessError.
+- Sin coste en lo de siempre: comprobaciones en setRequestHeader y una propiedad con getter.
+- WPT xhr 307 → 525/1112 (setrequestheader-bogus-name 0 → 69/71, responsetype 19 → 46/50, status-basic 0 → 11/27...);
+  status.h2 baja una (es HTTP/2, que el servidor de las pruebas no habla). test_jsdom_xhr_sinc (nuevo),
+  test_jsdom_load_peticion, test_js_fetch y test_jsdom_scripts pasan.

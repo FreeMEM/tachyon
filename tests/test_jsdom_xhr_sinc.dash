@@ -1,0 +1,32 @@
+# Test: XMLHttpRequest como dice su norma (tarea 41d, WPT xhr): síncrono (open(..., false): send vuelve con la
+# respuesta y, tras el de open, un solo readystatechange, ya en DONE), setRequestHeader con un nombre que no es un token o un valor con
+# salto de línea da SyntaxError y las cabeceras prohibidas no se mandan, y responseType ignora lo que no es uno de los
+# suyos.
+# emu-server: http.py 40879
+# memcheck
+# expect-out: sinc: 200 [hola] estados 1,4 sin loadstart true
+# expect-out: cabeceras: SyntaxError SyntaxError | prohibida no se manda: true
+# expect-out: responseType: json json
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40879/x.html')", "t.js")
+    c = "var x = new XMLHttpRequest(), estados = [], ls = false; x.onreadystatechange = function () { estados.push(x.readyState); };"
+    c = c + "x.addEventListener('loadstart', function () { ls = true; }); x.open('GET', '/hola', false); x.send();"
+    c = c + "'sinc: ' + x.status + ' [' + x.responseText + '] estados ' + estados.join(',') + ' sin loadstart ' + !ls"
+    Print js_evaluar(js, c, "t.js")
+    c = "var y = new XMLHttpRequest(), r = 'cabeceras:'; y.open('GET', '/hola');"
+    c = c + "try { y.setRequestHeader('mal nombre', 'v'); } catch (e) { r += ' ' + e.name; }"
+    c = c + "try { y.setRequestHeader('X-A', 'a\\nb'); } catch (e) { r += ' ' + e.name; }"
+    c = c + "y.setRequestHeader('Referer', 'http://otro/'); r + ' | prohibida no se manda: ' + (y._cab.join().indexOf('Referer') < 0)"
+    Print js_evaluar(js, c, "t.js")
+    c = "var z = new XMLHttpRequest(); z.responseType = 'json'; z.responseType = 'nada'; var a = z.responseType; z.open('GET', '/hola'); 'responseType: ' + a + ' ' + z.responseType"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

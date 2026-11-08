@@ -858,6 +858,39 @@ var jsdom_peticiones: [PeticionJS] = []
     _jsdom_peticiones_empezar(js)
 end
 
+# XMLHttpRequest síncrono (open(..., false)): la petición id de ese motor empieza ya (sin esperar turno en la cola)
+# y se avanza hasta que acaba; se entrega al JavaScript como las demás (__dashweb_respuesta) antes de volver de
+# send(). Algunas webs y librerías viejas aún lo usan (WPT xhr)
+@export func jsdom_esperar_peticion(js: Int, id: Int)
+    i = 0
+    while i < jsdom_peticiones.length
+        p = jsdom_peticiones[i]
+        if p.js == js and p.id == id
+            if p.en_cola
+                p.en_cola = false
+                p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+            end
+            if p.carga == nil
+                jsdom_peticiones.remove(i)
+                _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
+                return
+            end
+            while not http_avanzar(p.carga)
+                time_delay(1)
+            end
+            r = p.carga.respuesta
+            cab = ""
+            for k in r.cabeceras.keys()
+                cab = cab + k + ": " + r.cabeceras[k] + "\r\n"
+            end
+            jsdom_peticiones.remove(i)
+            _jsdom_responder(js, p.id, r.estado, r.razon, cab, r.url, r.cuerpo, r.error)
+            return
+        end
+        i = i + 1
+    end
+end
+
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
 func jsdom_peticiones_avanzar(js: Int) -> Int
     hechas = 0

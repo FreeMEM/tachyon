@@ -2344,6 +2344,15 @@ static JSValue _jsdom_caja(JSContext *ctx, JSValueConst this_val, int argc, JSVa
 
 /* __dashweb_vista(): [width, height, scroll y, page height] (jsdom_vista) */
 /* __dashweb_pedir(id, method, url, headers "k: v\n...", body): a request of XMLHttpRequest/fetch (jsdom_pedir) */
+/* __dashweb_esperar(id): XMLHttpRequest síncrono; la petición id acaba (y se entrega) antes de volver */
+static JSValue _jsdom_esperar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsDom *d = _jsdom_de(ctx);
+    int32_t id = 0;
+    if (!d || argc < 1 || JS_ToInt32(ctx, &id, argv[0])) return JS_UNDEFINED;
+    jsdom_esperar_peticion(d->motor, id);
+    return JS_UNDEFINED;
+}
+
 static JSValue _jsdom_pedir(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     _JsDom *d = _jsdom_de(ctx);
     int32_t id = 0;
@@ -2885,6 +2894,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_esperar", JS_NewCFunction(m->ctx, _jsdom_esperar, "__dashweb_esperar", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));

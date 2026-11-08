@@ -1,4 +1,4 @@
-WPT TOTAL webstorage: 1240/1273 subpruebas en 52 de 52 ficheros
+WPT TOTAL webstorage: 1242/1281 subpruebas en 52 de 52 ficheros
 
 WPT FILE webstorage/defineProperty.window.html 12/12 OK
 WPT FILE webstorage/document-domain.html 0/1 OK
@@ -7,20 +7,20 @@ WPT FILE webstorage/event_body_attribute.html 0/0 sin acabar
 WPT FILE webstorage/event_case_sensitive.html 0/0 sin acabar
 WPT FILE webstorage/event_constructor.window.html 4/6 OK
 WPT FILE webstorage/event_initstorageevent.window.html 0/5 OK
-WPT FILE webstorage/event_local_key.html 0/1 OK
-WPT FILE webstorage/event_local_newvalue.html 0/1 OK
-WPT FILE webstorage/event_local_oldvalue.html 0/1 OK
-WPT FILE webstorage/event_local_removeitem.html 0/1 OK
-WPT FILE webstorage/event_local_storagearea.html 0/1 OK
-WPT FILE webstorage/event_local_url.html 0/1 OK
+WPT FILE webstorage/event_local_key.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_local_newvalue.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_local_oldvalue.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_local_removeitem.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_local_storagearea.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_local_url.html 0/1 TIMEOUT 
 WPT FILE webstorage/event_local_window_open_oldvalue.html 0/1 TIMEOUT 
-WPT FILE webstorage/event_no_duplicates.html 0/0 TIMEOUT 
-WPT FILE webstorage/event_session_key.html 0/1 OK
-WPT FILE webstorage/event_session_newvalue.html 0/1 OK
-WPT FILE webstorage/event_session_oldvalue.html 0/1 OK
-WPT FILE webstorage/event_session_removeitem.html 0/1 OK
-WPT FILE webstorage/event_session_storagearea.html 0/1 OK
-WPT FILE webstorage/event_session_url.html 0/1 OK
+WPT FILE webstorage/event_no_duplicates.html 2/8 TIMEOUT 
+WPT FILE webstorage/event_session_key.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_session_newvalue.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_session_oldvalue.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_session_removeitem.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_session_storagearea.html 0/1 TIMEOUT 
+WPT FILE webstorage/event_session_url.html 0/1 TIMEOUT 
 WPT FILE webstorage/event_session_window_open_scope.html 0/1 TIMEOUT 
 WPT FILE webstorage/event_setattribute.html 0/0 sin acabar
 WPT FILE webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.html 0/1 TIMEOUT 
@@ -61,19 +61,25 @@ WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent wi
 WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 sensible arguments | not a function
 WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 null arguments | not a function
 WPT SUB FAIL webstorage/event_initstorageevent.window.html | initStorageEvent with 8 undefined arguments | not a function
-WPT SUB FAIL webstorage/event_local_key.html | key property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_clear_iframe.html'
-WPT SUB FAIL webstorage/event_local_newvalue.html | newValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_change_item_iframe.html'
-WPT SUB FAIL webstorage/event_local_oldvalue.html | oldValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_change_item_iframe.html'
-WPT SUB FAIL webstorage/event_local_removeitem.html | key property test of local event | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_remove_iframe.html'
-WPT SUB FAIL webstorage/event_local_storagearea.html | storageArea property test of local event - Local event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_iframe.html'
-WPT SUB FAIL webstorage/event_local_url.html | url property test of local event - Local event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/local_set_item_iframe.html'
+WPT SUB TIMEOUT webstorage/event_local_key.html | key property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_local_newvalue.html | newValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_local_oldvalue.html | oldValue property test of local event - Local event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_local_removeitem.html | key property test of local event | Test timed out
+WPT SUB TIMEOUT webstorage/event_local_storagearea.html | storageArea property test of local event - Local event is fired due to an invocation of the setItem() method. | Test timed out
+WPT SUB TIMEOUT webstorage/event_local_url.html | url property test of local event - Local event is fired due to an invocation of the setItem() method. | Test timed out
 WPT SUB TIMEOUT webstorage/event_local_window_open_oldvalue.html | oldValue property test of local event from window.open() - Local event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
-WPT SUB FAIL webstorage/event_session_key.html | key property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_clear_iframe.html'
-WPT SUB FAIL webstorage/event_session_newvalue.html | newvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_change_item_iframe.html'
-WPT SUB FAIL webstorage/event_session_oldvalue.html | oldvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_change_item_iframe.html'
-WPT SUB FAIL webstorage/event_session_removeitem.html | key property test of session event | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_remove_iframe.html'
-WPT SUB FAIL webstorage/event_session_storagearea.html | storageArea property test of session event - session event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_iframe.html'
-WPT SUB FAIL webstorage/event_session_url.html | url property test of session event - Session event is fired due to an invocation of the setItem() method. | Invalid URL 'http://127.0.0.1:40881/webstorage/resources/session_set_item_iframe.html'
+WPT SUB TIMEOUT webstorage/event_no_duplicates.html | Setting to same value does not trigger event for sessionStorage | Test timed out
+WPT SUB NOTRUN webstorage/event_no_duplicates.html | Deleting non-existent key does not trigger event for sessionStorage | 
+WPT SUB NOTRUN webstorage/event_no_duplicates.html | Clearing empty storage does not trigger event for sessionStorage | 
+WPT SUB NOTRUN webstorage/event_no_duplicates.html | Setting to same value does not trigger event for localStorage | 
+WPT SUB NOTRUN webstorage/event_no_duplicates.html | Deleting non-existent key does not trigger event for localStorage | 
+WPT SUB NOTRUN webstorage/event_no_duplicates.html | Clearing empty storage does not trigger event for localStorage | 
+WPT SUB TIMEOUT webstorage/event_session_key.html | key property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_session_newvalue.html | newvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_session_oldvalue.html | oldvalue property test of session event - Session event is fired due to an invocation of the setItem(), clear() methods. | Test timed out
+WPT SUB TIMEOUT webstorage/event_session_removeitem.html | key property test of session event | Test timed out
+WPT SUB TIMEOUT webstorage/event_session_storagearea.html | storageArea property test of session event - session event is fired due to an invocation of the setItem() method. | Test timed out
+WPT SUB TIMEOUT webstorage/event_session_url.html | url property test of session event - Session event is fired due to an invocation of the setItem() method. | Test timed out
 WPT SUB TIMEOUT webstorage/event_session_window_open_scope.html | sessionStorage events from a new window opened via window.open() should not fire in the opener | Test timed out
 WPT SUB TIMEOUT webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.html | StorageKey: test 3P about:blank window opened from a 3P iframe | Test timed out
 WPT SUB FAIL webstorage/localstorage-cross-origin-iframe.https.window.html | LocalStorage should be accessible on both same_origin and cross_origin iframes | promise_test: Unhandled rejection with value: object "ReferenceError: 'newIframe' is not defined"

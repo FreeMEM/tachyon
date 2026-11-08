@@ -13,6 +13,7 @@
 # Cada nodo tiene un solo objeto JS (a === b funciona); el objeto sujeta su Nodo hasta js_liberar.
 # Los textos van en Latin-1 hacia Dash y en UTF-8 hacia el JS, como en lib/js.dash.
 
+import "almacen.dash"
 import "js.dash"
 import "estilo.dash"
 import "formularios.dash"
@@ -1154,6 +1155,20 @@ end
 
 @export func jsdom_galleta(direccion: String, v: String)
     cookies_poner(url_parse(direccion), v, false)
+end
+
+# localStorage que dura (lib/almacen.dash): los cambios de un origen, como los da el preludio; todo: en lugar de lo
+# de antes (la página que los junta), si no, se añaden
+@export func jsdom_almacen(origen: String) -> String
+    return almacen_leer(origen)
+end
+
+@export func jsdom_almacen_poner(origen: String, cambios: String, todo: Bool)
+    if todo
+        almacen_poner(origen, cambios)
+    else
+        almacen_anadir(origen, cambios)
+    end
 end
 
 # Un clic en n: el evento click sube de n hasta document. false si alguien llamó a preventDefault

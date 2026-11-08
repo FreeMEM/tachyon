@@ -2566,6 +2566,24 @@ static JSValue _jsdom_galleta(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_UNDEFINED;
 }
 
+/* __dashweb_almacen(origen) y __dashweb_almacen_poner(origen, cambios, todo): localStorage que dura (lib/almacen.dash) */
+static JSValue _jsdom_almacen(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *o = _jsdom_arg(ctx, argc, argv, 0);
+    JSValue v;
+    if (!o) return JS_EXCEPTION;
+    v = _jsdom_cadena(ctx, jsdom_almacen((STRPTR)o));
+    _jsdom_soltar(o);
+    return v;
+}
+
+static JSValue _jsdom_almacen_poner(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *o = _jsdom_arg(ctx, argc, argv, 0), *t = _jsdom_arg(ctx, argc, argv, 1);
+    if (o && t) jsdom_almacen_poner((STRPTR)o, (STRPTR)t, argc > 2 && JS_ToBool(ctx, argv[2]));
+    _jsdom_soltar(o);
+    _jsdom_soltar(t);
+    return JS_UNDEFINED;
+}
+
 /* __dashweb_navegar(url, sustituir): location.assign/replace/href = (jsdom_navegar) */
 /* __dashweb_es_nodo(o): ¿un nodo de verdad (o solo algo que hereda de su prototipo, como el de una clase)? */
 static JSValue _jsdom_es_nodo(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -2868,6 +2886,8 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_navegar", JS_NewCFunction(m->ctx, _jsdom_navegar, "__dashweb_navegar", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_es_nodo", JS_NewCFunction(m->ctx, _jsdom_es_nodo, "__dashweb_es_nodo", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));

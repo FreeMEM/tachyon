@@ -83,6 +83,7 @@ const FICHERO_MARCADORES = "PROGDIR:Tachyon.marcadores"
 const FICHERO_PREFERENCIAS = "PROGDIR:Tachyon.prefs"
 # Las cookies que duran más que la sesión (lib/cookies.dash), de una vez para otra
 const FICHERO_COOKIES = "PROGDIR:Tachyon.cookies"
+const FICHERO_ALMACEN = "PROGDIR:Tachyon.almacen"     # localStorage de cada sitio (lib/almacen.dash)
 # Lo visto (lib/marcadores.dash, tachyon:historial)
 const FICHERO_HISTORIAL = "PROGDIR:Tachyon.historial"
 # Las descargas acabadas (lib/descargas.dash, tachyon:descargas)
@@ -801,6 +802,14 @@ func abrir(w: Ventana, direccion: String)
             end
             cookies_borrar(dominio)
             cookies_guardar(FICHERO_COOKIES)
+            # (y su localStorage: borrar los datos de un sitio es borrarlo todo)
+            if dominio == ""
+                almacen_borrar("")
+            else
+                almacen_borrar("https://" + dominio)
+                almacen_borrar("http://" + dominio)
+            end
+            almacen_guardar(FICHERO_ALMACEN)
         end
         d = documento_html("tachyon:cookies", cookies_html())
     elif str_starts(direccion, "tachyon:informe")
@@ -2248,6 +2257,7 @@ Main
     # las maquetas caras por el JavaScript, como mucho un tercio del tiempo (lib/documento.dash)
     documento_aplazar = true
     cookies_cargar(FICHERO_COOKIES)
+    almacen_cargar(FICHERO_ALMACEN)
     descargas_cargar(FICHERO_DESCARGAS)
     # el idioma de Locale para las webs: Accept-Language y navigator.language
     jsdom_idioma = actualizar_idioma_web(actualizar_idioma_preferido())
@@ -2592,6 +2602,7 @@ Main
         # la tarea de la red, parada (el programa espera a sus tareas al acabar)
         red_terminar()
         cookies_guardar(FICHERO_COOKIES)
+        almacen_guardar(FICHERO_ALMACEN)
         mui_app_end()
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"

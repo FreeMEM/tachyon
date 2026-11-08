@@ -6070,3 +6070,22 @@ Formato:
   abre el selector "Open file". Soltar iconos se probó con la tarea 60 (sin cambios desde entonces).
 - Notas de la versión en castellano e inglés preparadas. Sin publicar: el usuario da el visto bueno antes (PR de dev a
   main, etiqueta y pre-release).
+
+### 2026-11-08 — Tarea 41d: localStorage que dura (por origen, en PROGDIR:Tachyon.almacen)
+- localStorage solo vivía lo que la página. Ahora lo de cada origen http/https dura: lib/almacen.dash lo guarda
+  ({String: [String]}, origen -> los cambios) y src/dashweb.dash lo lee al arrancar y lo escribe al salir, como las
+  cookies; tachyon:cookies?borrar también borra el localStorage de ese sitio (o todo). sessionStorage y file: no
+  duran. El instalador no lo pisa (solo copia lo del paquete); el LEEME lo dice.
+- Preludio: localStorage trae lo de su origen la primera vez que se usa (__dashweb_almacen); de lo que cambia un script
+  se apunta lo último de cada clave (Map) y al acabar el script (una microtarea) se le da a Dash una vez, en JSON y
+  ASCII (["k","v"] pone, ["k"] quita; clear da todo en su lugar). Dash solo añade a la lista; la página siguiente
+  aplica los cambios en orden y, si sobran (más de 16 por encima de las claves), le da todo junto.
+- Probado y quitado: dar todo el almacén al acabar cada script: con 100 KB dentro, 50 scripts de una clave 1680 →
+  8400 ms (JSON de 100 KB cada vez).
+- Medido (tests/pages/bench_almacen.html, máquina RTG, dos pasadas; antes → después): 50 scripts de una clave con
+  100 KB dentro, sessionStorage 1640-1660 → 1660 ms y localStorage 1680-1700 → 1680-1700 (igual); 1000 claves en un
+  script, contando el darlo a Dash, 140-160 → 280-320 ms (lo que cuesta que duren: 0,15 ms por clave).
+- tests/test_jsdom_almacen.dash: la página siguiente del mismo origen lo ve (también lo que no es Latin-1), otro origen
+  no; mil claves, una vez a Dash; clear; file: y sessionStorage no duran; se compacta; el fichero se lee igual.
+- WPT webstorage 1240/1273 → 1242/1281 (ningún fichero peor; los event_* que esperan el evento storage de otro marco
+  ahora acaban en TIMEOUT en vez de fallar en seguida: sus iframes ya cargan). test_jsdom_storage pasa.

@@ -1,0 +1,98 @@
+# localStorage que dura (tarea 41d): lo de cada origen ("https://ejemplo.com") como los cambios que da el preludio,
+# en JSON y ASCII (lo de fuera con \u): ["clave","valor"] pone, ["clave"] quita, [] lo borra todo. Cada script da
+# los suyos al acabar y aquí solo se añaden a la lista (sin pasar por todo lo guardado: con 100 KB dentro, darlo
+# entero en cada script era 5 veces más lento); la página siguiente los aplica en orden y, si sobran muchos, da todo
+# junto otra vez (almacen_poner). En el fichero, una línea por origen: origen, tabulador y los cambios con comas.
+#
+#   almacen_cargar("PROGDIR:Tachyon.almacen")
+#   t = almacen_leer("https://ejemplo.com")              # "" si no tiene nada
+#   almacen_anadir("https://ejemplo.com", "[\"a\",\"1\"],[\"b\"]")
+#   almacen_poner("https://ejemplo.com", "[\"a\",\"1\"]")  # en lugar de todo lo de antes ("": nada)
+#   almacen_guardar("PROGDIR:Tachyon.almacen")           # solo si cambió algo
+
+var almacen_sitios: {String: [String]} = {}
+var almacen_cambiado: Bool = false
+
+func almacen_leer(origen: String) -> String
+    partes = almacen_sitios.get(origen, nil)
+    if partes == nil
+        return ""
+    end
+    t = ""
+    for p in partes
+        if t != ""
+            t = t + ","
+        end
+        t = t + p
+    end
+    return t
+end
+
+func almacen_anadir(origen: String, cambios: String)
+    if cambios == ""
+        return
+    end
+    if not almacen_sitios.has(origen)
+        var nuevas: [String] = []
+        almacen_sitios[origen] = nuevas
+    end
+    almacen_sitios[origen].push(cambios)
+    almacen_cambiado = true
+end
+
+func almacen_poner(origen: String, texto: String)
+    if almacen_sitios.has(origen)
+        almacen_sitios.remove(origen)
+        almacen_cambiado = true
+    end
+    almacen_anadir(origen, texto)
+end
+
+# Borra lo de un origen ("" todos)
+func almacen_borrar(origen: String)
+    if origen == ""
+        if almacen_sitios.length > 0
+            almacen_cambiado = true
+        end
+        almacen_sitios.clear()
+        return
+    end
+    almacen_poner(origen, "")
+end
+
+func almacen_guardar(fichero: String) -> Bool
+    if not almacen_cambiado
+        return true
+    end
+    t = ""
+    for o in almacen_sitios.keys()
+        t = t + o + "\t" + almacen_leer(o) + "\n"
+    end
+    if file_write_text(fichero, t)
+        almacen_cambiado = false
+        return true
+    end
+    return false
+end
+
+func almacen_cargar(fichero: String)
+    t = file_read_text(fichero)
+    if t == nil
+        return
+    end
+    desde = 0
+    n = t.length
+    while desde < n
+        fin = str_find_from(t, "\n", desde)
+        if fin < 0
+            fin = n
+        end
+        linea = t[desde:fin]
+        tab = str_find(linea, "\t")
+        if tab > 0 and not almacen_sitios.has(linea[0:tab])
+            almacen_anadir(linea[0:tab], linea[tab + 1:])
+        end
+        desde = fin + 1
+    end
+    almacen_cambiado = false
+end

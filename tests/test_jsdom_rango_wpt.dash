@@ -1,0 +1,25 @@
+# Test: lo de WPT dom/ranges (tarea 41d): length de los textos, comentarios y ProcessingInstruction (CharacterData),
+# las constantes de Node que ya no se usan (PROCESSING_INSTRUCTION_NODE...), y el how de compareBoundaryPoints como
+# unsigned short (65537 es 1, NaN 0; fuera de 0-3, NotSupportedError antes de mirar el árbol).
+# memcheck
+# expect-out: length: 2 3 5 | constantes: 7 5 6 12 7 | how: -1 -1 1 NotSupportedError NotSupportedError
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<!doctype html><html><head></head><body><p>ab</p><p>cd</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var p = document.querySelectorAll('p'), t = p[0].firstChild, x = document.implementation.createDocument(null, null, null);"
+    c = c + "var r = 'length: ' + t.length + ' ' + document.createComment('xyz').length + ' ' + x.createProcessingInstruction('a', 'bcdef').length;"
+    c = c + "r += ' | constantes: ' + Node.PROCESSING_INSTRUCTION_NODE + ' ' + Node.ENTITY_REFERENCE_NODE + ' ' + Node.ENTITY_NODE + ' ' + Node.NOTATION_NODE + ' ' + t.PROCESSING_INSTRUCTION_NODE;"
+    c = c + "var a = document.createRange(), b = document.createRange(); a.setStart(t, 0); a.setEnd(t, 1); b.setStart(p[1].firstChild, 0); b.setEnd(p[1].firstChild, 1);"
+    c = c + "r += ' | how: ' + a.compareBoundaryPoints(NaN, b) + ' ' + a.compareBoundaryPoints(-65536, b) + ' ' + b.compareBoundaryPoints(65537, a);"
+    c = c + "try { a.compareBoundaryPoints(4, b); } catch (e) { r += ' ' + e.name; }"
+    c = c + "var otro = document.implementation.createHTMLDocument('').createRange();"
+    c = c + "try { a.compareBoundaryPoints(-1, otro); } catch (e) { r += ' ' + e.name; } r"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

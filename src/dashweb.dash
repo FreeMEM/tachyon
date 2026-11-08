@@ -63,6 +63,7 @@ const ID_DESCARGAS = 29
 const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuración (tarea 54)
 const ID_GUARDAR_PAGINA = 31   # menú Proyecto (Amiga-S) y el del botón derecho sobre la página (tarea 57)
 const ID_GUARDAR_ENLACE = 32   # el del botón derecho: el enlace donde se pulsó, a un fichero
+const ID_ABRIR_FICHERO = 33    # menú Proyecto (Amiga-O): una página del disco (tarea 60)
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
@@ -73,6 +74,7 @@ const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeou
 const ID_RANGO = 12       # la barra, después de maquetar en el dibujo (el ancho cambió)
 const ID_CERRADA = 100    # + número de ventana: su botón de cerrar
 const ID_RATON = 120      # + número de ventana: el ratón se movió sobre su página (o salió; D63, tarea 37f3)
+const ID_SOLTADO = 130    # + número de ventana: iconos del Workbench soltados en ella (tarea 60, D83)
 const ID_COMPLETA = 90    # la ventana del vídeo a pantalla completa: un clic o una tecla
 const ID_COMPLETA_CERRADA = 91
 
@@ -81,6 +83,7 @@ const FICHERO_MARCADORES = "PROGDIR:Tachyon.marcadores"
 const FICHERO_PREFERENCIAS = "PROGDIR:Tachyon.prefs"
 # Las cookies que duran más que la sesión (lib/cookies.dash), de una vez para otra
 const FICHERO_COOKIES = "PROGDIR:Tachyon.cookies"
+const FICHERO_ALMACEN = "PROGDIR:Tachyon.almacen"     # localStorage de cada sitio (lib/almacen.dash)
 # Lo visto (lib/marcadores.dash, tachyon:historial)
 const FICHERO_HISTORIAL = "PROGDIR:Tachyon.historial"
 # Las descargas acabadas (lib/descargas.dash, tachyon:descargas)
@@ -799,6 +802,14 @@ func abrir(w: Ventana, direccion: String)
             end
             cookies_borrar(dominio)
             cookies_guardar(FICHERO_COOKIES)
+            # (y su localStorage: borrar los datos de un sitio es borrarlo todo)
+            if dominio == ""
+                almacen_borrar("")
+            else
+                almacen_borrar("https://" + dominio)
+                almacen_borrar("http://" + dominio)
+            end
+            almacen_guardar(FICHERO_ALMACEN)
         end
         d = documento_html("tachyon:cookies", cookies_html())
     elif str_starts(direccion, "tachyon:informe")
@@ -838,9 +849,14 @@ func avanzar_carga(w: Ventana)
             fase = http_fase(w.carga)
             if fase != "recibiendo"
                 host = url_parse(w.carga_dir).host
+                if fase == "esperando" and w.actual != nil and w.actual.js != 0
+                    # (la tabla de conexiones llena: las del JavaScript de la página que se deja no avanzan
+                    # mientras se carga la nueva y no se cerrarían; se cancelan, como al llegar la nueva)
+                    jsdom_peticiones_cancelar(w.actual.js)
+                end
                 if fase == "buscando"
                     dw_estado(w, hueco(tr(107, "Looking up %1..."), host))
-                elif fase == "conectando"
+                elif fase == "conectando" or fase == "esperando"
                     dw_estado(w, hueco(tr(104, "Connecting to %1..."), host))
                 else
                     dw_estado(w, hueco(tr(108, "Secure connection to %1..."), host))
@@ -954,6 +970,36 @@ func pedir_ruta(nombre: String) -> String
     return ruta
 end
 
+# "Abrir fichero..." (tarea 60; Ferrán García: una web guardada, documentación en HTML): el selector de ficheros,
+# en el cajón de la última vez, y la página con su dirección file: (así sus enlaces relativos van a su cajón)
+func abrir_fichero(w: Ventana)
+    cajon = preferencia(FICHERO_PREFERENCIAS, "cajon_abrir")
+    ruta = dialog_file_at(tr(476, "Open file"), "", false, cajon, "")
+    if ruta == ""
+        return
+    end
+    if dialog_cajon(ruta) != cajon
+        preferencia_poner(FICHERO_PREFERENCIAS, "cajon_abrir", dialog_cajon(ruta))
+    end
+    navegar(w, url_de_ruta(ruta))
+end
+
+# Iconos del Workbench soltados en la ventana (tarea 60, D83 de Dash; solo en la pantalla del Workbench): el
+# primero se abre en la pestaña que se ve y los demás, cada uno en una nueva (mientras quepan)
+func soltado(w: Ventana)
+    ruta = app_drop()
+    primero = true
+    while ruta != ""
+        if primero
+            navegar(w, url_de_ruta(ruta))
+            primero = false
+        else
+            nueva_pestana(w, url_de_ruta(ruta))
+        end
+        ruta = app_drop()
+    end
+end
+
 # "Guardar enlace como..." (tarea 57; Ferrán García lo pidió para bajarse los .readme de Aminet, como AmiFire): el
 # enlace donde se pulsó el botón derecho, al gestor de descargas tal cual (sin abrirlo ni interpretarlo)
 func guardar_enlace(w: Ventana)
@@ -1049,8 +1095,8 @@ func atajo_de_menu(w: Ventana) -> Int
     if c == ""
         return 0
     end
-    letras = "nktwlsqrhybdj?"
-    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
+    letras = "nktwlosqrhybdj?"
+    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
     i = str_find(letras, str_lower(c[:1]))
     if i < 0
         return 0
@@ -1808,8 +1854,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.9.2-alfa"
-@version "Tachyon 0.9.2-alfa"
+const DASHWEB_VERSION = "0.9.3-alfa"
+@version "Tachyon 0.9.3-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)
@@ -2109,6 +2155,7 @@ func nueva_ventana(direccion: String) -> Ventana
     # la página se pinta aparte y llega a la ventana de una vez: no se ve redibujarse
     mui_canvas_buffered(v.pagina, true)
     mui_on_close(v.window, ID_CERRADA + k)
+    mui_on_drop(v.window, ID_SOLTADO + k)
     mui_window_open(v.window)
     if k > 0
         mover_ventana(v.window, k * 24, k * 16)
@@ -2210,6 +2257,7 @@ Main
     # las maquetas caras por el JavaScript, como mucho un tercio del tiempo (lib/documento.dash)
     documento_aplazar = true
     cookies_cargar(FICHERO_COOKIES)
+    almacen_cargar(FICHERO_ALMACEN)
     descargas_cargar(FICHERO_DESCARGAS)
     # el idioma de Locale para las webs: Accept-Language y navigator.language
     jsdom_idioma = actualizar_idioma_web(actualizar_idioma_preferido())
@@ -2332,6 +2380,10 @@ Main
                 raton(dw_ventanas[ev - ID_RATON])
                 continue
             end
+            if ev >= ID_SOLTADO and ev < ID_SOLTADO + MAX_VENTANAS
+                soltado(dw_ventanas[ev - ID_SOLTADO])
+                continue
+            end
             w = activa()
             if w == nil
                 break
@@ -2413,6 +2465,9 @@ Main
             end
             if ev == ID_GUARDAR_ENLACE
                 guardar_enlace(w)
+            end
+            if ev == ID_ABRIR_FICHERO
+                abrir_fichero(w)
             end
             if ev == ID_IR_DIRECCION
                 activar(w.v.window, w.v.url)
@@ -2547,6 +2602,7 @@ Main
         # la tarea de la red, parada (el programa espera a sus tareas al acabar)
         red_terminar()
         cookies_guardar(FICHERO_COOKIES)
+        almacen_guardar(FICHERO_ALMACEN)
         mui_app_end()
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"

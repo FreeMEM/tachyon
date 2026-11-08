@@ -41,3 +41,12 @@ Directivas de los tests (`tests/run.py` las explica): `# expect-out:`, `# dash-f
 - `src/`: el navegador. `lib/`: módulos reutilizables (red, URL, HTML, CSS...). `tests/`: tests y páginas.
 - `third_party/quickjs`: QuickJS 2026-06-04 con tres cambios para AmigaOS (`docs/quickjs_amiga.md`).
 - `tools/`: compilar QuickJS y ejecutarlo en el emulador.
+
+## Reconocimiento a quien lo pide
+
+Regla del usuario (2026-11-08). Cada arreglo o novedad que venga de una persona lleva su nombre. Vale para una petición, una idea, un aviso de fallo o una indicación. Es para reconocer su interés por el proyecto.
+
+- En el mensaje del commit. Por ejemplo: "(idea de Ferrán García)" o "(lo contó David Martínez)".
+- En las notas de la versión, el CHANGELOG y la documentación donde se describa el cambio.
+- Se usa el nombre con el que se presenta en el grupo. Nunca datos de contacto: ni teléfono, ni correo.
+- Si no se sabe quién lo pidió, preguntar a la sesión "telegram" o al usuario.

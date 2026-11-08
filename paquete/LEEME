@@ -62,7 +62,8 @@ Usar
   mientras busca el servidor, conecta o negocia HTTPS.
   Lo que no es una página (un .lha, un .zip...) se guarda en disco: Tachyon pregunta
   dónde. Las cookies se guardan entre sesiones (Tachyon.cookies) y se ven y se borran
-  en la dirección tachyon:cookies. Los scripts de rastreo y publicidad conocidos no
+  en la dirección tachyon:cookies; el localStorage de las páginas, también
+  (Tachyon.almacen), y se borra con las cookies de su sitio. Los scripts de rastreo y publicidad conocidos no
   se bajan.
   La rueda, la barra y las teclas (arriba, abajo, espacio, retroceso) desplazan. Clic en enlaces y en formularios (texto,
   casillas, desplegables, botones; GET y POST).

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (06.11.2026)
+## version $VER: Tachyon.catalog 1.0 (07.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -152,6 +152,9 @@ Spara länken som...
 MSG_50
 Sida
 ; Page
+MSG_51
+Öppna fil...
+; Open file...
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -641,3 +644,12 @@ Du får en kod: ange den i ärendet du öppnar på %1, och berätta vad du gjord
 MSG_475
 Det här är allt som skickas:
 ; This is everything that will be sent:
+MSG_476
+Öppna fil
+; Open file
+MSG_477
+Innehåll i %1
+; Contents of %1
+MSG_478
+Överordnad låda
+; Parent drawer

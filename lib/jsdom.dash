@@ -13,6 +13,7 @@
 # Cada nodo tiene un solo objeto JS (a === b funciona); el objeto sujeta su Nodo hasta js_liberar.
 # Los textos van en Latin-1 hacia Dash y en UTF-8 hacia el JS, como en lib/js.dash.
 
+import "almacen.dash"
 import "js.dash"
 import "estilo.dash"
 import "formularios.dash"
@@ -37,7 +38,7 @@ end
             # (uno que no se entiende no casa con nada: getElementsByClassName("\u212a") llega como ".?" y era un
             # selector nil que tiraba el programa; WPT dom/nodes/getElementsByClassName-14)
             sel = css_selector(t)
-            if sel != nil
+            if sel != nil and not _jsdom_con_pseudo_elemento(sel)
                 sels.push(sel)
             end
         end
@@ -475,7 +476,8 @@ func _jsdom_raiz_de(n: Nodo) -> Nodo
 end
 
 # ¿Se entiende el selector? (si no, querySelector y matches dan un SyntaxError, como en los
-# navegadores, y jQuery usa su propio buscador)
+# navegadores, y jQuery usa su propio buscador). Con un pseudo-elemento que se conoce (::before, :after...) en el
+# último compuesto vale y no casa con nada (Selectors; WPT dom/nodes)
 @export func jsdom_selector_valido(texto: String) -> Bool
     hay = false
     for t in css_partir(texto, 44)
@@ -483,19 +485,47 @@ end
             return false
         end
         sel = css_selector(t)
-        if sel == nil or not estilo_puede_cumplirse(sel)
+        if sel == nil
             return false
+        end
+        ultima = sel.partes.length - 1
+        i = 0
+        for parte in sel.partes
+            pe = parte.simple.pseudo_elemento
+            if pe != "" and (i != ultima or not _jsdom_pseudo_elemento(pe))
+                return false
+            end
+            for p in parte.simple.pseudo
+                if not css_pseudo_conocida(p)
+                    return false
+                end
+            end
+            i = i + 1
         end
         hay = true
     end
     return hay
 end
 
+func _jsdom_pseudo_elemento(pe: String) -> Bool
+    return pe == "before" or pe == "after" or pe == "first-line" or pe == "first-letter" or pe == "marker" or pe == "placeholder" or pe == "selection" or pe == "backdrop" or pe == "file-selector-button" or pe == "cue" or pe == "grammar-error" or pe == "spelling-error" or str_starts(pe, "part(") or str_starts(pe, "slotted(") or str_starts(pe, "highlight(")
+end
+
+# ¿Lleva un pseudo-elemento? (no casa con ningún elemento)
+func _jsdom_con_pseudo_elemento(sel: Selector) -> Bool
+    for parte in sel.partes
+        if parte.simple.pseudo_elemento != ""
+            return true
+        end
+    end
+    return false
+end
+
 # matches(): ¿n cumple alguno de los selectores?
 @export func jsdom_cumple(n: Nodo, texto: String) -> Bool
     for t in css_partir(texto, 44)
         sel = css_selector(t)
-        if sel != nil and estilo_cumple(n, sel)
+        if sel != nil and not _jsdom_con_pseudo_elemento(sel) and estilo_cumple(n, sel)
             return true
         end
     end
@@ -744,6 +774,42 @@ struct PeticionJS
     js: Int
     id: Int
     carga: Carga
+    # (en cola: aún sin carga, con lo que hace falta para empezarla)
+    en_cola: Bool = false
+    metodo: String = ""
+    url: String = ""
+    cuerpo: String = ""
+    tipo: String = ""
+    extra: String = ""
+end
+
+# Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
+# conexiones de la red: "demasiadas conexiones" al ir a otra página). Chrome hace 6 por servidor.
+const JSDOM_PETICIONES_A_LA_VEZ = 6
+
+func _jsdom_peticiones_activas(js: Int) -> Int
+    n = 0
+    for p in jsdom_peticiones
+        if p.js == js and p.carga != nil
+            n = n + 1
+        end
+    end
+    return n
+end
+
+# Empieza las de la cola de ese motor mientras haya sitio
+func _jsdom_peticiones_empezar(js: Int)
+    activas = _jsdom_peticiones_activas(js)
+    for p in jsdom_peticiones
+        if activas >= JSDOM_PETICIONES_A_LA_VEZ
+            return
+        end
+        if p.js == js and p.en_cola
+            p.en_cola = false
+            p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+            activas = activas + 1
+        end
+    end
 end
 
 var jsdom_peticiones: [PeticionJS] = []
@@ -780,7 +846,16 @@ var jsdom_peticiones: [PeticionJS] = []
         jsdom_peticiones.push(PeticionJS(js, id, sin))
         return
     end
-    jsdom_peticiones.push(PeticionJS(js, id, http_empezar_metodo(url, metodo, cuerpo, tipo, extra, 20000)))
+    var nada: Carga = nil
+    p = PeticionJS(js, id, nada)
+    p.en_cola = true
+    p.metodo = metodo
+    p.url = url
+    p.cuerpo = cuerpo
+    p.tipo = tipo
+    p.extra = extra
+    jsdom_peticiones.push(p)
+    _jsdom_peticiones_empezar(js)
 end
 
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
@@ -789,6 +864,10 @@ func jsdom_peticiones_avanzar(js: Int) -> Int
     i = 0
     while i < jsdom_peticiones.length
         p = jsdom_peticiones[i]
+        if p.js == js and p.en_cola
+            i = i + 1
+            continue
+        end
         if p.js == js and p.carga == nil
             jsdom_peticiones.remove(i)
             _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
@@ -807,6 +886,9 @@ func jsdom_peticiones_avanzar(js: Int) -> Int
             continue
         end
         i = i + 1
+    end
+    if hechas > 0
+        _jsdom_peticiones_empezar(js)
     end
     return hechas
 end
@@ -1102,6 +1184,20 @@ end
 
 @export func jsdom_galleta(direccion: String, v: String)
     cookies_poner(url_parse(direccion), v, false)
+end
+
+# localStorage que dura (lib/almacen.dash): los cambios de un origen, como los da el preludio; todo: en lugar de lo
+# de antes (la página que los junta), si no, se añaden
+@export func jsdom_almacen(origen: String) -> String
+    return almacen_leer(origen)
+end
+
+@export func jsdom_almacen_poner(origen: String, cambios: String, todo: Bool)
+    if todo
+        almacen_poner(origen, cambios)
+    else
+        almacen_anadir(origen, cambios)
+    end
 end
 
 # Un clic en n: el evento click sube de n hasta document. false si alguien llamó a preventDefault

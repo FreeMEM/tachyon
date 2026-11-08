@@ -326,6 +326,34 @@ func url_fichero(direccion: String) -> String
     return _url_deshacer(ruta)
 end
 
+# Lo contrario de url_fichero: la dirección file: de una ruta del Amiga ("Work:Docs/a b.html" ->
+# "file:///Work/Docs/a%20b.html"), para que los enlaces relativos de la página se resuelvan bien. Lo que no va tal
+# cual en una ruta de URL, en %XX; lo de Latin-1, en UTF-8 (como lo deshace url_fichero). Sin volumen, igual.
+func url_de_ruta(ruta: String) -> String
+    dos = str_find(ruta, ":")
+    if dos <= 0
+        return ruta
+    end
+    t = ruta[:dos] + "/" + ruta[dos + 1:]
+    hex = "0123456789ABCDEF"
+    r = "file:///"
+    i = 0
+    while i < t.length
+        c = str_code(t, i)
+        if c >= 128
+            for b in [192 + c / 64, 128 + c % 64]
+                r = r + "%" + hex[b / 16:b / 16 + 1] + hex[b % 16:b % 16 + 1]
+            end
+        elif c <= 32 or c == 34 or c == 35 or c == 37 or c == 60 or c == 62 or c == 63 or c == 96 or c == 123 or c == 125
+            r = r + "%" + hex[c / 16:c / 16 + 1] + hex[c % 16:c % 16 + 1]
+        else
+            r = r + t[i:i + 1]
+        end
+        i = i + 1
+    end
+    return r
+end
+
 # ¿Una dirección data: (lo que va dentro de la propia dirección: data:image/png;base64,...)?
 func url_es_data(direccion: String) -> Bool
     return str_starts(str_lower(direccion[:5]), "data:")

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuesta que localStorage dure (lib/almacen.dash): con 100 claves de 1000 caracteres dentro, 50
+     scripts seguidos (temporizadores) que ponen una clave cada uno; localStorage (se da a Dash al acabar cada uno)
+     frente a sessionStorage (no dura); y poner 1000 claves en un solo script. El resultado en la página y en el
+     título -->
+<p id=r>midiendo...</p>
+<script>
+var mil = 'x'.repeat(1000);
+for (var i = 0; i < 100; i++) { localStorage.setItem('g' + i, mil); sessionStorage.setItem('g' + i, mil); }
+function ronda(s, n, fin) {
+    var i = 0, t = Date.now();
+    (function paso() {
+        if (i++ >= n) return fin(Date.now() - t);
+        s.setItem('k' + (i % 10), 'y'.repeat(100));
+        setTimeout(paso, 0);
+    })();
+}
+// (cada medida acaba en un temporizador: cuenta también lo que se hace al acabar el script, darlo a Dash)
+setTimeout(function () {
+ronda(sessionStorage, 50, function (a) {
+    ronda(localStorage, 50, function (b) {
+        var t = Date.now();
+        for (var i = 0; i < 1000; i++) localStorage.setItem('m' + i, 'z');
+        setTimeout(function () {
+            var c = Date.now() - t;
+            localStorage.clear();
+            var s = 'sesion ' + a + ' local ' + b + ' mil ' + c;
+            document.getElementById('r').textContent = s;
+            document.title = s;
+        }, 0);
+    });
+});
+}, 0);
+</script>
+</body></html>

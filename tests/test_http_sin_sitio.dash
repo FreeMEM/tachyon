@@ -1,0 +1,66 @@
+# Test: con la tabla de conexiones de la red llena (48), una carga espera sitio en vez de fallar en seguida con
+# "demasiadas conexiones" (lo vio el usuario al ir de YouTube a otra página): fase "esperando" mientras tanto,
+# sigue en cuanto se cierra una. Y las conexiones libres (keep-alive) se cierran para hacer sitio.
+# emu-server: http.py 40871
+# expect-out: llena: true
+# expect-out: esperando: esperando
+# expect-out: tras cerrar una: 200 [hola]
+# expect-out: con una libre: [connection refused] pronto: true
+
+import "../lib/http.dash"
+
+func traer(direccion: String) -> Respuesta
+    c = http_empezar(direccion, 10000)
+    while not http_avanzar(c)
+        time_delay(2)
+    end
+    return c.respuesta
+end
+
+# Ocupa todos los sitios de la tabla con conexiones al puerto 1 (las rechaza, pero sin red_abrir_avanzar nadie
+# cierra la conexión y su sitio sigue ocupado; así el servidor no se satura)
+func llenar() -> [Conexion]
+    var tenidas: [Conexion] = []
+    while tenidas.length < 100
+        c = red_abrir_empezar("127.0.0.1", 1, false, 10000)
+        if red_sin_sitio(c)
+            red_cerrar(c)
+            return tenidas
+        end
+        tenidas.push(c)
+    end
+    return tenidas
+end
+
+Main
+    base = "http://127.0.0.1:40871"
+    tenidas = llenar()
+    Print "llena: " + (tenidas.length > 0 and tenidas.length <= 48)
+    c = http_empezar(base + "/hola", 10000)
+    desde = time_ms()
+    while time_ms() - desde < 1000 and not http_avanzar(c)
+        time_delay(2)
+    end
+    Print "esperando: " + http_fase(c)
+    red_cerrar(tenidas[0])
+    while not http_avanzar(c)
+        time_delay(2)
+    end
+    Print "tras cerrar una: " + c.respuesta.estado + " [" + c.respuesta.cuerpo + "]" + c.respuesta.error
+    for t in tenidas
+        red_cerrar(t)
+    end
+
+    # una libre a 127.0.0.1:40871 y la tabla llena: la carga a otro sitio (127.0.0.1:1, que la rechaza) la cierra
+    # y llega a conectar en seguida, sin esperar 20 s a que se libere una ni dar "demasiadas conexiones"
+    http_seguir = true
+    r = traer(base + "/hola")
+    tenidas = llenar()
+    desde = time_ms()
+    r = traer("http://127.0.0.1:1/")
+    Print "con una libre: [" + r.error + "] pronto: " + (time_ms() - desde < 10000)
+    for t in tenidas
+        red_cerrar(t)
+    end
+    http_cerrar_libres()
+end

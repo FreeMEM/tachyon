@@ -1,0 +1,26 @@
+# Test: una dirección file: de un cajón (o el icono de un disco soltado en la ventana, tarea 60) da una página con lo
+# que tiene, como en los navegadores: el cajón padre, los cajones con "/" y los ficheros con su tamaño, cada uno con
+# su dirección file:. Un fichero que no existe sigue dando "can't read".
+# expect-out: titulo: Contents of RAM:tcajon/
+# expect-out: padre: true
+# expect-out: cajon: true
+# expect-out: fichero: true
+# expect-out: espacio: true
+# expect-out: nada: can't read file:///RAM/tcajon/no.html
+
+import "../lib/documento.dash"
+
+Main
+    dir_create("RAM:tcajon")
+    dir_create("RAM:tcajon/sub")
+    file_write_text("RAM:tcajon/a b.html", "<p>hola</p>")
+    d = documento_abrir("file:///RAM/tcajon/")
+    t = documento_texto("file:///RAM/tcajon/", d)
+    Print "titulo: " + str_split(str_split(t, "<title>")[1], "</title>")[0]
+    Print "padre: " + (str_find(t, "href=\"file:///RAM/\"") >= 0)
+    Print "cajon: " + (str_find(t, "href=\"file:///RAM/tcajon/sub/\"><b>sub/</b>") >= 0)
+    Print "fichero: " + (str_find(t, ">a b.html</a> (1 KB)") >= 0)
+    Print "espacio: " + (str_find(t, "href=\"file:///RAM/tcajon/a%20b.html\"") >= 0)
+    t = documento_texto("file:///RAM/tcajon/no.html", d)
+    Print "nada: " + d.error
+end

@@ -1,0 +1,32 @@
+# Test: lo de WPT dom/nodes ParentNode-querySelector-All y Node-removeChild (tarea 41d): NodeList (instanceof con
+# las listas, item, el polyfill de forEach), pseudo-elementos válidos que no casan con nada, [a~=""] y [a~="b c"]
+# sin casar, [*=x] y [a= b c ] y ":: before" no válidos, [a="b" sin cerrar, la bandera i, *|a, y removeChild de
+# algo que no es hijo con NotFoundError.
+# memcheck
+# expect-out: nodelist: function true true p | pseudo: 0 0 0 null false | palabra: 0 0 1 | malos: SyntaxError SyntaxError SyntaxError SyntaxError | abierto: 1 | i: 1 0 | ns: 1
+# expect-out: quitar: NotFoundError TypeError 2
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<!doctype html><html><head></head><body><p class='a b' title='Hola' rel='x y'>uno</p><p>dos</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var l = document.querySelectorAll('p'), r = 'nodelist: ' + typeof NodeList + ' ' + (l instanceof NodeList) + ' ' + (document.body.childNodes instanceof NodeList) + ' ' + NodeList.prototype.item.call(l, 0).localName;"
+    c = c + "if (window.NodeList && !NodeList.prototype.forEach) r += ' sin forEach';"
+    c = c + "r += ' | pseudo: ' + document.querySelectorAll('p::before').length + ' ' + document.querySelectorAll('p:after').length + ' ' + document.querySelectorAll('::slotted(p)').length + ' ' + document.querySelector('p::first-line') + ' ' + l[0].matches('p::marker');"
+    c = c + "r += ' | palabra: ' + document.querySelectorAll('[class~=\"\"]').length + ' ' + document.querySelectorAll('[rel~=\"x y\"]').length + ' ' + document.querySelectorAll('[rel~=y]').length;"
+    c = c + "r += ' | malos:'; ['[*=a]', '[class= a b ]', 'p:: before', 'p:'].forEach(function (s) { try { document.querySelector(s); r += ' nada'; } catch (e) { r += ' ' + e.name; } });"
+    c = c + "r += ' | abierto: ' + document.querySelectorAll('[title=\"Hola\"').length;"
+    c = c + "r += ' | i: ' + document.querySelectorAll('[title=\"HOLA\" i]').length + ' ' + document.querySelectorAll('[title=\"HOLA\"]').length;"
+    c = c + "r += ' | ns: ' + document.querySelectorAll('[*|TiTlE]').length; r"
+    Print js_evaluar(js, c, "t.js")
+    c = "var r = 'quitar:', p = document.querySelectorAll('p');"
+    c = c + "try { p[0].removeChild(p[1]); } catch (e) { r += ' ' + e.name; }"
+    c = c + "try { document.body.removeChild({}); } catch (e) { r += ' ' + e.name; }"
+    c = c + "r + ' ' + document.querySelectorAll('p').length"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

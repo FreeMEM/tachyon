@@ -185,11 +185,77 @@ func documento_texto(direccion: String, d: Documento) -> String
         return http_texto(r)
     end
     t = file_read_text(url_fichero(direccion))
+    if t == nil and str_starts(str_lower(direccion), "file:")
+        lista = documento_cajon(url_fichero(direccion))
+        if lista != ""
+            return lista
+        end
+    end
     if t == nil
         d.error = hueco(tr(411, "can't read %1"), direccion)
         return "<title>Error</title><h1>" + tr(412, "Couldn't load the page") + "</h1><p>" + d.error + "</p>"
     end
     return utf8_a_latin1(t)
+end
+
+# Un cajón (file:///Work/Docs/, o el icono de un disco soltado en la ventana: tarea 60) como una página con lo que
+# tiene, como hacen los navegadores; "" si no es un cajón que se pueda leer
+func documento_cajon(ruta: String) -> String
+    n = dir_read(ruta)
+    if n < 0
+        return ""
+    end
+    base = ruta
+    if not str_ends(base, ":") and not str_ends(base, "/")
+        base = base + "/"
+    end
+    var nombres: [String] = []
+    var cajones: [Bool] = []
+    var tamanos: [Int] = []
+    i = 0
+    while i < n
+        nombres.push(dir_entry_name(i))
+        cajones.push(dir_entry_is_dir(i))
+        tamanos.push(dir_entry_size(i))
+        i = i + 1
+    end
+    titulo = _documento_html(hueco(tr(477, "Contents of %1"), base))
+    h = "<title>" + titulo + "</title><h1>" + titulo + "</h1><ul>"
+    if str_ends(base, "/")
+        h = h + "<li><a href=\"" + url_de_ruta(_documento_padre(base)) + "\">" + _documento_html(tr(478, "Parent drawer")) + "</a></li>"
+    end
+    i = 0
+    while i < n
+        nombre = nombres[i]
+        if cajones[i]
+            h = h + "<li><a href=\"" + url_de_ruta(base + nombre) + "/\"><b>" + _documento_html(nombre) + "/</b></a></li>"
+        else
+            h = h + "<li><a href=\"" + url_de_ruta(base + nombre) + "\">" + _documento_html(nombre) + "</a> (" + (tamanos[i] + 1023) / 1024 + " KB)</li>"
+        end
+        i = i + 1
+    end
+    return h + "</ul>"
+end
+
+# "Work:a/b/" -> "Work:a/"; "Work:a/" -> "Work:"
+func _documento_padre(base: String) -> String
+    t = base[:base.length - 1]
+    i = t.length - 1
+    while i >= 0
+        c = str_code(t, i)
+        if c == 47
+            return t[:i + 1]
+        end
+        if c == 58
+            return t[:i + 1]
+        end
+        i = i - 1
+    end
+    return base
+end
+
+func _documento_html(t: String) -> String
+    return str_replace(str_replace(str_replace(t, "&", "&amp;"), "<", "&lt;"), "\"", "&quot;")
 end
 
 func documento_abrir(direccion: String) -> Documento

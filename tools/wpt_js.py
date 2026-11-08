@@ -35,13 +35,15 @@ from medir_visor import MAQUINAS          # noqa: E402
 
 # (el informe: cada subprueba y el total del fichero, en __dashweb_wpt; sin la tabla de resultados en la página)
 INFORME = r"""
-setup({output: false});
+setup({output: false, timeout_multiplier: 5});  // (el emulador es lento: como hace wptrunner con las plataformas lentas)
 add_completion_callback(function (tests, status) {
     var ruta = String(location.pathname).replace(/^\//, '');
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
     var harness = ['OK', 'ERROR', 'TIMEOUT', 'PRECONDITION_FAILED'];
     var pasan = 0, l = [];
-    function una(t) { return String(t === undefined || t === null ? '' : t).replace(/\s+/g, ' ').slice(0, 160); }
+    // (en una línea y sin caracteres de control: un nulo en el nombre de una subprueba cortaba el informe entero, que
+    // pasa por textos de C; url-origin, a-element)
+    function una(t) { return String(t === undefined || t === null ? '' : t).replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').slice(0, 160); }
     tests.forEach(function (t) {
         if (t.status === 0) pasan++;
         l.push('WPT SUB ' + (est[t.status] || t.status) + ' ' + ruta + ' | ' + una(t.name) + (t.status ? ' | ' + una(t.message) : ''));
@@ -51,6 +53,65 @@ add_completion_callback(function (tests, status) {
     window.__dashweb_wpt = l.join('\n');
 });
 """
+
+
+def _manejador(camino):
+    """Un .py de wptserve (def main(request, response)) de la copia de WPT, con lo poco que usan los de las carpetas
+    pasadas: request.GET.first/get, request.headers, response.headers.set y lo que devuelve main (texto, o
+    (cabeceras, cuerpo), o (estado, cabeceras, cuerpo)). None si no es uno."""
+    import types
+    import urllib.parse
+    ruta, _, consulta = camino.partition("?")
+    f = WPT / urllib.parse.unquote(ruta).lstrip("/")
+    if f.suffix != ".py" or not f.is_file():
+        return None
+    utiles = types.ModuleType("wptserve.utils")
+    utiles.isomorphic_decode = lambda b: b.decode("latin-1") if isinstance(b, bytes) else b
+    utiles.isomorphic_encode = lambda t: t.encode("latin-1") if isinstance(t, str) else t
+    wptserve = types.ModuleType("wptserve")
+    wptserve.utils = utiles
+    sys.modules.setdefault("wptserve", wptserve)
+    sys.modules.setdefault("wptserve.utils", utiles)
+    q = urllib.parse.parse_qs(consulta, keep_blank_values=True)
+
+    class Get:
+        def first(self, k, defecto=None):
+            k = k.decode("latin-1") if isinstance(k, bytes) else k
+            return q[k][0].encode("latin-1") if k in q else defecto
+        get = first
+
+        def __contains__(self, k):
+            return (k.decode("latin-1") if isinstance(k, bytes) else k) in q
+
+    class Cabeceras(list):
+        def set(self, k, v):
+            k = k.decode("latin-1") if isinstance(k, bytes) else k
+            self[:] = [(a, b) for a, b in self if a.lower() != k.lower()]
+            self.append((k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
+        append_header = set
+
+    peticion = types.SimpleNamespace(GET=Get(), headers={}, url_parts=None)
+    respuesta = types.SimpleNamespace(headers=Cabeceras(), status=200)
+    espacio = {"__name__": "wpt_manejador"}
+    try:
+        exec(compile(f.read_text(encoding="utf-8"), str(f), "exec"), espacio)
+        r = espacio["main"](peticion, respuesta)
+    except Exception as e:
+        return 500, [("Content-Type", "text/plain")], ("manejador: %s" % e).encode()
+    estado, cabeceras = respuesta.status, list(respuesta.headers)
+    if isinstance(r, tuple):
+        if len(r) == 3:
+            estado, extra, r = r
+        else:
+            extra, r = r
+        for k, v in extra:
+            cabeceras.append((k.decode("latin-1") if isinstance(k, bytes) else k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
+    if isinstance(estado, tuple):
+        estado = estado[0]
+    if not any(k.lower() == "content-type" for k, _ in cabeceras):
+        cabeceras.append(("Content-Type", "text/html"))
+    cuerpo = r.encode("utf-8") if isinstance(r, str) else (r or b"")
+    return int(estado), cabeceras, cuerpo
 
 
 def pruebas(carpeta):
@@ -138,6 +199,16 @@ def main():
                 self.end_headers()
                 self.wfile.write(cuerpo)
                 return
+            py = _manejador(self.path)
+            if py is not None:
+                estado, cabeceras, cuerpo = py
+                self.send_response(estado)
+                for k, v in cabeceras:
+                    self.send_header(k, v)
+                self.send_header("Content-Length", str(len(cuerpo)))
+                self.end_headers()
+                self.wfile.write(cuerpo)
+                return
             env = _envoltorio(self.path.split("?")[0])
             if env is not None:
                 self.send_response(200)
@@ -155,7 +226,7 @@ def main():
                            cwd=ROOT, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit(r.stdout + r.stderr)
-        out = run_programs([str(exe)], timeout=120 + 30 * len(lote), kickstart=os.environ.get("DASH_KICKSTART_32"),
+        out = run_programs([str(exe)], timeout=120 + 70 * len(lote), kickstart=os.environ.get("DASH_KICKSTART_32"),
                            extra_config="bsdsocket_library = 1\n" + MAQUINAS[a.maquina],
                            system=os.path.expanduser("~/.cache/dash-emu/sys32rtg38"),
                            args=[f"http://127.0.0.1:{PUERTO}/ dashweb-lista-js.txt"])[0]

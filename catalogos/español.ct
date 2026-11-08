@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (06.11.2026)
+## version $VER: Tachyon.catalog 1.0 (07.11.2026)
 ## language español
 ## codeset 0
 ;
@@ -152,6 +152,9 @@ Guardar enlace como...
 MSG_50
 Página
 ; Page
+MSG_51
+Abrir fichero...
+; Open file...
 MSG_100
 Esta página no se guarda en marcadores
 ; This page can't be bookmarked
@@ -641,3 +644,12 @@ Te saldrá un código: ponlo en la incidencia que abras en %1, y di qué hacías
 MSG_475
 Esto es todo lo que se enviará:
 ; This is everything that will be sent:
+MSG_476
+Abrir fichero
+; Open file
+MSG_477
+Contenido de %1
+; Contents of %1
+MSG_478
+Cajón superior
+; Parent drawer

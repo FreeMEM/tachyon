@@ -62,6 +62,11 @@ static size_t _js_memoria_tope(void) {
     if (tope > (ULONG)JS_MEMORIA_MAX) tope = JS_MEMORIA_MAX;
     return (size_t)tope;
 }
+static size_t _js_pila_tope(void) {
+    struct Task *yo = FindTask(NULL);
+    ULONG pila = (ULONG)yo->tc_SPUpper - (ULONG)yo->tc_SPLower;
+    return pila > 128 * 1024 ? pila - 64 * 1024 : 64 * 1024;
+}
 typedef struct _JsMotorS {
     JSRuntime *rt;
     JSContext *ctx;
@@ -533,11 +538,7 @@ LONG js_nuevo(void)
            (the tests, on an A1200 with 8 MB, cannot ask for more: libnix's swapstack waits on a requester when it
            cannot get it), ~960 KB in the browser, whose @stack is 1 MB (Polymer stamping its templates in YouTube
            overflowed 192 KB; tarea 38) */
-        {
-            struct Task *yo = FindTask(NULL);
-            ULONG pila = (ULONG)yo->tc_SPUpper - (ULONG)yo->tc_SPLower;
-            JS_SetMaxStackSize(m->rt, pila > 128 * 1024 ? pila - 64 * 1024 : 64 * 1024);
-        }
+        JS_SetMaxStackSize(m->rt, _js_pila_tope());
         /* a page whose JavaScript wants more gets "out of memory" in its script, instead of leaving the whole
            Amiga without memory (Next.js on commodoremalacca.club took the 128 MB of the RTG machine) */
         JS_SetMemoryLimit(m->rt, _js_memoria_tope());
@@ -638,6 +639,7 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
     const char *t = codigo ? (const char *)codigo : "";
     size_t n = strlen(t), i;
     ULONG suma = 5381;
+    int ascii = 1;
     JSValue f, v;
     char *texto;
     STRPTR r;
@@ -658,29 +660,70 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
             Close(f2);
         }
     }
+    f = JS_UNDEFINED;
     if (!bc || bc_fuente != n || bc_suma != suma) {
-        char *fuente = _js_utf8(t);
-        uint8_t *b;
-        size_t largo;
+        char *fuente;
+        uint8_t *b = NULL;
+        size_t largo = 0;
+        JSRuntime *crt = m->rt;
+        JSContext *cctx = m->ctx;
+        APTR tpool = NULL;
+        int quitar = JS_GetStripInfo(m->rt);
+        /* (el preludio es solo ASCII, tools/preludio.py lo mira: tal cual, sin otra copia en UTF-8; se mira aquí, no
+           con la suma, que va en cada página) */
+        for (i = 0; i < n && ascii; i++)
+            if ((unsigned char)t[i] >= 0x80) ascii = 0;
+        fuente = ascii ? (char *)t : _js_utf8(t);
         if (!fuente) { m->error = strdup("sin memoria (texto del guardado)"); return (STRPTR)""; }
+        /* con memoria de sobra, en un motor aparte con su pool, que se borra entero al acabar: en el de la página, los
+           charcos de 512 KB que llenaba la compilación se quedaban con ella (algo que dura acaba en cada uno) y la
+           primera página de un A1200 de 8 MB tenía 520 KB menos (tarea 61). Solo con lo que pide compilar: Eval y el
+           compilador de expresiones regulares (el mismo bytecode). Con poca (el motor aparte no cabría), en el de la
+           página, y lo compilado se ejecuta tal cual, sin leerlo otra vez del bytecode */
+        if (AvailMem(MEMF_ANY) > 4UL * 1024 * 1024) {
+            JSRuntime *trt;
+            JSContext *tctx = NULL;
+#ifdef _JS_GUARDAS
+            trt = JS_NewRuntime2(&_jg_funciones, NULL);
+#else
+            tpool = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+            trt = tpool ? JS_NewRuntime2(&_jm_funciones, tpool) : NULL;
+#endif
+            if (trt) {
+                JS_SetMemoryLimit(trt, _js_memoria_tope());
+                JS_SetMaxStackSize(trt, _js_pila_tope());
+                tctx = JS_NewContextRaw(trt);
+                if (tctx) {
+                    JS_AddIntrinsicRegExpCompiler(tctx);
+                    if (JS_AddIntrinsicEval(tctx)) {
+                        JS_FreeContext(tctx);
+                        tctx = NULL;
+                    }
+                }
+            }
+            if (tctx) {
+                crt = trt;
+                cctx = tctx;
+            } else {
+                if (trt) JS_FreeRuntime(trt);
+                if (tpool) DeletePool(tpool);
+                tpool = NULL;
+            }
+        }
         _js_empieza();
         /* sin el texto de sus funciones (el de toString): QuickJS guarda el de cada una, también el de las de dentro,
            y va en el bytecode; con el preludio de 245 KB ya no cabía en un A1200 de 8 MB (tarea 41d). Sus funciones
            dicen [native code], como las de un navegador */
-        {
-            int quitar = JS_GetStripInfo(m->rt);
-            JS_SetStripInfo(m->rt, quitar | JS_STRIP_SOURCE);
-            f = JS_Eval(m->ctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
-            JS_SetStripInfo(m->rt, quitar);
+        JS_SetStripInfo(crt, quitar | JS_STRIP_SOURCE);
+        f = JS_Eval(cctx, fuente, strlen(fuente), nombre ? (const char *)nombre : "<js>", JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_COMPILE_ONLY);
+        JS_SetStripInfo(crt, quitar);
+        if (!ascii) free(fuente);
+        if (JS_IsException(f))
+            m->error = _js_excepcion(cctx);
+        else {
+            b = JS_WriteObject(cctx, &largo, f, JS_WRITE_OBJ_BYTECODE);
+            if (!b) m->error = _js_excepcion(cctx);
         }
-        free(fuente);
-        if (JS_IsException(f)) {
-            m->error = _js_excepcion(m->ctx);
-            if (!m->error) m->error = strdup("error");
-            return (STRPTR)"";
-        }
-        b = JS_WriteObject(m->ctx, &largo, f, JS_WRITE_OBJ_BYTECODE);
-        JS_FreeValue(m->ctx, f);
         if (b) {
             free(bc);
             bc = (uint8_t *)malloc(largo);
@@ -703,20 +746,29 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
                         DeleteFile((STRPTR)"T:tachyon_preludio.bc.nuevo");
                 }
             }
-            js_free(m->ctx, b);
+            js_free(cctx, b);
         }
-        if (!bc) {
-            m->error = b ? NULL : _js_excepcion(m->ctx);
-            if (!m->error) m->error = strdup("sin memoria (bytecode del guardado)");
+        if (cctx != m->ctx) {
+            JS_FreeValue(cctx, f);
+            f = JS_UNDEFINED;
+            JS_FreeContext(cctx);
+            JS_FreeRuntime(crt);
+            if (tpool) DeletePool(tpool);
+        }
+        if (!bc || bc_fuente != n || bc_suma != suma) {
+            JS_FreeValue(m->ctx, f);
+            if (!m->error) m->error = strdup(b ? "sin memoria (bytecode del guardado)" : "error");
             return (STRPTR)"";
         }
     }
     _js_empieza();
-    f = JS_ReadObject(m->ctx, bc, bc_largo, JS_READ_OBJ_BYTECODE);
-    if (JS_IsException(f)) {
-        m->error = _js_excepcion(m->ctx);
-        if (!m->error) m->error = strdup("error");
-        return (STRPTR)"";
+    if (JS_IsUndefined(f)) {
+        f = JS_ReadObject(m->ctx, bc, bc_largo, JS_READ_OBJ_BYTECODE);
+        if (JS_IsException(f)) {
+            m->error = _js_excepcion(m->ctx);
+            if (!m->error) m->error = strdup("error");
+            return (STRPTR)"";
+        }
     }
     v = JS_EvalFunction(m->ctx, f);
     _js_trabajos(m->rt);
@@ -2514,6 +2566,24 @@ static JSValue _jsdom_galleta(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_UNDEFINED;
 }
 
+/* __dashweb_almacen(origen) y __dashweb_almacen_poner(origen, cambios, todo): localStorage que dura (lib/almacen.dash) */
+static JSValue _jsdom_almacen(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *o = _jsdom_arg(ctx, argc, argv, 0);
+    JSValue v;
+    if (!o) return JS_EXCEPTION;
+    v = _jsdom_cadena(ctx, jsdom_almacen((STRPTR)o));
+    _jsdom_soltar(o);
+    return v;
+}
+
+static JSValue _jsdom_almacen_poner(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *o = _jsdom_arg(ctx, argc, argv, 0), *t = _jsdom_arg(ctx, argc, argv, 1);
+    if (o && t) jsdom_almacen_poner((STRPTR)o, (STRPTR)t, argc > 2 && JS_ToBool(ctx, argv[2]));
+    _jsdom_soltar(o);
+    _jsdom_soltar(t);
+    return JS_UNDEFINED;
+}
+
 /* __dashweb_navegar(url, sustituir): location.assign/replace/href = (jsdom_navegar) */
 /* __dashweb_es_nodo(o): ¿un nodo de verdad (o solo algo que hereda de su prototipo, como el de una clase)? */
 static JSValue _jsdom_es_nodo(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -2525,6 +2595,12 @@ static JSValue _jsdom_navegar(JSContext *ctx, JSValueConst this_val, int argc, J
     if (u) jsdom_navegar(_jsdom_de(ctx)->doc, (STRPTR)u, argc > 1 && JS_ToBool(ctx, argv[1]));
     _jsdom_soltar(u);
     return JS_UNDEFINED;
+}
+
+/* __dashweb_version(): dom_version de lib/dom.dash (sube con cada cambio de un árbol): lo que el preludio guarda
+   mientras no cambie el DOM (document.baseURI; tarea 41d) */
+static JSValue _jsdom_version(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    return JS_NewInt32(ctx, dom_version_actual());
 }
 
 /* milliseconds since the program started (Dash's time_ms) */
@@ -2804,11 +2880,14 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_coleccion", JS_NewCFunction(m->ctx, _col_js, "__dashweb_coleccion", 2));
     JS_SetPropertyStr(m->ctx, global, "window", JS_DupValue(m->ctx, global));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_reloj", JS_NewCFunction(m->ctx, _jsdom_reloj, "__dashweb_reloj", 0));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_version", JS_NewCFunction(m->ctx, _jsdom_version, "__dashweb_version", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galletas", JS_NewCFunction(m->ctx, _jsdom_galletas, "__dashweb_galletas", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_navegar", JS_NewCFunction(m->ctx, _jsdom_navegar, "__dashweb_navegar", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_es_nodo", JS_NewCFunction(m->ctx, _jsdom_es_nodo, "__dashweb_es_nodo", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));

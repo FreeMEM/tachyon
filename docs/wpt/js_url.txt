@@ -1,30 +1,37 @@
-WPT TOTAL url: 2926/4319 subpruebas en 34 de 41 ficheros
+WPT TOTAL url: 7283/8699 subpruebas en 41 de 41 ficheros
 
 WPT FILE url/IdnaTestV2-removed.any.html 1/21 OK
-WPT FILE url/IdnaTestV2.any.html 1536/2676 TIMEOUT 
+WPT FILE url/IdnaTestV2.any.html 1536/2676 OK
+WPT FILE url/a-element-origin.html 405/415 OK
+WPT FILE url/a-element.html 844/897 OK
 WPT FILE url/data-uri-fragment.html 0/1 TIMEOUT 
-WPT FILE url/historical.any.html 6/8 OK
+WPT FILE url/failure.html 1175/1175 OK
+WPT FILE url/historical.any.html 8/8 OK
 WPT FILE url/idlharness.any.html 0/1 OK
 WPT FILE url/javascript-urls.window.html 0/6 TIMEOUT 
 WPT FILE url/percent-encoding.window.html 1/17 OK
-WPT FILE url/toascii.window.html 616/784 TIMEOUT 
+WPT FILE url/toascii.window.html 616/784 OK
 WPT FILE url/url-constructor.any.html 137/137 OK
 WPT FILE url/url-constructor.any.html 13/13 OK
 WPT FILE url/url-constructor.any.html 14/14 OK
-WPT FILE url/url-searchparams.any.html 3/4 OK
+WPT FILE url/url-constructor.any.html 740/740 OK
+WPT FILE url/url-origin.any.html 416/416 OK
+WPT FILE url/url-searchparams.any.html 4/4 OK
 WPT FILE url/url-setters-a-area.window.html 43/43 OK
 WPT FILE url/url-setters-a-area.window.html 13/13 OK
 WPT FILE url/url-setters-a-area.window.html 13/13 OK
+WPT FILE url/url-setters-a-area.window.html 491/491 OK
 WPT FILE url/url-setters-stripping.any.html 320/320 OK
 WPT FILE url/url-setters.any.html 22/22 OK
 WPT FILE url/url-setters.any.html 7/7 OK
 WPT FILE url/url-setters.any.html 7/7 OK
+WPT FILE url/url-setters.any.html 246/246 OK
 WPT FILE url/url-statics-canparse.any.html 8/8 OK
 WPT FILE url/url-statics-parse.any.html 8/8 OK
 WPT FILE url/url-tojson.any.html 1/1 OK
-WPT FILE url/urlencoded-parser.any.html 70/105 OK
+WPT FILE url/urlencoded-parser.any.html 105/105 OK
 WPT FILE url/urlsearchparams-append.any.html 4/4 OK
-WPT FILE url/urlsearchparams-constructor.any.html 24/27 OK
+WPT FILE url/urlsearchparams-constructor.any.html 26/27 OK
 WPT FILE url/urlsearchparams-delete.any.html 8/8 OK
 WPT FILE url/urlsearchparams-foreach.any.html 6/6 OK
 WPT FILE url/urlsearchparams-get.any.html 2/2 OK
@@ -1195,243 +1202,70 @@ WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???????") C1; V6; V7 | assert_th
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???.?4?") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???.?4?") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 WPT SUB FAIL url/IdnaTestV2.any.html | ToASCII("???????") C1; V6; V7 | assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:foo.com> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < :foo.com > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < foo.com > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: < > against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:foo.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:foo.com\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:a> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:#> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#\> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#;?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <:23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </:23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <\x> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <::> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <::23> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http::@c:29> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <[61:24:74]:98> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:[61:27]/:foo> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/example.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/> against <http://example.com/> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:example.com/> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/b/c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/ /c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a%2fc> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </a/%2f/c> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <#?> against <http://example.org/foo/bar> | assert_equals: origin expected "http://example.org" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/example.com/> against <about:blank> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:example.com/> against <about:blank> | assert_equals: origin expected "http://example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:a:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/a:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http::b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/:b@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:a:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http:/a:@www.example.com> against <about:blank> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: </test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <.> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <..> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <./test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../aaa/test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <../../test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <?/test.txt> against <http://www.example.com/test> | assert_equals: origin expected "http://www.example.com" but got "http://127.0.0.1:40881"
 WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://GOO? goo.com> against <http://other.com/> | assert_equals: origin expected "http://googoo.com" but got "http://goo"
-WPT SUB FAIL url/a-element-origin.html | Parsing origin: <
-WPT SUB FAIL url/a-element.html | Parsing: <http:foo.com> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/foo.com" but got "http://127.0.0.1:40881/url/foo.com"
-WPT SUB FAIL url/a-element.html | Parsing: < :foo.com > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com" but got "http://127.0.0.1:40881/url/:foo.com"
-WPT SUB FAIL url/a-element.html | Parsing: < foo.com > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/foo.com" but got "http://127.0.0.1:40881/url/foo.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:b/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f: /c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:fifty-two/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <non-special://f:999999/c> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://f: 21 / b ? d # e > against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: < > against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar" but got "http://127.0.0.1:40881/url/a-element.html"
-WPT SUB FAIL url/a-element.html | Parsing: <:foo.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com/" but got "http://127.0.0.1:40881/url/:foo.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <:foo.com\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:foo.com/" but got "http://127.0.0.1:40881/url/:foo.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <:> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:" but got "http://127.0.0.1:40881/url/:"
-WPT SUB FAIL url/a-element.html | Parsing: <:a> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:a" but got "http://127.0.0.1:40881/url/:a"
-WPT SUB FAIL url/a-element.html | Parsing: <:/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:/" but got "http://127.0.0.1:40881/url/:/"
-WPT SUB FAIL url/a-element.html | Parsing: <:\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:/" but got "http://127.0.0.1:40881/url/:/"
-WPT SUB FAIL url/a-element.html | Parsing: <:#> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:#" but got "http://127.0.0.1:40881/url/:#"
-WPT SUB FAIL url/a-element.html | Parsing: <#> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#" but got "http://127.0.0.1:40881/url/a-element.html#"
-WPT SUB FAIL url/a-element.html | Parsing: <#/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#/" but got "http://127.0.0.1:40881/url/a-element.html#/"
-WPT SUB FAIL url/a-element.html | Parsing: <#\> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#\\" but got "http://127.0.0.1:40881/url/a-element.html#\\"
-WPT SUB FAIL url/a-element.html | Parsing: <#;?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#;?" but got "http://127.0.0.1:40881/url/a-element.html#;?"
-WPT SUB FAIL url/a-element.html | Parsing: <?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar?" but got "http://127.0.0.1:40881/url/a-element.html?"
-WPT SUB FAIL url/a-element.html | Parsing: </> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <:23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:23" but got "http://127.0.0.1:40881/url/:23"
-WPT SUB FAIL url/a-element.html | Parsing: </:23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/:23" but got "http://127.0.0.1:40881/:23"
-WPT SUB FAIL url/a-element.html | Parsing: <\x> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/x" but got "http://127.0.0.1:40881/x"
-WPT SUB FAIL url/a-element.html | Parsing: <::> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/::" but got "http://127.0.0.1:40881/url/::"
-WPT SUB FAIL url/a-element.html | Parsing: <::23> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/::23" but got "http://127.0.0.1:40881/url/::23"
-WPT SUB FAIL url/a-element.html | Parsing: <http::@c:29> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/:@c:29" but got "http://127.0.0.1:40881/url/:@c:29"
-WPT SUB FAIL url/a-element.html | Parsing: <[61:24:74]:98> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/[61:24:74]:98" but got "http://127.0.0.1:40881/url/[61:24:74]:98"
-WPT SUB FAIL url/a-element.html | Parsing: <http:[61:27]/:foo> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/[61:27]/:foo" but got "http://127.0.0.1:40881/url/[61:27]/:foo"
-WPT SUB FAIL url/a-element.html | Parsing: <http://[1::2]:3:4> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://2001::1]:80> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[::127.0.0.1.]> against <http://example.org/foo/bar> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/example.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/example.com/" but got "http://127.0.0.1:40881/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/> against <http://example.com/> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <file://example:1/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://example:test/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://example%/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <file://[example]/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:example.com/> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/example.com/" but got "http://127.0.0.1:40881/url/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: </a/b/c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/b/c" but got "http://127.0.0.1:40881/a/b/c"
-WPT SUB FAIL url/a-element.html | Parsing: </a/ /c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/%20/c" but got "http://127.0.0.1:40881/a/%20/c"
-WPT SUB FAIL url/a-element.html | Parsing: </a%2fc> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a%2fc" but got "http://127.0.0.1:40881/a%2fc"
-WPT SUB FAIL url/a-element.html | Parsing: </a/%2f/c> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/a/%2f/c" but got "http://127.0.0.1:40881/a/%2f/c"
-WPT SUB FAIL url/a-element.html | Parsing: <#?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#%CE%B2" but got "http://127.0.0.1:40881/url/a-element.html#?"
-WPT SUB FAIL url/a-element.html | Parsing: <C|/foo/bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "http://127.0.0.1:40881/url/C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: </C|\foo\bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "http://127.0.0.1:40881/C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <//C|/foo/bar> against <file:///tmp/mock/path> | assert_equals: href expected "file:///C:/foo/bar" but got "//C|/foo/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <//server/file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: <\\server\file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: </\server/file> against <file:///tmp/mock/path> | assert_equals: href expected "file://server/file" but got "http://server/file"
-WPT SUB FAIL url/a-element.html | Parsing: <//> against <file:///tmp/mock/path> | assert_equals: href expected "file:///" but got "//"
-WPT SUB FAIL url/a-element.html | Parsing: <///> against <file:///tmp/mock/path> | assert_equals: href expected "file:///" but got "///"
-WPT SUB FAIL url/a-element.html | Parsing: <///test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///test" but got "http://test/"
-WPT SUB FAIL url/a-element.html | Parsing: <test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///tmp/mock/test" but got "http://127.0.0.1:40881/url/test"
-WPT SUB FAIL url/a-element.html | Parsing: <file:test> against <file:///tmp/mock/path> | assert_equals: href expected "file:///tmp/mock/test" but got "file:///test"
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: < http://example.com/ > against <about:blank> | assert_equals: origin expected "http://example.com" but got ""
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://www.foo?bar.com> against <http://other.com/> | assert_equals: origin expected "http://www.foo.bar.com" but got "http://www.foo"
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://??.com> against <http://other.com/> | assert_equals: origin expected "http://go.com" but got ""
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://????> against <http://other.com/> | assert_equals: origin expected "http://xn--6qqa088eba" but got ""
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://????????????> against <http://other.com/> | assert_equals: origin expected "http://192.168.0.1" but got ""
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://foo:?@example.com/bar> against <http://other.com/> | assert_equals: origin expected "http://example.com" but got "http://foo"
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://a:?x@host/> against <about:blank> | assert_equals: origin expected "http://host" but got "http://a"
+WPT SUB FAIL url/a-element-origin.html | Parsing origin: <http://?@host/> against <about:blank> | assert_equals: origin expected "http://host" but got ""
+WPT SUB FAIL url/a-element.html | Parsing: <#?> against <http://example.org/foo/bar> | assert_equals: href expected "http://example.org/foo/bar#%CE%B2" but got "http://example.org/foo/bar#?"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/????> against <about:blank> | assert_equals: href expected "http://example.com/%E4%BD%A0%E5%A5%BD%E4%BD%A0%E5%A5%BD" but got "http://example.com/????"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%A5/foo" but got "http://example.com/?/foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/ /foo> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BB%BF/foo" but got "http://example.com//foo"
 WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/?/foo/?/bar> against <about:blank> | assert_equals: href expected "http://example.com/%E2%80%AE/foo/%E2%80%AD/bar" but got "http://example.com/?/foo/?/bar"
-WPT SUB FAIL url/a-element.html | Parsing: <http://user:pass@/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://foo:-80/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/example.com/> against <about:blank> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:example.com/> against <about:blank> | assert_equals: href expected "http://example.com/" but got "http://127.0.0.1:40881/url/example.com/"
-WPT SUB FAIL url/a-element.html | Parsing: <http:@www.example.com> against <about:blank> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/url/@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@www.example.com> against <about:blank> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:b@www.example.com> against <about:blank> | assert_equals: href expected "http://a:b@www.example.com/" but got "http://127.0.0.1:40881/url/a:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:b@www.example.com> against <about:blank> | assert_equals: href expected "http://a:b@www.example.com/" but got "http://127.0.0.1:40881/a:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http::b@www.example.com> against <about:blank> | assert_equals: href expected "http://:b@www.example.com/" but got "http://127.0.0.1:40881/url/:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/:b@www.example.com> against <about:blank> | assert_equals: href expected "http://:b@www.example.com/" but got "http://127.0.0.1:40881/:b@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://user@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <https:@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://a:b@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http::@/www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:a:@www.example.com> against <about:blank> | assert_equals: href expected "http://a@www.example.com/" but got "http://127.0.0.1:40881/url/a:@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:/a:@www.example.com> against <about:blank> | assert_equals: href expected "http://a@www.example.com/" but got "http://127.0.0.1:40881/a:@www.example.com"
-WPT SUB FAIL url/a-element.html | Parsing: <http:@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http:/@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://@:www.example.com> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: </> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: </test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <.> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/url/"
-WPT SUB FAIL url/a-element.html | Parsing: <..> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/" but got "http://127.0.0.1:40881/"
-WPT SUB FAIL url/a-element.html | Parsing: <test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/url/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <./test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/url/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../aaa/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/aaa/test.txt" but got "http://127.0.0.1:40881/aaa/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <../../test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/test.txt" but got "http://127.0.0.1:40881/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <?/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/%E4%B8%AD/test.txt" but got "http://127.0.0.1:40881/url/a-element.html?/test.txt"
-WPT SUB FAIL url/a-element.html | Parsing: <http://example example.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://Goo%20 goo%7C|.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://[:]> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
-WPT SUB FAIL url/a-element.html | Parsing: <http://GOO goo.com> against <http://other.com/> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <?/test.txt> against <http://www.example.com/test> | assert_equals: href expected "http://www.example.com/%E4%B8%AD/test.txt" but got "http://www.example.com/test?/test.txt"
+WPT SUB FAIL url/a-element.html | Parsing: <http://GOO goo.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://GOO goo.com" but got "http://GOO ?goo.com"
 WPT SUB FAIL url/a-element.html | Parsing: <http://GOO? goo.com> against <http://other.com/> | assert_equals: href expected "http://googoo.com/" but got "http://goo/?goo.com"
-WPT SUB FAIL url/a-element.html | Parsing: <
+WPT SUB FAIL url/a-element.html | Parsing: < http://example.com/ > against <about:blank> | assert_equals: href expected "http://example.com/" but got ""
+WPT SUB FAIL url/a-element.html | Parsing: <http://www.foo?bar.com> against <http://other.com/> | assert_equals: href expected "http://www.foo.bar.com/" but got "http://www.foo/?bar.com"
+WPT SUB FAIL url/a-element.html | Parsing: <http://?zyx.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://?zyx.com" but got "http://?zyx.com"
+WPT SUB FAIL url/a-element.html | Parsing: <https://?> against <about:blank> | assert_equals: failure should set href to input expected "https://\ufffd" but got "https://?"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/???#?> against <about:blank> | assert_equals: href expected "https://x/%EF%BF%BD?%EF%BF%BD#%EF%BF%BD" but got "https://x/???#?"
+WPT SUB FAIL url/a-element.html | Parsing: <http://??.com> against <http://other.com/> | assert_equals: href expected "http://go.com/" but got "http://??.com"
+WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://???.com" but got "http://???.com"
+WPT SUB FAIL url/a-element.html | Parsing: <http://???.com> against <http://other.com/> | assert_equals: failure should set href to input expected "http://???.com" but got "http://???.com"
+WPT SUB FAIL url/a-element.html | Parsing: <http://????> against <http://other.com/> | assert_equals: href expected "http://xn--6qqa088eba/" but got "http://????"
+WPT SUB FAIL url/a-element.html | Parsing: <http://????????????> against <http://other.com/> | assert_equals: href expected "http://192.168.0.1/" but got "http://????????????"
+WPT SUB FAIL url/a-element.html | Parsing: <http://foo:?@example.com/bar> against <http://other.com/> | assert_equals: href expected "http://foo:%F0%9F%92%A9@example.com/bar" but got "http://foo/?@example.com/bar"
+WPT SUB FAIL url/a-element.html | Parsing: <http://?x@host/> against <about:blank> | assert_equals: href expected "http://%F0%9F%98%80x@host/" but got "http://?x@host/"
+WPT SUB FAIL url/a-element.html | Parsing: <http://a:?x@host/> against <about:blank> | assert_equals: href expected "http://a:%F0%9F%98%80x@host/" but got "http://a/?x@host/"
+WPT SUB FAIL url/a-element.html | Parsing: <http://?@host/> against <about:blank> | assert_equals: href expected "http://%F0%9F%98%80@host/" but got "http://?@host/"
+WPT SUB FAIL url/a-element.html | Parsing: <https://localhost?q=?> against <about:blank> | assert_equals: href expected "https://localhost/?q=%F0%9F%94%A5" but got "https://localhost/?q=?"
+WPT SUB FAIL url/a-element.html | Parsing: <https://localhost#?> against <about:blank> | assert_equals: href expected "https://localhost/#%F0%9F%94%A5" but got "https://localhost/#?"
+WPT SUB FAIL url/a-element.html | Parsing: <wow:?> against <about:blank> | assert_equals: href expected "wow:%EF%BF%BF" but got "wow:?"
+WPT SUB FAIL url/a-element.html | Parsing: <sc://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://a b/> against <about:blank> | assert_unreached: Expected URL to fail parsing Reached unreachable code
+WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test??> against <about:blank> | assert_equals: href expected "http://example.org/test?%E2%8C%A3" but got "http://example.org/test??"
+WPT SUB FAIL url/a-element.html | Parsing: <http://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "http://example.org/test?a#b%00c" but got "http://example.org/test?a#b"
+WPT SUB FAIL url/a-element.html | Parsing: <non-spec://example.org/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec://example.org/test?a#b%00c" but got "non-spec://example.org/test?a#b"
+WPT SUB FAIL url/a-element.html | Parsing: <non-spec:/test?a#b c> against <about:blank> | assert_equals: href expected "non-spec:/test?a#b%00c" but got "non-spec:/test?a#b"
+WPT SUB FAIL url/a-element.html | Parsing: <file://loC??????/usr/bin> against <about:blank> | assert_equals: href expected "file:///usr/bin" but got "file://loc/??????/usr/bin"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:cannot-be-a-base-url- ~ > against <about:blank> | assert_equals: href expected "non-special:cannot-be-a-base-url-%00%01%1F%1E~%7F%C2%80" but got "non-special:cannot-be-a-base-url-"
+WPT SUB FAIL url/a-element.html | Parsing: <http://?.123/> against <about:blank> | assert_equals: failure should set href to input expected "http://?.123/" but got "http://?.123/"
+WPT SUB FAIL url/a-element.html | Parsing: <https:// y> against <about:blank> | assert_equals: failure should set href to input expected "https://\0y" but got "https://"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/ y> against <about:blank> | assert_equals: href expected "https://x/%00y" but got "https://x/"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/? y> against <about:blank> | assert_equals: href expected "https://x/?%00y" but got "https://x/?"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/?# y> against <about:blank> | assert_equals: href expected "https://x/?#%00y" but got "https://x/?#"
+WPT SUB FAIL url/a-element.html | Parsing: <https://?y> against <about:blank> | assert_equals: failure should set href to input expected "https://\uffffy" but got "https://?y"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/?y> against <about:blank> | assert_equals: href expected "https://x/%EF%BF%BFy" but got "https://x/?y"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/??y> against <about:blank> | assert_equals: href expected "https://x/?%EF%BF%BFy" but got "https://x/??y"
+WPT SUB FAIL url/a-element.html | Parsing: <https://x/?#?y> against <about:blank> | assert_equals: href expected "https://x/?#%EF%BF%BFy" but got "https://x/?#?y"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special: y> against <about:blank> | assert_equals: href expected "non-special:%00y" but got "non-special:"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/ y> against <about:blank> | assert_equals: href expected "non-special:x/%00y" but got "non-special:x/"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/? y> against <about:blank> | assert_equals: href expected "non-special:x/?%00y" but got "non-special:x/?"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/?# y> against <about:blank> | assert_equals: href expected "non-special:x/?#%00y" but got "non-special:x/?#"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:?y> against <about:blank> | assert_equals: href expected "non-special:%EF%BF%BFy" but got "non-special:?y"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/?y> against <about:blank> | assert_equals: href expected "non-special:x/%EF%BF%BFy" but got "non-special:x/?y"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/??y> against <about:blank> | assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/??y"
+WPT SUB FAIL url/a-element.html | Parsing: <non-special:x/?#?y> against <about:blank> | assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#?y"
+WPT SUB FAIL url/a-element.html | Parsing: <data:text/plain,test# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "data:text/plain,test#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "data:text/pl
+WPT SUB FAIL url/a-element.html | Parsing: <about:blank# !"#$%&'()*+,-./09:;<=>?@AZ[\]^_`az{|}~ Éé> against <about:blank> | assert_equals: href expected "about:blank#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "about:blank#"
+WPT SUB FAIL url/a-element.html | Parsing: <http://example.com/U+d800?U+dfff???????U+d800?U+dfff??????> against <about:blank> | assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%B
 WPT SUB TIMEOUT url/data-uri-fragment.html | Data URI parsing of fragments | Test timed out
-WPT SUB FAIL url/failure.html | XHR: file://example:1/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): file://example:1/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: file://example:1/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): file://example:1/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: file://example:test/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): file://example:test/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: file://example:test/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): file://example:test/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: file://example%/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): file://example%/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: file://example%/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): file://example%/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: file://[example]/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): file://[example]/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: file://[example]/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): file://[example]/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://user:pass@/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://user:pass@/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://user:pass@/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://user:pass@/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://foo:-80/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://foo:-80/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://foo:-80/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://foo:-80/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://user@/www.example.com should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://user@/www.example.com should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://user@/www.example.com should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://user@/www.example.com should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://@/www.example.com should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://@/www.example.com should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://@/www.example.com should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://@/www.example.com should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://a:b@/www.example.com should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://a:b@/www.example.com should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://a:b@/www.example.com should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://a:b@/www.example.com should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://@:www.example.com should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://@:www.example.com should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://@:www.example.com should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://@:www.example.com should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: https://? should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): https://? should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: https://? should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): https://? should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: https://%EF%BF%BD should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): https://%EF%BF%BD should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: https://%EF%BF%BD should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): https://%EF%BF%BD should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: https://x x:12 should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): https://x x:12 should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: https://x x:12 should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): https://x x:12 should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: http://[www.google.com]/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): http://[www.google.com]/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: http://[www.google.com]/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): http://[www.google.com]/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: sc://@/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): sc://@/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: sc://@/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): sc://@/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: sc://te@s:t@/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): sc://te@s:t@/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: sc://te@s:t@/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): sc://te@s:t@/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: sc://:/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): sc://:/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: sc://:/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): sc://:/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/failure.html | XHR: sc://:12/ should throw | assert_throws_dom: function "() => client.open("GET", test.input)" threw object "TypeError: Failed to construct 'URL': Invalid URL" that is not a DOMException S
-WPT SUB FAIL url/failure.html | sendBeacon(): sc://:12/ should throw | assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
-WPT SUB FAIL url/failure.html | Location's href: sc://:12/ should throw | assert_throws_dom: function "() => frame.contentWindow.location = test.input" did not throw
-WPT SUB FAIL url/failure.html | window.open(): sc://:12/ should throw | assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: cannot read property 'close' of null" that is not a DOMException Synt
-WPT SUB FAIL url/historical.any.html | URL: no structured serialize/deserialize support | assert_throws_dom: function "() => self.structuredClone(new URL("about:blank"))" threw object "TypeError: not a function" that is not a DOMException DataCloneEr
-WPT SUB FAIL url/historical.any.html | URLSearchParams: no structured serialize/deserialize support | assert_throws_dom: function "() => self.structuredClone(new URLSearchParams())" threw object "TypeError: not a function" that is not a DOMException DataCloneErr
 WPT SUB FAIL url/idlharness.any.html | idl_test setup | promise_test: Unhandled rejection with value: object "Error fetching /interfaces/url.idl."
 WPT SUB TIMEOUT url/javascript-urls.window.html | javascript: URL that fails to parse due to invalid host | Test timed out
 WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL that fails to parse due to invalid host and has a U+0009 in scheme | 
@@ -1439,22 +1273,22 @@ WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL with extra slas
 WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL without an opaque path | 
 WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL containing a JavaScript string split over path and query | 
 WPT SUB NOTRUN url/javascript-urls.window.html | javascript: URL containing a JavaScript string split over path and query and has a U+000A in scheme | 
-WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding big5 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding euc-kr | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding windows-1252 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding big5 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding iso-2022-jp | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ?\ with encoding iso-2022-jp | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ?\ with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ? with encoding gb18030 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ? with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input - with encoding shift_jis | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input - with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ¢ with encoding iso-8859-2 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input ¢ with encoding utf-8 | cannot read property 'hash' of null
-WPT SUB FAIL url/percent-encoding.window.html | Input á| with encoding utf-8 | cannot read property 'hash' of null
+WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding big5 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=big5&value=4oCg'
+WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding euc-kr | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=euc-kr&value=4oCg'
+WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=4oCg'
+WPT SUB FAIL url/percent-encoding.window.html | Input + with encoding windows-1252 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=windows-1252&value=4oCg'
+WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding big5 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=big5&value=DkE='
+WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding iso-2022-jp | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=iso-2022-jp&value=DkE='
+WPT SUB FAIL url/percent-encoding.window.html | Input A with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=DkE='
+WPT SUB FAIL url/percent-encoding.window.html | Input ?\ with encoding iso-2022-jp | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=iso-2022-jp&value=4oC+XA=='
+WPT SUB FAIL url/percent-encoding.window.html | Input ?\ with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=4oC+XA=='
+WPT SUB FAIL url/percent-encoding.window.html | Input ? with encoding gb18030 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=gb18030&value=7pel'
+WPT SUB FAIL url/percent-encoding.window.html | Input ? with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=7pel'
+WPT SUB FAIL url/percent-encoding.window.html | Input - with encoding shift_jis | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=shift_jis&value=4oiS'
+WPT SUB FAIL url/percent-encoding.window.html | Input - with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=4oiS'
+WPT SUB FAIL url/percent-encoding.window.html | Input ¢ with encoding iso-8859-2 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=iso-8859-2&value=wqI='
+WPT SUB FAIL url/percent-encoding.window.html | Input ¢ with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=wqI='
+WPT SUB FAIL url/percent-encoding.window.html | Input á| with encoding utf-8 | Invalid URL 'http://127.0.0.1:40881/url/resources/percent-encoding.py?encoding=utf-8&value=w6F8'
 WPT SUB FAIL url/toascii.window.html | xn--a (using URL) | Failed to construct 'URL': Invalid URL
 WPT SUB FAIL url/toascii.window.html | xn--a (using URL.host) | assert_equals: expected "xn--a" but got "x"
 WPT SUB FAIL url/toascii.window.html | xn--a (using URL.hostname) | assert_equals: expected "xn--a" but got "x"
@@ -1623,42 +1457,4 @@ WPT SUB FAIL url/toascii.window.html | xn--0.com (using <a>.hostname) | assert_e
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>) | Failed to construct 'URL': Invalid URL
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.host) | assert_equals: expected "xn--0.com" but got "x"
 WPT SUB FAIL url/toascii.window.html | xn--0.com (using <area>.hostname) | assert_equals: expected "xn--0.com" but got "x"
-WPT SUB FAIL url/url-searchparams.any.html | URL.searchParams and URL.search setters, update propagation | assert_equals: expected "%3Fa=b&c=d" but got "a=b&c=d"
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: test | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: test=  | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %EF%BB%BFtest=%EF%BB%BF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %EF%BF%BF=%EF%BF%BF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %FE%FF | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %FF%FE | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: +&+=x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %C2 | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %C2x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: _charset_=windows-1252&test=%C2x | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input:  | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a= | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: =b | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: & | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: &a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a&a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a&b&c | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b&c=d | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=b&c=d& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: &&&a=b&&&&c=d& | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=a&a=b&a=c | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a==a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: a=a+b+c+d | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %a=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %a_=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %61=a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: %61+%4d%4D= | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: id=0&value=% | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%2sf%2a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%2%2af%2a | not a function
-WPT SUB FAIL url/urlencoded-parser.any.html | request.formData() with input: b=%%2a | not a function
 WPT SUB FAIL url/urlsearchparams-constructor.any.html | URLSearchParams constructor, DOMException as argument | assert_throws_js: Constructing a URLSearchParams from DOMException.prototype should throw due to branding checks function "() => new URLSearchParams(DOMExceptio
-WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 2 unpaired surrogates (no trailing) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["\ufffdx", "3"] got ["\ufffdx", "1"])
-WPT SUB FAIL url/urlsearchparams-constructor.any.html | Construct with 3 unpaired surrogates (no leading) | assert_array_equals: expected property 1 to be "3" but got "1" (expected array ["x\ufffd", "3"] got ["x\ufffd", "1"])

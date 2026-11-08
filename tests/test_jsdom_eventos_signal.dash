@@ -1,0 +1,29 @@
+# Test: addEventListener con signal (abortarla quita el oyente; ya abortada no lo pone; null es TypeError), window.event
+# durante el despacho (undefined fuera), un oyente objeto sin handleEvent da el evento error en la ventana y
+# reportError llama a window.onerror con mensaje y error (tarea 41d, WPT dom/events). (La consola, callada: los dos
+# errores se escriben ahí.)
+# memcheck
+# expect-out: signal: 1 0 | null: TypeError | event: undefined click undefined | handleEvent: error | reportError: hola true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><p id=p></p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "console.log = function () {}; var p = document.getElementById('p'), n = 0, ac = new AbortController();"
+    c = c + "p.addEventListener('x', function () { n++; }, {signal: ac.signal}); p.dispatchEvent(new Event('x')); ac.abort(); p.dispatchEvent(new Event('x'));"
+    c = c + "var m = 0; p.addEventListener('y', function () { m++; }, {signal: AbortSignal.abort()}); p.dispatchEvent(new Event('y'));"
+    c = c + "var r = 'signal: ' + n + ' ' + m;"
+    c = c + "try { p.addEventListener('z', function () {}, {signal: null}); r += ' | null: no'; } catch (e) { r += ' | null: ' + e.name; }"
+    c = c + "var dentro; p.addEventListener('click', function () { dentro = window.event.type; }); var antes = String(window.event); p.click();"
+    c = c + "r += ' | event: ' + antes + ' ' + dentro + ' ' + window.event;"
+    c = c + "var vista = ''; window.addEventListener('error', function (e) { vista = e.type; }); p.addEventListener('w', {}); p.dispatchEvent(new Event('w'));"
+    c = c + "r += ' | handleEvent: ' + vista;"
+    c = c + "var args; window.onerror = function (msg, f, l, col, err) { args = msg + ' ' + (err instanceof Error); }; reportError(new Error('hola'));"
+    c = c + "r += ' | reportError: ' + args; r"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

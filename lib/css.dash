@@ -566,12 +566,17 @@ func css_selector(texto: String) -> Selector
             vacio = false
             i = j
         elif c == 91
+            # (sin "]", hasta el final: CSS cierra lo abierto al acabar; [align="center" vale)
             fin = _css_buscar(s, 93, i + 1)
             if fin < 0
+                fin = n
+            end
+            at = _css_sel_atributo(s[i + 1:fin])
+            if at.op == "!"
                 var nada: Selector = nil
                 return nada
             end
-            actual.atributos.push(_css_sel_atributo(s[i + 1:fin]))
+            actual.atributos.push(at)
             clases = clases + 1
             vacio = false
             i = fin + 1
@@ -586,6 +591,11 @@ func css_selector(texto: String) -> Selector
                 j = j + 1
             end
             nombre = str_lower(s[inicio:j])
+            # (":" o "::" sin nombre detrás, como ":: before", no vale)
+            if nombre == ""
+                var sin_nombre: Selector = nil
+                return sin_nombre
+            end
             if j < n and str_code(s, j) == 40
                 fin = _css_buscar(s, 41, j + 1)
                 if fin < 0
@@ -651,13 +661,42 @@ func css_selector(texto: String) -> Selector
 end
 
 # [nombre], [nombre=valor], [nombre~=valor]...
+# ¿Un espacio sin escapar? (un valor sin comillas es un identificador: "second\ two" sí, "a b" no)
+func _css_espacio_suelto(v: String) -> Bool
+    i = 0
+    n = v.length
+    while i < n
+        c = str_code(v, i)
+        if c == 92
+            i = i + 2
+        elif c == 32 or c == 9 or c == 10 or c == 12 or c == 13
+            return true
+        else
+            i = i + 1
+        end
+    end
+    return false
+end
+
+# [nombre], [nombre=valor], [nombre~="valor" i]...; uno que no vale (sin nombre, operador raro, valor sin comillas con
+# espacios) da op "!" y css_selector, nil. *|nombre y |nombre: los atributos de HTML no llevan espacio de nombres,
+# así que es el nombre. Con la bandera i, op lleva "i" detrás y valor va en minúsculas (_cumple_atributo).
 func _css_sel_atributo(t: String) -> SelAtributo
+    t = str_trim(t)
+    if str_starts(t, "*|")
+        t = t[2:]
+    elif str_starts(t, "|")
+        t = t[1:]
+    end
     p = 0
     n = t.length
     while p < n and _css_nombre(str_code(t, p))
         p = p + 1
     end
-    nombre = str_lower(str_trim(t[:p]))
+    nombre = str_lower(t[:p])
+    if nombre == ""
+        return SelAtributo("", "!", "")
+    end
     resto = str_trim(t[p:])
     if resto == ""
         return SelAtributo(nombre, "", "")
@@ -669,14 +708,29 @@ func _css_sel_atributo(t: String) -> SelAtributo
     else
         op = resto[:2]
         valor = resto[2:]
+        if op != "~=" and op != "|=" and op != "^=" and op != "$=" and op != "*="
+            return SelAtributo(nombre, "!", "")
+        end
     end
     valor = str_trim(valor)
+    bandera = ""
+    k = valor.length
+    if k >= 3 and str_find(" \t\n", valor[k - 2:k - 1]) >= 0 and str_find("iIsS", valor[k - 1:]) >= 0
+        bandera = str_lower(valor[k - 1:])
+        valor = str_trim(valor[:k - 1])
+    end
     if valor.length >= 2 and (str_starts(valor, "\"") or str_starts(valor, "'"))
         valor = valor[1:valor.length - 1]
+    elif _css_espacio_suelto(valor)
+        return SelAtributo(nombre, "!", "")
     end
     # con escapes, lo que dicen: [class=second\ two] es "second two" (Acid2)
     if str_find(valor, "\\") >= 0
         valor = css_desescapar(valor)
+    end
+    if bandera == "i"
+        op = op + "i"
+        valor = str_lower(valor)
     end
     return SelAtributo(nombre, op, valor)
 end
@@ -1431,7 +1485,13 @@ func css_selector_texto(sel: Selector) -> String
             r = r + "." + c
         end
         for a in s.atributos
-            r = r + "[" + a.nombre + a.op + a.valor + "]"
+            if str_ends(a.op, "i")
+                r = r + "[" + a.nombre + a.op[:a.op.length - 1] + "\"" + a.valor + "\" i]"
+            elif a.op == ""
+                r = r + "[" + a.nombre + "]"
+            else
+                r = r + "[" + a.nombre + a.op + "\"" + a.valor + "\"]"
+            end
         end
         for ps in s.pseudo
             r = r + ":" + ps

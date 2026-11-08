@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (06.11.2026)
+## version $VER: Tachyon.catalog 1.0 (07.11.2026)
 ## language français
 ## codeset 0
 ;
@@ -152,6 +152,9 @@ Enregistrer le lien sous...
 MSG_50
 Page
 ; Page
+MSG_51
+Ouvrir un fichier...
+; Open file...
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -641,3 +644,12 @@ Vous recevrez un code : indiquez-le dans le ticket que vous ouvrirez sur %1, et 
 MSG_475
 Voici tout ce qui sera envoyé :
 ; This is everything that will be sent:
+MSG_476
+Ouvrir un fichier
+; Open file
+MSG_477
+Contenu de %1
+; Contents of %1
+MSG_478
+Tiroir parent
+; Parent drawer

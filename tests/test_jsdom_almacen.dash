@@ -1,0 +1,61 @@
+# Test: localStorage que dura (tarea 41d, lib/almacen.dash): lo que pone una página está en la siguiente del mismo
+# origen (también lo que no es Latin-1: va en ASCII con \u), no en la de otro; mil claves de un script se dan a Dash
+# una sola vez; clear lo deja sin nada; sessionStorage y las direcciones file: no duran; y el fichero (una línea por
+# origen) se guarda y se lee otra vez igual. A Dash solo van los cambios; la página siguiente los aplica y, si sobran
+# muchos, le da todo junto.
+# memcheck
+# expect-out: guardado: ["k","v \u00e9 \u2603"],["x","1"]
+# expect-out: otra: true 1 2 | sesion: null
+# expect-out: otro origen: 0
+# expect-out: mil: 1000 en 1 vez | luego: 1002
+# expect-out: file: 0 | vacio: 0
+# expect-out: compactado: 30 cambios ["k","29"] | otra vez: 29
+# expect-out: fichero: true ["k","v \u00e9 \u2603"],["x","1"] | origenes 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func abrir(direccion: String) -> Int
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "__dashweb_lugar('" + direccion + "')", "t.js")
+    return js
+end
+
+func pagina(direccion: String, codigo: String) -> String
+    js = abrir(direccion)
+    r = js_evaluar(js, codigo, "t.js")
+    js_evaluar(js, "1", "t.js")
+    js_liberar(js)
+    return r
+end
+
+Main
+    pagina("http://a.example/uno.html", "localStorage.setItem('k', 'v \\u00e9 \\u2603'); localStorage.x = 1; sessionStorage.s = 2; ''")
+    Print "guardado: " + almacen_leer("http://a.example")
+    Print "otra: " + pagina("http://a.example/dos.html", "(localStorage.getItem('k') === 'v \\u00e9 \\u2603') + ' ' + localStorage.x + ' ' + localStorage.length + ' | sesion: ' + sessionStorage.getItem('s')")
+    Print "otro origen: " + pagina("https://a.example/", "String(localStorage.length)")
+    # (cuántas veces se le da a Dash lo de un script que pone mil claves)
+    js = abrir("http://b.example/")
+    js_evaluar(js, "var n = 0, f = __dashweb_almacen_poner; __dashweb_almacen_poner = function (o, t) { n++; f(o, t); }; for (var i = 0; i < 1000; i++) localStorage.setItem('c' + i, i); ''", "t.js")
+    Print "mil: " + js_evaluar(js, "localStorage.length + ' en ' + n + ' vez'", "t.js") + " | luego: " + pagina("http://b.example/x", "localStorage.a = 1; localStorage.b = 2; String(localStorage.length)")
+    js_liberar(js)
+    pagina("file:///RAM/x.html", "localStorage.f = 1; ''")
+    pagina("http://b.example/", "localStorage.clear(); ''")
+    Print "file: " + almacen_leer("file://").length + " | vacio: " + almacen_leer("http://b.example").length
+    js = abrir("http://c.example/")
+    for i in (0..29)
+        js_evaluar(js, "localStorage.k = " + i, "t.js")
+    end
+    js_liberar(js)
+    antes = almacen_sitios["http://c.example"].length
+    Print "compactado: " + antes + " cambios " + pagina("http://c.example/", "localStorage.length ? '' : 'nada'") + almacen_leer("http://c.example") + " | otra vez: " + pagina("http://c.example/", "localStorage.k")
+    almacen_borrar("http://c.example")
+    ok = almacen_guardar("RAM:talmacen")
+    almacen_sitios.clear()
+    almacen_cargar("RAM:talmacen")
+    Print "fichero: " + ok + " " + almacen_leer("http://a.example") + " | origenes " + almacen_sitios.length
+    file_delete("RAM:talmacen")
+end

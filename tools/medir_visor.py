@@ -55,6 +55,8 @@ def main():
                     "with --sistema ~/.cache/dash-emu/sys31muiweb)")
     ap.add_argument("--sistema", metavar="DIR", help="emulated system (default $DASH_EMU_SYS; with fonts: "
                     "tools/emu_sys_fuentes.sh)")
+    ap.add_argument("--workbench", action="store_true",
+                    help="C:LoadWB before the program (to drop Workbench icons on the window: --acciones with i)")
     ap.add_argument("--acciones", metavar="'TÍTULO e 100 c X Y ...'",
                     help="tools/amiga/clicar.dash in the background: clicks and keys in that window")
     ap.add_argument("--memoria", type=int, metavar="MB", help="Zorro III memory of the 68040 machines (default 128): "
@@ -194,7 +196,7 @@ def main():
                                                    MAQUINAS[args.maquina].replace("zorro_iii_memory = 131072",
                                                                                   f"zorro_iii_memory = {args.memoria * 1024}")),
                                screenshot=shot, system=args.sistema, keep=args.guardar,
-                               background=fondo or None, args=prog_args)[0]
+                               background=fondo or None, args=prog_args, workbench=args.workbench)[0]
         finally:
             server.kill()
             server.wait()

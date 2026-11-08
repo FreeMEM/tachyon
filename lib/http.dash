@@ -673,6 +673,9 @@ func http_avanzar(c: Carga) -> Bool
         return true
     end
     if c.conexion.fase != 0
+        if red_sin_sitio(c.conexion)
+            http_cerrar_libres()      # (la tabla de conexiones llena: primero sobran las que nadie usa)
+        end
         abierta = red_abrir_avanzar(c.conexion)
         if abierta == 0
             return false

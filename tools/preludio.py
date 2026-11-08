@@ -26,6 +26,9 @@ def generar() -> str:
         l = l.strip()
         if not l or l.startswith("//"):
             continue
+        # (solo ASCII, lo de fuera con \u: así el C lo compila sin pasarlo a UTF-8, sin otra copia de 230 KB en un A1200)
+        if any(ord(c) > 127 for c in l):
+            sys.exit(f"lib/jsdom_preludio.js: carácter que no es ASCII fuera de un comentario (escríbelo con \\u): {l[:80]}")
         lineas.append(l)
     cuerpo = "\n".join(f"    j = j + {cadena_dash(l)}" for l in lineas)
     return ("# Generado por tools/preludio.py desde lib/jsdom_preludio.js: no editar a mano.\n\n"

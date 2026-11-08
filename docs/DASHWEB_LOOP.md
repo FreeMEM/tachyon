@@ -13,7 +13,8 @@ publicar la 0.7.2; luego la 53 (las webs de chat).**
 
 **Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
-pendiente del plan. Esto manda sobre los dos encargos de arriba.**
+pendiente del plan. Esto manda sobre los dos encargos de arriba. Al acabar WPT, la 62
+(las demás baterías: compatibilidad, velocidad, red y seguridad).**
 
 **Y sin perder velocidad ni memoria (usuario, 2026-11-07: "vamos a conseguir que wpt pase entero bien, pero no a costa
 de ser lento o consumiendo mucha memoria").** Cada cambio para WPT se mide antes y después (tests/pages/bench_*.html
@@ -204,6 +205,15 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [x] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
+      abrir una página soltando su icono en la ventana de Tachyon). app_window y app_drop de Dash valen solo para las
+      ventanas de window_create; las de MUI no. MUI lo trae de serie: MUIA_Window_AppWindow TRUE en la ventana y
+      notificación de MUIA_AppMessage en el objeto donde cae (o en la ventana). Hace falta algo como
+      `mui_app_window(ventana)` y un evento que dé la ruta del icono soltado (y el objeto: la página, la barra de
+      dirección...), en dashc y en dash1, con su test. El usuario: "Sí que suelte iconos ya": pedida a freememlang
+      [e4f769] el 2026-11-07 (que la pase a quien lleve Dash main si no es ella).
+      Hecha (freememlang, PR #126 de Dash, e3da1d0): todas las ventanas MUI son AppWindow; mui_on_drop(obj, id) da
+      el evento y app_drop() las rutas, una a una. Solo en la pantalla del Workbench (cosa de MUI).
 - [x] D82. **El C de @link también por --gcc: la API dl_* y --cabecera en dash1** (2026-11-02, tarea 58; usuario:
       "podemos decidir compilar con dash directo a nativo 68k o intermedio con --gcc. Es la forma de conseguir portar
       a PPC en un futuro"). src_c/tachyon.c (libpegamento.a) incluye build/dash_tipos.h de `dashc --cabecera` y
@@ -598,15 +608,25 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 62. **Las demás baterías de pruebas, cuando acabe WPT (usuario, 2026-11-07: "Cuando terminemos con wpt, vamos a
+      pasar todos los test de compatibilidad, velocidad, red y seguridad").** Con copias guardadas y servidas desde el
+      PC (nada automático contra webs de otros), cada una con su resumen en docs/ para ver cómo sube:
+      (a) compatibilidad: Acid1, Test262 (el JavaScript de QuickJS), css3test.com, html5test.com y las áreas de
+      Interop (las de WPT que eligen cada año los navegadores grandes);
+      (b) velocidad: SunSpider, Kraken, Dromaeo (el DOM) y, si caben, Speedometer, JetStream y MotionMark (en PiStorm);
+      (c) red y seguridad: los casos de badssl.com (certificados caducados, de otro nombre, autofirmados, cifrados
+      débiles: se tienen que rechazar) y lo de howsmyssl.com (versión de TLS y cifrados), con servidores de prueba
+      propios donde se pueda.
 - [~] 61. **Repaso de velocidad y consumo de memoria (usuario, 2026-11-07).** Medir dónde se van el tiempo y la memoria
       en páginas reales guardadas (gh_repo.html, Wikipedia, amigatronics, YouTube) con el perfil (--perfil), TRAZA y
       la memoria libre por fases, y quitar lo que sobre: copias de textos, estilos recalculados, maquetas enteras que
       podrían ser parciales, JavaScript del preludio que se ejecuta siempre. Dejar medidas antes y después en la
       bitácora y en docs/panel/medidas.json.
-- [ ] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
+- [x] 60. **Abrir un fichero del disco (Ferrán García por Telegram, 2026-11-07, vía la sesión freemem-14).** "Poder
       cargar un fichero también estaría bien, sea por menú o por drag&drop" (una web guardada, documentación en HTML).
       Las direcciones file:// ya se abren (2026-10-17); falta: en el menú Proyecto, "Open file..." con el selector de
       ficheros (ASL), y soltar el icono de un fichero en la ventana (AppWindow de Workbench) para abrirlo.
+      Hecho (2026-11-07): Proyecto, "Open file..." (Amiga-O), y soltar iconos en la ventana (con D83).
 - [x] 57. **Guardar la página y guardar un enlace (sugerencia de un usuario por Telegram, 2026-10-30).** Bajando de
       Aminet quería guardarse también el .readme de cada fichero y no pudo: no hay forma de guardar lo que está en
       pantalla ni lo que apunta un enlace. Hacer: menú Proyecto, "Guardar página como..." (Amiga-S: el cuerpo tal como
@@ -5837,3 +5857,341 @@ Formato:
 - Coste: el preludio crece 26 KB de texto. Con todos los cambios de hoy en él, la segunda página con scripts tarda lo
   mismo en prepararlos (237 → 240 ms) y la primera tras arrancar (la que compila el preludio) 1228 → 1353 ms.
 - Test test_js_textdecoder.
+
+### 2026-11-07 — Publicada la v0.9.2-alfa
+- Usuario: "cuando creas conveniente puedes ir publicando un nuevo Tachyon". Versión 0.9.2-alfa (tareas 61 y 41d de
+  hoy), PR #22 de dev a main (df5996e), etiqueta v0.9.2-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.2-alfa con tachyon.lha, Tachyon.gz (SHA-256 41dcca2e...7e890b,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Antes de publicar: batería 144/146 (5599 s). Los dos que fallaron pasan sueltos: test_imagenes_carga no podía
+  arrancar su servidor (el puerto 40856 lo tenía una conexión de salida de Chrome del PC: pasa igual con otro puerto)
+  y test_guardar dio "SyntaxError: invalid assignment left-hand side" al compilar el preludio en una línea que está
+  bien, tras muchos tests en la misma sesión del A1200 de 8 MB (sin T:tachyon_preludio.bc, que solo se guarda con más
+  de 32 MB libres): parece falta de memoria al compilar el preludio, que hoy ha crecido (URL, tablas de codificaciones).
+  Aviso: vigilar el tamaño del preludio en máquinas de 8 MB.
+- Actualización de verdad desde el Tachyon.gz de la v0.9.1-alfa publicada (máquina RTG con MUI 3.8, GitHub de
+  mentira en el PC): icono verde, baja Tachyon.gz y los nueve catálogos, instalado idéntico al compilado, .old el de
+  antes, Reiniciar abre la 0.9.2. La 0.9.2 del paquete: Amiga+C/V/X, Ctrl+V y Amiga-S bien; cuatro ventanas (Acid3,
+  gh_local.html, estrellas.html y Acid2) unos 5 min sin colgarse y un clic al final que responde.
+
+### 2026-11-07 — Tarea 61 (7): el preludio, 15 KB más pequeño (las tablas de codificaciones comprimidas)
+- Tras la batería de la 0.9.2 (una compilación del preludio sin memoria en el A1200 de 8 MB): el preludio, sin
+  comentarios ni sangría, pasó hoy de 184 KB (v0.9.1) a 234 KB; 26 KB eran las 27 tablas de un byte en \uXXXX.
+- Ahora van comprimidas (cada código en base 36, "+k" para los k siguientes de uno en uno, "-" sin carácter) y
+  encTabla abre cada una la primera vez que una página la usa: 6,7 KB. Preludio: 219 KB. Comprobado en node que cada
+  tabla sale igual; WPT encoding/ sigue en 11085/12004 y test_js_textdecoder pasa.
+
+### 2026-11-07 — Tarea 41d: WPT dom/traversal 42/53 → 1590/1608
+- Medida otra vez (la anterior era del 2026-11-04): NodeIterator.html, TreeWalker.html y NodeIterator-removal.html ya
+  no se paran al empezar ("TypeError: not a function" en el setup de dom/common.js) con lo de hoy: 1585/1608. Una copia
+  de la página con un oyente de error lo confirmó (762/766) antes de medir otra vez.
+- TreeWalker y NodeIterator: [Symbol.toStringTag], root/whatToShow/filter de solo lectura, whatToShow como entero
+  sin signo (null es 0), la raíz tiene que ser un nodo (TypeError) y currentNode solo acepta nodos.
+- WPT dom/traversal 1590/1608 (ningún fichero a peor). Tests: acid, jsdom_rango, jsdom_interfaces, jsdom_wpt_dom.
+
+### 2026-11-07 — Tarea 41d: AbortSignal y AbortController como dice DOM (WPT dom/abort 21 → 35/37); dom/ suelto medido
+- Medidas nuevas: dom/abort 21/37 y los ficheros sueltos de dom/ 108/142 (historical 75/80, interface-objects 20/23;
+  los de XPath, sin hacer).
+- lib/jsdom_preludio.js: el motivo por omisión de abort() y de AbortSignal.timeout es una DOMException (AbortError,
+  TimeoutError; era un Error con ese name); el evento abort es de confianza; AbortSignal.any da una señal dependiente
+  de las fuentes de verdad (las de otra any, sus fuentes), con el motivo de la primera ya abortada; al abortar se marcan
+  antes la señal y sus dependientes y luego van los eventos, en orden (salían al revés). toStringTag.
+- WPT dom/abort 35/37 (las dos que faltan necesitan iframes de otra ventana). test_js_fetch pasa.
+
+### 2026-11-07 — Tarea 41d: el corredor de WPT, con más tiempo por página (dom/events 482/674)
+- Event-dispatch-single-activation-behavior se quedaba en 86/132 con 37 NOTRUN: no era Tachyon (los de <AREA>, en una
+  copia de la página solos, pasan), sino los 20 s por página de tools/wpt_testharness.dash, que con 132 promise_test de
+  dos temporizadores cada uno no llegaban en el emulador.
+- tools/wpt_testharness.dash espera hasta 60 s por página; tools/wpt_js.py pone setup({timeout_multiplier: 5}) en
+  testharness (como hace wptrunner con las plataformas lentas) y da 70 s por página al emulador.
+- dom/events: single-activation 86 → 124/132; ningún fichero a peor. Lo que queda ahí: con formularios uno dentro de
+  otro (por el DOM), el submit del de dentro llega también al de fuera. Total de dom/events: 482/674 en 97 ficheros
+  (ahora entran también sus .any.js y .window.js: eran 83 ficheros y 618 subpruebas).
+
+### 2026-11-07 — Tarea 41d: el informe de WPT sin caracteres de control (url/ entero: 5976/8699)
+- url/ daba resultado de 34 de 41 páginas: url-origin, a-element, a-element-origin y failure corrían enteras, pero el
+  nombre de una subprueba lleva un carácter nulo y el informe, que pasa por textos de C, se cortaba ahí (sin la línea
+  WPT FILE). tools/wpt_js.py cambia los caracteres de control de nombres y mensajes por espacios.
+- url/ 41/41 páginas: 5976/8699 (69 %). encoding/ con más tiempo por página: 11101/12004.
+
+### 2026-11-07 — Tarea 41d: document.baseURI con el primer <base href> (url/: 6224/8699)
+- document.baseURI salía siempre de la dirección del documento; ahora resuelve el primer `<base href>` contra ella,
+  como dice HTML. Se guarda hasta que cambia el DOM: el C da `__dashweb_version()` (el contador dom_version), así
+  a.href no busca el `<base>` en cada lectura.
+- url/a-element 423 → 586, a-element-origin 320 → 405; ningún fichero peor. url/ 41/41: 6224/8699 (72 %).
+  Tests de jsdom y documento sin red: 28/28.
+
+### 2026-11-07 — Tarea 41d: una dirección que no se analiza da SyntaxError (url/failure.html 415 → 1175/1175)
+- window.open, location (la de la página y la de un marco), XMLHttpRequest.open y navigator.sendBeacon resolvían
+  como podían una dirección mala (o, la de location, navegaban a ella tal cual). Ahora, como dice HTML, un
+  DOMException SyntaxError (TypeError en sendBeacon), con dirValida() en el preludio. La location de un marco es un
+  objeto con href (accesor) y window.location de su ventana, un accesor.
+- url/ 41/41: 6984/8699 (80 %), ningún fichero peor. Sin cambios en lo que corre a menudo (misma resolución).
+
+### 2026-11-07 — "demasiadas conexiones" al salir de YouTube (lo vio el usuario en su Amiga)
+- Captura del usuario: ir de YouTube a consent.youtube.com daba "No se pudo cargar la página: demasiadas
+  conexiones". La tabla de la tarea de la red (net_bg_*, de Dash) tiene 48 sitios. El JavaScript de YouTube lanzaba
+  sus fetch/XHR sin límite, las de la página que se deja no avanzan (ni se cierran) mientras se carga la nueva, y
+  red_abrir_empezar fallaba en seguida si no había sitio.
+- lib/red.dash: sin sitio, la conexión queda en fase 3 ("esperando") y red_abrir_avanzar lo vuelve a intentar hasta
+  su espera (20 s como poco); red_sin_sitio(c) lo dice. lib/http.dash: con una esperando, se cierran antes las
+  conexiones libres (keep-alive). src/dashweb.dash: si la carga de la página espera sitio, se cancelan las
+  peticiones del JavaScript de la que se deja (lo mismo que al llegar la nueva); el estado dice "Conectando".
+  lib/jsdom.dash: 6 peticiones del JavaScript a la vez por motor (como Chrome por servidor); las demás, en cola.
+- tests/test_http_sin_sitio.dash (puerto 40871): llena la tabla con conexiones al puerto 1 y comprueba que la carga
+  espera y sigue al cerrarse una, y que una libre se cierra para dejar sitio. Pasan los de red (http*, js_fetch,
+  jsdom_load_peticion, navegacion, navegar_js, youtube) y los de jsdom y documento.
+
+### 2026-11-07 — Tarea 60: "Abrir fichero..." en el menú Proyecto (Amiga-O)
+- Lo pidió Ferrán García. abrir_fichero() en src/dashweb.dash: dialog_file_at en el cajón de la última vez
+  (preferencia cajon_abrir) y la página por su dirección file: (url_de_ruta, nueva en lib/url.dash: "Work:Docs/a
+  b.html" -> "file:///Work/Docs/a%20b.html", Latin-1 en UTF-8), así sus enlaces relativos van a su cajón.
+  Textos 51 y 476 en el .cd y traducidos en los nueve .ct. test_url con url_de_ruta; el navegador compila. El
+  selector no se ha probado en el emulador (ASL interactivo).
+- Soltar el icono en la ventana: hace falta Dash (D83). El usuario: "Sí que suelte iconos ya": pedida a
+  freememlang [e4f769].
+
+### 2026-11-07 — Tarea 41d: las partes de la dirección de <a> y <area> como dice HTML (url/a-element 586 → 844/897)
+- a.protocol, host, pathname... con un href que no se analiza (o sin href) daban "" o lo que salía de analizar
+  a.href (que, al fallar, es el atributo tal cual): ahora protocol ":" y lo demás "", y sus setters no hacen nada.
+  urlEnlace() analiza el atributo una vez contra document.baseURI (antes, dos: a.href y luego new URL(a.href)).
+- url/ 41/41: 7242/8699 (83 %), ningún fichero peor. Los de a-element-origin que faltan llevan caracteres fuera de
+  Latin-1 en el atributo (el DOM los guarda en Latin-1: se pierden; otra tarea).
+
+### 2026-11-07 — Tarea 60 acabada: soltar iconos del Workbench en la ventana (D83)
+- src/dashweb.dash: mui_on_drop(ventana, ID_SOLTADO + k) en cada ventana; soltado() abre el primer icono en la
+  pestaña que se ve y los demás en pestañas nuevas, por su dirección file: (url_de_ruta).
+- Un cajón o un disco soltado (o una dirección file: de un cajón) daba "can't read": ahora una página con lo que
+  tiene, como en los navegadores (documento_cajon en lib/documento.dash: el cajón padre, los cajones con "/" y los
+  ficheros con su tamaño; textos 477 y 478, traducidos). tests/test_documento_cajon.dash.
+- Probado de verdad en la máquina RTG con MUI 3.8 y el Workbench cargado: tools/medir_visor.py --workbench (nuevo:
+  C:LoadWB antes del programa) y la acción "i" nueva de tools/amiga/clicar.dash (arrastra el primer icono del
+  escritorio que no tape la ventana, con el ARexx del Workbench). RAM Disk soltado: "Contents of RAM Disk:" con
+  Clipboards/, ENV/ y T/. Para repetirlo:
+      medir_visor.py --maquina rtg --sistema ~/.cache/dash-emu/sys32rtg38 --programa src/dashweb.dash --workbench
+                     --pagina bench_url.html --acciones 'Tachyon e 500 i e 500' --captura x.png
+
+### 2026-11-07 — Tarea 41d: formData() de Request y Response como dice Fetch (url/urlencoded-parser 70 → 105/105)
+- Request no tenía formData, arrayBuffer, bytes, blob ni bodyUsed; ahora sí, y pone el Content-Type de su cuerpo si
+  no lo traía. aFormData() (las dos): urlencoded, multipart/form-data (con sus ficheros como Blob) y, con otro tipo,
+  TypeError (antes, Response lo leía siempre como urlencoded).
+- url/ 41/41: 7277/8699 (84 %), ningún fichero peor. Pasan los de jsdom, documento y js sin red, js_fetch y
+  jsdom_load_peticion.
+
+### 2026-11-07 — Tarea 41d: structuredClone y dos detalles de URLSearchParams (url/: 7283/8699)
+- No había structuredClone (lo usan muchas webs para copiar datos). Copia honda: objetos (una clase propia queda en
+  objeto llano, como en los navegadores), listas, Date, RegExp, Map, Set, ArrayBuffer y vistas, Blob, errores y los
+  envoltorios de primitivos, con las referencias repetidas y circulares. Funciones, símbolos y objetos de la
+  plataforma (nodos, URL, Promise, Headers...) dan DataCloneError. tests/test_js_structuredclone.dash.
+- url.searchParams leía la query con el constructor, que quita un "?" del principio ("??a=b" daba "a" y no "?a");
+  un record con dos claves que quedan iguales al cambiar sus sustitutos sueltos por U+FFFD es una sola (sitio de la
+  primera, valor de la última).
+- url/ 41/41: 7283/8699, ningún fichero peor (historical 8/8, url-constructor 740/740, url-searchparams 4/4).
+
+### 2026-11-07 — Tarea 41d: signal en addEventListener, window.event, reportError (dom/events 482 → 509/673)
+- addEventListener(t, f, {signal}): abortarla quita el oyente (antes del evento abort, con los _algos nuevos de
+  AbortSignal); ya abortada no lo pone; signal null es TypeError (una de un polyfill, por su evento abort). Un oyente
+  quitado durante un despacho ya no se llama ("quitado").
+- El oyente puede ser cualquier objeto: handleEvent se lee en cada evento, y si no es función, TypeError reportado.
+- window.event: el evento mientras se llama a un oyente (undefined si el objeto está en una sombra; se mira solo si
+  alguien llamó a attachShadow), undefined fuera.
+- Las excepciones de los oyentes y reportError() (nuevo: React lo usa si está) van a la consola y al evento error de
+  la ventana; window.onerror recibe mensaje, fichero, línea, columna y error, y true lo cancela.
+- 10 ficheros mejor, ninguno peor. tests/test_jsdom_eventos_signal.dash. Velocidad (bench_eventos.html nuevo, máquina
+  RTG, dos pasadas): 500 despachos por 13 nodos con oyentes 1180-1240 → 1220-1280 ms, sin oyentes 1000-1060 →
+  1040-1060, add/remove 220 → 220-240: lo mismo dentro del ruido (pasos de 20 ms). Lo caro es despachar en sí (2 ms
+  cada uno sin oyentes): para la tarea 61.
+
+### 2026-11-07 — Tarea 61: despachar eventos más deprisa
+- Medido por partes (tests/pages/bench_eventos_partes.html, máquina RTG): de 1040 ms por 500 despachos sin oyentes
+  en un árbol de 13 nodos, crear los eventos se llevaba 240: el constructor recorría con forEach (y una función por
+  clave) las 29 claves que copia del diccionario. Ahora recorre solo las que trae (for-in contra EV_COPIA).
+- En la captura no se llama a avisar() en los nodos sin oyentes de ese tipo.
+- bench_eventos.html: con oyentes 1180-1240 → 1040 ms, sin oyentes 1000-1060 → 800-860, crear 500 eventos 240 →
+  80. dom/events igual (509/673, ningún fichero distinto); los de jsdom, documento y js pasan.
+- Lo que queda (unos 1,6 ms por despacho): los nodeType, parentNode y hasAttribute('on...') de cada nodo del camino
+  (llamadas a C).
+
+### 2026-11-07 — Tarea 41d: localStorage y sessionStorage como Storage (WPT webstorage 56 → 1240/1273)
+- Carpeta nueva (git sparse-checkout add webstorage). localStorage era un objeto con seis métodos: localStorage.x = 1
+  no se guardaba (getItem daba null), setItem(k, null) tampoco, sin Storage ni instanceof.
+- Ahora un Proxy por almacén sobre un objeto de Storage.prototype, con las propiedades con nombre de HTML: leer
+  (si el nombre no está en el prototipo: getItem sigue siendo el método aunque haya una clave "getItem"), poner
+  (siempre guarda, como texto), in, delete, Object.keys y defineProperty; key() con el número como unsigned long;
+  sin argumentos, TypeError; cupo de 1.000.000 de caracteres (claves y valores; Chrome da 5 MB, un Amiga no tiene
+  para tanto) con QuotaExceededError. tests/test_jsdom_storage.dash.
+- Falta: que localStorage dure más que la página (guardarlo en disco por origen): tarea siguiente. Lo que queda de
+  la carpeta son eventos storage entre ventanas, iframes de otro origen y window.open.
+
+### 2026-11-07 — Preparando la 0.9.3: la batería y la memoria del preludio en un A1200 de 8 MB (tarea 61)
+- Usuario: "Adelante" a preparar la 0.9.3 y pedir el visto bueno antes de publicar. Primera batería: 145/151
+  (5941 s). Los seis:
+  - test_jsdom_iframe, de verdad: el location del marco analizaba su dirección contra la suya, que al empezar es el
+    src tal cual ("/acid3/empty.html", sin base válida) y desde b076bde daba "Invalid URL". Ahora contra la base de
+    la página (quien la pone).
+  - test_imagenes_carga: el puerto 40856 lo tiene una conexión de Chrome del PC (ss lo dice), como en la 0.9.2.
+  - test_js_crypto, test_jsdom_custom, test_jsdom_domparser y test_guardar: "out of memory" (o un SyntaxError raro)
+    al compilar el preludio. Repetidos en tanda (tests sin red con sondas de memoria entre medias): salen siempre
+    los mismos; sueltos, pasan.
+- Por qué (medido con marcas de AvailMem en js_evaluar_guardado, copias aparte de cada commit):
+  - La primera página de un programa compila el preludio en el motor de la página, en su pool de charcos de 512 KB,
+    y lo que dura (los átomos de la compilación) acaba en cada charco: no vuelven hasta soltar la página. Desde
+    e73b73d (el preludio 15 KB más pequeño) la compilación se queda con un charco más: la primera página con 0,89 MB
+    libres (0,9.2: 1,43; las siguientes, 1,94 en las dos). En el PC el pico de compilar es el mismo (1,43 → 1,50 MB):
+    es dónde caen los bloques, no más memoria.
+  - --memcheck se lleva 2,7 MB de los 8 (un test vacío: 8,2 MB libres sin él, 0,8 con documento.dash y él): los
+    tests de JavaScript con memcheck compilaban el preludio con 1,2 MB libres y pasaban según la suerte de los
+    charcos (la reserva de _jm_hay solo se mira al pedir charco nuevo).
+- Hecho:
+  - src_c/tachyon.c: con más de 4 MB libres el preludio se compila en un motor aparte (su pool; solo Eval y el
+    compilador de expresiones regulares: mismo bytecode, comprobado en el PC) que se borra entero; con menos, en el
+    de la página, y lo compilado se ejecuta tal cual sin leerlo otra vez del bytecode.
+  - El preludio, solo ASCII (las siete letras con acento de sus mensajes, con \u; tools/preludio.py falla si hay
+    otra): se compila sin la copia en UTF-8 (230 KB menos en el pico). Se mira solo al compilar: mirarlo con la suma
+    de cada página costaba 140 ms por página.
+  - tests/run.py: los de --memcheck llevan 4 MB de Zorro III de más (lo que se come memcheck), y con Zorro III la CPU
+    es un 68020 entero: el de FS-UAE en A1200 es un 68EC020 de 24 bits y no la veía (los nueve tests que pedían
+    64 MB tampoco la tenían: mem_total 10,3 MB).
+  - Probado y quitado: charcos según la memoria libre (64-512 KB): la primera página igual y con poca memoria la
+    reserva de _jm_hay saltaba antes.
+- Medido (A1200 de 8 MB, documento con un script, tres veces): primera página 85,99 s y 0,89 MB libres → 86,76 s y
+  1,94 MB; las siguientes 14,79 s → 14,80 s, 1,94 MB las dos. test_js_crypto y test_jsdom_custom pasan.
+- Batería entera con esto: 150/151 (5760 s); el que falta, test_imagenes_carga, por el puerto 40856 de Chrome: con
+  40859 pasa.
+
+### 2026-11-08 — La 0.9.3-alfa lista, a falta del visto bueno del usuario para publicar
+- Versión 0.9.3-alfa (ab2db41), tools/paquete.sh: tachyon.lha 2,1 MB, Tachyon.gz 1,9 MB y los nueve catálogos.
+- Batería entera 150/151 (5760 s; test_imagenes_carga, el puerto de Chrome: con otro, pasa).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.2-alfa publicada (SHA-256 41dcca2e..., el de GitHub), en la
+  máquina RTG con MUI 3.8 (sys32rtg38) y un GitHub de mentira en el PC: baja Tachyon.gz y los nueve catálogos, el
+  instalado es idéntico al compilado, .old el de antes, y Reiniciar abre la 0.9.3 (su versión en la portada).
+- La 0.9.3 del paquete con MUI 3.8: cuatro ventanas (Acid3, gh_local.html, estrellas.html y Acid2) 300 s sin colgarse y
+  un clic al final que responde; copiar y pegar (Amiga+C/V/X, Ctrl+V), Amiga-S ("Saved in RAM:pegar.html") y Amiga-O
+  abre el selector "Open file". Soltar iconos se probó con la tarea 60 (sin cambios desde entonces).
+- Notas de la versión en castellano e inglés preparadas. Sin publicar: el usuario da el visto bueno antes (PR de dev a
+  main, etiqueta y pre-release).
+
+### 2026-11-08 — Tarea 41d: localStorage que dura (por origen, en PROGDIR:Tachyon.almacen)
+- localStorage solo vivía lo que la página. Ahora lo de cada origen http/https dura: lib/almacen.dash lo guarda
+  ({String: [String]}, origen -> los cambios) y src/dashweb.dash lo lee al arrancar y lo escribe al salir, como las
+  cookies; tachyon:cookies?borrar también borra el localStorage de ese sitio (o todo). sessionStorage y file: no
+  duran. El instalador no lo pisa (solo copia lo del paquete); el LEEME lo dice.
+- Preludio: localStorage trae lo de su origen la primera vez que se usa (__dashweb_almacen); de lo que cambia un script
+  se apunta lo último de cada clave (Map) y al acabar el script (una microtarea) se le da a Dash una vez, en JSON y
+  ASCII (["k","v"] pone, ["k"] quita; clear da todo en su lugar). Dash solo añade a la lista; la página siguiente
+  aplica los cambios en orden y, si sobran (más de 16 por encima de las claves), le da todo junto.
+- Probado y quitado: dar todo el almacén al acabar cada script: con 100 KB dentro, 50 scripts de una clave 1680 →
+  8400 ms (JSON de 100 KB cada vez).
+- Medido (tests/pages/bench_almacen.html, máquina RTG, dos pasadas; antes → después): 50 scripts de una clave con
+  100 KB dentro, sessionStorage 1640-1660 → 1660 ms y localStorage 1680-1700 → 1680-1700 (igual); 1000 claves en un
+  script, contando el darlo a Dash, 140-160 → 280-320 ms (lo que cuesta que duren: 0,15 ms por clave).
+- tests/test_jsdom_almacen.dash: la página siguiente del mismo origen lo ve (también lo que no es Latin-1), otro origen
+  no; mil claves, una vez a Dash; clear; file: y sessionStorage no duran; se compacta; el fichero se lee igual.
+- WPT webstorage 1240/1273 → 1242/1281 (ningún fichero peor; los event_* que esperan el evento storage de otro marco
+  ahora acaban en TIMEOUT en vez de fallar en seguida: sus iframes ya cargan). test_jsdom_storage pasa.
+
+### 2026-11-08 — Tarea 41d: dom/ranges 36624 → 39068/44024 (83 → 89 %): length de CharacterData, constantes de Node y compareBoundaryPoints
+- Los textos y comentarios no tenían length (CharacterData): undefined. Ahora en sus prototipos (#text, #comment; las
+  CDATA salen de createTextNode) y en cada ProcessingInstruction. Range-mutations-* contaba con él: appendData 192 →
+  384/384, deleteData, insertData, replaceData y splitText enteras, dataChange 1404 → 1638.
+- Faltaban las constantes PROCESSING_INSTRUCTION_NODE, ENTITY_REFERENCE_NODE, ENTITY_NODE y NOTATION_NODE: con
+  nodeLength() de common.js en 0 para las PI, Range-set 10440 → 10920/10920, y comparePoint, isPointInRange,
+  intersectsNode y selectNode enteras.
+- compareBoundaryPoints: how como unsigned short de WebIDL (NaN e Infinity 0, el resto módulo 65536) y
+  NotSupportedError antes del WrongDocumentError: 8140 → 9313/9313.
+- dom/nodes: los ficheros de antes, todos igual o mejor (Node-constants 8/8, CharacterData-data 0 → 12/16,
+  createTextNode y createComment 6/6, Node-properties 691 → 706); total 10583/13044 (ahora lista 263 ficheros: entran
+  los .window.js). tests/test_jsdom_rango_wpt.dash.
+- Sin coste de velocidad que medir: un getter en dos prototipos, constantes y dos cuentas en compareBoundaryPoints.
+- Lo que queda de dom/ranges: Range-insertNode y Range-surroundContents (3680) piden scripts dentro de un iframe con su
+  propio window (un motor por iframe: casi 1 MB más cada uno en un A1200); Range-mutations-dataChange acaba en TIMEOUT
+  (2808 subpruebas).
+
+### 2026-11-08 — Tarea 41d: el characterSet del documento de un iframe (dom/nodes 10583 → 11219/13044)
+- El documento de un <iframe> decía siempre UTF-8. Ahora toma el charset del Content-Type o, si no lo trae, el de su
+  <meta charset> (o el de <meta http-equiv=content-type>), normalizado como dice Encoding (encDoc: "get an
+  encoding"; UTF-16 da UTF-8 y x-user-defined windows-1252, como HTML). Las etiquetas de lo que no se sabe leer (GBK,
+  gb18030, Big5, EUC-JP, ISO-2022-JP, Shift_JIS, EUC-KR, replacement, ISO-8859-8-I) van en una tabla de 550
+  caracteres que se abre la primera vez que se usa. Document-characterSet-normalization-1 y -2: 18 → 654/654.
+- tools/wpt_js.py ejecuta los manejadores .py de wptserve de la copia de WPT (main(request, response), con lo poco
+  que usan: GET.first, headers.set y lo que devuelven); estos dos pedían encoding.py?label=.
+- Queda: el characterSet de la página misma (siempre UTF-8; Dash sabe el de verdad).
+
+### 2026-11-08 — Tarea 41d: NodeList, selectores de atributo y pseudo-elementos en querySelector, removeChild (dom/nodes 11219 → 11432/13044)
+- NodeList no existía: el polyfill de siempre ("if (window.NodeList && !NodeList.prototype.forEach)") y quien pregunta
+  instanceof NodeList daban ReferenceError. Ahora una interfaz con prototipo que hereda de Array.prototype (las listas
+  de childNodes y querySelectorAll son Arrays: instanceof dice true con ellos), item y toStringTag.
+- lib/css.dash, selectores de atributo: [*=x] (sin nombre), un operador raro o un valor sin comillas con espacios sin
+  escapar ([a= b c ]) no valen (SyntaxError en querySelector, regla ignorada en una hoja); "second\ two" sigue valiendo
+  (Acid2). *|a y |a son a (los atributos de HTML no tienen espacio de nombres). La bandera i: sin distinguir
+  mayúsculas (op con "i" detrás y el valor en minúsculas); s, como sin bandera. Un [ sin cerrar llega hasta el final
+  (CSS cierra lo abierto). ":" o "::" sin nombre no vale. css_selector_texto pone el valor entre comillas, como CSSOM.
+- lib/estilo.dash: [a~=""] y [a~="b c"] no casan (una palabra no es vacía ni tiene espacios).
+- lib/jsdom.dash: un pseudo-elemento que se conoce (::before, :after, ::marker, ::slotted()...) en el último compuesto
+  vale en querySelector y matches y no casa con nada.
+- removeChild de algo que no es hijo: NotFoundError; de algo que no es un nodo, TypeError (antes, el RangeError de C).
+- Medido (tests/pages/bench_dom_quitar.html, máquina RTG, dos pasadas; antes → después): 2000 appendChild+removeChild
+  2500-2520 → 2440-2480 ms; 60 querySelectorAll con [=], [~=] y [^=] sobre 200 elementos 140-160 → 160-180 (pasos de
+  20 ms): igual dentro del ruido.
+- WPT dom/nodes: querySelector-All 1693 → 1849/1975, matches 616 → 630/669, Node-removeChild 0 → 19/28, los de
+  case-insensitive y namespaces enteros; ninguno peor. test_jsdom_selectores_wpt (nuevo); test_css con la nueva
+  serialización; css, estilo, selectores4, Acid2 y los de jsdom pasan (los 8 últimos de la tanda de jsdom dan TIMEOUT
+  por el tiempo de la tanda filtrada, 600 + 45 s por test; sueltos, pasan).
+- Queda de querySelector-All: ids y clases con caracteres fuera de Latin-1 (el DOM va en Latin-1), :link/:visited,
+  :target y los selectores con espacio de nombres de elemento (*|div, |div).
+
+### 2026-11-08 — Tarea 41d: createElementNS con prefijo en XHTML y SVG; Acid3 frente a los nombres de DOM de ahora (pendiente del usuario)
+- createElementNS(XHTML o SVG, "p:x") daba un elemento sin prefijo: ahora prefix "p" y tagName con él (en XHTML, en
+  mayúsculas). WPT dom/nodes case.html 63 → 84/285 (pasado suelto; el resumen de la carpeta, en la próxima pasada).
+- Probado y quitado (en espera del usuario): los nombres como dice DOM desde 2025 (más laxos que el Name de XML:
+  "f}oo", "f<oo" o "￿foo" valen en createElement; ":div" da InvalidCharacterError y no NamespaceError; un
+  doctype "a:" vale). WPT lo pide (createElementNS, createDocument, createDocumentType, case: unas 300 subpruebas),
+  pero Acid3 (pruebas 23 a 25, tests/pages/acid3) pide lo de antes: 'di<v' con error 5, ':div' con 14 y
+  createDocumentType('a:') con NAMESPACE_ERR; test_jsdom_excepciones (de esas pruebas) fallaba. La versión con los
+  nombres nuevos, en el scratchpad de la sesión (prel_nombres_nuevos.js). Decide el usuario.
+
+### 2026-11-08 — Tarea 41d: WPT domparsing, carpeta nueva (129 → 573/1090)
+- git sparse-checkout add domparsing; primera pasada: 129/1090.
+- append, prepend, before, after y replaceWith con HTML y HTMLUnsafe (HTML, 2025): el HTML en un fragmento como el de
+  un <template>; las seguras quitan <script>, on... y lo de sanitizer.removeElements; las Unsafe con runScripts
+  ejecutan los scripts; con un documento, un fragmento suelto o <html> de padre, HierarchyRequestError (el fragmento
+  de template.content lleva __plantilla para distinguirlo). positional-methods 6 → 396/480.
+- El documento de DOMParser.parseFromString lleva la dirección del de la ventana (URL, documentURI), no about:blank.
+- Sin coste en lo de antes: métodos nuevos, dos defineProperty por parseFromString y uno por <template>.
+- Queda: XMLSerializer y los atributos con espacio de nombres (el mismo modelo que falta en dom/nodes), y lo que pide
+  el DOMParser de otro iframe (un motor por iframe).
+
+### 2026-11-08 — Tarea 41d: atributos con espacio de nombres; attributes 4 veces más rápido (dom/nodes 11432 → 11632/13044)
+- Dash guarda los atributos por su nombre en minúsculas (el CSS los busca así). De los que llegan por setAttributeNS con
+  espacio de nombres o prefijo, cada elemento apunta en __ans (por esa clave) el nombre tal cual, el espacio de
+  nombres, el prefijo y el local; getAttributeNS, hasAttributeNS y removeAttributeNS buscan por espacio de nombres y
+  local (antes no miraban el espacio de nombres); removeAttribute quita el apunte. Los Attr de attributes llevan
+  localName, prefix, namespaceURI y ownerElement. cloneNode copia el apunte y el nombre que puso createElementNS
+  (Node-cloneNode bajaba una subprueba con lo del prefijo de antes: ahora 124 → 125/135).
+- attributes guarda su copia de C mientras no cambie el DOM (__dashweb_version): cada length y cada [i] la pedían
+  entera. Medido (tests/pages/bench_atributos.html, máquina RTG, dos pasadas; antes → después): recorrer los atributos
+  de 200 elementos dos veces 2920-3120 → 720-780 ms; clonar el contenedor 5 veces 60 → 40-60; 2000 setAttribute +
+  getAttribute 380 → 400-420 (un 5 % más: quizá la recogida de basura con las copias guardadas).
+- WPT dom/nodes: case 63 → 245/285, attributes 8 → 20/67, namespaced-attribute-mutations 8 → 10/24 y otros cuatro con
+  una más; ninguno peor. mutaciones, svg_dom, custom, interfaces, jquery, wpt_dom y selectores_wpt pasan.
+
+### 2026-11-08 — Regla nueva: el nombre de quien pide cada cosa
+- Usuario (por la sesión telegram): cada arreglo o novedad que venga de una persona lleva su nombre en el commit, las
+  notas de la versión, el CHANGELOG y la documentación ("(idea de Ferrán García)"), con el nombre con el que se
+  presenta en el grupo y nunca datos de contacto; si no se sabe, preguntar a telegram o al usuario. En AGENTS.md.
+- En la 0.9.3: abrir ficheros del disco y soltar iconos (tarea 60) es idea de Ferrán García; las notas ya lo dicen.
+
+### 2026-11-08 — La 0.9.3-alfa rehecha con lo de hoy, lista a falta del visto bueno del usuario
+- Usuario: "Si" a preparar la 0.9.3 con todo lo de hoy (localStorage que dura, NodeList, selectores, atributos con
+  espacio de nombres, dom/ranges y dom/nodes, domparsing) en vez de la de ayer (60736ce).
+- Batería entera 153/154 (6380 s; test_imagenes_carga, el puerto 40856 de Chrome: con 40859 pasa). tools/paquete.sh:
+  tachyon.lha 2,1 MB, Tachyon.gz 1,9 MB y los nueve catálogos.
+- Actualización de verdad desde el Tachyon.gz de la v0.9.2-alfa publicada (máquina RTG, MUI 3.8, GitHub de mentira en
+  el PC): baja Tachyon.gz y los nueve catálogos, el instalado es idéntico al compilado, .old el de antes, y Reiniciar
+  abre la 0.9.3.
+- localStorage entre dos arranques (tests/pages/visitas.html, el Tachyon del paquete, MUI 3.8): el primero abre la
+  página y sale con Amiga-Q, y deja Tachyon.almacen con ["visitas","1"]; el segundo, con ese fichero, dice "visitas 2".
+- La 0.9.3 del paquete con MUI 3.8: cuatro ventanas (Acid3, gh_local.html, estrellas.html y Acid2) 300 s sin colgarse y
+  un clic al final que responde; copiar y pegar, Amiga-S ("Saved in RAM:pegar.html") y Amiga-O abre el selector.
+- Notas de la versión en castellano e inglés, con las cifras de WPT comprobadas contra la 0.9.2 publicada. Sin
+  publicar: el usuario da el visto bueno antes.

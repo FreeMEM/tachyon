@@ -38,7 +38,7 @@ struct Conexion
     fin: Int
     cerrada: Bool
     error: String
-    fase: Int = 0     # abriéndose: 1 nombre y conexión, 2 negociación TLS; 0 abierta
+    fase: Int = 0     # abriéndose: 1 nombre y conexión, 2 negociación TLS, 3 esperando sitio en la tabla; 0 abierta
     host: String = ""
     con_tls: Bool = false
     puerto: Int = 0
@@ -100,12 +100,12 @@ func red_abrir_empezar(host: String, puerto: Int, con_tls: Bool, espera_ms: Int)
     else
         c.sock = net_bg_open(host, puerto, espera_ms)
     end
-    if c.sock < 0
-        c.error = "too many connections"
-        red_cerrar(c)
-        return c
-    end
     c.fase = 1
+    if c.sock < 0
+        # la tabla de la tarea está llena (48): se espera a que otra se cierre, como mucho espera_ms (antes,
+        # error en seguida: "demasiadas conexiones" al ir a otra página con las de YouTube aún abiertas)
+        c.fase = 3
+    end
     return c
 end
 
@@ -116,6 +116,24 @@ func red_abrir_avanzar(c: Conexion) -> Int
     end
     if c.fase == 0
         return 1
+    end
+    if c.fase == 3
+        if c.con_tls
+            c.sock = net_bg_open_tls(c.host, c.puerto, c.espera)
+        else
+            c.sock = net_bg_open(c.host, c.puerto, c.espera)
+        end
+        if c.sock >= 0
+            c.fase = 1
+            c.empezada = time_ms()
+            return 0
+        end
+        if time_ms() - c.empezada > c.espera and time_ms() - c.empezada > 20000
+            c.error = "too many connections"
+            red_cerrar(c)
+            return -1
+        end
+        return 0
     end
     e = net_bg_state(c.sock)
     if e == 6 or e == 5
@@ -136,10 +154,18 @@ func red_abrir_avanzar(c: Conexion) -> Int
     return 0
 end
 
+# ¿Espera sitio en la tabla de conexiones? (está llena: quien pueda, que cierre alguna)
+func red_sin_sitio(c: Conexion) -> Bool
+    return not c.cerrada and c.fase == 3
+end
+
 # En qué está una conexión que se abre: "buscando" (el nombre), "conectando", "negociando" (TLS); "" abierta
 func red_fase(c: Conexion) -> String
     if c.cerrada or c.fase == 0
         return ""
+    end
+    if c.fase == 3
+        return "esperando"
     end
     e = net_bg_state(c.sock)
     if e == 3

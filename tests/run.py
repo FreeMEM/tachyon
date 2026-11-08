@@ -28,6 +28,7 @@ results do not count) and $DASH_EMU_SYS (Workbench files), as in Dash.
 """
 
 import argparse
+import re
 import os
 import shlex
 import subprocess
@@ -133,7 +134,7 @@ def main():
     ap.add_argument("filter", nargs="?")
     ap.add_argument("--no-emu", action="store_true")
     ap.add_argument("--memcheck", action="store_true")
-    # (the tests with the same emulator config run in one session: it gets this plus 20 s per test)
+    # (the tests with the same emulator config run in one session: it gets this plus 75 s per test)
     ap.add_argument("--timeout", type=float, default=600)
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
@@ -184,6 +185,15 @@ def main():
             results[src.stem] = (True, f"compiled (emulator skipped: no {', '.join(missing)})")
         else:
             cfg = EMU_BASE + "".join(c + "\n" for c in directives(src, "emu-config"))
+            # (--memcheck se lleva 2,7 MB del A1200 de 8 MB para su cuenta de cada bloque: se le dan 4 MB más, para que
+            # el programa tenga lo de un A1200 de verdad y no la mitad; con el preludio compilándose, los de JavaScript
+            # se quedaban sin memoria según la suerte; tarea 61)
+            if (args.memcheck or any(l.strip() == "# memcheck" for l in src.read_text().splitlines())) and "zorro_iii_memory" not in cfg:
+                cfg += "zorro_iii_memory = 4096\n"
+            # (la Zorro III solo la ve un 68020 entero: el del A1200 de FS-UAE es un 68EC020, de 24 bits, y sin esto no
+            # había memoria de más, tampoco en los que pedían 64 MB)
+            if "zorro_iii_memory" in cfg and not re.search(r"^cpu\s*=", cfg, re.M):
+                cfg += "cpu = 68020\n"
             if directives(src, "emu-server"):
                 cfg += "bsdsocket_library = 1\n"
             to_run.setdefault((cfg, system), []).append((src, exe, expected))
@@ -197,9 +207,10 @@ def main():
         if servers:
             time.sleep(1)       # let them listen
         try:
-            # (los de una misma configuración van en una sola sesión del emulador: 45 s por test; con 20, al crecer los de
-            # JavaScript, los últimos del grupo se quedaban sin tiempo y daban TIMEOUT en cada batería entera)
-            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 45 * len(group),
+            # (los de una misma configuración van en una sola sesión del emulador: 75 s por test; con 20, al crecer los de
+            # JavaScript, los últimos del grupo se quedaban sin tiempo y daban TIMEOUT en cada batería entera, y con 45,
+            # en una tanda filtrada de los de jsdom, que tardan 60-90 s cada uno)
+            outs = run_programs([exe for _, exe, _ in group], timeout=args.timeout + 75 * len(group),
                                 kickstart=os.environ.get("DASH_KICKSTART"), extra_config=cfg, system=system or None)
         except RuntimeError as e:
             for src, _, _ in group:

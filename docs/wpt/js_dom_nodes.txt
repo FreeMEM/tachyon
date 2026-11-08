@@ -1,9 +1,9 @@
-WPT TOTAL dom/nodes: 10501/12653 subpruebas en 246 de 246 ficheros
+WPT TOTAL dom/nodes: 10583/13044 subpruebas en 263 de 263 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
-WPT FILE dom/nodes/CharacterData-appendData.html 12/14 OK
-WPT FILE dom/nodes/CharacterData-data.html 0/16 OK
+WPT FILE dom/nodes/CharacterData-appendData.html 14/14 OK
+WPT FILE dom/nodes/CharacterData-data.html 12/16 OK
 WPT FILE dom/nodes/CharacterData-deleteData.html 16/18 OK
 WPT FILE dom/nodes/CharacterData-insertData.html 16/18 OK
 WPT FILE dom/nodes/CharacterData-remove.html 12/12 OK
@@ -21,20 +21,28 @@ WPT FILE dom/nodes/DOMImplementation-createHTMLDocument-with-saved-implementatio
 WPT FILE dom/nodes/DOMImplementation-createHTMLDocument.html 11/13 OK
 WPT FILE dom/nodes/DOMImplementation-hasFeature.html 137/137 OK
 WPT FILE dom/nodes/Document-URL.html 0/1 OK
+WPT FILE dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html 1/7 OK
 WPT FILE dom/nodes/Document-adoptNode.html 1/7 OK
-WPT FILE dom/nodes/Document-characterSet-normalization-1.html 0/0 sin acabar
+WPT FILE dom/nodes/Document-base-url-not-live.window.html 0/2 TIMEOUT 
+WPT FILE dom/nodes/Document-characterSet-normalization-1.html 18/315 OK
 WPT FILE dom/nodes/Document-characterSet-normalization-2.html 0/339 OK
+WPT FILE dom/nodes/Document-cloneNode-about-base-url-relative.window.html 0/4 OK
+WPT FILE dom/nodes/Document-cloneNode-about-base-url.window.html 1/5 OK
+WPT FILE dom/nodes/Document-cloneNode-base-url-xml.window.html 0/3 OK
+WPT FILE dom/nodes/Document-cloneNode-base-url.window.html 0/11 OK
+WPT FILE dom/nodes/Document-cloneNode-srcdoc-base-url.window.html 0/4 OK
 WPT FILE dom/nodes/Document-constructor.html 3/5 OK
 WPT FILE dom/nodes/Document-createAttribute.html 22/36 OK
 WPT FILE dom/nodes/Document-createCDATASection.html 1/1 OK
-WPT FILE dom/nodes/Document-createComment.html 0/6 OK
-WPT FILE dom/nodes/Document-createElement-namespace.html 35/51 TIMEOUT 
+WPT FILE dom/nodes/Document-createComment.html 6/6 OK
+WPT FILE dom/nodes/Document-createElement-namespace.html 41/51 OK
 WPT FILE dom/nodes/Document-createElement.html 115/147 OK
 WPT FILE dom/nodes/Document-createElementNS.html 487/596 OK
+WPT FILE dom/nodes/Document-createEvent-touchevent.window.html 0/3 OK
 WPT FILE dom/nodes/Document-createEvent.https.html 228/279 OK
 WPT FILE dom/nodes/Document-createProcessingInstruction.html 10/12 OK
-WPT FILE dom/nodes/Document-createTextNode.html 0/6 OK
-WPT FILE dom/nodes/Document-createTreeWalker.html 4/5 OK
+WPT FILE dom/nodes/Document-createTextNode.html 6/6 OK
+WPT FILE dom/nodes/Document-createTreeWalker.html 5/5 OK
 WPT FILE dom/nodes/Document-doctype.html 2/2 OK
 WPT FILE dom/nodes/Document-getElementById.html 14/18 OK
 WPT FILE dom/nodes/Document-getElementsByClassName.html 1/1 OK
@@ -59,7 +67,7 @@ WPT FILE dom/nodes/Element-closest.html 25/29 OK
 WPT FILE dom/nodes/Element-firstElementChild-namespace.html 1/1 OK
 WPT FILE dom/nodes/Element-firstElementChild.html 1/1 OK
 WPT FILE dom/nodes/Element-getElementsByClassName.html 2/3 OK
-WPT FILE dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html 0/1 TIMEOUT 
+WPT FILE dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html 0/1 OK
 WPT FILE dom/nodes/Element-getElementsByTagName.html 9/19 OK
 WPT FILE dom/nodes/Element-getElementsByTagNameNS.html 13/16 OK
 WPT FILE dom/nodes/Element-hasAttribute.html 2/2 OK
@@ -87,6 +95,7 @@ WPT FILE dom/nodes/Element-tagName.html 1/6 OK
 WPT FILE dom/nodes/Element-webkitMatchesSelector.html 616/669 OK
 WPT FILE dom/nodes/MutationObserver-attributes.html 37/42 TIMEOUT 
 WPT FILE dom/nodes/MutationObserver-callback-arguments.html 1/1 OK
+WPT FILE dom/nodes/MutationObserver-callback-order.window.html 1/3 OK
 WPT FILE dom/nodes/MutationObserver-callback-tricky.html 2/2 OK
 WPT FILE dom/nodes/MutationObserver-characterData.html 0/0 TIMEOUT 
 WPT FILE dom/nodes/MutationObserver-childList.html 34/40 TIMEOUT 
@@ -98,18 +107,21 @@ WPT FILE dom/nodes/MutationObserver-overlapping-registrations.html 1/3 OK
 WPT FILE dom/nodes/MutationObserver-sanity.html 10/16 OK
 WPT FILE dom/nodes/MutationObserver-takeRecords.html 3/3 OK
 WPT FILE dom/nodes/MutationObserver-textContent.html 4/4 OK
+WPT FILE dom/nodes/MutationObserver-transient-registered-observers.window.html 5/15 OK
+WPT FILE dom/nodes/Node-appendChild-cereactions-vs-script.window.html 0/1 OK
 WPT FILE dom/nodes/Node-appendChild.html 8/11 OK
 WPT FILE dom/nodes/Node-baseURI.html 0/9 OK
 WPT FILE dom/nodes/Node-childNodes-cache-2.html 1/1 OK
 WPT FILE dom/nodes/Node-childNodes-cache.html 1/1 OK
 WPT FILE dom/nodes/Node-childNodes.html 1/6 OK
 WPT FILE dom/nodes/Node-cloneNode-XMLDocument.html 0/1 OK
+WPT FILE dom/nodes/Node-cloneNode-document-allow-declarative-shadow-roots.window.html 0/1 OK
 WPT FILE dom/nodes/Node-cloneNode-document-with-doctype.html 3/3 OK
 WPT FILE dom/nodes/Node-cloneNode-parser-created-names.html 2/2 OK
 WPT FILE dom/nodes/Node-cloneNode-svg.html 0/4 OK
 WPT FILE dom/nodes/Node-cloneNode.html 124/135 OK
 WPT FILE dom/nodes/Node-compareDocumentPosition.html 1444/1444 OK
-WPT FILE dom/nodes/Node-constants.html 4/8 OK
+WPT FILE dom/nodes/Node-constants.html 8/8 OK
 WPT FILE dom/nodes/Node-contains.html 1482/1482 OK
 WPT FILE dom/nodes/Node-insertBefore.html 26/40 OK
 WPT FILE dom/nodes/Node-isConnected-shadow-dom.html 0/2 OK
@@ -124,17 +136,18 @@ WPT FILE dom/nodes/Node-normalize-2.html 0/2 OK
 WPT FILE dom/nodes/Node-normalize.html 3/4 OK
 WPT FILE dom/nodes/Node-parentElement.html 7/12 OK
 WPT FILE dom/nodes/Node-parentNode.html 5/5 OK
-WPT FILE dom/nodes/Node-properties.html 691/726 OK
+WPT FILE dom/nodes/Node-properties.html 706/726 OK
 WPT FILE dom/nodes/Node-removeChild.html 0/28 OK
 WPT FILE dom/nodes/Node-replaceChild.html 19/29 OK
 WPT FILE dom/nodes/Node-textContent.html 47/81 OK
 WPT FILE dom/nodes/NodeList-Iterable.html 7/8 OK
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-1.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-2.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-3.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html 0/1 TIMEOUT 
-WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html 0/1 TIMEOUT 
+WPT FILE dom/nodes/NodeList-live-mutations.window.html 0/4 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-1.html 0/1 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-2.html 0/1 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-3.html 0/1 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html 0/1 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html 0/1 OK
+WPT FILE dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html 0/1 OK
 WPT FILE dom/nodes/NonDocumentTypeChildNode-sibling-element.html 6/6 OK
 WPT FILE dom/nodes/ParentNode-append.html 10/25 OK
 WPT FILE dom/nodes/ParentNode-children.html 1/1 OK
@@ -171,6 +184,7 @@ WPT FILE dom/nodes/ParentNode-querySelector-scope.html 2/4 OK
 WPT FILE dom/nodes/ParentNode-querySelector-shadowroot-nth-child.html 0/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-svg-not-root.html 1/1 OK
 WPT FILE dom/nodes/ParentNode-querySelector-tag-case.html 6/6 OK
+WPT FILE dom/nodes/ParentNode-querySelector-xml-capitalization.window.html 2/3 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-case-insensitive-attribute-flag.html 0/2 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-namespace.html 0/1 OK
 WPT FILE dom/nodes/ParentNode-querySelectorAll-nested-not-has.html 1/1 OK
@@ -187,8 +201,10 @@ WPT FILE dom/nodes/ParentNode-replaceChildren.html 23/31 TIMEOUT
 WPT FILE dom/nodes/Text-constructor.html 11/16 OK
 WPT FILE dom/nodes/Text-splitText.html 6/6 OK
 WPT FILE dom/nodes/Text-wholeText.html 0/1 OK
+WPT FILE dom/nodes/adoption.window.html 1/6 OK
 WPT FILE dom/nodes/append-on-Document.html 2/5 OK
 WPT FILE dom/nodes/attach-shadow-realm-after-adoption.html 2/5 OK
+WPT FILE dom/nodes/attributes-namednodemap-cross-document.window.html 0/2 OK
 WPT FILE dom/nodes/attributes-namednodemap.html 6/8 OK
 WPT FILE dom/nodes/attributes.html 8/67 OK
 WPT FILE dom/nodes/case.html 63/285 OK
@@ -227,6 +243,7 @@ WPT FILE dom/nodes/getElementsByClassName-32.html 4/4 OK
 WPT FILE dom/nodes/getElementsByClassName-empty-set.html 3/3 OK
 WPT FILE dom/nodes/getElementsByClassName-whitespace-class-names.html 1/26 OK
 WPT FILE dom/nodes/insert-adjacent.html 8/14 OK
+WPT FILE dom/nodes/live-collections-batched-mutations.window.html 1/2 OK
 WPT FILE dom/nodes/name-validation.html 0/5 OK
 WPT FILE dom/nodes/namespaced-attribute-mutations.html 8/24 OK
 WPT FILE dom/nodes/node-creation-realm.html 10/13 OK
@@ -253,24 +270,10 @@ WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix present (SVG) | not a func
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix absent (SVG) | not a function
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix present (MathML) | not a function
 WPT SUB FAIL dom/nodes/Attr-prefix.html | Attr.prefix absent (MathML) | not a function
-WPT SUB FAIL dom/nodes/CharacterData-appendData.html | Text.appendData(non-ASCII) | assert_equals: expected (number) 25 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-appendData.html | Comment.appendData(non-ASCII) | assert_equals: expected (number) 25 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data initial value | assert_equals: expected (number) 4 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = null | assert_equals: expected "" but got "null"
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = undefined | assert_equals: expected (number) 9 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = 0 | assert_equals: expected (number) 1 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = '' | assert_equals: expected (number) 0 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = '--' | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = '??' | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = '? test ? TEST' | assert_equals: expected (number) 15 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data initial value | assert_equals: expected (number) 4 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/CharacterData-data.html | Text.data = '? test ? TEST' | assert_equals: expected 15 but got 13
 WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = null | assert_equals: expected "" but got "null"
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = undefined | assert_equals: expected (number) 9 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = 0 | assert_equals: expected (number) 1 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = '' | assert_equals: expected (number) 0 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = '--' | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = '??' | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = '? test ? TEST' | assert_equals: expected (number) 15 but got (undefined) undefined
+WPT SUB FAIL dom/nodes/CharacterData-data.html | Comment.data = '? test ? TEST' | assert_equals: expected 15 but got 13
 WPT SUB FAIL dom/nodes/CharacterData-deleteData.html | Text.deleteData() with non-BMP data | assert_equals: expected "? teST" but got "? tes"
 WPT SUB FAIL dom/nodes/CharacterData-deleteData.html | Comment.deleteData() with non-BMP data | assert_equals: expected "? teST" but got "? tes"
 WPT SUB FAIL dom/nodes/CharacterData-insertData.html | Text.insertData() with non-BMP data | assert_equals: expected "? te--st ? TEST" but got "? tes--t ? TEST"
@@ -574,12 +577,317 @@ WPT SUB FAIL dom/nodes/DOMImplementation-createDocumentType.html | createDocumen
 WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | createHTMLDocument test 2: undefined,undefined,"" | assert_equals: expected 0 but got 1
 WPT SUB FAIL dom/nodes/DOMImplementation-createHTMLDocument.html | Missing title argument | assert_equals: expected 0 but got 1
 WPT SUB FAIL dom/nodes/Document-URL.html | Document.URL with redirect | assert_equals: expected "http://127.0.0.1:40881/common/blank.html" but got "/common/redirect.py?location=/common/blank.html"
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() plain DocumentFragment (no host): adopts and returns it | assert_equals: fragment adopted expected Document node with 2 children but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() template.content: adopts fragment + children, returns it | assert_equals: fragment adopted expected Document node with 2 children but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() template.content into browsing-context document | assert_equals: child adopted expected Document node with 2 children but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() shadow root: throws HierarchyRequestError | assert_throws_dom: function "() => target.adoptNode(root)" did not throw
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() <template> element: content follows via template adopting steps | assert_equals: template element adopted into the target expected Document node with 2 children but got Document node with 2 children
+WPT SUB FAIL dom/nodes/Document-adoptNode-DocumentFragment-with-host.window.html | adoptNode() nested <template> elements: all owner documents update | assert_equals: outer template adopted expected Document node with 2 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element called 'x<' should work. | assert_equals: expected Document node with 0 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element called ':good:times:' should work. | assert_equals: expected Document node with 0 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting a Document should throw. | assert_throws_dom: function "function() { document.adoptNode(doc) }" did not throw
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element should adopt its Attr nodes. | assert_equals: expected (object) Document node with 2 children but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Inserting an Element into another document should adopt its Attr nodes. | assert_equals: Attr node must be adopted when its element is inserted into another document expected Document node with 1 child but got Document node with 2 chi
 WPT SUB FAIL dom/nodes/Document-adoptNode.html | Adopting an Element should adopt its namespaced attributes. | assert_equals: expected Document node with 1 child but got Document node with 2 children
+WPT SUB TIMEOUT dom/nodes/Document-base-url-not-live.window.html | about:blank base URL is not live | Test timed out
+WPT SUB NOTRUN dom/nodes/Document-base-url-not-live.window.html | about:srcdoc base URL is not live | 
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "866" (characterSet) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "866" (inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "866" (charset) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "cp866" (characterSet) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "cp866" (inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "cp866" (charset) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "csibm866" (characterSet) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "csibm866" (inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "csibm866" (charset) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "ibm866" (characterSet) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "ibm866" (inputEncoding) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "IBM866" has label "ibm866" (charset) | assert_equals: expected "IBM866" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "csisolatin2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "csisolatin2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "csisolatin2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-8859-2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-8859-2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-8859-2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-ir-101" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-ir-101" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso-ir-101" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso8859-2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso8859-2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso8859-2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso88592" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso88592" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso88592" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2:1987" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2:1987" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "iso_8859-2:1987" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "l2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "l2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "l2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "latin2" (characterSet) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "latin2" (inputEncoding) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-2" has label "latin2" (charset) | assert_equals: expected "ISO-8859-2" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "csisolatin3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "csisolatin3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "csisolatin3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-8859-3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-8859-3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-8859-3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-ir-109" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-ir-109" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso-ir-109" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso8859-3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso8859-3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso8859-3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso88593" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso88593" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso88593" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3:1988" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3:1988" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "iso_8859-3:1988" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "l3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "l3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "l3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "latin3" (characterSet) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "latin3" (inputEncoding) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-3" has label "latin3" (charset) | assert_equals: expected "ISO-8859-3" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "csisolatin4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "csisolatin4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "csisolatin4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-8859-4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-8859-4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-8859-4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-ir-110" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-ir-110" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso-ir-110" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso8859-4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso8859-4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso8859-4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso88594" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso88594" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso88594" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4:1988" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4:1988" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "iso_8859-4:1988" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "l4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "l4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "l4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "latin4" (characterSet) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "latin4" (inputEncoding) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-4" has label "latin4" (charset) | assert_equals: expected "ISO-8859-4" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "csisolatincyrillic" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "csisolatincyrillic" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "csisolatincyrillic" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "cyrillic" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "cyrillic" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "cyrillic" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-8859-5" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-8859-5" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-8859-5" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-ir-144" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-ir-144" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso-ir-144" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso8859-5" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso8859-5" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso8859-5" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso88595" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso88595" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso88595" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5:1988" (characterSet) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5:1988" (inputEncoding) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-5" has label "iso_8859-5:1988" (charset) | assert_equals: expected "ISO-8859-5" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "arabic" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "arabic" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "arabic" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "asmo-708" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "asmo-708" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "asmo-708" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596e" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596e" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596e" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596i" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596i" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csiso88596i" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csisolatinarabic" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csisolatinarabic" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "csisolatinarabic" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "ecma-114" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "ecma-114" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "ecma-114" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-e" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-e" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-e" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-i" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-i" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-8859-6-i" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-ir-127" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-ir-127" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso-ir-127" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso8859-6" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso8859-6" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso8859-6" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso88596" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso88596" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso88596" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6:1987" (characterSet) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6:1987" (inputEncoding) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-6" has label "iso_8859-6:1987" (charset) | assert_equals: expected "ISO-8859-6" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "csisolatingreek" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "csisolatingreek" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "csisolatingreek" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "ecma-118" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "ecma-118" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "ecma-118" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "elot_928" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "elot_928" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "elot_928" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek8" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek8" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "greek8" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-8859-7" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-8859-7" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-8859-7" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-ir-126" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-ir-126" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso-ir-126" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso8859-7" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso8859-7" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso8859-7" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso88597" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso88597" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso88597" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7:1987" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7:1987" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "iso_8859-7:1987" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "sun_eu_greek" (characterSet) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "sun_eu_greek" (inputEncoding) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-7" has label "sun_eu_greek" (charset) | assert_equals: expected "ISO-8859-7" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csiso88598e" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csiso88598e" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csiso88598e" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csisolatinhebrew" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csisolatinhebrew" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "csisolatinhebrew" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "hebrew" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "hebrew" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "hebrew" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8-e" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8-e" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-8859-8-e" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-ir-138" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-ir-138" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso-ir-138" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso8859-8" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso8859-8" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso8859-8" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso88598" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso88598" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso88598" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8:1988" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8:1988" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "iso_8859-8:1988" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "visual" (characterSet) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "visual" (inputEncoding) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8" has label "visual" (charset) | assert_equals: expected "ISO-8859-8" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "csiso88598i" (characterSet) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "csiso88598i" (inputEncoding) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "csiso88598i" (charset) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "iso-8859-8-i" (characterSet) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "iso-8859-8-i" (inputEncoding) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "iso-8859-8-i" (charset) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "logical" (characterSet) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "logical" (inputEncoding) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-8-I" has label "logical" (charset) | assert_equals: expected "ISO-8859-8-I" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "csisolatin6" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "csisolatin6" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "csisolatin6" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-8859-10" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-8859-10" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-8859-10" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-ir-157" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-ir-157" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso-ir-157" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso8859-10" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso8859-10" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso8859-10" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso885910" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso885910" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "iso885910" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "l6" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "l6" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "l6" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "latin6" (characterSet) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "latin6" (inputEncoding) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-10" has label "latin6" (charset) | assert_equals: expected "ISO-8859-10" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso-8859-13" (characterSet) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso-8859-13" (inputEncoding) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso-8859-13" (charset) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso8859-13" (characterSet) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso8859-13" (inputEncoding) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso8859-13" (charset) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso885913" (characterSet) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso885913" (inputEncoding) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-13" has label "iso885913" (charset) | assert_equals: expected "ISO-8859-13" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso-8859-14" (characterSet) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso-8859-14" (inputEncoding) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso-8859-14" (charset) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso8859-14" (characterSet) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso8859-14" (inputEncoding) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso8859-14" (charset) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso885914" (characterSet) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso885914" (inputEncoding) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-14" has label "iso885914" (charset) | assert_equals: expected "ISO-8859-14" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "csisolatin9" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "csisolatin9" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "csisolatin9" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso-8859-15" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso-8859-15" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso-8859-15" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso8859-15" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso8859-15" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso8859-15" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso885915" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso885915" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso885915" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso_8859-15" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso_8859-15" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "iso_8859-15" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "l9" (characterSet) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "l9" (inputEncoding) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-15" has label "l9" (charset) | assert_equals: expected "ISO-8859-15" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-16" has label "iso-8859-16" (characterSet) | assert_equals: expected "ISO-8859-16" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-16" has label "iso-8859-16" (inputEncoding) | assert_equals: expected "ISO-8859-16" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-characterSet-normalization-1.html | Name "ISO-8859-16" has label "iso-8859-16" (charset) | assert_equals: expected "ISO-8859-16" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (characterSet) | assert_equals: expected "KOI8-R" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (inputEncoding) | assert_equals: expected "KOI8-R" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "KOI8-R" has label "cskoi8r" (charset) | assert_equals: expected "KOI8-R" but got "UTF-8"
@@ -919,6 +1227,32 @@ WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replac
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (characterSet) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (inputEncoding) | assert_equals: expected "replacement" but got "UTF-8"
 WPT SUB FAIL dom/nodes/Document-characterSet-normalization-2.html | Name "replacement" has label "iso-2022-kr" (charset) | assert_equals: expected "replacement" but got "UTF-8"
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url-relative.window.html | A relative <base> in an about:blank document resolves against the inherited base URL | assert_equals: expected "http://127.0.0.1:40881/dom/nodes/sub/" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-about-base-url-relative.window.html
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url-relative.window.html | Clone of an about:blank document with a relative <base> | assert_equals: deep expected (string) "http://127.0.0.1:40881/dom/nodes/sub/" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url-relative.window.html | A relative <base> inserted into a shallow clone of an about:blank document resolves against the inherited base URL | promise_test: Unhandled rejection with value: object "TypeError: not a function"
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url-relative.window.html | A data: <base> in an about:blank document and its clone falls back to the inherited base URL | assert_equals: deep clone before expected (string) "https://example.com/" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Deep clone of an about:blank document | assert_equals: URL expected (string) "about:blank" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Shallow clone of an about:blank document | assert_equals: URL expected (string) "about:blank" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Clone of an about:blank document after detaching the source | assert_equals: shallow expected (string) "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-about-base-url.window.html" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Clone of an about:blank document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-about-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document ignores a non-HTML <base> element | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XHTML document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Deep clone of a document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone of a document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a createHTMLDocument() document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a createHTMLDocument() document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Deep clone of a document with a relative <base> | Failed to construct 'URL': Invalid URL
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone of a document with a relative <base> | Failed to construct 'URL': Invalid URL
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone is unaffected by later mutation of the source | assert_equals: source updated expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone's base URL survives later mutation of the clone | not a function
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Inserting a <base> into a shallow clone overrides the copied base URL | assert_equals: before inserting <base> expected (string) "http://example.com/foo/bar" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a blob: URL document | assert_equals: source expected "blob:http://127.0.0.1:40881/1" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-srcdoc-base-url.window.html | A relative <base> in an about:srcdoc document resolves against the inherited base URL | assert_equals: expected "http://127.0.0.1:40881/dom/nodes/sub/" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-srcdoc-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-srcdoc-base-url.window.html | Clone of an about:srcdoc document with a relative <base> | assert_equals: deep expected (string) "http://127.0.0.1:40881/dom/nodes/sub/" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Document-cloneNode-srcdoc-base-url.window.html | A relative <base> inserted into a shallow clone of an about:srcdoc document resolves against the inherited base URL | promise_test: Unhandled rejection with value: object "TypeError: not a function"
+WPT SUB FAIL dom/nodes/Document-cloneNode-srcdoc-base-url.window.html | A data: <base> in an about:srcdoc document and its clone falls back to the inherited base URL | assert_equals: deep clone before expected (string) "https://example.com/" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): interfaces | assert_false: Should not be an XMLDocument expected false got true
 WPT SUB FAIL dom/nodes/Document-constructor.html | new Document(): metadata | assert_equals: expected function "function Element() { [native code] }" but got function "function HTMLAnchorElement() { [native code] }"
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("invalid^Name") | The localName provided ('invalid^Name') contains an invalid character.
@@ -935,12 +1269,6 @@ WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttri
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("0:a") | The localName provided ('0:a') contains an invalid character.
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | HTML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
 WPT SUB FAIL dom/nodes/Document-createAttribute.html | XML document.createAttribute("~") | The localName provided ('~') contains an invalid character.
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("\v") | assert_equals: expected (number) 1 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a -- b") | assert_equals: expected (number) 6 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("a-") | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment("-b") | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(null) | assert_equals: expected (number) 4 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createComment.html | createComment(undefined) | assert_equals: expected (number) 9 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in empty.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in minimal_html.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
@@ -949,14 +1277,8 @@ WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_xhtml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_svg.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
 WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in bare_mathml.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.html | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.xhtml | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.xml | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.svg | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.html | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xhtml | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xml | Test timed out
-WPT SUB TIMEOUT dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.svg | Test timed out
+WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_removed.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
+WPT SUB FAIL dom/nodes/Document-createElement-namespace.html | Created element's namespace in xhtml_ns_changed.xml | assert_equals: Wrong MIME type returned from doc.contentType expected "application/xml" but got "text/xml"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("f?") in HTML document | assert_equals: localName expected "f?" but got "f?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo?") in HTML document | assert_equals: localName expected "foo?" but got "foo?"
 WPT SUB FAIL dom/nodes/Document-createElement.html | createElement("foo:?") in HTML document | assert_equals: localName expected "foo:?" but got "foo:?"
@@ -1098,6 +1420,9 @@ WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case non-HTML eleme
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | null namespace | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | undefined namespace | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | empty string namespace | assert_false: Should not be an HTMLElement expected false got true
+WPT SUB FAIL dom/nodes/Document-createEvent-touchevent.window.html | document.createEvent('TouchEvent') should throw if 'expose legacy touch event APIs' is false | assert_throws_dom: function "() => { document.createEvent(variant); }" did not throw
+WPT SUB FAIL dom/nodes/Document-createEvent-touchevent.window.html | document.createEvent('touchevent') should throw if 'expose legacy touch event APIs' is false | assert_throws_dom: function "() => { document.createEvent(variant); }" did not throw
+WPT SUB FAIL dom/nodes/Document-createEvent-touchevent.window.html | document.createEvent('TOUCHEVENT') should throw if 'expose legacy touch event APIs' is false | assert_throws_dom: function "() => { document.createEvent(variant); }" did not throw
 WPT SUB FAIL dom/nodes/Document-createEvent.https.html | BeforeUnloadEvent should be an alias for BeforeUnloadEvent. | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/Document-createEvent.https.html | beforeunloadevent should be an alias for BeforeUnloadEvent. | assert_equals: expected object "[object Object]" but got object "[object Object]"
 WPT SUB FAIL dom/nodes/Document-createEvent.https.html | BEFOREUNLOADEVENT should be an alias for BeforeUnloadEvent. | assert_equals: expected object "[object Object]" but got object "[object Object]"
@@ -1151,13 +1476,6 @@ WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | TOUCHEVE
 WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | createEvent('TOUCHEVENT') should be initialized correctly. | 'expose legacy touch event APIs'
 WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "×A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
 WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "A×" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("\v") | assert_equals: expected (number) 1 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("a -- b") | assert_equals: expected (number) 6 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("a-") | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode("-b") | assert_equals: expected (number) 2 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode(null) | assert_equals: expected (number) 4 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTextNode.html | createTextNode(undefined) | assert_equals: expected (number) 9 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Document-createTreeWalker.html | Required arguments to createTreeWalker should be required. | assert_throws_js: function "function() { document.createTreeWalker(); }" did not throw
 WPT SUB FAIL dom/nodes/Document-getElementById.html | Calling document.getElementById with an empty string argument. | assert_equals: expected null but got Element node <html><head><meta charset="utf-8"> <title>Document.getEle...
 WPT SUB FAIL dom/nodes/Document-getElementById.html | changing attribute's value via `Attr` gotten from `Element.attribute`. | assert_equals: should return null after updated id via Attr.value expected null but got Element node <div id="test7"></div>
 WPT SUB FAIL dom/nodes/Document-getElementById.html | add id attribute via outerHTML | assert_not_equals: should not be null got disallowed value null
@@ -1193,7 +1511,7 @@ WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 
 WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 'test4' and selector 'select > :scope' | assert_equals: select > :scope expected "test4" but got ""
 WPT SUB FAIL dom/nodes/Element-closest.html | Element.closest with context node 'test4' and selector ':has(> :scope)' | assert_equals: :has(> :scope) expected "test3" but got ""
 WPT SUB FAIL dom/nodes/Element-getElementsByClassName.html | Interface should be correct. | 'NodeList' is not defined
-WPT SUB NOTRUN dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html | Element-getElementsByTagName-change-document-HTMLNess | 
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName-change-document-HTMLNess.html | Element-getElementsByTagName-change-document-HTMLNess | assert_array_equals: In an HTML document, should lowercase the tagname passed in for HTML elements only lengths differ, expected array [Element node <a>xhtml:a<
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Interfaces | 'NodeList' is not defined
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | HTML element with uppercase tagName never matches in HTML Documents | assert_equals: expected "I" but got "i"
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, no prefix, lowercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
@@ -1350,6 +1668,8 @@ WPT SUB TIMEOUT dom/nodes/MutationObserver-attributes.html | attributes Element.
 WPT SUB FAIL dom/nodes/MutationObserver-attributes.html | attributes Element.setAttributeNS: creation mutation | assert_equals: attributeNamespace didn't match expected (string) "http://example.org/" but got (object) null
 WPT SUB FAIL dom/nodes/MutationObserver-attributes.html | attributes Element.setAttributeNS: prefixed attribute creation mutation | assert_equals: attributeName didn't match expected "lang" but got "xml:lang"
 WPT SUB FAIL dom/nodes/MutationObserver-attributes.html | attributes Element.removeAttributeNS: removal mutation | assert_equals: attributeNamespace didn't match expected (string) "http://example.org/" but got (object) null
+WPT SUB FAIL dom/nodes/MutationObserver-callback-order.window.html | Mutation observers are notified in the order they were created | assert_array_equals: expected property 0 to be "first" but got "second" (expected array ["first", "second"] got ["second", "first"])
+WPT SUB FAIL dom/nodes/MutationObserver-callback-order.window.html | Mutation observers are notified in the order they were created, also when one observes a removed subtree | assert_array_equals: lengths differ, expected array ["first", "second"] length 2, got ["first"] length 1
 WPT SUB TIMEOUT dom/nodes/MutationObserver-childList.html | childList Node.insertBefore: fragment removal mutations | Test timed out
 WPT SUB TIMEOUT dom/nodes/MutationObserver-childList.html | childList Node.appendChild: fragment removal mutations | Test timed out
 WPT SUB FAIL dom/nodes/MutationObserver-childList.html | childList Node.replaceChild: internal replacement mutation | assert_equals: nextSibling didn't match expected null but got Element node <span>CHANGED</span>
@@ -1368,6 +1688,17 @@ WPT SUB FAIL dom/nodes/MutationObserver-sanity.html | Should throw if characterD
 WPT SUB FAIL dom/nodes/MutationObserver-sanity.html | Should not throw if attributeOldValue is false and attributes is omitted | MutationObserver: nothing to observe
 WPT SUB FAIL dom/nodes/MutationObserver-sanity.html | Should not throw if characterDataOldValue is false and characterData is omitted | MutationObserver: nothing to observe
 WPT SUB FAIL dom/nodes/MutationObserver-sanity.html | attributeOldValue:false (present) auto-enables attribute observation | MutationObserver: nothing to observe
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | Mutations in a removed subtree are observed until mutation observers are notified | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child +added"] length 2, got ["childList parent -child"] length 1
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | Attribute mutations in a removed subtree are observed until mutation observers are notified | assert_array_equals: lengths differ, expected array ["attributes child data-test"] length 1, got [] length 0
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | Mutations in a subtree removed by replaceChildren() are observed until mutation observers are notified | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child +added"] length 2, got ["childList parent -child"] length 1
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | takeRecords() does not stop observing a removed subtree | assert_array_equals: lengths differ, expected array ["childList child +added"] length 1, got [] length 0
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | A removed subtree is no longer observed after mutation observers are notified | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child +before"] length 2, got ["childList parent -child"] length 1
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | A subtree removed from a removed subtree is no longer observed after mutation observers are notified | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child -grandchild", "childList grandchild +before"] length 3, got ["c
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | Removing a node from an observed subtree queues the mutation observer microtask | assert_array_equals: lengths differ, expected array ["observer", "promise"] length 2, got ["promise"] length 1
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | disconnect() does not affect another observer observing a removed subtree | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child +added"] length 2, got ["childList parent -child"] length 1
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | observe() stops observing a removed subtree through the target, but not through other targets | assert_array_equals: lengths differ, expected array ["childList child -grandchild", "childList grandchild +added"] length 2, got ["childList child -grandchild"]
+WPT SUB FAIL dom/nodes/MutationObserver-transient-registered-observers.window.html | observe() stops observing subtrees removed from a removed subtree | assert_array_equals: lengths differ, expected array ["childList parent -child", "childList child -grandchild"] length 2, got ["childList parent -child"] length 
+WPT SUB FAIL dom/nodes/Node-appendChild-cereactions-vs-script.window.html | Custom element reactions follow script execution | Illegal constructor
 WPT SUB FAIL dom/nodes/Node-appendChild.html | Appending a document | cannot read property 'document' of undefined
 WPT SUB FAIL dom/nodes/Node-appendChild.html | Adopting an orphan | cannot read property 'document' of undefined
 WPT SUB FAIL dom/nodes/Node-appendChild.html | Adopting a non-orphan | cannot read property 'document' of undefined
@@ -1386,6 +1717,7 @@ WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes on a DocumentFragm
 WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes on a Document. | assert_equals: expected [] but got [Element node <p></p>]
 WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes should be a live collection | 'NodeList' is not defined
 WPT SUB FAIL dom/nodes/Node-cloneNode-XMLDocument.html | Created with createDocument | assert_equals: Precondition check: document.implementation.createDocument() creates an XMLDocument expected function "function XMLDocument() { [native code] }" 
+WPT SUB FAIL dom/nodes/Node-cloneNode-document-allow-declarative-shadow-roots.window.html | cloneNode() and document's allow declarative shadow roots | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg>'s xmlns:xlink attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/2000/xmlns/" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
@@ -1401,10 +1733,6 @@ WPT SUB FAIL dom/nodes/Node-cloneNode.html | createProcessingInstruction | asser
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttribute | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttributeNS | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | implementation.createDocument | assert_equals: charset equality expected (undefined) undefined but got (string) "UTF-8"
-WPT SUB FAIL dom/nodes/Node-constants.html | Constants for nodeType on Node interface object. | assert_true: Object function Nodo() { [native code] } doesn't have ENTITY_REFERENCE_NODE expected true got false
-WPT SUB FAIL dom/nodes/Node-constants.html | Constants for nodeType on Node prototype object. | assert_true: Object [object Object] doesn't have ENTITY_REFERENCE_NODE expected true got false
-WPT SUB FAIL dom/nodes/Node-constants.html | Constants for nodeType on Element object. | assert_true: Object [object Object] doesn't have ENTITY_REFERENCE_NODE expected true got false
-WPT SUB FAIL dom/nodes/Node-constants.html | Constants for nodeType on Text object. | assert_true: Object [object Object] doesn't have ENTITY_REFERENCE_NODE expected true got false
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | Should check whether 'child' is a child of 'parent' before checking whether 'node' is of a type that can have a parent. | assert_throws_dom: function "function() { insertFunc.call(parent, node, child); }" threw object "HierarchyRequestError: Nodes of this type may not be inserted."
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | Should check whether 'child' is a child of 'parent' before checking whether 'node' is of a type that can have a parent of the type that 'parent' is. | assert_throws_dom: function "function() { insertFunc.call(parent, node, child); }" threw object "HierarchyRequestError: Nodes of type #text may not be inserted 
 WPT SUB FAIL dom/nodes/Node-insertBefore.html | Should check whether 'child' is a child of 'parent' before checking whether 'node' can be inserted into the document given the kids the document has right now. | assert_throws_dom: function "function() { insertFunc.call(parent, node, child); }" threw object "HierarchyRequestError: Only one element on document allowed." t
@@ -1454,28 +1782,13 @@ WPT SUB FAIL dom/nodes/Node-properties.html | foreignDoc.textContent | assert_eq
 WPT SUB FAIL dom/nodes/Node-properties.html | xmlDoc.textContent | assert_equals: expected (object) null but got (string) "do re mi fa so la ti"
 WPT SUB FAIL dom/nodes/Node-properties.html | xmlElement.parentElement | assert_equals: expected null but got Document node with 4 children
 WPT SUB FAIL dom/nodes/Node-properties.html | detachedTextNode.wholeText | assert_equals: expected (string) "Uvwxyzab" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedTextNode.length | assert_equals: expected (number) 8 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | foreignTextNode.wholeText | assert_equals: expected (string) "I admit that I harbor doubts about whether we really need so many things to test, but it's too late to stop now." but got (und
-WPT SUB FAIL dom/nodes/Node-properties.html | foreignTextNode.length | assert_equals: expected (number) 112 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | detachedForeignTextNode.wholeText | assert_equals: expected (string) "Cdefghij" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedForeignTextNode.length | assert_equals: expected (number) 8 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | xmlTextNode.wholeText | assert_equals: expected (string) "do re mi fa so la ti" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | xmlTextNode.length | assert_equals: expected (number) 20 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | detachedXmlTextNode.wholeText | assert_equals: expected (string) "Klmnopqr" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedXmlTextNode.length | assert_equals: expected (number) 8 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | processingInstruction.nodeType | assert_equals: expected (undefined) undefined but got (number) 7
 WPT SUB FAIL dom/nodes/Node-properties.html | processingInstruction.parentElement | assert_equals: expected null but got Document node with 4 children
-WPT SUB FAIL dom/nodes/Node-properties.html | processingInstruction.length | assert_equals: expected (number) 123 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedProcessingInstruction.nodeType | assert_equals: expected (undefined) undefined but got (number) 7
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedProcessingInstruction.length | assert_equals: expected (number) 17 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | comment.length | assert_equals: expected (number) 14 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedComment.length | assert_equals: expected (number) 8 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | foreignComment.parentElement | assert_equals: expected null but got Document node with 3 children
-WPT SUB FAIL dom/nodes/Node-properties.html | foreignComment.length | assert_equals: expected (number) 100 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedForeignComment.length | assert_equals: expected (number) 10 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | xmlComment.parentElement | assert_equals: expected null but got Document node with 4 children
-WPT SUB FAIL dom/nodes/Node-properties.html | xmlComment.length | assert_equals: expected (number) 143 but got (undefined) undefined
-WPT SUB FAIL dom/nodes/Node-properties.html | detachedXmlComment.length | assert_equals: expected (number) 14 but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Node-properties.html | doctype.textContent | assert_equals: expected (object) null but got (string) ""
 WPT SUB FAIL dom/nodes/Node-properties.html | doctype.parentElement | assert_equals: expected null but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Node-properties.html | foreignDoctype.textContent | assert_equals: expected (object) null but got (string) ""
@@ -1556,6 +1869,10 @@ WPT SUB FAIL dom/nodes/Node-textContent.html | For Documents created by createHT
 WPT SUB FAIL dom/nodes/Node-textContent.html | For DocumentType created by parser, setting textContent should do nothing | assert_equals: expected (object) null but got (string) "b"
 WPT SUB FAIL dom/nodes/Node-textContent.html | For DocumentType created by script, setting textContent should do nothing | assert_equals: expected (object) null but got (string) "b"
 WPT SUB FAIL dom/nodes/NodeList-Iterable.html | live NodeLists are for-of iterable and update appropriately | assert_array_equals: lengths differ, expected array ["b1", "b2", "b3", "afterb1", "afterb2"] length 5, got ["b1", "b2", "b3"] length 3
+WPT SUB FAIL dom/nodes/NodeList-live-mutations.window.html | NodeList live mutations: NodeList.length | assert_equals: expected 3 but got 0
+WPT SUB FAIL dom/nodes/NodeList-live-mutations.window.html | NodeList live mutations: NodeList.item(index) | not a function
+WPT SUB FAIL dom/nodes/NodeList-live-mutations.window.html | NodeList live mutations: NodeList[index] | assert_equals: expected (object) Element node <div></div> but got (undefined) undefined
+WPT SUB FAIL dom/nodes/NodeList-live-mutations.window.html | NodeList live mutations: NodeList ownPropertyNames | assert_object_equals: unexpected property "0"
 WPT SUB FAIL dom/nodes/NodeList-static-length-getter-tampered-1.html | NodeList (static collection) "length" getter tampered | interrupted
 WPT SUB FAIL dom/nodes/NodeList-static-length-getter-tampered-2.html | NodeList (static collection) "length" getter tampered | interrupted
 WPT SUB FAIL dom/nodes/NodeList-static-length-getter-tampered-3.html | NodeList (static collection) "length" getter tampered | interrupted
@@ -1900,6 +2217,7 @@ WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope-in-not.html | :scope neste
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope.html | querySelector with :scope | assert_equals: expected Element node <p><span>hello</span></p> but got null
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-scope.html | querySelectorAll with :scope | assert_array_equals: lengths differ, expected array [Element node <p><span>hello</span></p>] length 1, got [] length 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelector-shadowroot-nth-child.html | div:nth-child(2) should select #first when preceded by a style inside shadow root | cannot read property 'id' of null
+WPT SUB FAIL dom/nodes/ParentNode-querySelector-xml-capitalization.window.html | Child combinator | assert_equals: test expected null but got Element node <test> content <my-tag>abc</my-tag> <...
 WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-case-insensitive-attribute-flag.html | Case-insensitive attribute selector with lowercase flag 'i' should work | assert_equals: Selector with lowercase 'i' flag should match the element expected 1 but got 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-case-insensitive-attribute-flag.html | Case-insensitive attribute selector with uppercase flag 'I' should work | assert_equals: Selector with uppercase 'I' flag should match the element expected 1 but got 0
 WPT SUB FAIL dom/nodes/ParentNode-querySelectorAll-namespace.html | querySelectorAll with namespaced XML elements | assert_equals: entries length expected 2 but got 0
@@ -1920,12 +2238,19 @@ WPT SUB FAIL dom/nodes/Text-constructor.html | new Text(): "\0" | assert_equals:
 WPT SUB FAIL dom/nodes/Text-constructor.html | new Text(): "\0test" | assert_equals: expected "\0test" but got ""
 WPT SUB FAIL dom/nodes/Text-constructor.html | new Text() should get the correct ownerDocument across globals | assert_equals: expected Document node with 2 children but got Document node with 2 children
 WPT SUB FAIL dom/nodes/Text-wholeText.html | wholeText returns text of all Text nodes logically adjacent to the node, in document order. | assert_equals: expected (string) "a" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/adoption.window.html | appendChild() and DocumentFragment with host | assert_not_equals: got disallowed value Document node with 2 children
+WPT SUB FAIL dom/nodes/adoption.window.html | adoptNode() and DocumentFragment with host | assert_not_equals: got disallowed value Document node with 2 children
+WPT SUB FAIL dom/nodes/adoption.window.html | adoptNode() and DocumentFragment | assert_equals: expected Document node with 2 children but got Document node with 0 children
+WPT SUB FAIL dom/nodes/adoption.window.html | appendChild() and ShadowRoot | assert_equals: expected Document node with 0 children but got Document node with 2 children
+WPT SUB FAIL dom/nodes/adoption.window.html | adoptNode() and ShadowRoot | assert_throws_dom: function "() => document.adoptNode(df)" did not throw
 WPT SUB FAIL dom/nodes/append-on-Document.html | Document.append() with only one element as an argument, on a Document having one child. | assert_throws_dom: function "function() { parent.append(y); }" did not throw
 WPT SUB FAIL dom/nodes/append-on-Document.html | Document.append() with text as an argument, on a Document having no child. | assert_throws_dom: function "function() { parent.append('text'); }" did not throw
 WPT SUB FAIL dom/nodes/append-on-Document.html | Document.append() with two elements as the argument, on a Document having no child. | assert_throws_dom: function "function() { parent.append(x, y); }" did not throw
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() on an adopted built-in host: shadow root uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() on an adopted custom element host: shadow root uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
 WPT SUB FAIL dom/nodes/attach-shadow-realm-after-adoption.html | attachShadow() invoked via another realm's method uses the node document realm | assert_true: shadow root is from the node document's (top-level) realm expected true got false
+WPT SUB FAIL dom/nodes/attributes-namednodemap-cross-document.window.html | Moving an attribute between documents | assert_equals: expected (object) Document node with 2 children but got (undefined) undefined
+WPT SUB FAIL dom/nodes/attributes-namednodemap-cross-document.window.html | Replacing an attribute across documents | assert_equals: expected (object) Document node with 0 children but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should add and remove fields from `attributes` | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should not interfere with existing method names | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (toggleAttribute) | assert_throws_dom: toggleAttribute("", true) function "function() { el.toggleAttribute(invalid_names[i], true) }" did not throw
@@ -2245,6 +2570,7 @@ WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid caller object insertAdjace
 WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid syntax for insertAdjacentElement | assert_throws_dom: function "function() { el.insertAdjacentElement('heeeee', div) }" did not throw
 WPT SUB FAIL dom/nodes/insert-adjacent.html | invalid syntax for insertAdjacentText | assert_throws_dom: function "function() { el.insertAdjacentText('hoooo', 'magret de canard') }" did not throw
 WPT SUB FAIL dom/nodes/insert-adjacent.html | insertAdjacentText should return null | not a node
+WPT SUB FAIL dom/nodes/live-collections-batched-mutations.window.html | childNodes on Node instances remains live across batched mutations and supported access methods | assert_equals: expected [] but got [Element node <span></span>, Text node "text", Element node <span></span>]
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElement. | assert_unreached: document.createElement should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" Inv
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElementNS and createDocument. | assert_unreached: document.createElementNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" c
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttribute, toggleAttribute, and createAttribute. | assert_unreached: document.createAttribute should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" I
@@ -2274,10 +2600,10 @@ WPT SUB FAIL dom/nodes/post-connection-steps-shadow-tree.html | Script post-conn
 WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.append() with only one element as an argument, on a Document having one child. | assert_throws_dom: function "function() { parent.prepend(y); }" did not throw
 WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.prepend() with text as an argument, on a Document having no child. | assert_throws_dom: function "function() { parent.prepend('text'); }" did not throw
 WPT SUB FAIL dom/nodes/prepend-on-Document.html | Document.prepend() with two elements as the argument, on a Document having no child. | assert_throws_dom: function "function() { parent.prepend(x, y); }" did not throw
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction in main parser | assert_equals: expected (undefined) undefined but got (number) 8
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction in main parser | assert_equals: expected 7 but got 8
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-dom | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from html-dom | assert_true: expected true got false
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-dom | assert_equals: attribute value before toggling expected (string) "value" but got (object) null
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "html-dom") | assert_equals: expected "attr=\"=\"" but got ""
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "html-dom") | assert_equals: expected "attr=\"axx&quot;\"" but got ""
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "html-dom") | assert_equals: expected "attr=\"axx&gt;\"" but got ""
@@ -2302,10 +2628,10 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribut
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-dom): x123A and x123a | assert_false: expected false got true
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from html-dom | assert_equals: expected (undefined) undefined but got (number) 7
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-parser | assert_equals: expected (undefined) undefined but got (number) 8
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from html-dom | assert_true: expected true got false
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from html-parser | assert_equals: expected 7 but got 8
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from html-parser | assert_true: expected true got false
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-parser | assert_equals: expected (undefined) undefined but got (number) 8
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from html-parser | assert_equals: expected 7 but got 8
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "html-parser") | assert_equals: expected "attr=\"=\"" but got "?target ?"
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "html-parser") | assert_equals: expected "attr=\"axx&quot;\"" but got "?target ?"
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "html-parser") | assert_equals: expected "attr=\"axx&gt;\"" but got "?target ?"
@@ -2330,9 +2656,9 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribut
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: html-parser): x123A and x123a | assert_false: expected false got true
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-dom | assert_true: expected true got false
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from xml-dom | assert_true: expected true got false
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-dom | assert_equals: attribute value before toggling expected (string) "value" but got (object) null
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "xml-dom") | assert_equals: expected "attr=\"=\"" but got ""
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "xml-dom") | assert_equals: expected "attr=\"axx&quot;\"" but got ""
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "xml-dom") | assert_equals: expected "attr=\"axx&gt;\"" but got ""
@@ -2357,10 +2683,10 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribut
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-dom): x123A and x123a | assert_false: expected false got true
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-dom | assert_equals: expected (undefined) undefined but got (number) 7
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-parser | assert_equals: expected (undefined) undefined but got (number) 1
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-dom | assert_true: expected true got false
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute mutation from xml-parser | assert_equals: expected 7 but got 1
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attribute parsing allows _ in attribute names from xml-parser | assert_true: expected true got false
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-parser | assert_equals: expected (undefined) undefined but got (number) 1
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction toggleAttribute from xml-parser | assert_equals: expected 7 but got 1
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "=" (source: "xml-parser") | assert_equals: expected (string) "attr=\"=\"" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx"" (source: "xml-parser") | assert_equals: expected (string) "attr=\"axx&quot;\"" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | check attribute value: "axx>" (source: "xml-parser") | assert_equals: expected (string) "attr=\"axx&gt;\"" but got (undefined) undefined
@@ -2385,7 +2711,7 @@ WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Invalid attribut
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): ABC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): abC and abc | assert_false: expected false got true
 WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Distinct attribute name (source: xml-parser): x123A and x123a | assert_false: expected false got true
-WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-parser | assert_equals: expected (undefined) undefined but got (number) 1
+WPT SUB FAIL dom/nodes/processing-instruction-attributes.html | Processing instruction attributes with xml-stylesheet from xml-parser | assert_equals: expected 7 but got 1
 WPT SUB NOTRUN dom/nodes/query-target-in-load-event.html | document.querySelector(":target") must work when called in the window.load event | 
 WPT SUB FAIL dom/nodes/querySelector-empty-id.html | querySelector attribute matching empty id | 'root' is not defined
 WPT SUB FAIL dom/nodes/querySelector-id-nth-child.html | querySelector matching #id + constant nth-child() | 'target' is not defined

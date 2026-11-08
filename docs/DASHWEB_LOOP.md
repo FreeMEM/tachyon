@@ -6089,3 +6089,20 @@ Formato:
   no; mil claves, una vez a Dash; clear; file: y sessionStorage no duran; se compacta; el fichero se lee igual.
 - WPT webstorage 1240/1273 → 1242/1281 (ningún fichero peor; los event_* que esperan el evento storage de otro marco
   ahora acaban en TIMEOUT en vez de fallar en seguida: sus iframes ya cargan). test_jsdom_storage pasa.
+
+### 2026-11-08 — Tarea 41d: dom/ranges 36624 → 39068/44024 (83 → 89 %): length de CharacterData, constantes de Node y compareBoundaryPoints
+- Los textos y comentarios no tenían length (CharacterData): undefined. Ahora en sus prototipos (#text, #comment; las
+  CDATA salen de createTextNode) y en cada ProcessingInstruction. Range-mutations-* contaba con él: appendData 192 →
+  384/384, deleteData, insertData, replaceData y splitText enteras, dataChange 1404 → 1638.
+- Faltaban las constantes PROCESSING_INSTRUCTION_NODE, ENTITY_REFERENCE_NODE, ENTITY_NODE y NOTATION_NODE: con
+  nodeLength() de common.js en 0 para las PI, Range-set 10440 → 10920/10920, y comparePoint, isPointInRange,
+  intersectsNode y selectNode enteras.
+- compareBoundaryPoints: how como unsigned short de WebIDL (NaN e Infinity 0, el resto módulo 65536) y
+  NotSupportedError antes del WrongDocumentError: 8140 → 9313/9313.
+- dom/nodes: los ficheros de antes, todos igual o mejor (Node-constants 8/8, CharacterData-data 0 → 12/16,
+  createTextNode y createComment 6/6, Node-properties 691 → 706); total 10583/13044 (ahora lista 263 ficheros: entran
+  los .window.js). tests/test_jsdom_rango_wpt.dash.
+- Sin coste de velocidad que medir: un getter en dos prototipos, constantes y dos cuentas en compareBoundaryPoints.
+- Lo que queda de dom/ranges: Range-insertNode y Range-surroundContents (3680) piden scripts dentro de un iframe con su
+  propio window (un motor por iframe: casi 1 MB más cada uno en un A1200); Range-mutations-dataChange acaba en TIMEOUT
+  (2808 subpruebas).

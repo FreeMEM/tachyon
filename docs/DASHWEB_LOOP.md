@@ -6208,3 +6208,16 @@ Formato:
   createDocumentType y case). Acid3 sigue en 100/100; no volver a cambiarlos sin preguntar.
 - Y "sube los agradecimientos": webs-freemem 7d58fdb subido a origin/main (el servidor lo trae cada 5 minutos y
   rehace la web).
+
+### 2026-11-08 — La actualización a la 0.9.3 falla en la máquina del usuario ("No se pudo bajar la versión nueva")
+- Usuario (captura): su Tachyon 0.9.2 ve la 0.9.3 pero dice "No se pudo bajar la versión nueva". La prueba de antes
+  de publicar usaba un GitHub de mentira que daba el fichero sin más; el de verdad contesta 302 a
+  release-assets.githubusercontent.com con una dirección de 901 caracteres (certificado *.githubusercontent.com de
+  Let's Encrypt YR1 -> Root YR -> ISRG Root X1, TLS 1.3).
+- Descartado: la redirección larga a otro servidor (el GitHub de mentira con REDIRIGIR=1: baja todo) y GitHub con
+  AmiSSL (un programa de diagnóstico en el emulador sys32rtg38, el mismo http_empezar_a_fichero de la actualización:
+  200, una redirección, 1993291 bytes en 14,7 s). El tope de 30 s es sin recibir nada, no de toda la descarga.
+- Queda por saber qué pasa en su máquina: T:Tachyon.gz (T: sin sitio o sin asignar), su AmiSSL o su red. Pedido al
+  usuario lo que dice TRAZA ("llega ...: código error").
+- src/dashweb.dash: "No se pudo bajar la versión nueva" y "No se pudo mirar si hay versiones nuevas" dicen ya el porqué
+  (el error de la red o el código HTTP) entre paréntesis.

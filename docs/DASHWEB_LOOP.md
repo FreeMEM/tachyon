@@ -6279,3 +6279,8 @@ Formato:
 - WPT xhr 307 → 525/1112 (setrequestheader-bogus-name 0 → 69/71, responsetype 19 → 46/50, status-basic 0 → 11/27...);
   status.h2 baja una (es HTTP/2, que el servidor de las pruebas no habla). test_jsdom_xhr_sinc (nuevo),
   test_jsdom_load_peticion, test_js_fetch y test_jsdom_scripts pasan.
+
+### 2026-11-08 — Corrección: domparsing es 600, no 608
+- En la entrada de XMLSerializer (03b39e6) puse domparsing 573 → 608: era una pasada intermedia. La guardada, con el
+  namespaceURI por getter, es 600/1090 (XMLSerializer 3 → 30; DOMParser-parseFromString-xml y xml-character-entities,
+  que habían subido 4 cada uno en la intermedia, vuelven a 4/20 y 0/8). Queda mirar por qué.

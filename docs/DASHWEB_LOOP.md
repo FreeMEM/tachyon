@@ -6106,3 +6106,13 @@ Formato:
 - Lo que queda de dom/ranges: Range-insertNode y Range-surroundContents (3680) piden scripts dentro de un iframe con su
   propio window (un motor por iframe: casi 1 MB más cada uno en un A1200); Range-mutations-dataChange acaba en TIMEOUT
   (2808 subpruebas).
+
+### 2026-11-08 — Tarea 41d: el characterSet del documento de un iframe (dom/nodes 10583 → 11219/13044)
+- El documento de un <iframe> decía siempre UTF-8. Ahora toma el charset del Content-Type o, si no lo trae, el de su
+  <meta charset> (o el de <meta http-equiv=content-type>), normalizado como dice Encoding (encDoc: "get an
+  encoding"; UTF-16 da UTF-8 y x-user-defined windows-1252, como HTML). Las etiquetas de lo que no se sabe leer (GBK,
+  gb18030, Big5, EUC-JP, ISO-2022-JP, Shift_JIS, EUC-KR, replacement, ISO-8859-8-I) van en una tabla de 550
+  caracteres que se abre la primera vez que se usa. Document-characterSet-normalization-1 y -2: 18 → 654/654.
+- tools/wpt_js.py ejecuta los manejadores .py de wptserve de la copia de WPT (main(request, response), con lo poco
+  que usan: GET.first, headers.set y lo que devuelven); estos dos pedían encoding.py?label=.
+- Queda: el characterSet de la página misma (siempre UTF-8; Dash sabe el de verdad).

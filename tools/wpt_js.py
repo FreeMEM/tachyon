@@ -55,6 +55,65 @@ add_completion_callback(function (tests, status) {
 """
 
 
+def _manejador(camino):
+    """Un .py de wptserve (def main(request, response)) de la copia de WPT, con lo poco que usan los de las carpetas
+    pasadas: request.GET.first/get, request.headers, response.headers.set y lo que devuelve main (texto, o
+    (cabeceras, cuerpo), o (estado, cabeceras, cuerpo)). None si no es uno."""
+    import types
+    import urllib.parse
+    ruta, _, consulta = camino.partition("?")
+    f = WPT / urllib.parse.unquote(ruta).lstrip("/")
+    if f.suffix != ".py" or not f.is_file():
+        return None
+    utiles = types.ModuleType("wptserve.utils")
+    utiles.isomorphic_decode = lambda b: b.decode("latin-1") if isinstance(b, bytes) else b
+    utiles.isomorphic_encode = lambda t: t.encode("latin-1") if isinstance(t, str) else t
+    wptserve = types.ModuleType("wptserve")
+    wptserve.utils = utiles
+    sys.modules.setdefault("wptserve", wptserve)
+    sys.modules.setdefault("wptserve.utils", utiles)
+    q = urllib.parse.parse_qs(consulta, keep_blank_values=True)
+
+    class Get:
+        def first(self, k, defecto=None):
+            k = k.decode("latin-1") if isinstance(k, bytes) else k
+            return q[k][0].encode("latin-1") if k in q else defecto
+        get = first
+
+        def __contains__(self, k):
+            return (k.decode("latin-1") if isinstance(k, bytes) else k) in q
+
+    class Cabeceras(list):
+        def set(self, k, v):
+            k = k.decode("latin-1") if isinstance(k, bytes) else k
+            self[:] = [(a, b) for a, b in self if a.lower() != k.lower()]
+            self.append((k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
+        append_header = set
+
+    peticion = types.SimpleNamespace(GET=Get(), headers={}, url_parts=None)
+    respuesta = types.SimpleNamespace(headers=Cabeceras(), status=200)
+    espacio = {"__name__": "wpt_manejador"}
+    try:
+        exec(compile(f.read_text(encoding="utf-8"), str(f), "exec"), espacio)
+        r = espacio["main"](peticion, respuesta)
+    except Exception as e:
+        return 500, [("Content-Type", "text/plain")], ("manejador: %s" % e).encode()
+    estado, cabeceras = respuesta.status, list(respuesta.headers)
+    if isinstance(r, tuple):
+        if len(r) == 3:
+            estado, extra, r = r
+        else:
+            extra, r = r
+        for k, v in extra:
+            cabeceras.append((k.decode("latin-1") if isinstance(k, bytes) else k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
+    if isinstance(estado, tuple):
+        estado = estado[0]
+    if not any(k.lower() == "content-type" for k, _ in cabeceras):
+        cabeceras.append(("Content-Type", "text/html"))
+    cuerpo = r.encode("utf-8") if isinstance(r, str) else (r or b"")
+    return int(estado), cabeceras, cuerpo
+
+
 def pruebas(carpeta):
     r = []
     for f in sorted((WPT / carpeta).iterdir()):
@@ -136,6 +195,16 @@ def main():
                 cuerpo = INFORME.encode()
                 self.send_response(200)
                 self.send_header("Content-Type", "text/javascript")
+                self.send_header("Content-Length", str(len(cuerpo)))
+                self.end_headers()
+                self.wfile.write(cuerpo)
+                return
+            py = _manejador(self.path)
+            if py is not None:
+                estado, cabeceras, cuerpo = py
+                self.send_response(estado)
+                for k, v in cabeceras:
+                    self.send_header(k, v)
                 self.send_header("Content-Length", str(len(cuerpo)))
                 self.end_headers()
                 self.wfile.write(cuerpo)

@@ -277,6 +277,12 @@ def main():
             if metodo != "HEAD":
                 self.wfile.write(salida)
 
+        def __getattr__(self, nombre):
+            # (cualquier otro método, como los inventados de los tests de xhr: al manejador .py)
+            if nombre.startswith("do_"):
+                return lambda: self._metodo(nombre[3:])
+            raise AttributeError(nombre)
+
         def do_POST(self):
             self._metodo("POST")
 

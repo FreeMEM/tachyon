@@ -1,12 +1,14 @@
 # Test: XMLHttpRequest como dice su norma (tarea 41d, WPT xhr): síncrono (open(..., false): send vuelve con la
 # respuesta y, tras el de open, un solo readystatechange, ya en DONE), setRequestHeader con un nombre que no es un token o un valor con
 # salto de línea da SyntaxError y las cabeceras prohibidas no se mandan, y responseType ignora lo que no es uno de los
-# suyos.
+# suyos; una dirección data: se resuelve sin red, y el método se comprueba (CONNECT, SecurityError) y solo los seis
+# de siempre van en mayúsculas.
 # emu-server: http.py 40879
 # memcheck
 # expect-out: sinc: 200 [hola] estados 1,4 sin loadstart true
 # expect-out: cabeceras: SyntaxError SyntaxError | prohibida no se manda: true
 # expect-out: responseType: json json
+# expect-out: data: 200 [hola mundo] text/plain | metodos: SecurityError SyntaxError xUNIcorn POST
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -27,6 +29,10 @@ Main
     c = c + "y.setRequestHeader('Referer', 'http://otro/'); r + ' | prohibida no se manda: ' + (y._cab.join().indexOf('Referer') < 0)"
     Print js_evaluar(js, c, "t.js")
     c = "var z = new XMLHttpRequest(); z.responseType = 'json'; z.responseType = 'nada'; var a = z.responseType; z.open('GET', '/hola'); 'responseType: ' + a + ' ' + z.responseType"
+    Print js_evaluar(js, c, "t.js")
+    c = "var w = new XMLHttpRequest(); w.open('GET', 'data:text/plain,hola%20mundo', false); w.send(); var r = 'data: ' + w.status + ' [' + w.responseText + '] ' + w.getResponseHeader('content-type') + ' | metodos:';"
+    c = c + "['CONNECT', 'mal metodo'].forEach(function (m) { try { new XMLHttpRequest().open(m, '/hola'); } catch (e) { r += ' ' + e.name; } });"
+    c = c + "var v = new XMLHttpRequest(); v.open('xUNIcorn', '/hola'); r += ' ' + v._m; v.open('post', '/hola'); r + ' ' + v._m"
     Print js_evaluar(js, c, "t.js")
     js_liberar(js)
 end

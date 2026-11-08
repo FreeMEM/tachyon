@@ -6297,3 +6297,13 @@ Formato:
   300 → 300, leer el RSS 2340-2420 → 2340-2360: igual.
 - WPT domparsing 600 → 620 (DOMParser-parseFromString-xml 4 → 20/20, xml-character-entities 0 → 4/8), dom/nodes
   11634 → 11635 (Element-tagName). domparser, xml_ns, jquery y wpt_dom pasan.
+
+### 2026-11-08 — Tarea 41d: XMLHttpRequest con data:, el método de open y getAllResponseHeaders (xhr 525 → 576/1112)
+- open(): el método, un token de HTTP (si no, SyntaxError); CONNECT, TRACE y TRACK, SecurityError; solo DELETE, GET,
+  HEAD, OPTIONS, POST y PUT van en mayúsculas (antes todos: "xUNIcorn" salía "XUNICORN").
+- Una dirección data: se resuelve en el preludio sin red (datosDeDataUrl: base64 o con %; con otro método que GET, error
+  de red), síncrona o en el siguiente tic; antes respondía vacío.
+- getAllResponseHeaders, por orden de nombre (en minúsculas).
+- tools/wpt_js.py pasa cualquier método (los inventados de los tests: daban 501) a los manejadores .py.
+- WPT xhr 525 → 576 (open-method-* enteros, status-basic y status-async 11 → 19/27, data-uri 0 → 5/10...); ninguno
+  peor. test_jsdom_xhr_sinc con data: y los métodos, test_jsdom_load_peticion pasan.

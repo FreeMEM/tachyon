@@ -6307,3 +6307,11 @@ Formato:
 - tools/wpt_js.py pasa cualquier método (los inventados de los tests: daban 501) a los manejadores .py.
 - WPT xhr 525 → 576 (open-method-* enteros, status-basic y status-async 11 → 19/27, data-uri 0 → 5/10...); ninguno
   peor. test_jsdom_xhr_sinc con data: y los métodos, test_jsdom_load_peticion pasan.
+
+### 2026-11-08 — Tarea 41d: pendiente en xhr (send-redirect)
+- tests/servers/http.py: /r307, /r308 y /r303 (redirigen a /eco) y /eco (devuelve el método y el cuerpo). lib/http.dash
+  sigue bien un POST por 307 (POST y su cuerpo), 303 (GET) y 302: probado.
+- Lo que falla de xhr/send-redirect no es la redirección: (1) un GET con Content-Type puesto por setRequestHeader no lo
+  manda (_http_peticion solo pone Content-Type con POST o con cuerpo: llevarlo como extra en jsdom_pedir si es GET o
+  HEAD); (2) con HEAD llega sin cabeceras (status 0): lib/http.dash espera el cuerpo de un HEAD (líneas 319 y 953 solo
+  saltan el cuerpo con 204, 304 y 1xx). Siguiente vuelta.

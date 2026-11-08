@@ -6174,3 +6174,9 @@ Formato:
   getAttribute 380 → 400-420 (un 5 % más: quizá la recogida de basura con las copias guardadas).
 - WPT dom/nodes: case 63 → 245/285, attributes 8 → 20/67, namespaced-attribute-mutations 8 → 10/24 y otros cuatro con
   una más; ninguno peor. mutaciones, svg_dom, custom, interfaces, jquery, wpt_dom y selectores_wpt pasan.
+
+### 2026-11-08 — Regla nueva: el nombre de quien pide cada cosa
+- Usuario (por la sesión telegram): cada arreglo o novedad que venga de una persona lleva su nombre en el commit, las
+  notas de la versión, el CHANGELOG y la documentación ("(idea de Ferrán García)"), con el nombre con el que se
+  presenta en el grupo y nunca datos de contacto; si no se sabe, preguntar a telegram o al usuario. En AGENTS.md.
+- En la 0.9.3: abrir ficheros del disco y soltar iconos (tarea 60) es idea de Ferrán García; las notas ya lo dicen.

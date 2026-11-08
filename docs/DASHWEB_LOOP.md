@@ -6337,6 +6337,9 @@ Formato:
   pantalla se llama TACHYON y la ventana va en ella. Fallo de Dash: en esa pantalla el título de la ventana sale con
   la letra de la página (font_use), no en la del Workbench; pasado a la sesión del lienzo. Soltar iconos solo va en
   la del Workbench (ya dicho en las notas).
+- El fallo del título lo arregla Dash en la rama clon-letra (PR #134: font_use y font_style ya no cambian la letra
+  del RastPort de la pantalla pública del programa): probado con Tachyon, el título sale bien. Hace falta que se
+  fusione en Dash antes de dar una versión con esta opción.
 
 ### 2026-11-08 — Tarea 41d: el texto de la respuesta de XMLHttpRequest como dice la norma (xhr 601 → 643/1112)
 - tools/wpt_js.py: la consulta de la dirección se lee en Latin-1 (bytes, como wptserve); con %e6 y compañía el

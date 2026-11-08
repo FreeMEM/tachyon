@@ -6284,3 +6284,16 @@ Formato:
 - En la entrada de XMLSerializer (03b39e6) puse domparsing 573 → 608: era una pasada intermedia. La guardada, con el
   namespaceURI por getter, es 600/1090 (XMLSerializer 3 → 30; DOMParser-parseFromString-xml y xml-character-entities,
   que habían subido 4 cada uno en la intermedia, vuelven a 4/20 y 0/8). Queda mirar por qué.
+
+### 2026-11-08 — Tarea 41d: el tagName de un documento de XML tal cual (domparsing 600 → 620/1090)
+- Los 8 que se perdieron con el camino corto del analizador de XML (elementos de HTML por createElement): su tagName y
+  nodeName salían en mayúsculas ("FOO"). Ahora el documento de DOMParser lleva el atributo "xml" y el getter de C
+  (_jsdom_en_xml en src_c/tachyon.c: sube hasta la raíz y lo mira) da el nombre tal cual. Además: el <parsererror> del
+  documento de error, en el espacio de nombres de Mozilla, como los navegadores; y uno de DOMParser no es XMLDocument
+  (__dp), que eso solo lo da createDocument.
+- Probado y quitado (medido, tests/pages/bench_tagname.html y bench_xml.html, máquina RTG): un getter de JavaScript
+  para tagName y nodeName en todos los elementos (20000 lecturas 300 → 540 ms: un 80 % más en todas las webs); y las dos
+  propiedades en cada elemento del XML (leer el RSS 2340 → 2740 ms). Con el de C: tagName 300 → 300-340, nodeName
+  300 → 300, leer el RSS 2340-2420 → 2340-2360: igual.
+- WPT domparsing 600 → 620 (DOMParser-parseFromString-xml 4 → 20/20, xml-character-entities 0 → 4/8), dom/nodes
+  11634 → 11635 (Element-tagName). domparser, xml_ns, jquery y wpt_dom pasan.

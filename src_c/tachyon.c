@@ -1517,6 +1517,19 @@ static JSValue _jsdom_lista(JSContext *ctx, DashArrayLong *l) {
 #define _JSDOM_ESTE_PONER(nombre) _Dash_Nodo *n = _jsdom_nodo(ctx, this_val); \
     if (!n) { JS_DefinePropertyValueStr(ctx, this_val, nombre, JS_DupValue(ctx, v), JS_PROP_C_W_E); return JS_UNDEFINED; }
 
+/* ¿n está en un documento de XML (el de DOMParser, con el atributo "xml")? Su tagName va tal cual, no en mayúsculas */
+static int _jsdom_en_xml(_Dash_Nodo *n) {
+    LONG i, k;
+    while (n->padre) n = n->padre;
+    if (n->tipo != DOM_DOCUMENTO || !n->atributos) return 0;
+    k = DashArray_length(n->atributos);
+    for (i = 0; i < k; i++) {
+        _Dash_Atributo *at = (_Dash_Atributo *)DashArray_get(n->atributos, i);
+        if (at->nombre && !strcmp((const char *)at->nombre, "xml")) return 1;
+    }
+    return 0;
+}
+
 static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
     JSValue v;
@@ -1525,6 +1538,7 @@ static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     if (n->tipo != DOM_ELEMENTO)
         return JS_NewString(ctx, n->tipo == DOM_TEXTO ? "#text" : n->tipo == DOM_COMENTARIO ? "#comment"
                                  : n->tipo == DOM_FRAGMENTO ? "#document-fragment" : "#document");
+    if (_jsdom_en_xml(n)) return _jsdom_cadena(ctx, n->nombre);
     t = strdup((const char *)n->nombre);
     if (!t) return JS_EXCEPTION;
     { char *p; for (p = t; *p; p++) if (*p >= 'a' && *p <= 'z') *p -= 32; }

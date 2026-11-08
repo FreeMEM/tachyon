@@ -1,4 +1,4 @@
-WPT TOTAL dom/nodes: 11634/13044 subpruebas en 263 de 263 ficheros
+WPT TOTAL dom/nodes: 11635/13044 subpruebas en 263 de 263 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
@@ -91,7 +91,7 @@ WPT FILE dom/nodes/Element-setAttribute.html 1/2 OK
 WPT FILE dom/nodes/Element-setAttributeNodeNS.html 0/3 OK
 WPT FILE dom/nodes/Element-siblingElement-null.html 1/1 OK
 WPT FILE dom/nodes/Element-tagName-adopt.html 0/1 OK
-WPT FILE dom/nodes/Element-tagName.html 2/6 OK
+WPT FILE dom/nodes/Element-tagName.html 3/6 OK
 WPT FILE dom/nodes/Element-webkitMatchesSelector.html 630/669 OK
 WPT FILE dom/nodes/MutationObserver-attributes.html 37/42 TIMEOUT 
 WPT FILE dom/nodes/MutationObserver-callback-arguments.html 1/1 OK
@@ -949,7 +949,6 @@ WPT SUB FAIL dom/nodes/Element-setAttributeNodeNS.html | Replacing an attribute 
 WPT SUB FAIL dom/nodes/Element-setAttributeNodeNS.html | Replacing an attribute prefix preserves other attributes with the old qualified name | not a function
 WPT SUB FAIL dom/nodes/Element-tagName-adopt.html | tagName should not be uppercased when appended to XML document | assert_equals: tagName should be lowercase in XML document expected "t" but got "T"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should not upper-case for SVG elements in HTML documents. | assert_equals: expected "svg" but got "SVG"
-WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument | assert_equals: tagName should be lowercase in XML expected "div" but got "DIV"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument (createDocument without prefix) | assert_equals: tagName should be lowercase in XML expected "div" but got "DIV"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument (createDocument with prefix) | assert_equals: tagName should be lowercase in XML expected "foo:div" but got "FOO:DIV"
 WPT SUB FAIL dom/nodes/Element-webkitMatchesSelector.html | Document should not support webkitMatchesSelector | assert_false: Document supports webkitMatchesSelector expected false got true

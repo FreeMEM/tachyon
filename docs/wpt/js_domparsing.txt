@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 600/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 620/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -16,8 +16,8 @@ WPT FILE domparsing/DOMParser-parseFromString-xml-empty-nodes.html 4/8 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-internal-subset.html 0/1 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 15/23 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 0/13 OK
-WPT FILE domparsing/DOMParser-parseFromString-xml.html 4/20 OK
-WPT FILE domparsing/DOMParser-xml-character-entities.html 0/8 OK
+WPT FILE domparsing/DOMParser-parseFromString-xml.html 20/20 OK
+WPT FILE domparsing/DOMParser-xml-character-entities.html 4/8 OK
 WPT FILE domparsing/XMLSerializer-serializeToString.html 30/33 OK
 WPT FILE domparsing/createContextualFragment-external-scripts-async.html 0/1 OK
 WPT FILE domparsing/createContextualFragment.html 34/35 OK
@@ -238,14 +238,14 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml inval
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using another iframe's DOMParser from that frame | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using a parser from this frame and the method from the iframe | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using a parser from the iframe and the method from this frame | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type text/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type text/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xhtml+xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xhtml+xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type image/svg+xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type image/svg+xml | assert_equals: expected "foo" but got "FOO"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type text/xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type text/xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xhtml+xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xhtml+xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type image/svg+xml | assert_equals: expected "#cdata-section" but got "#text"
+WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type image/svg+xml | assert_equals: expected "#cdata-section" but got "#text"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-doctype.html | Doctype parsing of System Id must fail on ommitted value | assert_equals: expected null but got Element node <div id="test"></div>
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type text/xml | assert_equals: expected 4 but got 3
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type application/xml | assert_equals: expected 4 but got 3
@@ -273,29 +273,9 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append importNode result | cannot read property 'cloneNode' of undefined
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append adoptNode result | cannot read property 'parentNode' of undefined
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append cloneNode result | cannot read property 'cloneNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should parse correctly in type text/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for correctly parsed document with type text/xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should return an error document for XML wellformedness errors in type text/xml | assert_equals: expected "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for incorrectly parsed document with type text/xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should parse correctly in type application/xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for correctly parsed document with type application/xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should return an error document for XML wellformedness errors in type application/xml | assert_equals: expected "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for incorrectly parsed document with type application/xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should parse correctly in type application/xhtml+xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for correctly parsed document with type application/xhtml+xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should return an error document for XML wellformedness errors in type application/xhtml+xml | assert_equals: expected "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for incorrectly parsed document with type application/xhtml+xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should parse correctly in type image/svg+xml | assert_equals: expected "foo" but got "FOO"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for correctly parsed document with type image/svg+xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | Should return an error document for XML wellformedness errors in type image/svg+xml | assert_equals: expected "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml.html | XMLDocument interface for incorrectly parsed document with type image/svg+xml | assert_false: Should not be XMLDocument expected false got true
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should parse XML character entities correctly in type text/xml | assert_equals: expected "foo" but got "FOO"
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type text/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should parse XML character entities correctly in type application/xml | assert_equals: expected "foo" but got "FOO"
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should parse XML character entities correctly in type application/xhtml+xml | assert_equals: expected "foo" but got "FOO"
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xhtml+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should parse XML character entities correctly in type image/svg+xml | assert_equals: expected "foo" but got "FOO"
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type image/svg+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if no special handling for XLink namespace unlike HTML serializer. | assert_equals: expected "<root xmlns:xl=\"http://www.w3.org/1999/xlink\" xl:type=\"v\"/>" but got "<root xmlns:ns1=\"http://www.w3.org/1999/xlink\" ns1:type=\"v
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if a prefix bound to an empty namespace URI ("no namespace") serialize | assert_equals: expected "<root xmlns=\"\" xmlns:foo=\"\"/>" but got "<root xmlns:foo=\"\"/>"

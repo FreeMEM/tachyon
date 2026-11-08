@@ -6160,3 +6160,17 @@ Formato:
 - Sin coste en lo de antes: métodos nuevos, dos defineProperty por parseFromString y uno por <template>.
 - Queda: XMLSerializer y los atributos con espacio de nombres (el mismo modelo que falta en dom/nodes), y lo que pide
   el DOMParser de otro iframe (un motor por iframe).
+
+### 2026-11-08 — Tarea 41d: atributos con espacio de nombres; attributes 4 veces más rápido (dom/nodes 11432 → 11632/13044)
+- Dash guarda los atributos por su nombre en minúsculas (el CSS los busca así). De los que llegan por setAttributeNS con
+  espacio de nombres o prefijo, cada elemento apunta en __ans (por esa clave) el nombre tal cual, el espacio de
+  nombres, el prefijo y el local; getAttributeNS, hasAttributeNS y removeAttributeNS buscan por espacio de nombres y
+  local (antes no miraban el espacio de nombres); removeAttribute quita el apunte. Los Attr de attributes llevan
+  localName, prefix, namespaceURI y ownerElement. cloneNode copia el apunte y el nombre que puso createElementNS
+  (Node-cloneNode bajaba una subprueba con lo del prefijo de antes: ahora 124 → 125/135).
+- attributes guarda su copia de C mientras no cambie el DOM (__dashweb_version): cada length y cada [i] la pedían
+  entera. Medido (tests/pages/bench_atributos.html, máquina RTG, dos pasadas; antes → después): recorrer los atributos
+  de 200 elementos dos veces 2920-3120 → 720-780 ms; clonar el contenedor 5 veces 60 → 40-60; 2000 setAttribute +
+  getAttribute 380 → 400-420 (un 5 % más: quizá la recogida de basura con las copias guardadas).
+- WPT dom/nodes: case 63 → 245/285, attributes 8 → 20/67, namespaced-attribute-mutations 8 → 10/24 y otros cuatro con
+  una más; ninguno peor. mutaciones, svg_dom, custom, interfaces, jquery, wpt_dom y selectores_wpt pasan.

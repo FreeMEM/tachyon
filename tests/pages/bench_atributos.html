@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><title>Bench</title>
+<style>body { margin: 10px; font-size: 24px }</style>
+</head><body>
+<!-- tarea 41d: lo que cuestan los atributos desde el JavaScript: recorrer attributes (nombre y valor) de 200
+     elementos con 5 atributos, clonar el contenedor entero y setAttribute/getAttribute; el resultado en la página y
+     en el título -->
+<p id=r>midiendo...</p>
+<div id=c></div>
+<script>
+var c = document.getElementById('c');
+for (var i = 0; i < 200; i++) {
+    var d = document.createElement('span');
+    d.setAttribute('id', 's' + i); d.setAttribute('class', 'a b'); d.setAttribute('title', 't'); d.setAttribute('data-x', i); d.setAttribute('lang', 'es');
+    c.appendChild(d);
+}
+function medir(f) { var t = Date.now(); f(); return Date.now() - t; }
+var n = 0, hijos = c.children;
+var r1 = medir(function () { for (var k = 0; k < 2; k++) for (var i = 0; i < hijos.length; i++) { var a = hijos[i].attributes; for (var j = 0; j < a.length; j++) n += a[j].name.length + a[j].value.length; } });
+var r2 = medir(function () { for (var k = 0; k < 5; k++) n += c.cloneNode(true).childNodes.length; });
+var r3 = medir(function () { for (var i = 0; i < 2000; i++) { var e = hijos[i % 200]; e.setAttribute('data-y', i); n += e.getAttribute('data-y').length; } });
+var s = 'attributes ' + r1 + ' clonar ' + r2 + ' poner ' + r3;
+document.getElementById('r').textContent = s;
+document.title = s;
+</script>
+</body></html>

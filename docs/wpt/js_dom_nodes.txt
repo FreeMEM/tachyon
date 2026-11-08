@@ -1,4 +1,4 @@
-WPT TOTAL dom/nodes: 11432/13044 subpruebas en 263 de 263 ficheros
+WPT TOTAL dom/nodes: 11632/13044 subpruebas en 263 de 263 ficheros
 
 WPT FILE dom/nodes/Attr-prefix.html 0/6 OK
 WPT FILE dom/nodes/CharacterData-appendChild.html 9/9 OK
@@ -37,7 +37,7 @@ WPT FILE dom/nodes/Document-createCDATASection.html 1/1 OK
 WPT FILE dom/nodes/Document-createComment.html 6/6 OK
 WPT FILE dom/nodes/Document-createElement-namespace.html 41/51 OK
 WPT FILE dom/nodes/Document-createElement.html 115/147 OK
-WPT FILE dom/nodes/Document-createElementNS.html 487/596 OK
+WPT FILE dom/nodes/Document-createElementNS.html 488/596 OK
 WPT FILE dom/nodes/Document-createEvent-touchevent.window.html 0/3 OK
 WPT FILE dom/nodes/Document-createEvent.https.html 228/279 OK
 WPT FILE dom/nodes/Document-createProcessingInstruction.html 10/12 OK
@@ -87,11 +87,11 @@ WPT FILE dom/nodes/Element-remove.html 4/4 OK
 WPT FILE dom/nodes/Element-removeAttribute.html 0/2 OK
 WPT FILE dom/nodes/Element-removeAttributeNS.html 0/1 OK
 WPT FILE dom/nodes/Element-setAttribute-crbug-1138487.html 1/1 OK
-WPT FILE dom/nodes/Element-setAttribute.html 0/2 OK
+WPT FILE dom/nodes/Element-setAttribute.html 1/2 OK
 WPT FILE dom/nodes/Element-setAttributeNodeNS.html 0/3 OK
 WPT FILE dom/nodes/Element-siblingElement-null.html 1/1 OK
 WPT FILE dom/nodes/Element-tagName-adopt.html 0/1 OK
-WPT FILE dom/nodes/Element-tagName.html 1/6 OK
+WPT FILE dom/nodes/Element-tagName.html 2/6 OK
 WPT FILE dom/nodes/Element-webkitMatchesSelector.html 630/669 OK
 WPT FILE dom/nodes/MutationObserver-attributes.html 37/42 TIMEOUT 
 WPT FILE dom/nodes/MutationObserver-callback-arguments.html 1/1 OK
@@ -119,7 +119,7 @@ WPT FILE dom/nodes/Node-cloneNode-document-allow-declarative-shadow-roots.window
 WPT FILE dom/nodes/Node-cloneNode-document-with-doctype.html 3/3 OK
 WPT FILE dom/nodes/Node-cloneNode-parser-created-names.html 2/2 OK
 WPT FILE dom/nodes/Node-cloneNode-svg.html 0/4 OK
-WPT FILE dom/nodes/Node-cloneNode.html 124/135 OK
+WPT FILE dom/nodes/Node-cloneNode.html 125/135 OK
 WPT FILE dom/nodes/Node-compareDocumentPosition.html 1444/1444 OK
 WPT FILE dom/nodes/Node-constants.html 8/8 OK
 WPT FILE dom/nodes/Node-contains.html 1482/1482 OK
@@ -206,8 +206,8 @@ WPT FILE dom/nodes/append-on-Document.html 2/5 OK
 WPT FILE dom/nodes/attach-shadow-realm-after-adoption.html 2/5 OK
 WPT FILE dom/nodes/attributes-namednodemap-cross-document.window.html 0/2 OK
 WPT FILE dom/nodes/attributes-namednodemap.html 6/8 OK
-WPT FILE dom/nodes/attributes.html 8/67 OK
-WPT FILE dom/nodes/case.html 63/285 OK
+WPT FILE dom/nodes/attributes.html 20/67 OK
+WPT FILE dom/nodes/case.html 245/285 OK
 WPT FILE dom/nodes/create-element-realm-after-adoption.html 0/0 TIMEOUT 
 WPT FILE dom/nodes/getElementById-namespaced-id.html 0/4 OK
 WPT FILE dom/nodes/getElementsByClassName-01.htm 1/1 OK
@@ -245,7 +245,7 @@ WPT FILE dom/nodes/getElementsByClassName-whitespace-class-names.html 1/26 OK
 WPT FILE dom/nodes/insert-adjacent.html 8/14 OK
 WPT FILE dom/nodes/live-collections-batched-mutations.window.html 1/2 OK
 WPT FILE dom/nodes/name-validation.html 0/5 OK
-WPT FILE dom/nodes/namespaced-attribute-mutations.html 8/24 OK
+WPT FILE dom/nodes/namespaced-attribute-mutations.html 10/24 OK
 WPT FILE dom/nodes/node-creation-realm.html 10/13 OK
 WPT FILE dom/nodes/node-realm-adoption-after-frame-removal.html 3/3 OK
 WPT FILE dom/nodes/node-realm-mixed-across-adoption.html 3/4 OK
@@ -599,17 +599,17 @@ WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Deep clon
 WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Shallow clone of an about:blank document | assert_equals: URL expected (string) "about:blank" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Clone of an about:blank document after detaching the source | assert_equals: shallow expected (string) "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-about-base-url.window.html" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-about-base-url.window.html | Clone of an about:blank document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-about-base-url.window.html"
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document ignores a non-HTML <base> element | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document ignores a non-HTML <base> element | assert_equals: deep expected (string) "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XHTML document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url-xml.window.html | Clone of an XML document without a <base> | assert_equals: deep expected (string) "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url-xml.window.html" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Deep clone of a document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone of a document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a document without a <base> | assert_equals: deep expected (string) "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a createHTMLDocument() document without a <base> | assert_equals: source expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a createHTMLDocument() document with a <base> | assert_equals: source expected "http://example.com/foo/bar" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Deep clone of a document with a relative <base> | Failed to construct 'URL': Invalid URL
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone of a document with a relative <base> | Failed to construct 'URL': Invalid URL
-WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone is unaffected by later mutation of the source | assert_equals: source updated expected "about:blank" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Deep clone of a document with a relative <base> | assert_equals: source expected "http://127.0.0.1:40881/dom/nodes/sub/" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone of a document with a relative <base> | assert_equals: source expected "http://127.0.0.1:40881/dom/nodes/sub/" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
+WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone is unaffected by later mutation of the source | assert_equals: clone unchanged expected (string) "http://example.com/foo/bar" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Shallow clone's base URL survives later mutation of the clone | not a function
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Inserting a <base> into a shallow clone overrides the copied base URL | assert_equals: before inserting <base> expected (string) "http://example.com/foo/bar" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Document-cloneNode-base-url.window.html | Clone of a blob: URL document | assert_equals: source expected "blob:http://127.0.0.1:40881/1" but got "http://127.0.0.1:40881/dom/nodes/Document-cloneNode-base-url.window.html"
@@ -774,11 +774,10 @@ WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in X
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in HTML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | createElementNS test in XHTML document: "foo:","foo:","INVALID_CHARACTER_ERR" | assert_throws_dom: function "function() {doc.createElementNS(namespace, qualifiedName) }" threw object "NamespaceError: NamespaceError" that is not a DOMExcepti
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case HTML element with a prefix | assert_equals: expected (string) "html" but got (object) null
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case non-HTML element without a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Lower-case non-HTML element with a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element without a prefix | assert_equals: expected "SPAN" but got "span"
-WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element with a prefix | assert_equals: expected (string) "html" but got (object) null
+WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case HTML element with a prefix | assert_equals: expected "SPAN" but got "span"
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case non-HTML element without a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | Upper-case non-HTML element with a prefix | assert_false: Should not be an HTMLElement expected false got true
 WPT SUB FAIL dom/nodes/Document-createElementNS.html | null namespace | assert_false: Should not be an HTMLElement expected false got true
@@ -841,7 +840,7 @@ WPT SUB PRECONDITION_FAILED dom/nodes/Document-createEvent.https.html | createEv
 WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "×A" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
 WPT SUB FAIL dom/nodes/Document-createProcessingInstruction.html | Should throw an INVALID_CHARACTER_ERR for target "A×" and data "x". | assert_throws_dom: function "function() { document.createProcessingInstruction(invalid[i][0], invalid[i][1]) }" did not throw
 WPT SUB FAIL dom/nodes/Document-getElementById.html | Calling document.getElementById with an empty string argument. | assert_equals: expected null but got Element node <html><head><meta charset="utf-8"> <title>Document.getEle...
-WPT SUB FAIL dom/nodes/Document-getElementById.html | changing attribute's value via `Attr` gotten from `Element.attribute`. | assert_equals: should return null after updated id via Attr.value expected null but got Element node <div id="test7"></div>
+WPT SUB FAIL dom/nodes/Document-getElementById.html | changing attribute's value via `Attr` gotten from `Element.attribute`. | assert_equals: should return null after updated id via Attr.value expected null but got Element node <div id="test7-updated"></div>
 WPT SUB FAIL dom/nodes/Document-getElementById.html | add id attribute via outerHTML | assert_not_equals: should not be null got disallowed value null
 WPT SUB FAIL dom/nodes/Document-getElementById.html | remove id attribute via outerHTML | assert_equals: should be null. expected null but got Element node <div id="test11"></div>
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | HTML element with uppercase tagName never matches in HTML Documents | assert_equals: expected "I" but got "i"
@@ -851,7 +850,7 @@ WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML 
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, no prefix, non-ascii characters in name | assert_equals: expected "aÇ" but got "aç"
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
-WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Document-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
@@ -880,7 +879,7 @@ WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML n
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, uppercase name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, no prefix, non-ascii characters in name | assert_equals: expected "aÇ" but got "aç"
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, non-ascii characters in name | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
-WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All uppercase input lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
+WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in HTML namespace, prefix, non-ascii characters in name | assert_array_equals: All lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagName.html | Element in non-HTML namespace, prefix, non-ascii characters in name | assert_array_equals: Ascii lowercase input lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | ABC element in html namespace | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 1
 WPT SUB FAIL dom/nodes/Element-getElementsByTagNameNS.html | AÇ, case sensitivity | assert_array_equals: lengths differ, expected array [Element node <aç></aç>] length 1, got object "[object HTMLCollection]" length 0
@@ -945,16 +944,14 @@ WPT SUB FAIL dom/nodes/Element-removeAttribute.html | removeAttribute should rem
 WPT SUB FAIL dom/nodes/Element-removeAttribute.html | removeAttribute should remove the first attribute, irrespective of namespace, when the first attribute is in a namespace | assert_equals: expected 2 but got 1
 WPT SUB FAIL dom/nodes/Element-removeAttributeNS.html | removeAttributeNS should take a local name. | assert_equals: textContent expected (string) "pass" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/Element-setAttribute.html | setAttribute should change the first attribute, irrespective of namespace | assert_equals: expected 2 but got 1
-WPT SUB FAIL dom/nodes/Element-setAttribute.html | setAttribute should lowercase before setting | assert_equals: expected (object) null but got (string) "bar"
 WPT SUB FAIL dom/nodes/Element-setAttributeNodeNS.html | Replacing an attribute prefix preserves name lookup order with namespacedFirst=false | not a function
 WPT SUB FAIL dom/nodes/Element-setAttributeNodeNS.html | Replacing an attribute prefix preserves name lookup order with namespacedFirst=true | not a function
 WPT SUB FAIL dom/nodes/Element-setAttributeNodeNS.html | Replacing an attribute prefix preserves other attributes with the old qualified name | not a function
 WPT SUB FAIL dom/nodes/Element-tagName-adopt.html | tagName should not be uppercased when appended to XML document | assert_equals: tagName should be lowercase in XML document expected "t" but got "T"
-WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should upper-case for HTML elements in HTML documents. | assert_equals: expected "X:B" but got "B"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should not upper-case for SVG elements in HTML documents. | assert_equals: expected "svg" but got "SVG"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument | assert_equals: tagName should be lowercase in XML expected "div" but got "DIV"
 WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument (createDocument without prefix) | assert_equals: tagName should be lowercase in XML expected "div" but got "DIV"
-WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument (createDocument with prefix) | assert_equals: tagName should be lowercase in XML expected "foo:div" but got "DIV"
+WPT SUB FAIL dom/nodes/Element-tagName.html | tagName should be updated when changing ownerDocument (createDocument with prefix) | assert_equals: tagName should be lowercase in XML expected "foo:div" but got "FOO:DIV"
 WPT SUB FAIL dom/nodes/Element-webkitMatchesSelector.html | Document should not support webkitMatchesSelector | assert_false: Document supports webkitMatchesSelector expected false got true
 WPT SUB FAIL dom/nodes/Element-webkitMatchesSelector.html | Fragment should not support webkitMatchesSelector | assert_false: Fragment supports webkitMatchesSelector expected false got true
 WPT SUB FAIL dom/nodes/Element-webkitMatchesSelector.html | DIV Element.webkitMatchesSelector no parameter | assert_throws_js: This should throw a TypeError. function "function() { element[method](); }" did not throw
@@ -1050,16 +1047,15 @@ WPT SUB FAIL dom/nodes/Node-childNodes.html | Node.childNodes should be a live c
 WPT SUB FAIL dom/nodes/Node-cloneNode-XMLDocument.html | Created with createDocument | assert_equals: Precondition check: document.implementation.createDocument() creates an XMLDocument expected function "function XMLDocument() { [native code] }" 
 WPT SUB FAIL dom/nodes/Node-cloneNode-document-allow-declarative-shadow-roots.window.html | cloneNode() and document's allow declarative shadow roots | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg>'s xmlns:xlink attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/2000/xmlns/" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <svg>'s xmlns:xlink attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/2000/xmlns/" but got (object) null
 WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use> should have the right properties | assert_equals: expected "http://www.w3.org/2000/svg" but got "http://www.w3.org/1999/xhtml"
-WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use>'s xlink:href attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/1999/xlink" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/Node-cloneNode-svg.html | cloned <use>'s xlink:href attribute should have the right properties | assert_equals: expected (string) "http://www.w3.org/1999/xlink" but got (object) null
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(dir) | assert_true: HTMLDirectoryElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(font) | assert_true: HTMLFontElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(frame) | assert_true: HTMLFrameElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(frameset) | assert_true: HTMLFrameSetElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(param) | assert_true: HTMLParamElement is not supported expected true got false
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElement(unknown) | assert_true: original instanceof function HTMLUnknownElement() { [native code] } expected true got false
-WPT SUB FAIL dom/nodes/Node-cloneNode.html | createElementNS non-HTML | assert_equals: nodeName expected "foo:div" but got "DIV"
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createProcessingInstruction | assert_equals: data expected (undefined) undefined but got (string) "data"
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttribute | not a function
 WPT SUB FAIL dom/nodes/Node-cloneNode.html | createAttributeNS | not a function
@@ -1405,28 +1401,18 @@ WPT SUB FAIL dom/nodes/attributes-namednodemap-cross-document.window.html | Repl
 WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should add and remove fields from `attributes` | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes-namednodemap.html | setNamedItem and removeNamedItem on `attributes` should not interfere with existing method names | assert_equals: expected Node object of unknown type but got object "[object Object]"
 WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (toggleAttribute) | assert_throws_dom: toggleAttribute("", true) function "function() { el.toggleAttribute(invalid_names[i], true) }" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should lowercase its name argument (upper case attribute) | not a function
-WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should lowercase its name argument (mixed case attribute) | not a function
 WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should not change the order of previously set attributes. | assert_equals: attributes[0]: textContent expected (string) "thing" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should set the first attribute with the given name | cannot read property 'value' of undefined
 WPT SUB FAIL dom/nodes/attributes.html | toggleAttribute should set the attribute with the given qualified name | assert_equals: textContent expected (string) "1" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | Toggling element with inline style should make inline style disappear | assert_equals: expected false but got true
 WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (setAttribute) | assert_throws_dom: function "function() { el.setAttribute(invalid_names[i], "test") }" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | setAttribute should lowercase its name argument (upper case attribute) | assert_equals: expected (object) null but got (string) "left"
-WPT SUB FAIL dom/nodes/attributes.html | setAttribute should lowercase its name argument (mixed case attribute) | assert_equals: expected (object) null but got (string) "tasty"
 WPT SUB FAIL dom/nodes/attributes.html | setAttribute should not change the order of previously set attributes. | assert_equals: attributes[0]: textContent expected (string) "3" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | setAttribute should set the first attribute with the given name | assert_equals: attributes[0]: textContent expected (string) "pass" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | setAttribute should set the attribute with the given qualified name | assert_equals: textContent expected (string) "1" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the Name production, an INVALID_CHARACTER_ERR exception is to be thrown. (setAttributeNS) | assert_throws_dom: function "function() { el.setAttributeNS("a", invalid_names[i], "fail") }" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the QName production, an INVALID_CHARACTER_ERR exception is to be thrown. | assert_throws_dom: Expected exception for b:. function "function() { el.setAttributeNS("a", invalid_qnames[i], "fail") }" did not throw
+WPT SUB FAIL dom/nodes/attributes.html | When qualifiedName does not match the QName production, an INVALID_CHARACTER_ERR exception is to be thrown. | assert_throws_dom: Expected exception for b:. function "function() { el.setAttributeNS("a", invalid_qnames[i], "fail") }" threw object "NamespaceError: Namespac
 WPT SUB FAIL dom/nodes/attributes.html | null and the empty string should result in a null namespace. | assert_equals: attributes[0]: textContent expected (string) "bb" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | A namespace is required to use a prefix. | assert_throws_dom: function "function() { el.setAttributeNS("", "aa:bb", "fail") }" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | The xml prefix should not be allowed for arbitrary namespaces | assert_throws_dom: function "function() { el.setAttributeNS("a", "xml:bb", "fail") }" did not throw
 WPT SUB FAIL dom/nodes/attributes.html | XML-namespaced attributes don't need an xml prefix | assert_equals: textContent expected (string) "pass" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | The xmlns prefix should not be allowed for arbitrary namespaces | assert_throws_dom: function "function() { el.setAttributeNS("a", "xmlns:bb", "fail") }" did not throw
-WPT SUB FAIL dom/nodes/attributes.html | The xmlns qualified name should not be allowed for arbitrary namespaces | assert_throws_dom: function "function() { el.setAttributeNS("a", "xmlns", "fail") }" did not throw
 WPT SUB FAIL dom/nodes/attributes.html | xmlns should be allowed as local name | assert_equals: textContent expected (string) "pass" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | The XMLNS namespace should require xmlns as prefix or qualified name | assert_throws_dom: function "function() { el.setAttributeNS(XMLNS, "a:xmlns", "fail") }" did not throw
 WPT SUB FAIL dom/nodes/attributes.html | xmlns should be allowed as prefix in the XMLNS namespace | assert_equals: textContent expected (string) "pass" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | xmlns should be allowed as qualified name in the XMLNS namespace | assert_equals: textContent expected (string) "pass" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | Setting the same attribute with another prefix should not change the prefix | assert_equals: textContent expected (string) "X" but got (undefined) undefined
@@ -1434,16 +1420,14 @@ WPT SUB FAIL dom/nodes/attributes.html | Attributes should work in document frag
 WPT SUB FAIL dom/nodes/attributes.html | Attribute values should not be parsed. | assert_equals: nodeValue expected "Y&lt;" but got "y"
 WPT SUB FAIL dom/nodes/attributes.html | Specified attributes should be accessible. | assert_equals: textContent expected (string) "test1" but got (undefined) undefined
 WPT SUB FAIL dom/nodes/attributes.html | Entities in attributes should have been expanded while parsing. | assert_equals: textContent expected (string) "&<>foo" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | Unset attributes return null | not a function
-WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned by getAttribute | not a function
-WPT SUB FAIL dom/nodes/attributes.html | Style attributes are not normalized | not a function
+WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned by getAttribute | assert_equals: expected true but got false
 WPT SUB FAIL dom/nodes/attributes.html | Only lowercase attributes are returned on HTML elements (upper case attribute) | assert_equals: expected false but got true
 WPT SUB FAIL dom/nodes/attributes.html | Only lowercase attributes are returned on HTML elements (mixed case attribute) | assert_equals: expected false but got true
-WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned with mapped attribute set first | not a function
-WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned with mapped attribute set later | not a function
-WPT SUB FAIL dom/nodes/attributes.html | Non-HTML element with upper-case attribute | not a function
-WPT SUB FAIL dom/nodes/attributes.html | Attribute with prefix in local name | assert_equals: prefixed local name expected (string) "pre:fix" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/attributes.html | Attribute loses its owner when removed | assert_equals: expected (object) Element node <div foo="bar"></div> but got (undefined) undefined
+WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned with mapped attribute set first | assert_equals: expected true but got false
+WPT SUB FAIL dom/nodes/attributes.html | First set attribute is returned with mapped attribute set later | assert_equals: expected true but got false
+WPT SUB FAIL dom/nodes/attributes.html | Non-HTML element with upper-case attribute | assert_equals: el.hasAttributeNS("") expected true but got false
+WPT SUB FAIL dom/nodes/attributes.html | Attribute with prefix in local name | assert_equals: expected object "[object Object]" but got object "[object Object]"
+WPT SUB FAIL dom/nodes/attributes.html | Attribute loses its owner when removed | assert_equals: expected null but got Element node <div></div>
 WPT SUB FAIL dom/nodes/attributes.html | Basic functionality of getAttributeNode/getAttributeNodeNS | not a function
 WPT SUB FAIL dom/nodes/attributes.html | Basic functionality of setAttributeNode | not a function
 WPT SUB FAIL dom/nodes/attributes.html | setAttributeNode should distinguish attributes with same local name and different namespaces | not a function
@@ -1463,228 +1447,46 @@ WPT SUB FAIL dom/nodes/attributes.html | Own property correctness with two names
 WPT SUB FAIL dom/nodes/attributes.html | Own property names should only include all-lowercase qualified names for an HTML element in an HTML document | assert_array_equals: lengths differ, expected array ["0", "1", "2", "3", "4", "5", "g:h", "j"] length 8, got ["0", "1", "2", "3", "4", "5", "a:b", "c:d", "e:f",
 WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for a non-HTML element in an HTML document | assert_array_equals: expected property 6 to be "A:B" but got "a:b" (expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] got ["0"
 WPT SUB FAIL dom/nodes/attributes.html | Own property names should include all qualified names for an HTML element in a non-HTML document | assert_array_equals: expected property 6 to be "A:B" but got "a:b" (expected array ["0", "1", "2", "3", "4", "5", "A:B", "c:D", "e:F", "g:h", "I", "j"] got ["0"
-WPT SUB FAIL dom/nodes/case.html | setAttribute abc | assert_equals: expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:abc | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
-WPT SUB FAIL dom/nodes/case.html | setAttribute Abc | assert_equals: expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:Abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:Abc | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Abc | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
-WPT SUB FAIL dom/nodes/case.html | setAttribute ABC | assert_equals: expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
+WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ABC | assert_array_equals: lengths differ, expected array [] length 0, got object "[object HTMLCollection]" length 9
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ABC | assert_array_equals: lengths differ, expected array [Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Element node <abc></abc>, Ele
-WPT SUB FAIL dom/nodes/case.html | setAttribute ä | assert_equals: expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getElementsByTagName a:ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>] length 4, got objec
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName ä | assert_array_equals: lengths differ, expected array [Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä>, Element node <ä></ä
 WPT SUB FAIL dom/nodes/case.html | createElement Ä | assert_equals: expected "Ä" but got "ä"
-WPT SUB FAIL dom/nodes/case.html | setAttribute Ä | assert_equals: expected (string) "Ä" but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | setAttribute Ä | assert_equals: expected "Ä" but got "ä"
 WPT SUB FAIL dom/nodes/case.html | getElementsByTagName Ä | assert_array_equals: lengths differ, expected array [Element node <Ä></Ä>] length 1, got object "[object HTMLCollection]" length 2
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,abc | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ä | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: prefix expected (string) "abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,abc | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ä | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: prefix expected (string) "ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,Abc | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,ABC | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,abc,Ä | assert_equals: prefix expected (string) "abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Abc,abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Abc,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Abc,Abc | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Abc,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Abc,ABC | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Abc,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Abc,ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Abc,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Abc,Ä | assert_equals: prefix expected (string) "Abc" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Abc,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ABC,abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ABC,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ABC,Abc | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ABC,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ABC,ABC | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ABC,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ABC,ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ABC,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ABC,Ä | assert_equals: prefix expected (string) "ABC" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ABC,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ä,abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ä,Abc | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ä,ABC | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ä,ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,ä,Ä | assert_equals: prefix expected (string) "ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Ä,abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Ä,abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Ä,Abc | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Ä,Abc | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Ä,ABC | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Ä,ABC | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Ä,ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Ä,ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS http://FOO,Ä,Ä | assert_equals: prefix expected (string) "Ä" but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS http://FOO,Ä,Ä | assert_equals: expected (string) "test" but got (object) null
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS abc | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS Abc | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS Abc | assert_equals: expected (object) null but got (string) "test"
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS ABC | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | getAttributeNS ABC | assert_equals: expected (object) null but got (string) "test"
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS ä | assert_equals: prefix expected (object) null but got (undefined) undefined
-WPT SUB FAIL dom/nodes/case.html | setAttributeNS Ä | assert_equals: prefix expected (object) null but got (undefined) undefined
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,abc,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Abc,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ABC,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,ä,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/1999/xhtml,Ä,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,abc,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Abc,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ABC,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,ä,Ä | assert_equals: localName expected "Ä" but got "ä"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Abc | assert_equals: localName expected "Abc" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,ABC | assert_equals: localName expected "ABC" but got "abc"
+WPT SUB FAIL dom/nodes/case.html | createElementNS http://www.w3.org/2000/svg,Ä,Ä | assert_equals: localName expected "Ä" but got "ä"
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | append a namespaced ID preserves ID lookup and form association | assert_equals: expected Element node <form id="unrelated"></form> but got null
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | change a namespaced ID preserves ID lookup and form association | assert_equals: expected Element node <form id="unrelated"></form> but got null
 WPT SUB FAIL dom/nodes/getElementById-namespaced-id.html | remove a namespaced ID preserves ID lookup and form association | assert_equals: expected Element node <form></form> but got null
@@ -1725,16 +1527,14 @@ WPT SUB FAIL dom/nodes/live-collections-batched-mutations.window.html | childNod
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElement. | assert_unreached: document.createElement should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" Inv
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createElementNS and createDocument. | assert_unreached: document.createElementNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" c
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttribute, toggleAttribute, and createAttribute. | assert_unreached: document.createAttribute should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" I
-WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttributeNS and createAttributeNS. | assert_unreached: document.createAttributeNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?"
+WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in setAttributeNS and createAttributeNS. | assert_unreached: element.setAttributeNS should not have thrown an error for: code points: [115,109,97,108,108,69,109,111,106,105,63], string: "smallEmoji?" cod
 WPT SUB FAIL dom/nodes/name-validation.html | Valid and invalid characters in createDocumentType. | assert_unreached: createDocumentType should not have thrown an error for code points: [], string: "" InvalidCharacterError: InvalidCharacterError Reached unreac
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | append a namespaced style attribute preserves HTML inline style | assert_equals: expected "color: green" but got "after"
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | change a namespaced style attribute preserves HTML inline style | assert_equals: expected "color: green" but got "after"
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | remove a namespaced style attribute preserves HTML inline style | assert_equals: expected (string) "color: green" but got (object) null
+WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | append a namespaced style attribute preserves HTML inline style | assert_equals: expected (string) "color: green" but got (object) null
+WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | change a namespaced style attribute preserves HTML inline style | assert_equals: expected (string) "color: green" but got (object) null
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | replace a namespaced style attribute preserves HTML inline style | not a function
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | replace a namespaced event handler attribute preserves an HTML event handler | not a function
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | append a namespaced style attribute preserves SVG inline style | assert_equals: expected "color: green" but got "after"
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | change a namespaced style attribute preserves SVG inline style | assert_equals: expected "color: green" but got "after"
-WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | remove a namespaced style attribute preserves SVG inline style | assert_equals: expected (string) "color: green" but got (object) null
+WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | append a namespaced style attribute preserves SVG inline style | assert_equals: expected (string) "color: green" but got (object) null
+WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | change a namespaced style attribute preserves SVG inline style | assert_equals: expected (string) "color: green" but got (object) null
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | replace a namespaced style attribute preserves SVG inline style | not a function
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | replace a namespaced event handler attribute preserves an SVG event handler | not a function
 WPT SUB FAIL dom/nodes/namespaced-attribute-mutations.html | A namespaced slot attribute does not assign a slot | assert_equals: expected (string) "" but got (undefined) undefined

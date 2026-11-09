@@ -6426,3 +6426,16 @@ Formato:
 - WPT xhr 755 → 761: formdata 2 → 5/9, progressevent-interface 1 → 4/7; ninguno peor. dom/events 509/674 igual (solo
   cambian de TIMEOUT a OK y al revés tres ficheros de marcos, sin perder ninguna). Pasan eventos (2), xhr_sinc,
   fetch, peticion y formularios (4).
+
+### 2026-11-09 — Tarea 41d: las cabeceras de la respuesta en XMLHttpRequest (xhr 761 → 778/1112)
+- lib/http.dash (_leer_cabeceras): si el servidor cierra después de alguna cabecera sin la línea vacía, se acaban
+  ahí, como en los navegadores (antes "cut headers"); sin ninguna cabecera sigue siendo un corte.
+- getResponseHeader y getAllResponseHeaders: sin Set-Cookie ni Set-Cookie2 (la página no los ve); el valor sin
+  recortar por el final (lib/http.dash ya recorta cada uno, y dos vacíos juntos son ", ").
+- tools/wpt_js.py: los .asis (la respuesta HTTP entera tal cual, de wptserve) y response.headers.append(nombre,
+  valor); headers.py fallaba.
+- Velocidad: lo de siempre igual (un replace en vez de trim por cabecera; lo de lib/http solo al cerrar sin línea
+  vacía).
+- WPT xhr 761 → 778: getresponseheader.any 0 → 6/6, getallresponseheaders 0 → 6/7, getresponseheader-cookies-and-more,
+  case-insensitive, special-characters, getallresponseheaders-cookies y after-reuse enteros; ninguno peor. Pasan
+  test_http (7), xhr_sinc, fetch, peticion y cookies.

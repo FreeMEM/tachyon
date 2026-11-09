@@ -146,6 +146,9 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
             self.append((k, t(v)))
         def append_header(self, k, v):
             self.append((t(k), t(v)))
+        def append(self, k, v=None):
+            # (headers.append(nombre, valor) de wptserve; con un solo argumento, el de la lista)
+            list.append(self, k if v is None else (t(k), t(v)))
         def get(self, k, defecto=None):
             for a, c in self:
                 if a.lower() == t(k).lower():
@@ -345,6 +348,13 @@ def main():
                     self.send_header("Content-Length", str(len(cuerpo)))
                 self.end_headers()
                 self.wfile.write(cuerpo)
+                return
+            # (un .asis es la respuesta HTTP entera tal cual, línea de estado y cabeceras incluidas, como en wptserve)
+            ruta = self.translate_path(self.path.split("?")[0])
+            if ruta.endswith(".asis") and os.path.isfile(ruta):
+                self.close_connection = True
+                with open(ruta, "rb") as f:
+                    self.wfile.write(f.read())
                 return
             env = _envoltorio(self.path.split("?")[0])
             if env is not None:

@@ -285,7 +285,9 @@ func _leer_cabeceras(c: Conexion, r: Respuesta)
         end
         linea = red_leer_linea(c)
     end
-    if linea == nil
+    # (el cierre después de alguna cabecera, sin la línea vacía, también las acaba, como en los navegadores: los .asis
+    # de WPT xhr; sin ninguna, cortada)
+    if linea == nil and r.cabeceras.length == 0
         r.error = tr(404, "cut headers")
         return
     end

@@ -614,6 +614,17 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 65. **"Inspeccionar", como las herramientas de Chrome (usuario, 2026-11-09: "estaría bien añadirle a Tachyon un
+      inspeccionar como el de chrome donde se vean consola, memoria, aplicación, y cosas así básicas pero que nos de
+      algo de información de lo que pasa en una web").** Después de la 64. Una página propia (tachyon:inspeccionar,
+      de la pestaña o ventana que se mira; menú Herramientas y el del botón derecho) con pestañas sencillas:
+      (a) Consola: console.log, los avisos y los errores de JavaScript (ya los guarda el registro de lib/js.dash para
+      el informe de la tarea 54), y una línea para escribir JavaScript y ver el resultado; (b) Elementos: el árbol del
+      DOM plegable, con los atributos y el estilo calculado del elegido; (c) Red: lo que pidió la página (dirección,
+      estado, tamaño, tiempo, tipo), como lo que ya escribe TRAZA; (d) Memoria: la libre y el mayor bloque, la del
+      JavaScript, las imágenes y las hojas (lo de "entera ... memoria libre ... JavaScript KB, imágenes KB"); (e)
+      Aplicación: cookies, localStorage y sessionStorage del origen, con borrar; (f) Tiempos: carga, HTML, JS, estilo,
+      maqueta, pintar. Sin coste cuando no está abierto.
 - [ ] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
       prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
       reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un
@@ -6690,3 +6701,5 @@ Formato:
   resúmenes; las miniaturas grandes de los vídeos todavía no (siguen con src vacío). Pasan imagenes (4), documento,
   iframe, interseccion, todos y los demás de la tanda (15).
 - Velocidad: un recorrido de la página por tanda de imágenes que llegan, solo si hay JavaScript.
+- (2026-11-09) Dash: el arreglo del "file is not executable" (las reubicaciones en grupos de 32767) ya está en main
+  (freememlang-af, PR #143, b4295b9) y ~/Projects/FreeMEMLang ha vuelto a main: Tachyon vuelve a cargar por dashc.

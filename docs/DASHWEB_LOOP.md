@@ -6734,3 +6734,14 @@ Formato:
 - medir_visor ya no arranca el servidor de tests/servers con una web de fuera: va sin el cerrojo de la red (el
   usuario quiere más emuladores a la vez).
 - Pendiente en YouTube: las esquinas redondeadas de las miniaturas, el icono de carga y la página del vídeo.
+
+### 2026-11-09 — La actualización 0.9.2 -> 0.9.3, probada en Amiberry con la copia de CoffinOS del usuario
+- tools/amiga/diagnostico_actualizar.dash (nuevo): pregunta a GitHub, baja Tachyon.gz a T: y lo descomprime y
+  comprueba en memoria, sin instalar. En FS-UAE y en Amiberry con DashCoffin (la copia del sistema del usuario):
+  200 y 1993291 bytes en 1,8-5,5 s; descomprimido y comprobado bien. (run_capture de "Assign T:" colgaba el programa
+  en el emulador: ahora file_real_path("T:").)
+- El de verdad: el paquete 0.9.2 publicado (tachyon.lha) en DASHRUN: de DashCoffin en Amiberry (68040 con JIT, la
+  configuración de coffin.uae del usuario), arrancado sin argumentos (con argumentos no mira las versiones): sale el
+  icono verde, se pulsa (tools/amiga/clicar.dash) y dice "Instalada la 0.9.3-alfa: pulsa el icono verde"; queda la
+  0.9.3 en su sitio y la 0.9.2 como .old. No se reproduce su "No se pudo bajar la versión nueva" (2026-11-08): o fue
+  algo de ese momento (GitHub), o es de lo cambiado en su disco desde el 6 (DashCoffin es de entonces).

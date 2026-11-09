@@ -614,6 +614,15 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
+      prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
+      reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un
+      navegador de verdad, en la máquina RTG y medido en el A1200: (a) la portada con sus miniaturas y títulos, y el
+      consentimiento de cookies; (b) buscar y la página de resultados; (c) la página de un vídeo: título, canal,
+      descripción, vídeos relacionados y comentarios; (d) reproducirlo con su sonido desde esa página (no solo
+      incrustado), con pausa, avance y pantalla completa; (e) ir de un vídeo a otro sin recargar todo (la navegación
+      de YouTube por history.pushState) y volver atrás; (f) tiempos y memoria aceptables (medidos antes y después).
+      Primero ver cómo sale hoy cada parte (capturas, errores de JS, memoria, tiempos) y partirla en subtareas.
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e

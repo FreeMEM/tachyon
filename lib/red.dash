@@ -44,6 +44,7 @@ struct Conexion
     puerto: Int = 0
     empezada: Int = 0      # time_ms de cuando se pidió la conexión
     reintentos: Int = 0
+    nul: Bool = false      # red_leer_linea vio un byte 0 (str_from_buffer lo da como espacio; lib/http.dash)
 end
 
 # Sin ninguna conexión, la tarea de la red acaba tras esto (ms); dashweb lo sube y llama a red_terminar al salir
@@ -284,7 +285,11 @@ func red_leer_linea(c: Conexion) -> String
     i = c.ini
     while true
         while i < c.fin
-            if buffer_get_byte(c.buf, i) == 10
+            b = buffer_get_byte(c.buf, i)
+            if b == 0
+                c.nul = true
+            end
+            if b == 10
                 fin = i
                 if fin > c.ini and buffer_get_byte(c.buf, fin - 1) == 13
                     fin = fin - 1

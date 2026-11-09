@@ -265,6 +265,7 @@ end
 
 # "Nombre: valor" hasta una línea vacía; nombres en minúsculas
 func _leer_cabeceras(c: Conexion, r: Respuesta)
+    c.nul = false
     linea = red_leer_linea(c)
     while linea != nil and linea != ""
         p = str_find(linea, ":")
@@ -290,6 +291,11 @@ func _leer_cabeceras(c: Conexion, r: Respuesta)
     # de WPT xhr; sin ninguna, cortada)
     if linea == nil and r.cabeceras.length == 0
         r.error = tr(404, "cut headers")
+        return
+    end
+    # (un byte 0 en las cabeceras: error de red, como en los navegadores; Fetch, WPT xhr/headers-normalize-response)
+    if c.nul
+        r.error = tr(402, "an answer that isn't HTTP")
         return
     end
     if r.cabeceras.has("content-type")

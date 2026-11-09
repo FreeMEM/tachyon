@@ -6485,3 +6485,14 @@ Formato:
   0 → 2/3, overridemimetype-edge-cases 4/4, send-entity-body-none 4 → 6/6, send-entity-body-empty 3/3,
   send-data-es-object 9 → 10/11; ninguno peor. Pasan test_http (7), xhr_sinc, fetch, peticion, formularios_post y
   domparser.
+
+### 2026-11-09 — Tarea 41d: un byte 0 en las cabeceras es un error de red (xhr 828 → 834/1112)
+- lib/red.dash: red_leer_linea marca c.nul si ve un byte 0 (str_from_buffer lo da como espacio y no se notaba);
+  lib/http.dash (_leer_cabeceras) da entonces "an answer that isn't HTTP" (402, ya en los catálogos), como los
+  navegadores (Fetch). Antes "hola\0" llegaba como "hola".
+- tools/wpt_js.py: con response.add_required_headers = False, lo escrito con writer va tal cual (la respuesta HTTP
+  entera; echo-method.py).
+- Velocidad: lo de siempre igual (una comparación más por byte de las líneas de cabeceras y de tamaños de trozo, no
+  del cuerpo).
+- WPT xhr 828 → 834: headers-normalize-response 11 → 15/15, response-method 1 → 3/3; ninguno peor. Pasan test_http
+  (7), test_red, xhr_sinc, fetch y peticion.

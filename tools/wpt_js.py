@@ -182,7 +182,7 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
                                      request_path=camino,
                                      raw_headers=types.SimpleNamespace(raw_items=lambda: list((cabeceras or {}).items())),
                                      cookies={}, server=types.SimpleNamespace(stash=None))
-    respuesta = types.SimpleNamespace(headers=Respuesta(), status=200, content=None)
+    respuesta = types.SimpleNamespace(headers=Respuesta(), status=200, content=None, add_required_headers=True)
     respuesta.writer = Escritor(respuesta)
     respuesta.write_status_headers = lambda: None
     salida["escrito"] = respuesta.writer
@@ -203,6 +203,9 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
     razon = None
     if isinstance(estado, tuple):
         estado, razon = estado[0], t(estado[1]) if len(estado) > 1 else None
+    if r is None and not respuesta.add_required_headers:
+        # (el manejador escribe la respuesta HTTP entera con writer, línea de estado incluida: tal cual)
+        return None, [], b"".join(respuesta.writer.partes), None
     if r is None:
         r = respuesta.content if respuesta.content is not None else b"".join(respuesta.writer.partes)
     if isinstance(r, list):
@@ -301,6 +304,10 @@ def main():
                 self.end_headers()
                 return
             estado, cabeceras, salida, razon = py
+            if estado is None:
+                self.close_connection = True
+                self.wfile.write(salida)
+                return
             self.send_response(estado, razon)
             for k, v in cabeceras:
                 self.send_header(k, v)
@@ -343,6 +350,10 @@ def main():
             py = _manejador(self.path, "GET", dict(self.headers.items()))
             if py is not None:
                 estado, cabeceras, cuerpo, razon = py
+                if estado is None:
+                    self.close_connection = True
+                    self.wfile.write(cuerpo)
+                    return
                 self.send_response(estado, razon)
                 for k, v in cabeceras:
                     self.send_header(k, v)

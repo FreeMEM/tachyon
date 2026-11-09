@@ -614,6 +614,14 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 66. **Vídeo nuevo de Tachyon cuando la 64 y la 65 estén finas (usuario, 2026-11-09: "cuando esté fino molaría
+      hacer un vídeo con el estilo de los hechos en otras ocasiones publicados en la web de tachyon o forja").** Con el
+      estilo y las herramientas de los anteriores (~/.cache/video-tachyon: tomar.sh en Coffin con Amiberry, montar.py;
+      en inglés y castellano). Que se vea: (a) YouTube cargando, buscar y un vídeo reproduciéndose con sonido;
+      (b) alguna web con JavaScript funcionando, como la propia de Tachyon; (c) las novedades desde el último vídeo
+      (ARexx, modo lectura, abrir comprimidos, historial con buscar y borrar...); (d) Inspeccionar (tarea 65) con su
+      consola, memoria, red, etc., como las herramientas de desarrollo de Chrome. Publicarlo (YouTube, web de Tachyon,
+      Forja) solo con el visto bueno del usuario.
 - [ ] 65. **"Inspeccionar", como las herramientas de Chrome (usuario, 2026-11-09: "estaría bien añadirle a Tachyon un
       inspeccionar como el de chrome donde se vean consola, memoria, aplicación, y cosas así básicas pero que nos de
       algo de información de lo que pasa en una web").** Después de la 64. Una página propia (tachyon:inspeccionar,

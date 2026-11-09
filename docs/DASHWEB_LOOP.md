@@ -6647,3 +6647,13 @@ Formato:
   reubicaciones del código hacia sí mismo y dashc las escribía en un solo grupo (LoadSeg no acepta más de 65535).
   Lo encontró y lo arregla freememlang-af (grupos de 32767, dashc/src/hunk.c, rama reloc-grupos). Mientras, las
   medidas van por --gcc; no sacar ninguna versión de dashc hasta que esté en main y probado.
+
+### 2026-11-09 — Tarea 64b (parte): los resultados de búsqueda de YouTube; el título que pone el JavaScript
+- results?search_query=amiga+500 (RTG ancha, 256 MB, ya con el dashc arreglado de freememlang-af, rama reloc-grupos):
+  "entera" a los 234-272 s, 69-75 MB de JavaScript. Tras "Reject all" salen la caja con "amiga 500" y los filtros
+  (All, Shorts, Unwatched...), pero ni un resultado ni los iconos (logo, lupa, menú). Con --js a los 420 s: 15
+  ytd-video-renderer con sus títulos ("COMMODORE AMIGA 500: El ordenador que cambió la historia..."), 77 yt-icon y 29
+  svg, ytInitialData presente: están en el DOM y no se pintan. Siguiente: qué los esconde.
+- Arreglado: el título de la ventana se ponía solo al enseñar la página; el que pone después el JavaScript
+  (document.title: YouTube lo pone así) no llegaba y se quedaba la dirección. Ahora poner_titulo en cada tic si
+  cambió (Ventana.titulo_puesto). Visto: "amiga 500 - YouTube - Tachyon".

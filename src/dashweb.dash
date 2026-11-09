@@ -97,6 +97,7 @@ struct Ventana
     v: Navegador
     numero: Int
     abierta: Bool = true
+    titulo_puesto: String = ""   # el título de la ventana (poner_titulo): el JavaScript puede cambiar el de la página
     actual: Documento = nil
     desde: Int = 0
     desde_volver: Int = -1    # una pestaña descartada vuelve a su sitio cuando su página llega hasta ahí (-1: no)
@@ -1262,6 +1263,20 @@ func parar_carga(w: Ventana)
     end
 end
 
+# El título de la página en la ventana ("... - Tachyon"), si cambió
+func poner_titulo(w: Ventana)
+    t = ""
+    if w.actual != nil
+        t = w.actual.titulo
+    end
+    w.titulo_puesto = t
+    if t != "" and t != "Tachyon"
+        mui_set_text(w.v.window, t + " - Tachyon")
+    else
+        mui_set_text(w.v.window, "Tachyon")
+    end
+end
+
 # Pone el documento nuevo en la ventana
 func mostrar(w: Ventana, d: Documento, direccion: String)
     if w.actual != nil
@@ -1289,11 +1304,7 @@ func mostrar(w: Ventana, d: Documento, direccion: String)
     end
     var nadie: Nodo = nil
     w.foco = nadie
-    if w.actual.titulo != "" and w.actual.titulo != "Tachyon"
-        mui_set_text(w.v.window, w.actual.titulo + " - Tachyon")
-    else
-        mui_set_text(w.v.window, "Tachyon")
-    end
+    poner_titulo(w)
     ajustar_barra(w)
     if w.actual.error != ""
         dw_estado(w, hueco(tr(115, "Error: %1"), w.actual.error))
@@ -2042,11 +2053,7 @@ func pestana_traer(w: Ventana, i: Int)
         imagenes_despertar(w.actual.im)
     end
     mui_set_text(w.v.url, p.url)
-    if w.actual != nil and w.actual.titulo != "" and w.actual.titulo != "Tachyon"
-        mui_set_text(w.v.window, w.actual.titulo + " - Tachyon")
-    else
-        mui_set_text(w.v.window, "Tachyon")
-    end
+    poner_titulo(w)
     dw_estado(w, p.estado)
     modo_carga(w, w.carga != nil or w.preparando != nil)
     botones(w)
@@ -2590,6 +2597,10 @@ Main
                             ajustar_barra(t)
                         else
                             tic(t)
+                            # (el título que puso después el JavaScript: document.title, como en YouTube)
+                            if t.actual != nil and t.actual.titulo != t.titulo_puesto
+                                poner_titulo(t)
+                            end
                         end
                     end
                 end

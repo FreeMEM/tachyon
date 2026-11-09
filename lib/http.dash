@@ -776,8 +776,9 @@ func http_avanzar(c: Carga) -> Bool
         else
             c.redirecciones = c.redirecciones + 1
             c.actual = url_resolve(c.actual, r.cabeceras["location"])
-            if r.estado != 307 and r.estado != 308
-                # tras un POST, la redirección se sigue con GET (como los navegadores)
+            # (con GET y sin cuerpo: un POST tras 301 o 302, y tras 303 todo lo que no es GET ni HEAD; lo demás sigue
+            # con su método, también HEAD; Fetch, WPT xhr/send-redirect)
+            if (c.metodo == "POST" and (r.estado == 301 or r.estado == 302)) or (r.estado == 303 and c.metodo != "GET" and c.metodo != "HEAD")
                 c.metodo = "GET"
                 c.cuerpo = ""
             end

@@ -6496,3 +6496,21 @@ Formato:
   del cuerpo).
 - WPT xhr 828 → 834: headers-normalize-response 11 → 15/15, response-method 1 → 3/3; ninguno peor. Pasan test_http
   (7), test_red, xhr_sinc, fetch y peticion.
+
+### 2026-11-09 — Tarea 41d: timeout de XMLHttpRequest, XMLHttpRequestUpload y el método al redirigir (xhr 834 → 845/1112)
+- timeout no existía (era un número sin efecto). Ahora: en uno síncrono, InvalidAccessError al ponerlo, y open(...,
+  false) con uno puesto también; en uno asíncrono, al pasar el plazo la petición se corta (__dashweb_cancelar) y
+  acaba con un error de red y readystatechange, timeout y loadend. El plazo cuenta desde que acaba el script que
+  llamó a send(): hasta entonces la petición no avanza (la red de Dash se mueve en el bucle), y una tarea larga no
+  debe gastarlo (xhr-timeout-longtask). Cambiarlo en marcha lo vuelve a calcular.
+- xhr.upload es un XMLHttpRequestUpload (EventTarget; aún sin eventos de subida): event-timeout-order,
+  abort-event-order y los *-event-order daban ERROR por no existir la clase.
+- lib/http.dash: al redirigir, solo pasa a GET (y sin cuerpo) un POST con 301 o 302, y con 303 lo que no es GET ni
+  HEAD (Fetch); antes todo lo que no era 307/308, también HEAD.
+- AGENTS.md: DASH_EMU_SYS_SSL=~/.cache/dash-emu/sys31ssl (sys31 + AmiSSL, con la carpeta iconos copiada): test_https
+  pasa en el emulador (antes solo compilaba).
+- Velocidad: lo de siempre igual (un temporizador solo en las que ponen timeout).
+- WPT xhr 834 → 845: send-redirect 28 → 34/34, timeout-sync 0 → 2/2, event-timeout 1/1, timeout-multiple-fetches 0 →
+  1/2, abort-after-send 1/1 y seis que pasan de ERROR a OK; ninguno peor (xhr-timeout-longtask bajaba a 0 con el
+  plazo desde send(): arreglado y repetidas sueltas las de timeout, 1/1, cambiado a mano en el informe). Pasan
+  test_http (7) y test_https, xhr_sinc, fetch, peticion y formularios (4).

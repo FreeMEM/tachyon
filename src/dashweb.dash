@@ -20,6 +20,7 @@ import "../lib/buscadores.dash"
 import "../lib/descargas.dash"
 import "../lib/idioma.dash"
 import "../lib/informe.dash"
+import "../lib/lectura.dash"
 
 # desde el icono del Workbench, lo que escribe (console.log de las páginas, «entera en») no abre una consola
 @workbench_output "NIL:"
@@ -64,6 +65,7 @@ const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuració
 const ID_GUARDAR_PAGINA = 31   # menú Proyecto (Amiga-S) y el del botón derecho sobre la página (tarea 57)
 const ID_GUARDAR_ENLACE = 32   # el del botón derecho: el enlace donde se pulsó, a un fichero
 const ID_ABRIR_FICHERO = 33    # menú Proyecto (Amiga-O): una página del disco (tarea 60)
+const ID_LECTURA = 34          # menú Navegar (Amiga-E): el modo lectura de la página (tarea 63c)
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
@@ -802,6 +804,13 @@ func abrir(w: Ventana, direccion: String)
             preferencia_poner(FICHERO_PREFERENCIAS, "buscador", direccion[p + 6:])
         end
         d = documento_html("tachyon:buscadores", buscadores_html(buscador_elegido()))
+    elif direccion == "tachyon:lectura"
+        # el modo lectura de la página de antes (leer_pagina); vuelto a abrir sin ella (adelante, otra ventana), un aviso
+        h = dw_lectura_html
+        if h == ""
+            h = "<html><head><title>" + tr(170, "Reader view") + "</title></head><body><p>" + tr(171, "Open a page and choose Reader view in the Navigate menu.") + "</p></body></html>"
+        end
+        d = documento_html("tachyon:lectura", h)
     elif str_starts(direccion, "tachyon:historial")
         # ?borrar (todo), ?quitar=dirección (todas sus visitas; va la última, con lo que lleve) y ?buscar=texto
         if str_starts(direccion, "tachyon:historial?borrar")
@@ -1124,8 +1133,8 @@ func atajo_de_menu(w: Ventana) -> Int
     if c == ""
         return 0
     end
-    letras = "nktwlosqrhybdj?"
-    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
+    letras = "nktwlosqrhybdj?e"
+    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA, ID_LECTURA]
     i = str_find(letras, str_lower(c[:1]))
     if i < 0
         return 0
@@ -2267,11 +2276,39 @@ end
 
 # La ventana que está usando el usuario (la activa); si no hay, la primera abierta
 # El puerto ARexx (tarea 63b, como en Amelinium): ADDRESS TACHYON. Órdenes, sin mirar mayúsculas: OPEN dirección
-# (también OPENURL y GOTOURL), NEWTAB [dirección], GETURL, GETTITLE, BACK, FORWARD, RELOAD, STOP, HOME, VERSION y QUIT.
+# (también OPENURL y GOTOURL), NEWTAB [dirección], GETURL, GETTITLE, BACK, FORWARD, RELOAD, STOP, HOME, READER (el
+# modo lectura), VERSION y QUIT.
 # GETURL, GETTITLE y VERSION dan RESULT (OPTIONS RESULTS en el script); lo que no conoce, RC 10. Van a la ventana
-# activa. (MUI abre también el suyo, TACHYON.1, con sus órdenes de serie: QUIT, HIDE, SHOW, INFO...)
+# activa; su señal (rexx_signal, D84) despierta el bucle aunque Tachyon esté quieto. (MUI abre también el suyo,
+# TACHYON.1, con sus órdenes de serie: QUIT, HIDE, SHOW, INFO...)
 const PUERTO_AREXX = "TACHYON"
 var dw_rexx_evento: Int = 0     # el botón que pidió una orden (atrás, recargar...): el bucle lo hace como si se pulsara
+
+# El modo lectura (tarea 63c, como en Amelinium): lib/lectura.dash saca el artículo de la página que se ve y se abre
+# como tachyon:lectura (atrás vuelve a la página); en ella, otra vez el menú vuelve atrás. Sin artículo, un aviso.
+var dw_lectura_html: String = ""
+
+func leer_pagina(w: Ventana)
+    if w.actual == nil or w.actual.doc == nil
+        return
+    end
+    if w.actual.direccion == "tachyon:lectura"
+        if w.visto > 0
+            w.visto = w.visto - 1
+            mui_set_text(w.v.url, w.pasos[w.visto])
+            abrir(w, w.pasos[w.visto])
+            botones(w)
+        end
+        return
+    end
+    h = lectura_html(w.actual.doc, w.actual.direccion, w.actual.titulo)
+    if h == ""
+        dw_estado(w, tr(172, "There is no article to read on this page."))
+        return
+    end
+    dw_lectura_html = h
+    navegar(w, "tachyon:lectura")
+end
 
 # Una dirección escrita sin esquema ("amiga.org", o con su puerto "localhost:8080", "127.0.0.1:8080/x"), con http://;
 # las que llevan esquema o son una ruta del Amiga ("Work:pagina.html"), tal cual
@@ -2338,6 +2375,8 @@ func arexx_atender()
     elif verbo == "VERSION"
         rexx_reply(0, "Tachyon " + DASHWEB_VERSION)
         return
+    elif verbo == "READER"
+        leer_pagina(w)
     elif verbo == "BACK"
         dw_rexx_evento = ID_ATRAS
     elif verbo == "FORWARD"
@@ -2493,8 +2532,9 @@ Main
         while abiertas() > 0
             # también despierta con la señal de las tareas: la de la red (lib/red.dash) avisa al recibir algo, y las
             # que decodifican imágenes al acabar (0: una de ellas)
-            ev = mui_wait_event_signals(task_signal())
-            # (las órdenes de ARexx: la que pide un botón va en lugar del tic o de nada, o en la vuelta siguiente)
+            ev = mui_wait_event_signals(task_signal() | rexx_signal())
+            # (las órdenes de ARexx, que despiertan el bucle por su señal (D84): la que pide un botón va en lugar del
+            # tic o de nada, o en la vuelta siguiente)
             arexx_atender()
             if dw_rexx_evento != 0 and (ev == 0 or ev == ID_TIC)
                 ev = dw_rexx_evento
@@ -2614,6 +2654,9 @@ Main
             end
             if ev == ID_VER_HISTORIAL
                 navegar(w, "tachyon:historial")
+            end
+            if ev == ID_LECTURA
+                leer_pagina(w)
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")

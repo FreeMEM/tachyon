@@ -158,6 +158,9 @@ Apri file...
 MSG_52
 Apri su uno schermo proprio
 ; Open on its own screen
+MSG_53
+Modalità lettura
+; Reader view
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -362,6 +365,15 @@ Tachyon si aprirà su uno schermo proprio la prossima volta
 MSG_169
 Tachyon si aprirà sullo schermo del Workbench la prossima volta
 ; Tachyon will open on the Workbench screen next time
+MSG_170
+Modalità lettura
+; Reader view
+MSG_171
+Apri una pagina e scegli Modalità lettura nel menu Naviga.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+In questa pagina non c'è nessun articolo da leggere.
+; There is no article to read on this page.
 MSG_300
 La sua versione senza JavaScript: leggera, quella che va meglio su un Amiga. Privato.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

@@ -158,6 +158,9 @@ Bestand openen...
 MSG_52
 Op eigen scherm openen
 ; Open on its own screen
+MSG_53
+Leesweergave
+; Reader view
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -362,6 +365,15 @@ Tachyon opent de volgende keer op een eigen scherm
 MSG_169
 Tachyon opent de volgende keer op het Workbench-scherm
 ; Tachyon will open on the Workbench screen next time
+MSG_170
+Leesweergave
+; Reader view
+MSG_171
+Open een pagina en kies Leesweergave in het menu Navigeren.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Op deze pagina staat geen artikel om te lezen.
+; There is no article to read on this page.
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

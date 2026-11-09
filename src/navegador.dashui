@@ -118,6 +118,12 @@
               "key": "Y",
               "event": 20,
               "tr": 13
+            },
+            {
+              "label": "Reader view",
+              "key": "E",
+              "event": 34,
+              "tr": 53
             }
           ],
           "tr": 7

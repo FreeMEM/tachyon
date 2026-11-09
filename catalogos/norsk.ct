@@ -158,6 +158,9 @@ MSG_51
 MSG_52
 Åpne på egen skjerm
 ; Open on its own screen
+MSG_53
+Lesevisning
+; Reader view
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -362,6 +365,15 @@ Tachyon åpnes på sin egen skjerm neste gang
 MSG_169
 Tachyon åpnes på Workbench-skjermen neste gang
 ; Tachyon will open on the Workbench screen next time
+MSG_170
+Lesevisning
+; Reader view
+MSG_171
+Åpne en side og velg Lesevisning i menyen Naviger.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Det finnes ingen artikkel å lese på denne siden.
+; There is no article to read on this page.
 MSG_300
 Versjonen uten JavaScript: lett, den som går best på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.

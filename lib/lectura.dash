@@ -1,0 +1,236 @@
+# Modo lectura (tarea 63c, como en Amelinium y en el Firefox de "about:reader"): de la página, solo el texto principal
+# (el artículo), con un estilo para leer: letra con serifa, más grande, líneas cortas y sin menús, anuncios,
+# comentarios ni barras. Se elige el bloque así:
+# - un <article> o un <main> con texto de sobra (más de 500 letras); si no,
+# - como Readability: cada <p> (o <pre>, <td>) con 25 letras o más suma a su padre 1 + sus comas + una por cada 100
+#   letras (hasta 3), y la mitad a su abuelo; gana el que más suma, rebajado por lo que tiene de enlaces.
+# Luego se escribe otra vez, con solo lo que es texto (párrafos, títulos, listas, citas, código, tablas sencillas,
+# imágenes y enlaces, con sus direcciones completas) y sin lo que no (scripts, estilos, formularios, menús,
+# aside, footer, y lo que por su clase o su id parece de comentarios, compartir, relacionados o anuncios).
+
+import "dom.dash"
+import "url.dash"
+import "texto.dash"
+import "idioma.dash"
+
+const LECTURA_MINIMO = 25
+
+func _lectura_escapar(t: String) -> String
+    return str_replace(str_replace(str_replace(str_replace(t, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;")
+end
+
+# Lo que por su nombre, su clase o su id no es el artículo
+func _lectura_fuera(n: Nodo) -> Bool
+    nm = n.nombre
+    if nm == "script" or nm == "style" or nm == "noscript" or nm == "nav" or nm == "aside" or nm == "footer" or nm == "form" or nm == "button" or nm == "iframe" or nm == "svg" or nm == "select" or nm == "input" or nm == "textarea" or nm == "object" or nm == "embed" or nm == "template" or nm == "dialog"
+        return true
+    end
+    c = str_lower(dom_atributo(n, "class") + " " + dom_atributo(n, "id"))
+    if c == " "
+        return false
+    end
+    for p in ["comment", "share", "social", "related", "sidebar", "footer", "menu", "promo", "advert", "banner", "cookie", "newsletter", "breadcrumb", "subscribe", "popup", "modal"]
+        if str_find(c, p) >= 0
+            return true
+        end
+    end
+    return false
+end
+
+func _lectura_comas(t: String) -> Int
+    n = 0
+    p = str_find(t, ",")
+    while p >= 0
+        n = n + 1
+        p = str_find_from(t, ",", p + 1)
+    end
+    return n
+end
+
+# Las letras de dentro que están en enlaces, de todas
+func _lectura_enlaces(n: Nodo) -> Int
+    if n.tipo != DOM_ELEMENTO
+        return 0
+    end
+    if n.nombre == "a"
+        return dom_texto(n).length
+    end
+    r = 0
+    for h in n.hijos
+        r = r + _lectura_enlaces(h)
+    end
+    return r
+end
+
+# Reparte los puntos de los párrafos de dentro de n entre sus padres y abuelos (candidatos y puntos, a la par)
+func _lectura_puntuar(n: Nodo, candidatos: [Nodo], puntos: [Int])
+    for h in n.hijos
+        if h.tipo != DOM_ELEMENTO or _lectura_fuera(h)
+            continue
+        end
+        if h.nombre == "p" or h.nombre == "pre" or h.nombre == "td"
+            t = str_trim(dom_texto(h))
+            if t.length >= LECTURA_MINIMO
+                p = 10 + _lectura_comas(t) * 10 + t.length / 10
+                if t.length >= 300
+                    p = 10 + _lectura_comas(t) * 10 + 30
+                end
+                _lectura_sumar(h.padre, p, candidatos, puntos)
+                if h.padre != nil and h.padre.padre != nil
+                    _lectura_sumar(h.padre.padre, p / 2, candidatos, puntos)
+                end
+            end
+        end
+        _lectura_puntuar(h, candidatos, puntos)
+    end
+end
+
+func _lectura_sumar(n: Nodo, p: Int, candidatos: [Nodo], puntos: [Int])
+    if n == nil
+        return
+    end
+    for i in (0..candidatos.length - 1)
+        if candidatos[i] == n
+            puntos[i] = puntos[i] + p
+            return
+        end
+    end
+    candidatos.push(n)
+    puntos.push(p)
+end
+
+func _lectura_juntar(n: Nodo, nombre: String, l: [Nodo])
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            if h.nombre == nombre
+                l.push(h)
+            end
+            _lectura_juntar(h, nombre, l)
+        end
+    end
+end
+
+# El <article> o <main> con más texto, si pasa de 500 letras
+func _lectura_articulo(n: Nodo) -> Nodo
+    var mejor: Nodo = nil
+    largo = 500
+    for nombre in ["article", "main"]
+        var l: [Nodo] = []
+        _lectura_juntar(n, nombre, l)
+        for a in l
+            t = dom_texto(a).length
+            if t > largo
+                mejor = a
+                largo = t
+            end
+        end
+        if mejor != nil
+            return mejor
+        end
+    end
+    return mejor
+end
+
+# El bloque con el artículo (nil si no hay ninguno con texto de sobra)
+func lectura_bloque(doc: Nodo) -> Nodo
+    a = _lectura_articulo(doc)
+    if a != nil
+        return a
+    end
+    var candidatos: [Nodo] = []
+    var puntos: [Int] = []
+    _lectura_puntuar(doc, candidatos, puntos)
+    var mejor: Nodo = nil
+    mp = 0
+    for i in (0..candidatos.length - 1)
+        t = dom_texto(candidatos[i]).length
+        p = puntos[i]
+        if t > 0
+            p = p * (t - _lectura_enlaces(candidatos[i])) / t
+        end
+        if p > mp
+            mp = p
+            mejor = candidatos[i]
+        end
+    end
+    return mejor
+end
+
+func _lectura_dir(base: Url, d: String) -> String
+    if d == "" or str_starts(str_lower(d), "javascript:")
+        return ""
+    end
+    return url_text(url_resolve(base, d))
+end
+
+# n por dentro, limpio, en h
+func _lectura_escribir(n: Nodo, base: Url) -> String
+    if n.tipo == DOM_TEXTO
+        return _lectura_escapar(n.texto)
+    end
+    if n.tipo != DOM_ELEMENTO or _lectura_fuera(n)
+        return ""
+    end
+    nm = n.nombre
+    if nm == "br"
+        return "<br>"
+    end
+    if nm == "img"
+        s = dom_atributo(n, "src")
+        if s == "" or str_starts(s, "data:image/gif")
+            s = dom_atributo(n, "data-src")
+        end
+        s = _lectura_dir(base, s)
+        if s == ""
+            return ""
+        end
+        return "<img src=\"" + _lectura_escapar(s) + "\" alt=\"" + _lectura_escapar(dom_atributo(n, "alt")) + "\">"
+    end
+    dentro = ""
+    for h in n.hijos
+        dentro = dentro + _lectura_escribir(h, base)
+    end
+    if nm == "a"
+        d = _lectura_dir(base, dom_atributo(n, "href"))
+        if d == "" or str_starts(d, "#")
+            return dentro
+        end
+        return "<a href=\"" + _lectura_escapar(d) + "\">" + dentro + "</a>"
+    end
+    for t in ["p", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote", "pre", "code", "em", "strong", "b", "i", "figure", "figcaption", "table", "tr", "td", "th", "dl", "dt", "dd", "hr", "sup", "sub"]
+        if nm == t
+            if str_trim(dentro) == "" and nm != "hr" and nm != "td" and nm != "th"
+                return ""
+            end
+            return "<" + nm + ">" + dentro + "</" + nm + ">"
+        end
+    end
+    # (div, section, span y lo demás: solo lo de dentro; un div con texto suelto, como párrafo)
+    if nm == "div" or nm == "section"
+        return "\n" + dentro + "\n"
+    end
+    return dentro
+end
+
+# La página de lectura de un documento (su dirección, para las direcciones relativas y el enlace al original), o ""
+# si no se encuentra un artículo
+func lectura_html(doc: Nodo, direccion: String, titulo: String) -> String
+    b = lectura_bloque(doc)
+    if b == nil
+        return ""
+    end
+    base = url_parse(direccion)
+    cuerpo = _lectura_escribir(b, base)
+    t = _lectura_escapar(titulo)
+    h = "<html><head><title>" + t + "</title><style>body { font-family: serif; font-size: 19px; line-height: 1.5; "
+    h = h + "max-width: 36em; margin: 16px auto; padding: 0 20px; color: #222; background: #fbf8f1 } h1 { font-size: 30px; "
+    h = h + "line-height: 1.2; margin: 8px 0 18px } h2 { font-size: 24px } h3 { font-size: 21px } img { max-width: 100%; "
+    h = h + "height: auto } a { color: #1a4fa0 } pre { white-space: pre-wrap; font-size: 15px; background: #f0ece2; padding: 8px } "
+    h = h + "blockquote { border-left: 3px solid #ccc; margin-left: 0; padding-left: 14px; color: #555 } "
+    h = h + ".fuente { font-family: sans-serif; font-size: 13px; color: #777 }</style></head><body>"
+    h = h + "<p class=fuente><a href=\"" + _lectura_escapar(direccion) + "\">" + _lectura_escapar(base.host) + "</a></p>"
+    if t != "" and str_find(cuerpo, "<h1>") < 0
+        h = h + "<h1>" + t + "</h1>"
+    end
+    return h + cuerpo + "</body></html>"
+end

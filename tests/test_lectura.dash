@@ -1,0 +1,34 @@
+# Test: modo lectura (lib/lectura.dash, tarea 63c): en una página sin <article>, el bloque con los párrafos gana al
+# menú, a la barra y a los comentarios; lo de dentro sale limpio (sin scripts, formularios, botones de compartir ni
+# atributos), con las direcciones completas y la imagen de data-src; con <article>, ese; sin texto, "".
+# memcheck
+# expect-out: bloque: div#texto
+# expect-out: limpio: true true true true true true
+# expect-out: dirs: true true true
+# expect-out: article: true | sin nada: []
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/lectura.dash"
+import "../lib/html5.dash"
+
+Main
+    p = "<p>Este es un párrafo largo del artículo, con comas, más comas, y bastante texto para contar como uno de verdad.</p>"
+    h = "<html><head><title>T</title></head><body><nav><a href=/>Inicio</a> <a href=/b>Blog</a></nav>"
+    h = h + "<div id=lateral><p>Enlaces: <a href=/1>uno, dos y tres, cuatro y cinco, seis y siete</a></p></div>"
+    h = h + "<div id=texto><h2>Sub</h2>" + p + p + "<script>malo()</script><form><input></form>"
+    h = h + "<p>Con <a href=\"otra.html\">un enlace</a> y <img src=\"data:image/gif;base64,R0\" data-src=\"/img/a.png\" alt=x>.</p>"
+    h = h + "<div class=share-botones><p>Compártelo en todas partes, ya, ahora, por favor, gracias.</p></div>" + p + "</div>"
+    h = h + "<div class=comments><p>Un comentario, con comas, y más comas, que no es el artículo.</p></div></body></html>"
+    doc = dom_desde_html5(h)
+    b = lectura_bloque(doc)
+    Print "bloque: " + b.nombre + "#" + dom_atributo(b, "id")
+    l = lectura_html(doc, "http://a.org/dir/pagina.html", "T")
+    Print "limpio: " + str_contains(l, "<h2>Sub</h2>") + " " + (not str_contains(l, "malo")) + " " + (not str_contains(l, "<input")) + " " + (not str_contains(l, "Compártelo")) + " " + (not str_contains(l, "Un comentario")) + " " + (not str_contains(l, "Inicio"))
+    Print "dirs: " + str_contains(l, "href=\"http://a.org/dir/otra.html\"") + " " + str_contains(l, "src=\"http://a.org/img/a.png\"") + " " + str_contains(l, "<p class=fuente><a href=\"http://a.org/dir/pagina.html\">a.org</a>")
+    largo = ""
+    for i in (1..50)
+        largo = largo + "Lo de verdad. "
+    end
+    a = "<html><body><div>" + p + p + p + "</div><article><p>" + largo + "</p></article></body></html>"
+    Print "article: " + str_contains(lectura_html(dom_desde_html5(a), "http://a.org/", "A"), "Lo de verdad.") + " | sin nada: [" + lectura_html(dom_desde_html5("<html><body><p>hola</p></body></html>"), "http://a.org/", "") + "]"
+end

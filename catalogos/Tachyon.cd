@@ -104,6 +104,8 @@ MSG_51 (51//)
 Open file...
 MSG_52 (52//)
 Open on its own screen
+MSG_53 (53//)
+Reader view
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -240,6 +242,12 @@ MSG_168 (168//)
 Tachyon will open on its own screen next time
 MSG_169 (169//)
 Tachyon will open on the Workbench screen next time
+MSG_170 (170//)
+Reader view
+MSG_171 (171//)
+Open a page and choose Reader view in the Navigate menu.
+MSG_172 (172//)
+There is no article to read on this page.
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)

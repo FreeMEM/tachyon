@@ -205,7 +205,7 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
-- [ ] D84. **La señal del puerto ARexx propio** (2026-11-09, tarea 63b, puerto ARexx como en Amelinium; plan aprobado
+- [x] D84. **La señal del puerto ARexx propio** (hecha por freememlang-af, PR #141, f9b09a9: rexx_signal(); 2026-11-09, tarea 63b, puerto ARexx como en Amelinium; plan aprobado
       por el usuario). rexx_port crea su MsgPort con su bit de señal, pero el bucle de MUI espera con
       mui_wait_event_signals(task_signal()) y no lo ve: con Tachyon quieto, una orden ARexx espera al siguiente
       evento. Hace falta algo como `rexx_signal()` (la máscara, 0 sin puerto) para
@@ -6582,3 +6582,22 @@ Formato:
   0.9.3-alfa", GETURL y GETTITLE, OPEN y NEWTAB (también sin http:// y con puerto), BACK y FORWARD, RELOAD, STOP,
   NOSE con RC 10 y QUIT, que cierra Tachyon.
 - Velocidad: lo de siempre igual (un rexx_get, que no espera, por vuelta del bucle).
+
+### 2026-11-09 — Tarea 63c: modo lectura (como en Amelinium); ARexx con Tachyon quieto (D84)
+- lib/lectura.dash: el bloque del artículo (un <article> o <main> con más de 500 letras; si no, como Readability:
+  los <p>, <pre> y <td> de 25 letras o más dan puntos a su padre y la mitad a su abuelo, rebajados por lo que es
+  enlace) y la página para leerlo: solo párrafos, títulos, listas, citas, código, tablas, imágenes (también la de
+  data-src) y enlaces, con las direcciones completas; fuera scripts, estilos, formularios, menús, aside, footer y lo
+  que por su clase o id es de comentarios, compartir, relacionados, anuncios, cookies... Letra con serifa de 19 px,
+  líneas de 36em, fondo crema; arriba el sitio con enlace a la página y su título si el artículo no trae <h1>.
+- src/dashweb.dash: menú Navegar, "Modo lectura" (Amiga-E; también desde la página), y la orden ARexx READER. Se
+  abre como tachyon:lectura (atrás vuelve a la página; en ella, el menú vuelve atrás); sin artículo, un aviso en la
+  barra de estado. Textos 53 y 170-172 en los nueve catálogos.
+- D84 hecha (freememlang-af, f9b09a9): el bucle espera con task_signal() | rexx_signal(), y las órdenes ARexx se
+  atienden aunque Tachyon esté quieto (probado: GETURL y GETTITLE con tachyon:lectura, sin temporizadores).
+- tests/test_lectura.dash: en una página sin <article>, el bloque de los párrafos gana al menú, a la barra y a los
+  comentarios; sale limpio (sin script, input, compartir, comentarios ni menú), con direcciones completas y la
+  imagen de data-src; un <article> gana; sin texto, "". Pasa, y test_marcadores.
+- Probado en la máquina RTG con gh_repo.html (GitHub guardado): READER da el README de FreeMEM/tachyon limpio, con su
+  título (captura vista).
+- Velocidad: nada en la carga de las páginas (solo al pedirlo).

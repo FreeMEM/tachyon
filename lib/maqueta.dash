@@ -752,6 +752,7 @@ end
 # Lo mismo con los tantos por ciento (width, márgenes, rellenos) del ancho del contenedor: un flotante
 # o un absoluto recibe su ancho ya resuelto (el 25 % del contenedor) y no hay que volver a aplicarlo
 func _bloque_de(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: Int) -> Int
+    ceder()
     if _midiendo > 0 and n != _medido
         # al medir, lo de dentro de una caja flex se maqueta una vez por cada medida de cada caja de fuera (con
         # 20 niveles, cientos de veces): lo ya maquetado igual en esta maqueta se resume en dos dibujos

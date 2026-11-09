@@ -6703,3 +6703,26 @@ Formato:
 - Velocidad: un recorrido de la página por tanda de imágenes que llegan, solo si hay JavaScript.
 - (2026-11-09) Dash: el arreglo del "file is not executable" (las reubicaciones en grupos de 32767) ya está en main
   (freememlang-af, PR #143, b4295b9) y ~/Projects/FreeMEMLang ha vuelto a main: Tachyon vuelve a cargar por dashc.
+
+### 2026-11-09 — Tarea 64b: las miniaturas grandes de YouTube salen (el ::before de la proporción; soltar la CPU)
+- Las miniaturas de los resultados medían 0 de alto, así que el IntersectionObserver de YouTube (filtra
+  intersectionRect.height > 0) no las cargaba nunca. YouTube les da el alto con
+  ytd-thumbnail::before { display: block; content: ""; padding-top: 56.11% } y el enlace en position: absolute;
+  inset: 0. lib/estilo.dash (_estilo_pseudo) solo generaba un ::before de content vacío si tenía width, height, fondo
+  o borde; ahora también con relleno vertical (o min-height). tests/test_estilo_pseudo_relleno.dash (nuevo): la
+  estructura de YouTube da 500x280 (Chrome, 500x280,5).
+- La espera del primer aviso del IntersectionObserver para una caja sin área (probada antes) no hace falta con esto
+  y rompía jsdom_geometria (Chrome avisa de lo oculto con false): fuera. Medido sin ella: las miniaturas se piden igual.
+- Luego tardaban 200-300 s cada una en decodificarse: el otro proceso (prioridad -1) solo avanza cuando Tachyon
+  espera, y con YouTube no espera nunca (JavaScript 10 s seguidos, estilo 4 s, maqueta 5 s). Bajar Tachyon a -1 no
+  sirvió: medido aparte, una miniatura de 720x404 se decodifica sola en 0,8 s; en otro proceso con el programa
+  ocupado, a 0 o a -1, no acaba en 60 s (Exec no les reparte la CPU); soltando 1 tic cada 100 ms, 2,3 s (cada 50,
+  1,1 s; cada 20, 0,8 s). lib/ceder.dash (nuevo): ceder() suelta un tic (time_delay(1)) cada 100 ms mientras hay
+  imágenes decodificándose; lo llaman _estilo_nodo, _bloque_de y imagenes_ceder (hasta 500 ms después de la última);
+  el JavaScript lo hace en su manejador de interrupciones (js_ceder, src_c/tachyon.c).
+- Medido (búsqueda "amiga 500", RTG ancha, 256 MB): las miniaturas se decodifican en 10-15 s en vez de 200-300, y
+  la página sale entera con sus imágenes a los 220 s (antes 518 s); salen las miniaturas, con su duración, y la
+  barra lateral. Pasan estilo (16), maqueta (33), documento (10) y jsdom_geometria.
+- medir_visor ya no arranca el servidor de tests/servers con una web de fuera: va sin el cerrojo de la red (el
+  usuario quiere más emuladores a la vez).
+- Pendiente en YouTube: las esquinas redondeadas de las miniaturas, el icono de carga y la página del vídeo.

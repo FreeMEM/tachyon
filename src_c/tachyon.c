@@ -106,8 +106,20 @@ static int _js_es_utf8 = 0;
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
+/* With pictures decoding in their own processes (lib/imagen_dec.dash, priority -1) the JavaScript lets go of the CPU
+   one tick every 100 ms (js_ceder): Exec did not share it between them and YouTube, whose scripts run for seconds at a
+   time, saw each thumbnail 300 s late (alone, 0.8 s; letting go like this, 2.3 s while busy) */
+static int _js_ceder = 0;
+static ULONG _js_cedido = 0;
 static int _js_interrumpir(JSRuntime *rt, void *o) {
     ULONG t;
+    if (_js_ceder) {
+        t = _js_ms();
+        if (t - _js_cedido >= 100UL) {
+            Delay(1);
+            _js_cedido = _js_ms();
+        }
+    }
     if (_js_tope <= 0)
         return 0;
     t = _js_ms() - _js_desde;
@@ -818,6 +830,10 @@ LONG js_cortado(void)
 void js_tope(LONG segundos)
 {
     _js_tope = segundos;
+}
+void js_ceder(LONG si)
+{
+    _js_ceder = si != 0;
 }
 LONG js_memoria(LONG js)
 {

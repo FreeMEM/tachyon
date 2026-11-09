@@ -101,6 +101,7 @@ struct Pedida
     perezosa: Bool = false      # <img loading=lazy>: espera a estar cerca de lo que se ve
     de_fondo: Bool = false      # un background-image: espera a que algo lo pinte
     tinte: Int = -1             # una máscara (mask-image, mascara_clave): teñida de este color al decodificarla
+    dec_t0: Int = 0             # cuándo empezó a decodificarse (traza)
 end
 
 # Una imagen grande no se decodifica entera si el HTML ya dice a qué tamaño se ve (width y height)
@@ -331,7 +332,7 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
                     img = image_load(p.fichero)      # otro formato: los datatypes (una máscara no: no se tiñe)
                 end
                 if traza_activa
-                    traza("decodificada " + p.src)
+                    traza("decodificada en " + (time_ms() - p.dec_t0) + " ms (" + p.maxw + "x" + p.maxh + "): " + p.src)
                 end
                 if _imagen_llegada(im, doc, p, img)
                     llegadas = llegadas + 1
@@ -352,6 +353,7 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
             if decodificando < IMAGENES_DECODIFICANDO
                 _imagen_tamano_final(im, p)
                 p.dec = imagen_empezar(p.fichero, p.maxw, p.maxh)
+                p.dec_t0 = time_ms()
                 if p.dec != nil
                     p.dec.tinte = p.tinte
                 end
@@ -405,7 +407,30 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
         end
         i = i + 1
     end
+    imagenes_ceder(decodificando)
     return llegadas
+end
+
+# Con imágenes decodificándose, lo que tarda suelta la CPU de vez en cuando (lib/ceder.dash) hasta medio segundo
+# después de la última (con varias pestañas, la que no decodifica no lo quita mientras otra sí)
+var _imagenes_dec_hasta: Int = 0
+
+func imagenes_ceder(decodificando: Int)
+    if decodificando > 0
+        _imagenes_dec_hasta = time_ms() + 500
+        if not ceder_activo()
+            ceder_poner(true)
+            if traza_activa
+                traza("soltando la CPU mientras se decodifican " + decodificando)
+            end
+        end
+    elif ceder_activo() and time_ms() > _imagenes_dec_hasta
+        ceder_poner(false)
+        if traza_activa
+            traza("ya no se suelta la CPU")
+        end
+    end
+    ceder()
 end
 
 # Una decodificada de su fichero: se guarda su pedido (para imagenes_despertar)

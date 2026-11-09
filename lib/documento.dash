@@ -1537,6 +1537,14 @@ end
 func documento_imagenes(d: Documento) -> Bool
     if imagenes_pendientes(d.im) > 0
         d.sin_pintar = d.sin_pintar + imagenes_avanzar(d.im, d.doc)
+    else
+        imagenes_ceder(0)
+    end
+    # (el JavaScript también suelta la CPU mientras se decodifican: lib/ceder.dash)
+    if ceder_activo()
+        js_ceder(1)
+    else
+        js_ceder(0)
     end
     avisos = imagenes_avisos(d.im)
     if avisos != nil and d.js != 0 and d.doc != nil

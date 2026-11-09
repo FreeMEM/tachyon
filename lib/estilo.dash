@@ -11,6 +11,7 @@
 import "dom.dash"
 import "css.dash"
 import "http.dash"
+import "ceder.dash"
 
 const ESTILO_MEDIUM = 16
 const ESTILO_ORDEN_HOJA = 100000     # orden de la primera regla de cada hoja (una hoja puede tener miles)
@@ -2587,6 +2588,7 @@ func _estilo_nodo(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: {S
     if n.tipo != DOM_ELEMENTO
         return
     end
+    ceder()
     _estilo_propio(n, hojas, padre, padre_vars)
     _antepasados_cambiar(n, 1)
     for h in n.hijos

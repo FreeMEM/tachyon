@@ -1,0 +1,123 @@
+# Diagnóstico de la actualización de Tachyon en el Amiga del usuario (su 0.9.2 no bajaba la 0.9.3 y no decía por
+# qué): hace lo mismo que el actualizador (lib/actualizar.dash) paso a paso y lo apunta todo, sin instalar nada:
+# memoria, dónde está T:, las librerías de red, la pregunta a GitHub (estado, error, bytes) y la descarga de
+# Tachyon.gz a T: (estado, error, tamaño). Escribe en la Shell y en diagnostico.txt, junto al programa.
+#
+#   diagnostico                 (desde la Shell; o doble clic con su icono)
+
+import "../../lib/actualizar.dash"
+
+var salida: String = ""
+
+func apunta(t: String)
+    Print t
+    salida = salida + t + "\n"
+    file_write_text("PROGDIR:diagnostico.txt", salida)
+end
+
+func esperar(c: Carga) -> Int
+    t0 = time_ms()
+    while not http_avanzar(c)
+        time_delay(1)
+        if time_ms() - t0 > 120000
+            return -1
+        end
+    end
+    return time_ms() - t0
+end
+
+func le32(b: Int, i: Int) -> Int
+    return buffer_get_byte(b, i) | (buffer_get_byte(b, i + 1) << 8) | (buffer_get_byte(b, i + 2) << 16) | (buffer_get_byte(b, i + 3) << 24)
+end
+
+# Lo mismo que _act_comprobar de lib/actualizar.dash: 0 si está bien; 5 no se descomprimió, 6 tamaño o CRC, 7 no es
+# un ejecutable, 8 no es Tachyon
+func revisar(ex: Int, largo: Int, isize: Int, crc_gz: Int) -> Int
+    if largo < 0
+        return 5
+    end
+    if largo != isize or crc32(ex, largo, 0) != crc_gz
+        return 6
+    end
+    if largo < 64 or buffer_get_byte(ex, 0) != 0 or buffer_get_byte(ex, 1) != 0 or buffer_get_byte(ex, 2) != 3 or buffer_get_byte(ex, 3) != 243
+        return 7
+    end
+    if str_find(str_from_buffer(ex, 0, largo), "$VER: Tachyon ") < 0
+        return 8
+    end
+    return 0
+end
+
+# Lo que hace actualizar_instalar antes de tocar el disco: cargar el gzip, descomprimirlo y comprobarlo
+func comprobar() -> String
+    n = file_size(ACTUALIZAR_GZ)
+    if n < 19
+        return "la descarga no está o es muy corta (" + n + " bytes)"
+    end
+    gz = buffer_alloc(n)
+    if gz == 0
+        return "no hay memoria para cargar la descarga (" + n + " bytes)"
+    end
+    if file_load(ACTUALIZAR_GZ, gz, n) != n
+        buffer_free(gz)
+        return "no se pudo leer la descarga"
+    end
+    if buffer_get_byte(gz, 0) != 31 or buffer_get_byte(gz, 1) != 139 or buffer_get_byte(gz, 2) != 8
+        buffer_free(gz)
+        return "la descarga no es un gzip: empieza por " + buffer_get_byte(gz, 0) + " " + buffer_get_byte(gz, 1)
+    end
+    crc_gz = le32(gz, n - 8)
+    isize = le32(gz, n - 4)
+    ex = buffer_alloc(isize + 64)
+    if ex == 0
+        buffer_free(gz)
+        return "no hay memoria para descomprimir (" + isize + " bytes)"
+    end
+    t0 = time_ms()
+    largo = inflate_auto(gz, n, ex, isize + 64)
+    ms = time_ms() - t0
+    buffer_free(gz)
+    e = revisar(ex, largo, isize, crc_gz)
+    buffer_free(ex)
+    if e != 0
+        return "descomprimido en " + ms + " ms a " + largo + " bytes (se esperaban " + isize + "): falla la comprobación " + e
+    end
+    return "descomprimido en " + ms + " ms a " + largo + " bytes: correcto (CRC, ejecutable y $VER de Tachyon)"
+end
+
+Main
+    apunta("Diagnóstico de la actualización de Tachyon")
+    apunta("memoria: fast libre " + mem_fast_free() / 1024 + " KB, chip libre " + mem_chip_free() / 1024 + " KB, mayor bloque " + mem_largest() / 1024 + " KB")
+    apunta("T: -> " + file_real_path("T:"))
+    apunta("bsdsocket.library " + library_version("bsdsocket.library") + ", amisslmaster.library " + library_version("amisslmaster.library"))
+    apunta("")
+    apunta("1. Pregunta a GitHub: " + actualizar_api)
+    c = actualizar_empezar()
+    ms = esperar(c)
+    r = c.respuesta
+    apunta("   " + ms + " ms, estado " + r.estado + " " + r.razon + ", error [" + r.error + "], " + r.cuerpo.length + " bytes")
+    if r.error != "" or r.estado != 200
+        apunta("   (lo primero de la respuesta: " + http_texto(r)[:300] + ")")
+        apunta("FIN: no se pudo preguntar a GitHub")
+        return
+    end
+    n = actualizar_leer(http_texto(r), "0.9.2-alfa")
+    if n == nil
+        apunta("   no hay versión más nueva que la 0.9.2-alfa con Tachyon.gz en la respuesta")
+        apunta("FIN")
+        return
+    end
+    apunta("   la más nueva: " + n.version + " -> " + n.url)
+    apunta("")
+    apunta("2. Bajar Tachyon.gz a " + ACTUALIZAR_GZ)
+    d = actualizar_bajar(n)
+    ms = esperar(d)
+    r = d.respuesta
+    apunta("   " + ms + " ms, estado " + r.estado + " " + r.razon + ", error [" + r.error + "], " + r.bytes + " bytes; en el disco: " + file_size(ACTUALIZAR_GZ) + " bytes")
+    apunta("")
+    apunta("3. Descomprimir y comprobar (en memoria, sin escribir nada)")
+    apunta("   " + comprobar())
+    apunta("   (sin instalar nada: el Tachyon de antes sigue igual)")
+    file_delete(ACTUALIZAR_GZ)
+    apunta("FIN")
+end

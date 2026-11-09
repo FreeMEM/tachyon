@@ -144,9 +144,14 @@ def main():
             Path(args.guardar).mkdir(parents=True, exist_ok=True)
             shutil.copy(exe, Path(args.guardar) / "programa")
         modo = ["tls-lento"] if args.tls_lento else ["tls"] if args.tls else []
-        server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
-                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(3 if modo else 1)
+        # el servidor de tests/servers solo si alguna página es suya (una web de fuera no lo usa: así no ocupa el
+        # puerto de las pruebas de otras sesiones y va sin el cerrojo de la red)
+        propio = args.local or args.versiones or any("://" not in p and not p.startswith("tachyon:") for p in (args.pagina or "").split(",") if args.pagina)
+        server = None
+        if propio:
+            server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(3 if modo else 1)
         if args.dns_lento:
             shim = Path(tmp) / "dns_lento.so"
             subprocess.run(["gcc", "-shared", "-fPIC", "-O2", "-o", str(shim),
@@ -202,8 +207,9 @@ def main():
                                screenshot=shot, system=args.sistema, keep=args.guardar,
                                background=fondo or None, args=prog_args, workbench=args.workbench)[0]
         finally:
-            server.kill()
-            server.wait()
+            if server:
+                server.kill()
+                server.wait()
     print(f"{args.maquina}, programa de {size} bytes, rc {out.rc}")
     print(out.output or "(sin salida)")
 

@@ -6565,3 +6565,20 @@ Formato:
   overrides, overridesexpires y twice 3/3, abortedonmain y synconmain 2/2; ninguno peor (las de -worker- siguen sin
   nada: no hay Workers). Pasan structuredclone, xhr_sinc, fetch, iframe (2) y eventos (2).
 - D84 (rexx_signal, para la tarea 63b) pedida a freememlang-af: la lleva ella, en una rama, tras Dash 2.7.0.
+
+### 2026-11-09 — Tarea 63b: puerto ARexx (como en Amelinium)
+- Puerto TACHYON (rexx_port de Dash; ADDRESS TACHYON): OPEN dirección (y OPENURL, GOTOURL), NEWTAB [dirección],
+  GETURL, GETTITLE y VERSION (dan RESULT), BACK, FORWARD, RELOAD, STOP, HOME y QUIT; lo que no conoce, RC 10. Van a
+  la ventana activa; las de botón se hacen como si se pulsara (dw_rexx_evento en el bucle). MUI abre también el
+  suyo, TACHYON.1, con sus órdenes de serie.
+- Falta D84 (rexx_signal, en marcha en freememlang-af): sin ella, con Tachyon quieto (sin cargar ni temporizadores)
+  una orden espera al siguiente evento. Cuando llegue, mui_wait_event_signals(task_signal() | rexx_signal()).
+- con_esquema (src/dashweb.dash): una dirección sin esquema lleva http://, también con puerto ("localhost:8080",
+  "127.0.0.1:8080/x"; antes en la barra el ":" del puerto la dejaba sin él y no abría); las rutas del Amiga
+  ("Work:pagina.html") y los esquemas siguen tal cual. Lo usan la barra y ARexx.
+- tools/amiga/arexx.dash (manda órdenes a un puerto y apunta las respuestas en DH0:arexx.txt según llegan) y
+  tools/medir_visor.py --arexx 'ORDEN|ORDEN|...' para probarlo con el navegador entero.
+- Probado (máquina RTG, sys32rtg38, con reloj.html y boing.html, que tienen temporizadores): VERSION "Tachyon
+  0.9.3-alfa", GETURL y GETTITLE, OPEN y NEWTAB (también sin http:// y con puerto), BACK y FORWARD, RELOAD, STOP,
+  NOSE con RC 10 y QUIT, que cierra Tachyon.
+- Velocidad: lo de siempre igual (un rexx_get, que no espera, por vuelta del bucle).

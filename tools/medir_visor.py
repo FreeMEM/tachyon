@@ -61,6 +61,8 @@ def main():
                     help="tools/amiga/clicar.dash in the background: clicks and keys in that window")
     ap.add_argument("--memoria", type=int, metavar="MB", help="Zorro III memory of the 68040 machines (default 128): "
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
+    ap.add_argument("--arexx", metavar="'ORDEN|ORDEN|...'", help="tools/amiga/arexx.dash in the background: these ARexx "
+                    "commands to the TACHYON port, one every 4 s, once it exists; its answers in bg0.txt (with --guardar)")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
     ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
@@ -188,6 +190,8 @@ def main():
             fondo = []
             if args.acciones:
                 fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
+            if args.arexx:
+                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), 'TACHYON "' + args.arexx + '"'))
             if args.latido:
                 fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,

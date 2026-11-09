@@ -2266,6 +2266,97 @@ func abiertas() -> Int
 end
 
 # La ventana que está usando el usuario (la activa); si no hay, la primera abierta
+# El puerto ARexx (tarea 63b, como en Amelinium): ADDRESS TACHYON. Órdenes, sin mirar mayúsculas: OPEN dirección
+# (también OPENURL y GOTOURL), NEWTAB [dirección], GETURL, GETTITLE, BACK, FORWARD, RELOAD, STOP, HOME, VERSION y QUIT.
+# GETURL, GETTITLE y VERSION dan RESULT (OPTIONS RESULTS en el script); lo que no conoce, RC 10. Van a la ventana
+# activa. (MUI abre también el suyo, TACHYON.1, con sus órdenes de serie: QUIT, HIDE, SHOW, INFO...)
+const PUERTO_AREXX = "TACHYON"
+var dw_rexx_evento: Int = 0     # el botón que pidió una orden (atrás, recargar...): el bucle lo hace como si se pulsara
+
+# Una dirección escrita sin esquema ("amiga.org", o con su puerto "localhost:8080", "127.0.0.1:8080/x"), con http://;
+# las que llevan esquema o son una ruta del Amiga ("Work:pagina.html"), tal cual
+func con_esquema(d: String) -> String
+    p = str_find(d, ":")
+    if p < 0
+        return "http://" + d
+    end
+    k = p + 1
+    while k < d.length and str_code(d, k) >= 48 and str_code(d, k) <= 57
+        k = k + 1
+    end
+    if k > p + 1 and (k == d.length or str_code(d, k) == 47)
+        return "http://" + d
+    end
+    return d
+end
+
+func arexx_atender()
+    o = str_trim(rexx_get())
+    if o == ""
+        return
+    end
+    verbo = str_upper(o)
+    resto = ""
+    p = str_find(o, " ")
+    if p > 0
+        verbo = str_upper(o[:p])
+        resto = str_trim(o[p + 1:])
+    end
+    if resto.length >= 2 and str_starts(resto, "\"") and str_ends(resto, "\"")
+        resto = resto[1:resto.length - 1]
+    end
+    w = activa()
+    if w == nil
+        rexx_reply(20, "")
+        return
+    end
+    if resto != ""
+        resto = con_esquema(resto)
+    end
+    if verbo == "OPEN" or verbo == "OPENURL" or verbo == "GOTOURL"
+        if resto == ""
+            rexx_reply(10, "")
+            return
+        end
+        navegar(w, resto)
+    elif verbo == "NEWTAB"
+        nueva_pestana(w, resto)
+    elif verbo == "GETURL"
+        u = ""
+        if w.actual != nil
+            u = w.actual.direccion
+        end
+        rexx_reply(0, u)
+        return
+    elif verbo == "GETTITLE"
+        t = ""
+        if w.actual != nil
+            t = w.actual.titulo
+        end
+        rexx_reply(0, t)
+        return
+    elif verbo == "VERSION"
+        rexx_reply(0, "Tachyon " + DASHWEB_VERSION)
+        return
+    elif verbo == "BACK"
+        dw_rexx_evento = ID_ATRAS
+    elif verbo == "FORWARD"
+        dw_rexx_evento = ID_ADELANTE
+    elif verbo == "RELOAD"
+        dw_rexx_evento = ID_RECARGAR
+    elif verbo == "STOP"
+        dw_rexx_evento = ID_PARAR
+    elif verbo == "HOME"
+        dw_rexx_evento = ID_INICIO
+    elif verbo == "QUIT"
+        dw_rexx_evento = ID_SALIR
+    else
+        rexx_reply(10, "")
+        return
+    end
+    rexx_reply(0, "")
+end
+
 func activa() -> Ventana
     var primera: Ventana = nil
     for w in dw_ventanas
@@ -2325,6 +2416,7 @@ Main
     http_idiomas = actualizar_idioma_cabecera(jsdom_idioma)
     # sin requesters de AmigaOS ("Inserte el volumen..."): una dirección que no existe falla sin más (D68)
     dos_requesters(false)
+    rexx_port(PUERTO_AREXX)
     if mui_app_begin("Tachyon", "TACHYON") == 0
         Print "Tachyon necesita MUI (3.8 o 5) y un 68020"
     else
@@ -2402,6 +2494,12 @@ Main
             # también despierta con la señal de las tareas: la de la red (lib/red.dash) avisa al recibir algo, y las
             # que decodifican imágenes al acabar (0: una de ellas)
             ev = mui_wait_event_signals(task_signal())
+            # (las órdenes de ARexx: la que pide un botón va en lugar del tic o de nada, o en la vuelta siguiente)
+            arexx_atender()
+            if dw_rexx_evento != 0 and (ev == 0 or ev == ID_TIC)
+                ev = dw_rexx_evento
+                dw_rexx_evento = 0
+            end
             if ev == -1 or ev == ID_SALIR
                 break
             end
@@ -2485,8 +2583,8 @@ Main
                 if es_busqueda(direccion)
                     # unas palabras: se buscan con el buscador elegido, como en Chrome
                     direccion = buscar_url(buscador_elegido(), direccion)
-                elif direccion != "" and not str_starts(direccion, "http") and str_find(direccion, ":") < 0
-                    direccion = "http://" + direccion
+                elif direccion != ""
+                    direccion = con_esquema(direccion)
                 end
                 if direccion == ""
                     abrir(w, "")

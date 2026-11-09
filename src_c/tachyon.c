@@ -2367,6 +2367,13 @@ static JSValue _jsdom_esperar(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_UNDEFINED;
 }
 
+/* __dashweb_dda(obj): el objeto se porta como document.all en los navegadores ([[IsHTMLDDA]], anexo B de ECMAScript):
+   typeof da "undefined", es falso y == null, pero no === undefined (polymer-resin de YouTube lo distingue así) */
+static JSValue _jsdom_dda(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    if (argc >= 1 && JS_IsObject(argv[0])) JS_SetIsHTMLDDA(ctx, argv[0]);
+    return JS_UNDEFINED;
+}
+
 /* __dashweb_cancelar(id): abort() de XMLHttpRequest; la petición id se corta y deja su conexión libre */
 static JSValue _jsdom_cancelar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     _JsDom *d = _jsdom_de(ctx);
@@ -2919,6 +2926,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_esperar", JS_NewCFunction(m->ctx, _jsdom_esperar, "__dashweb_esperar", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_cancelar", JS_NewCFunction(m->ctx, _jsdom_cancelar, "__dashweb_cancelar", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_dda", JS_NewCFunction(m->ctx, _jsdom_dda, "__dashweb_dda", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));

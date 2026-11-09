@@ -6657,3 +6657,21 @@ Formato:
 - Arreglado: el título de la ventana se ponía solo al enseñar la página; el que pone después el JavaScript
   (document.title: YouTube lo pone así) no llegaba y se quedaba la dirección. Ahora poner_titulo en cada tic si
   cambió (Ventana.titulo_puesto). Visto: "amiga 500 - YouTube - Tachyon".
+
+### 2026-11-09 — Tarea 64b: los resultados de búsqueda de YouTube salen (document.all de verdad)
+- Por qué no salían: ytd-two-column-search-results-renderer se quedaba con hidden, y con él todos los resultados
+  (15 ytd-video-renderer en el DOM, en display: none; quitándolo a mano, se pintaban). Con una traza temporal del
+  preludio (no está en el repositorio): Polymer pone node.hidden = [[data.hideContents]] (undefined: la búsqueda no
+  lo trae) pero le llegaba "zClosurez". Es polymer-resin, el desinfectante de los enlaces de Polymer de YouTube:
+  deja pasar los valores falsos con "!y && y !== document.all", y en Tachyon document.all era undefined, así que
+  undefined no pasaba, se rechazaba y se cambiaba por su texto de relleno ("zClosurez", verdadero).
+- document.all de verdad (HTMLAllCollection): todos los elementos por número y por id o name, llamado como función,
+  item y namedItem; marcado [[IsHTMLDDA]] con JS_SetIsHTMLDDA de QuickJS (__dashweb_dda, src_c/tachyon.c): typeof
+  "undefined", falso y == null, pero no === undefined, como en los navegadores (los scripts viejos que miran
+  if (document.all) siguen sin tomarlo por Internet Explorer). Se hace la primera vez que se pide (un Proxy).
+  tests/test_jsdom_todos.dash (nuevo).
+- Probado (RTG ancha, 256 MB, "Reject all" a los ~260 s): results?search_query=amiga+500 con sus resultados
+  (título, canal, visitas, fecha, descripción, duración) y los iconos de arriba (logo, lupa, X, menú, filtros).
+  Faltan: las miniaturas y los avatares (el hueco y la duración sí), un icono suelto junto a las visitas y el de
+  carga a medio pintar; y "entera" no llega en 560 s (los resultados entran uno a uno, una maqueta entera cada uno,
+  7-13 s cada vez). Acid3 sigue en 100/100.

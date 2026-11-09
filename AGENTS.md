@@ -28,6 +28,7 @@ cambios de Dash los hacen sus sesiones (regla 3 del plan). Sintaxis de Dash en u
 ```bash
 export DASH_KICKSTART="/home/freemem/Descargas/Telegram Desktop/ks31a1200.rom"
 export DASH_EMU_SYS=~/.cache/dash-emu/sys31
+export DASH_EMU_SYS_SSL=~/.cache/dash-emu/sys31ssl   # sys31 + AmiSSL (FreeMEMLang/tools/emu_sys_amissl.sh): test_https
 python3 tests/run.py            # compila tests/test_*.dash y los ejecuta en FS-UAE (A1200 + 68882)
 python3 tests/run.py url -v     # solo los que contienen "url", con la salida de los que fallan
 tools/build_qjs.sh 020fpu -m68020 -m68881   # QuickJS suelto

@@ -1515,10 +1515,32 @@ func _documento_olvidar_tocados(d: Documento)
     d.doc.toques = nada
 end
 
+# Las <img> de esas imágenes (src -> "ancho:alto"), avisadas al JavaScript: load o error, con su tamaño de verdad
+# (tarea 64: YouTube y muchas otras dejan la imagen sin enseñar hasta su load)
+func _documento_avisar_imagenes(d: Documento, n: Nodo, avisos: {String: String})
+    if n.tipo != DOM_ELEMENTO and n.tipo != DOM_DOCUMENTO
+        return
+    end
+    if dom_es_imagen(n)
+        src = dom_img_src(n)
+        if src != "" and avisos.has(src)
+            jsdom_evento(d.js, n, "imagen:" + avisos[src])
+        end
+        return
+    end
+    for h in n.hijos
+        _documento_avisar_imagenes(d, h, avisos)
+    end
+end
+
 # Las imágenes que siguen llegando (sin esperar); true si llegó alguna y se volvió a maquetar
 func documento_imagenes(d: Documento) -> Bool
     if imagenes_pendientes(d.im) > 0
         d.sin_pintar = d.sin_pintar + imagenes_avanzar(d.im, d.doc)
+    end
+    avisos = imagenes_avisos(d.im)
+    if avisos != nil and d.js != 0 and d.doc != nil
+        _documento_avisar_imagenes(d, d.doc, avisos)
     end
     d.sin_maquetar = d.sin_maquetar + d.im.cambiados
     d.im.cambiados = 0

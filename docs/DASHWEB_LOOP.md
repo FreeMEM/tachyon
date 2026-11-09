@@ -6675,3 +6675,18 @@ Formato:
   Faltan: las miniaturas y los avatares (el hueco y la duración sí), un icono suelto junto a las visitas y el de
   carga a medio pintar; y "entera" no llega en 560 s (los resultados entran uno a uno, una maqueta entera cada uno,
   7-13 s cada vez). Acid3 sigue en 100/100.
+
+### 2026-11-09 — Tarea 64b (parte): las imágenes avisan al JavaScript (load, error, complete, naturalWidth)
+- Las <img> no daban nunca load ni error, ni tenían complete ni naturalWidth/naturalHeight (undefined): YouTube,
+  como muchas, deja la imagen sin enseñar hasta su load. Ahora lib/imagenes.dash apunta cada imagen que llega o falla
+  (Imagenes.avisos, src -> "ancho:alto"; también una <img> nueva con una imagen que ya estaba) y lib/documento.dash
+  (documento_imagenes) recorre la página una vez por tanda y avisa a cada <img> con ese src (jsdom_evento con
+  "imagen:ancho:alto"); el preludio pone complete y naturalWidth/naturalHeight y lanza load (o error), sin subir y
+  una vez por imagen. Sin src ni srcset, complete es true. tests/test_documento_img_load.dash (nuevo).
+- IntersectionObserverEntry de verdad (con sus campos en el prototipo, y las entradas son suyas): el polyfill de
+  IntersectionObserver de YouTube mira "intersectionRatio" in IntersectionObserverEntry.prototype y, si no, se ponía
+  encima del de Tachyon.
+- Visto (búsqueda "amiga 500", RTG ancha): ya salen los avatares de los canales, la miniatura de los capítulos y los
+  resúmenes; las miniaturas grandes de los vídeos todavía no (siguen con src vacío). Pasan imagenes (4), documento,
+  iframe, interseccion, todos y los demás de la tanda (15).
+- Velocidad: un recorrido de la página por tanda de imágenes que llegan, solo si hay JavaScript.

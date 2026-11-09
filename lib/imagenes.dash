@@ -61,6 +61,30 @@ struct Imagenes
     # fichero (uno compartido que hay que rehacer pasa antes a tener el suyo: imagenes_svg_rehacer)
     svg_textos: {String: String} = nil
     svg_usos: {String: Int} = nil
+    # src -> "ancho:alto" ("0:0" si no se pudo) de las que acaban de llegar o fallar, también las que ya estaban: lib/
+    # documento.dash avisa al JavaScript (load o error en sus <img>, complete y naturalWidth; tarea 64, YouTube)
+    avisos: {String: String} = nil
+end
+
+# Apunta el aviso de una imagen (img 0: no se pudo) para el JavaScript
+func _imagen_avisar(im: Imagenes, src: String, img: Int)
+    if im.avisos == nil
+        var a: {String: String} = {}
+        im.avisos = a
+    end
+    if img == 0
+        im.avisos[src] = "0:0"
+    else
+        im.avisos[src] = "" + image_width(img) + ":" + image_height(img)
+    end
+end
+
+# Los avisos de imágenes pendientes (y los olvida); nil si no hay
+func imagenes_avisos(im: Imagenes) -> {String: String}
+    a = im.avisos
+    var nada: {String: String} = nil
+    im.avisos = nada
+    return a
 end
 
 struct Pedida
@@ -246,6 +270,8 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
         if src != "" and im.por_src.has(src)
             if im.por_src[src] != 0
                 _imagen_tamano(n, im.por_src[src])
+                # (una <img> nueva con una imagen que ya estaba: su load también; el JavaScript no lo repite)
+                _imagen_avisar(im, src, im.por_src[src])
             end
         elif src != ""
             u = url_resolve(base, src)
@@ -277,6 +303,7 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
             else
                 im.por_src[src] = _imagen_traer(im, base, src)
                 _imagen_tamano(n, im.por_src[src])
+                _imagen_avisar(im, src, im.por_src[src])
             end
         end
         return
@@ -363,6 +390,9 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
                         continue                     # (a decodificarse, en esta misma vuelta si le toca)
                     end
                     im.por_src[p.src] = 0
+                    if p.fuente == ""
+                        _imagen_avisar(im, p.src, 0)
+                    end
                     im.cola.remove(i)
                     continue
                 end
@@ -484,6 +514,9 @@ end
 func _imagen_llegada(im: Imagenes, doc: Nodo, p: Pedida, img: Int) -> Bool
     img = _imagen_a_su_vista(im, p.src, img)
     im.por_src[p.src] = img
+    if p.tinte < 0 and not p.de_fondo
+        _imagen_avisar(im, p.src, img)
+    end
     if img == 0
         return false
     end

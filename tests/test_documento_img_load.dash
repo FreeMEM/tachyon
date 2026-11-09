@@ -1,0 +1,37 @@
+# Test: los <img> avisan al JavaScript (tarea 64, YouTube deja sus miniaturas sin enseñar hasta su load): load con
+# complete y naturalWidth/naturalHeight de la imagen de verdad; error en la que no existe; antes, complete false y
+# naturalWidth 0; sin src, complete true. El aviso no se repite.
+# emu-server: http.py 40856
+# memcheck
+# expect-out: antes: false 0 true
+# expect-out: después: a load true 8x4, b error true 0 | veces 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Window W
+    title "Imágenes"
+    width 200
+    height 80
+end
+
+Main
+    W.open
+    h = "<body><img id=a src=cuadro.iff><img id=b src=no.iff><img id=c><script>var log = [], veces = 0;"
+    h = h + "var a = document.getElementById('a'), b = document.getElementById('b');"
+    h = h + "a.onload = function () { veces++; log.push('a load ' + a.complete + ' ' + a.naturalWidth + 'x' + a.naturalHeight); };"
+    h = h + "b.onerror = function () { log.push('b error ' + b.complete + ' ' + b.naturalWidth); };"
+    h = h + "var antes = a.complete + ' ' + a.naturalWidth + ' ' + document.getElementById('c').complete;</script></body>"
+    d = documento_html("http://127.0.0.1:40856/pages/x.html", h)
+    vueltas = 0
+    while imagenes_pendientes(d.im) > 0 and vueltas < 500
+        documento_imagenes(d)
+        time_delay(1)
+        vueltas = vueltas + 1
+    end
+    documento_imagenes(d)
+    Print "antes: " + js_evaluar(d.js, "antes", "t.js")
+    Print "después: " + js_evaluar(d.js, "log.sort().join(', ') + ' | veces ' + veces", "t.js")
+    documento_liberar(d)
+    W.close
+end

@@ -608,6 +608,18 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
+      "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
+      (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
+      historial por días ya estaban); (b) puerto ARexx (rexx_port de Dash): OPEN, GETURL, GETTITLE, BACK, FORWARD,
+      RELOAD, NEWTAB, QUIT...; (c) modo lectura; (d) abrir .lha, .lzx, .zip... con lo del sistema
+      (xadmaster.library, o C:LhA, C:lzx, C:unzip; para .lha vale el lib de Aminet, cliente/src/lha.dash: "adelante")
+      y, si no hay nada, ofrecer instalarlo con Aminet (y Aminet si no está; ver (otro proyecto));
+      una OS 3.2 recién instalada no trae ninguno; (e) menos memoria al arrancar (3,4 MB; con la 61); (f) imprimir
+      (necesita printer.device en Dash); (g) gestor de contraseñas cifrado con contraseña maestra (AES y derivar la
+      clave con AmiSSL: necesita Dash); (h) PDF: primero abrirlo con un visor del sistema; pdf.js no es viable en
+      QuickJS sobre 68k; (i) radio por internet (minimp3 y sonido continuo por AHI/Paula en Dash; solo 68060/PiStorm).
+      Nada hacia fuera sin el visto bueno del usuario; la tabla comparativa de la web es de la sesión telegram.
 - [ ] 62. **Las demás baterías de pruebas, cuando acabe WPT (usuario, 2026-11-07: "Cuando terminemos con wpt, vamos a
       pasar todos los test de compatibilidad, velocidad, red y seguridad").** Con copias guardadas y servidas desde el
       PC (nada automático contra webs de otros), cada una con su resumen en docs/ para ver cómo sube:

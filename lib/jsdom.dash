@@ -894,6 +894,24 @@ end
     end
 end
 
+# (desde __dashweb_cancelar: abort() de XMLHttpRequest) la petición id de ese motor se corta y deja su sitio a las de
+# la cola; antes seguía hasta acabar y ocupaba una de las seis
+@export func jsdom_cancelar_peticion(js: Int, id: Int)
+    i = 0
+    while i < jsdom_peticiones.length
+        p = jsdom_peticiones[i]
+        if p.js == js and p.id == id
+            if p.carga != nil
+                http_cancelar(p.carga)
+            end
+            jsdom_peticiones.remove(i)
+            _jsdom_peticiones_empezar(js)
+            return
+        end
+        i = i + 1
+    end
+end
+
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
 func jsdom_peticiones_avanzar(js: Int) -> Int
     hechas = 0

@@ -179,10 +179,12 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
     u = urllib.parse.urlsplit("http://127.0.0.1:%d%s" % (PUERTO, camino))
     peticion = types.SimpleNamespace(method=metodo, GET=Tabla(urllib.parse.parse_qsl(consulta, keep_blank_values=True, encoding="latin-1")),
                                      POST=TablaPost(post), headers=cab, body=cuerpo, url=u.geturl(), url_parts=u,
+                                     request_path=camino,
                                      raw_headers=types.SimpleNamespace(raw_items=lambda: list((cabeceras or {}).items())),
                                      cookies={}, server=types.SimpleNamespace(stash=None))
     respuesta = types.SimpleNamespace(headers=Respuesta(), status=200, content=None)
     respuesta.writer = Escritor(respuesta)
+    respuesta.write_status_headers = lambda: None
     salida["escrito"] = respuesta.writer
     espacio = {"__name__": "wpt_manejador", "__file__": str(f)}
     try:
@@ -302,7 +304,7 @@ def main():
             self.send_response(estado, razon)
             for k, v in cabeceras:
                 self.send_header(k, v)
-            if not any(k.lower() == "content-length" for k, _ in cabeceras):
+            if not any(k.lower() in ("content-length", "transfer-encoding") for k, _ in cabeceras):
                 self.send_header("Content-Length", str(len(salida)))
             self.end_headers()
             if metodo != "HEAD":
@@ -344,7 +346,7 @@ def main():
                 self.send_response(estado, razon)
                 for k, v in cabeceras:
                     self.send_header(k, v)
-                if not any(k.lower() == "content-length" for k, _ in cabeceras):
+                if not any(k.lower() in ("content-length", "transfer-encoding") for k, _ in cabeceras):
                     self.send_header("Content-Length", str(len(cuerpo)))
                 self.end_headers()
                 self.wfile.write(cuerpo)

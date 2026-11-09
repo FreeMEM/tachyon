@@ -6439,3 +6439,24 @@ Formato:
 - WPT xhr 761 → 778: getresponseheader.any 0 → 6/6, getallresponseheaders 0 → 6/7, getresponseheader-cookies-and-more,
   case-insensitive, special-characters, getallresponseheaders-cookies y after-reuse enteros; ninguno peor. Pasan
   test_http (7), xhr_sinc, fetch, peticion y cookies.
+
+### 2026-11-09 — Tarea 41d: abort() de XMLHttpRequest que corta de verdad, data: con cualquier método (xhr 778 → 809/1112)
+- abort() como dice la norma: si estaba en marcha (también desde un oyente de readystatechange, loadstart o progress
+  de la misma respuesta), DONE con un error de red (status 0, sin cabeceras ni responseURL) y readystatechange, abort
+  y loadend; desde DONE, UNSENT sin eventos. Lo que quedaba de la respuesta ya no sigue (un contador "vez" que suben
+  open y abort).
+- abort() corta la petición en Dash: __dashweb_cancelar (src_c/tachyon.c) → jsdom_cancelar_peticion (lib/jsdom.dash),
+  http_cancelar y su sitio a la siguiente de la cola. Antes seguía bajando hasta acabar y ocupaba una de las seis
+  por motor (las páginas que abortan muchas, como los buscadores con sugerencias, se quedaban sin sitio).
+- send(): la marca de enviada antes de loadstart (setRequestHeader, send y withCredentials dan InvalidStateError
+  dentro de loadstart); sin abrir o ya enviada, InvalidStateError. withCredentials es un getter/setter.
+- data: con cualquier método (blob: solo con GET, Fetch); con HEAD, sin cuerpo.
+- tools/wpt_testharness.dash: al acabar cada página cancela sus peticiones (jsdom_peticiones_cancelar, como el
+  navegador al dejar una página); si no, la respuesta de una abortada llegaba a la página siguiente con el mismo
+  número (open-after-setrequestheader salía mal según el orden). tools/wpt_js.py: request.request_path,
+  response.write_status_headers y sin Content-Length si el manejador pone Transfer-Encoding.
+- Velocidad: lo de siempre igual (abort hace una búsqueda en la lista de peticiones).
+- WPT xhr 778 → 809: abort-during-done 0 → 3/3, responseurl-after-abort 1 → 5/5, data-uri 5 → 10/10,
+  open-url-fragment 1 → 4/4, split-byte-order-mark 0 → 3/4, withCredentials 3 → 5/5, loadstart-and-state 2/2,
+  open-during-abort, open-send-during-abort, send-send y otros siete enteros; ninguno peor. Pasan xhr_sinc, fetch y
+  peticion.

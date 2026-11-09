@@ -63,6 +63,8 @@ func correr_una(base: String, ruta: String)
             end
         end
     end
+    # (las que siguen en marcha, fuera: si no, su respuesta llegaba a la página siguiente, con los mismos números)
+    jsdom_peticiones_cancelar(js)
     js_liberar(js)
 end
 

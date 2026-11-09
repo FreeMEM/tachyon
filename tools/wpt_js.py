@@ -81,7 +81,7 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
         def __init__(self, pares):
             self.d = {}
             for k, v in pares:
-                self.d.setdefault(t(k).lower() if self.minus else t(k), []).append(b(v))
+                self.d.setdefault(t(k).lower() if self.minus else t(k), []).append(v if hasattr(v, "filename") else b(v))
         minus = False
         def first(self, k, defecto=None):
             k = t(k).lower() if self.minus else t(k)
@@ -104,6 +104,18 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
         def __iter__(self):
             return iter(self.keys())
 
+    class TablaPost(Tabla):
+        # (como MultiDict de wptserve: items() con la lista de valores de cada clave)
+        def items(self):
+            return [(b(k), v) for k, v in self.d.items()]
+
+    class Fichero:
+        # (una parte de multipart/form-data con filename, como la de cgi.FieldStorage que da wptserve)
+        def __init__(self, nombre, tipo, datos):
+            import io
+            self.filename, self.value, self.file = nombre, datos, io.BytesIO(datos)
+            self.headers = {"Content-Type": tipo}
+
     class Cabeceras(Tabla):
         minus = True
 
@@ -118,9 +130,14 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
             if parte.startswith(b"--") or b"\r\n\r\n" not in parte:
                 continue
             cab_p, valor = parte.split(b"\r\n\r\n", 1)
-            nombre = _re.search(rb'name="([^"]*)"', cab_p)
+            nombre = _re.search(rb'\bname="([^"]*)"', cab_p)
+            valor = valor[:-2] if valor.endswith(b"\r\n") else valor
+            fichero = _re.search(rb'filename="([^"]*)"', cab_p)
+            if fichero:
+                ct = _re.search(rb'(?i)content-type:[ \t]*([^\r\n]*)', cab_p)
+                valor = Fichero(fichero.group(1).decode("latin-1"), ct.group(1).decode("latin-1") if ct else None, valor)
             if nombre:
-                post.append((nombre.group(1).decode("latin-1"), valor[:-2] if valor.endswith(b"\r\n") else valor))
+                post.append((nombre.group(1).decode("latin-1"), valor))
 
     class Respuesta(list):
         def set(self, k, v):
@@ -158,7 +175,7 @@ def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
 
     u = urllib.parse.urlsplit("http://127.0.0.1:%d%s" % (PUERTO, camino))
     peticion = types.SimpleNamespace(method=metodo, GET=Tabla(urllib.parse.parse_qsl(consulta, keep_blank_values=True, encoding="latin-1")),
-                                     POST=Tabla(post), headers=cab, body=cuerpo, url=u.geturl(), url_parts=u,
+                                     POST=TablaPost(post), headers=cab, body=cuerpo, url=u.geturl(), url_parts=u,
                                      raw_headers=types.SimpleNamespace(raw_items=lambda: list((cabeceras or {}).items())),
                                      cookies={}, server=types.SimpleNamespace(stash=None))
     respuesta = types.SimpleNamespace(headers=Respuesta(), status=200, content=None)

@@ -6410,3 +6410,19 @@ Formato:
   1 → 4/4, responsexml-basic e invalid-type enteros, overridemimetype-open-state-force-xml 1/1, status-async y
   status-basic 27/27, send-redirect-no-location 4/4, template-element 2/3; ninguno peor. domparsing 620/1090, igual
   fichero a fichero. test_jsdom_xhr_sinc, fetch, peticion, domparser, xml_ns e iframe (2) pasan.
+
+### 2026-11-09 — Tarea 41d: interfaces de eventos como las de WebIDL, FormData en el shim y el meta charset (xhr 755 → 761/1112)
+- Event y sus clases (ProgressEvent, MouseEvent...): length 1, prototype que no se puede cambiar y en window sin salir
+  en for...in, como los navegadores. Los campos siguen siendo propios de cada evento (como accesores en el prototipo
+  costarían en cada evento).
+- responseType "document" con HTML sin charset en el tipo: el de su <meta charset> en los primeros 1024 bytes.
+  responsedocument-decoding sigue en 0/6: el DOM guarda el texto en Latin-1 (src_c/tachyon.c, _js_latin1), así que
+  U+0178 sale "Y" y lo de fuera de Latin-1 "?". Cambiarlo sería pasar el DOM a UTF-8 (más memoria): sin hacer.
+- tools/wpt_js.py: request.POST.items() da la lista de valores (MultiDict de wptserve) y las partes con filename son
+  objetos con filename, headers y file (como cgi.FieldStorage); xhr/resources/upload.py fallaba con "%b requires a
+  bytes-like object".
+- Velocidad (máquina RTG, tiempo de JS de la página, dos pasadas; antes de responseXML → ahora): bench_xml
+  4548-4573 → 4330-4599 ms, bench_eventos 3534-3559 → 3561-3755: lo mismo dentro del ruido.
+- WPT xhr 755 → 761: formdata 2 → 5/9, progressevent-interface 1 → 4/7; ninguno peor. dom/events 509/674 igual (solo
+  cambian de TIMEOUT a OK y al revés tres ficheros de marcos, sin perder ninguna). Pasan eventos (2), xhr_sinc,
+  fetch, peticion y formularios (4).

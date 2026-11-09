@@ -6460,3 +6460,13 @@ Formato:
   open-url-fragment 1 → 4/4, split-byte-order-mark 0 → 3/4, withCredentials 3 → 5/5, loadstart-and-state 2/2,
   open-during-abort, open-send-during-abort, send-send y otros siete enteros; ninguno peor. Pasan xhr_sinc, fetch y
   peticion.
+
+### 2026-11-09 — Tarea 41d: el charset del Content-Type con el analizador de tipos MIME (xhr 809 → 815/1112)
+- mimeAnalizar y mimeEscribir (lib/jsdom_preludio.js), como MIME Sniffing ("parse/serialize a MIME type"): tipo y
+  subtipo en minúsculas, parámetros con su nombre en minúsculas y el primero de cada nombre, comillas con sus \, y
+  null si no es un tipo MIME. send() lo usa para poner charset=UTF-8 cuando la página dice otro con un cuerpo de
+  texto; si no se entiende como tipo MIME, se manda tal cual. Antes era una expresión regular (cambiaba cada charset
+  repetido, no veía "text; ..." como no válido ni quitaba los parámetros sin valor).
+- Velocidad: lo de siempre igual (solo al enviar con un Content-Type de la página y un cuerpo de texto).
+- WPT xhr 809 → 815: send-content-type-charset 13 → 19/19; ninguno peor. Pasan xhr_sinc, fetch, peticion y
+  formularios_post.

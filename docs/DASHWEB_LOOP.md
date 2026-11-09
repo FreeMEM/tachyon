@@ -6470,3 +6470,18 @@ Formato:
 - Velocidad: lo de siempre igual (solo al enviar con un Content-Type de la página y un cuerpo de texto).
 - WPT xhr 809 → 815: send-content-type-charset 13 → 19/19; ninguno peor. Pasan xhr_sinc, fetch, peticion y
   formularios_post.
+
+### 2026-11-09 — Tarea 41d: el tipo final de la respuesta de XMLHttpRequest con el analizador de MIME (xhr 815 → 828/1112)
+- xhrMime (lib/jsdom_preludio.js), "final MIME type": el de overrideMimeType (analizado y escrito otra vez; si no es
+  un tipo MIME, application/octet-stream) o el de Content-Type, y text/xml si no hay o no se entiende. El charset, el
+  de overrideMimeType si lo trae y si no el de Content-Type (antes uno sin charset tapaba el de la respuesta). Lo usan
+  el texto, responseXML y el tipo del Blob de responseType "blob". Se calcula una vez por respuesta.
+- responseType con un valor que no es de la lista se ignora antes de mirar el estado (enum de WebIDL).
+  XMLHttpRequest.prototype[Symbol.toStringTag]. lib/http.dash: un POST o un PUT sin cuerpo mandan Content-Length: 0.
+- Sin hacer: Shift_JIS y las demás codificaciones de varios bytes de Asia (TextDecoder no las tiene;
+  overridemimetype-*-shiftjis y chunked-response), y mimesniff/mime-types.json (carpeta sin bajar).
+- Velocidad: lo de siempre igual (un análisis del Content-Type por respuesta).
+- WPT xhr 815 → 828: responsetype 46 → 50/50, overridemimetype-invalid-mime-type 1 → 3/3, overridemimetype-blob
+  0 → 2/3, overridemimetype-edge-cases 4/4, send-entity-body-none 4 → 6/6, send-entity-body-empty 3/3,
+  send-data-es-object 9 → 10/11; ninguno peor. Pasan test_http (7), xhr_sinc, fetch, peticion, formularios_post y
+  domparser.

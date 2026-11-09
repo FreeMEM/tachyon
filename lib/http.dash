@@ -196,7 +196,8 @@ func _http_peticion(u: Url, metodo: String, cuerpo: String, tipo: String, agente
     if extra != ""
         peticion = peticion + "\r\n" + extra
     end
-    if metodo == "POST" or (cuerpo != "" and metodo != "GET" and metodo != "HEAD")
+    # (sin cuerpo, un POST o un PUT llevan Content-Length: 0; Fetch, WPT xhr)
+    if metodo == "POST" or metodo == "PUT" or (cuerpo != "" and metodo != "GET" and metodo != "HEAD")
         if tipo != ""
             peticion = peticion + "\r\nContent-Type: " + tipo
         end

@@ -6393,3 +6393,20 @@ Formato:
 - Velocidad: lo de siempre igual (una vuelta por las cabeceras de la página al ponerlas).
 - WPT xhr 714 → 726: setrequestheader-header-allowed 0 → 10/10, setrequestheader-case-insensitive 0 → 1/2,
   preserve-ua-header-on-redirect 0 → 1/2; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion y test_http (7) pasan.
+
+### 2026-11-09 — Tarea 41d: responseXML y la respuesta "document" de XMLHttpRequest (xhr 726 → 755/1112)
+- responseXML no existía (siempre null). Ahora es un getter: según el tipo (el de overrideMimeType o el de
+  Content-Type; si no se entiende, text/xml), el XML (text/xml, application/xml, */*+xml) se lee con el analizador de
+  DOMParser y el HTML solo con responseType "document"; otro tipo o XML mal formado, null. Se hace la primera vez que
+  se pide (una página que no lo pide no paga nada) y se guarda: dos lecturas dan el mismo documento. Con un
+  responseType que no es "" ni "document", InvalidStateError; responseText igual con los que no son "" ni "text".
+- responseType "document": response es ese documento. El encoding de <?xml ...?> también vale para él.
+- DOMParser: docNuevo/docHtml/docXml, lo común con responseXML. El analizador de XML ya no deja pasar un & que no es
+  una referencia ni un <! que no es comentario, CDATA o el DOCTYPE de antes del elemento raíz (mal formados en los
+  navegadores); sin &, el texto ya no pasa por la expresión regular de las entidades. Los XML de Acid3 no tienen
+  ninguna de las dos cosas.
+- Velocidad: lo de siempre igual (responseXML solo cuando se pide).
+- WPT xhr 726 → 755: responsexml-media-type 7 → 15/15, responsexml-non-document-types 0 → 5/5, responsexml-get-twice
+  1 → 4/4, responsexml-basic e invalid-type enteros, overridemimetype-open-state-force-xml 1/1, status-async y
+  status-basic 27/27, send-redirect-no-location 4/4, template-element 2/3; ninguno peor. domparsing 620/1090, igual
+  fichero a fichero. test_jsdom_xhr_sinc, fetch, peticion, domparser, xml_ns e iframe (2) pasan.

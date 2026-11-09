@@ -6526,3 +6526,18 @@ Formato:
   1/2, abort-after-send 1/1 y seis que pasan de ERROR a OK; ninguno peor (xhr-timeout-longtask bajaba a 0 con el
   plazo desde send(): arreglado y repetidas sueltas las de timeout, 1/1, cambiado a mano en el informe). Pasan
   test_http (7) y test_https, xhr_sinc, fetch, peticion y formularios (4).
+
+### 2026-11-09 — Tarea 63a: buscar en el historial y quitar entradas (como en Amelinium)
+- tachyon:historial lleva arriba una caja de buscar (?buscar=texto): lo que tiene el texto en la dirección o el título,
+  sin mirar mayúsculas, una vez por dirección (lo último arriba) con su última visita ("Hoy 20:20") y cuántas veces
+  se vio (lib/marcadores.dash, _historial_buscado). Cada entrada, en la lista por días y en lo buscado, tiene "quitar"
+  (?quitar=dirección: todas sus visitas, historial_quitar); "borrar el historial" sigue. Textos 347-349 nuevos, en
+  los nueve catálogos (traducciones sin revisar, como las demás).
+- Arreglado de paso (ya pasaba): una web podía borrar el historial, las cookies o los marcadores, mandar el informe o
+  cambiar el buscador con un enlace a tachyon:...?borrar (o con location o un refresh). Ahora lo que hace algo en una
+  página propia solo vale desde otra página propia (destino_permitido en src/dashweb.dash); desde una web se abre la
+  página sin hacer nada. Y en atrás y adelante (y en la barra) queda la página sin la acción (tachyon_sin_accion):
+  volver a tachyon:historial?borrar ya no lo borra otra vez. Las búsquedas (tachyon:buscar?q=, ?buscar=) se quedan.
+- Velocidad: lo de siempre igual (la búsqueda recorre las 300 líneas como mucho).
+- tests/test_marcadores.dash: buscar (la última visita y las dos visitas de una dirección, sin mayúsculas, lo que no
+  está), "quitar" en la lista y quitar una dirección. Pasa; compilan el navegador y los nueve catálogos.

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (08.11.2026)
+## version $VER: Tachyon.catalog 1.0 (09.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -467,6 +467,15 @@ Idag
 MSG_346
 Igår
 ; Yesterday
+MSG_347
+Sök
+; Search
+MSG_348
+Inget i historiken innehåller: %1
+; Nothing in the history matches: %1
+MSG_349
+Senaste besök: %1. Besök: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Inga sparade.
 ; None stored.

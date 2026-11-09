@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (08.11.2026)
+## version $VER: Tachyon.catalog 1.0 (09.11.2026)
 ## language deutsch
 ## codeset 0
 ;
@@ -467,6 +467,15 @@ Heute
 MSG_346
 Gestern
 ; Yesterday
+MSG_347
+Suchen
+; Search
+MSG_348
+Nichts im Verlauf enthält: %1
+; Nothing in the history matches: %1
+MSG_349
+Letzter Besuch: %1. Besuche: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Keine gespeichert.
 ; None stored.

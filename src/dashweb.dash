@@ -803,10 +803,25 @@ func abrir(w: Ventana, direccion: String)
         end
         d = documento_html("tachyon:buscadores", buscadores_html(buscador_elegido()))
     elif str_starts(direccion, "tachyon:historial")
+        # ?borrar (todo), ?quitar=dirección (todas sus visitas; va la última, con lo que lleve) y ?buscar=texto
         if str_starts(direccion, "tachyon:historial?borrar")
             historial_borrar(FICHERO_HISTORIAL)
         end
-        d = documento_html("tachyon:historial", historial_html(FICHERO_HISTORIAL, historial_ahora()))
+        p = str_find(direccion, "quitar=")
+        if p >= 0
+            historial_quitar(FICHERO_HISTORIAL, direccion[p + 7:])
+        end
+        buscar = ""
+        p = str_find(direccion, "buscar=")
+        if p >= 0
+            buscar = direccion[p + 7:]
+            f = str_find(buscar, "&")
+            if f >= 0
+                buscar = buscar[:f]
+            end
+            buscar = str_trim(url_deshacer(str_replace(buscar, "+", " ")))
+        end
+        d = documento_html(tachyon_sin_accion(direccion), historial_html(FICHERO_HISTORIAL, historial_ahora(), buscar))
     elif str_starts(direccion, "tachyon:cookies")
         # dashweb:cookies?borrar (todas) o ?borrar=dominio
         if str_starts(direccion, "tachyon:cookies?borrar")
@@ -1765,6 +1780,32 @@ func envio_del_js(w: Ventana)
     end
 end
 
+# Una página propia sin lo que hace algo (borrar, quitar, usar, enviar...): lo que queda en atrás y adelante, para
+# que volver no lo haga otra vez; las búsquedas (tachyon:buscar?q=, tachyon:historial?buscar=) se quedan
+func tachyon_sin_accion(d: String) -> String
+    p = str_find(d, "?")
+    if not str_starts(d, "tachyon:") or p < 0 or str_starts(d, "tachyon:buscar?")
+        return d
+    end
+    if str_starts(d, "tachyon:historial?buscar=")
+        f = str_find(d, "&")
+        if f >= 0
+            return d[:f]
+        end
+        return d
+    end
+    return d[:p]
+end
+
+# Lo que pide hacer algo en una página propia solo vale desde otra página propia: una web no puede
+# borrar el historial, las cookies o los marcadores con un enlace (ni con location ni un refresh)
+func destino_permitido(w: Ventana, destino: String) -> String
+    if tachyon_sin_accion(destino) == destino or (w.actual != nil and str_starts(w.actual.direccion, "tachyon:"))
+        return destino
+    end
+    return tachyon_sin_accion(destino)
+end
+
 # Ir a una dirección nueva: lo que había delante en el historial se descarta. Un enlace a otra parte
 # de la misma página solo desplaza.
 func navegar(w: Ventana, destino: String)
@@ -1777,9 +1818,10 @@ func navegar(w: Ventana, destino: String)
         end
         return
     end
-    mui_set_text(w.v.url, destino)
+    destino = destino_permitido(w, destino)
+    mui_set_text(w.v.url, tachyon_sin_accion(destino))
     abrir(w, destino)
-    apuntar(w, destino)
+    apuntar(w, tachyon_sin_accion(destino))
 end
 
 # La página pide ir a otra (tarea 51): su JavaScript (location.replace...; la de salto de DuckDuckGo) o su
@@ -1827,9 +1869,10 @@ func ir_a(w: Ventana, destino: String, sustituir: Bool)
         navegar(w, destino)
         return
     end
-    mui_set_text(w.v.url, destino)
+    destino = destino_permitido(w, destino)
+    mui_set_text(w.v.url, tachyon_sin_accion(destino))
     abrir(w, destino)
-    w.pasos[w.visto] = destino
+    w.pasos[w.visto] = tachyon_sin_accion(destino)
     botones(w)
 end
 

@@ -310,6 +310,12 @@ MSG_345 (345//)
 Today
 MSG_346 (346//)
 Yesterday
+MSG_347 (347//)
+Search
+MSG_348 (348//)
+Nothing in the history matches: %1
+MSG_349 (349//)
+Last visit: %1. Visits: %2.
 MSG_350 (350//)
 None stored.
 MSG_351 (351//)

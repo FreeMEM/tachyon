@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (08.11.2026)
+## version $VER: Tachyon.catalog 1.0 (09.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -467,6 +467,15 @@ I dag
 MSG_346
 I går
 ; Yesterday
+MSG_347
+Søk
+; Search
+MSG_348
+Ingenting i loggen inneholder: %1
+; Nothing in the history matches: %1
+MSG_349
+Siste besøk: %1. Besøk: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Ingen lagret.
 ; None stored.

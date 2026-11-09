@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (08.11.2026)
+## version $VER: Tachyon.catalog 1.0 (09.11.2026)
 ## language português
 ## codeset 0
 ;
@@ -467,6 +467,15 @@ Hoje
 MSG_346
 Ontem
 ; Yesterday
+MSG_347
+Procurar
+; Search
+MSG_348
+Nada no histórico contém: %1
+; Nothing in the history matches: %1
+MSG_349
+Última visita: %1. Visitas: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Nenhum guardado.
 ; None stored.

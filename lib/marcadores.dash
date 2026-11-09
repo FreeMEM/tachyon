@@ -182,6 +182,38 @@ func historial_borrar(fichero: String) -> Bool
     return _escribir_lineas(fichero, nada)
 end
 
+# Quita del historial todas las visitas a una dirección (tachyon:historial?quitar=, como en Amelinium)
+func historial_quitar(fichero: String, direccion: String) -> Bool
+    lineas = _lineas_de(fichero)
+    var quedan: [String] = []
+    for l in lineas
+        p = str_find(l, "\t")
+        if p >= 0 and (str_starts(l[p + 1:], direccion + "\t") or l[p + 1:] == direccion)
+            continue
+        end
+        quedan.push(l)
+    end
+    return _escribir_lineas(fichero, quedan)
+end
+
+# Lo buscado, para volver a ponerlo en una dirección (tachyon:historial?buscar=...): lo que partiría la consulta
+func _hist_codificar(t: String) -> String
+    return str_replace(str_replace(str_replace(str_replace(str_replace(t, "%", "%25"), "&", "%26"), "#", "%23"), "\"", "%22"), " ", "+")
+end
+
+# "Hoy 12:30", "Ayer 09:05" o "23/10/2026 18:00" de un minuto del historial
+func _hist_cuando(minuto: Int, ahora: Int) -> String
+    dia = minuto / 1440
+    hoy = ahora / 1440
+    f = _fecha(dia)
+    if dia == hoy
+        f = tr(345, "Today")
+    elif dia == hoy - 1
+        f = tr(346, "Yesterday")
+    end
+    return f + " " + _dos_cifras((minuto % 1440) / 60) + ":" + _dos_cifras(minuto % 60)
+end
+
 func _dos_cifras(n: Int) -> String
     if n < 10
         return "0" + n
@@ -216,16 +248,24 @@ func _fecha(dias: Int) -> String
     return _dos_cifras(d + 1) + "/" + _dos_cifras(mes + 1) + "/" + anio
 end
 
-# Una página con lo visto, lo último arriba, por días (Hoy, Ayer, la fecha), con la hora, el título y la dirección
-func historial_html(fichero: String, ahora: Int) -> String
+# Una página con lo visto, lo último arriba, por días (Hoy, Ayer, la fecha), con la hora, el título, la dirección y
+# el enlace para quitarla; arriba, la caja de buscar. Con buscar, lo que lo tiene en la dirección o el título (sin
+# mirar mayúsculas), una vez por dirección con su última visita y cuántas (como en Amelinium)
+func historial_html(fichero: String, ahora: Int, buscar: String) -> String
     h = "<html><head><title>" + tr(342, "History") + "</title><style>body { font-family: sans-serif; margin: 16px 24px; color: #222 } "
     h = h + "h1 { color: #1d3557; margin-bottom: 4px } h2 { color: #1d3557; font-size: 15px; border-bottom: 1px solid #ccd; "
     h = h + "padding-bottom: 3px; margin-top: 18px } .e { margin: 6px 0 } .hora { color: #888; display: inline-block; "
     h = h + "width: 48px } .dir { color: #2a7a3a; font-size: 12px; margin-left: 48px } a { color: #1a4fa0 } "
-    h = h + ".borrar { font-size: 13px }</style></head><body><h1>" + tr(342, "History") + "</h1>"
+    h = h + ".borrar { font-size: 13px } .quitar { float: right; font-size: 12px; color: #a33 } "
+    h = h + ".veces { color: #666; font-size: 12px; margin-left: 48px }</style></head><body><h1>" + tr(342, "History") + "</h1>"
     lineas = _lineas_de(fichero)
     if lineas.length == 0
         return h + "<p>" + tr(343, "You haven't seen any page yet.") + "</p></body></html>"
+    end
+    h = h + "<form action=\"tachyon:historial\"><input name=buscar size=30 value=\"" + _html_escapar(buscar) + "\"> "
+    h = h + "<input type=submit value=\"" + tr(347, "Search") + "\"></form>"
+    if buscar != ""
+        return h + _historial_buscado(lineas, ahora, buscar) + "</body></html>"
     end
     h = h + "<p class=borrar><a href=\"tachyon:historial?borrar\">" + tr(344, "Clear the history") + "</a></p>"
     hoy = ahora / 1440
@@ -254,8 +294,60 @@ func historial_html(fichero: String, ahora: Int) -> String
         if partes.length > 2 and partes[2] != ""
             t = _html_escapar(partes[2])
         end
-        h = h + "<div class=e><span class=hora>" + _dos_cifras((minuto % 1440) / 60) + ":" + _dos_cifras(minuto % 60) + "</span>"
+        h = h + "<div class=e><a class=quitar href=\"tachyon:historial?quitar=" + d + "\">" + tr(331, "remove") + "</a>"
+        h = h + "<span class=hora>" + _dos_cifras((minuto % 1440) / 60) + ":" + _dos_cifras(minuto % 60) + "</span>"
         h = h + "<a href=\"" + d + "\">" + t + "</a><div class=dir>" + d + "</div></div>"
     end
     return h + "</body></html>"
+end
+
+# Lo del historial que tiene lo buscado, una vez por dirección (lo último arriba), con su última visita y cuántas
+func _historial_buscado(lineas: [String], ahora: Int, buscar: String) -> String
+    b = str_lower(buscar)
+    var sitio: {String: Int} = {}
+    var dirs: [String] = []
+    var titulos: [String] = []
+    var ultimas: [Int] = []
+    var veces: [Int] = []
+    i = lineas.length - 1
+    while i >= 0
+        partes = str_split(lineas[i], "\t")
+        i = i - 1
+        if partes.length < 2
+            continue
+        end
+        t = ""
+        if partes.length > 2
+            t = partes[2]
+        end
+        if sitio.has(partes[1])
+            k = sitio[partes[1]]
+            veces[k] = veces[k] + 1
+            continue
+        end
+        if str_find(str_lower(partes[1]), b) < 0 and str_find(str_lower(t), b) < 0
+            continue
+        end
+        sitio[partes[1]] = dirs.length
+        dirs.push(partes[1])
+        titulos.push(t)
+        ultimas.push(str_to_int(partes[0], 10))
+        veces.push(1)
+    end
+    if dirs.length == 0
+        return "<p>" + hueco(tr(348, "Nothing in the history matches: %1"), _html_escapar(buscar)) + "</p>"
+    end
+    h = ""
+    q = _html_escapar(_hist_codificar(buscar))
+    for k in (0..dirs.length - 1)
+        d = _html_escapar(dirs[k])
+        t = d
+        if titulos[k] != ""
+            t = _html_escapar(titulos[k])
+        end
+        h = h + "<div class=e><a class=quitar href=\"tachyon:historial?buscar=" + q + "&amp;quitar=" + d + "\">" + tr(331, "remove") + "</a>"
+        h = h + "<a href=\"" + d + "\">" + t + "</a><div class=dir>" + d + "</div>"
+        h = h + "<div class=veces>" + hueco2(tr(349, "Last visit: %1. Visits: %2."), _hist_cuando(ultimas[k], ahora), "" + veces[k]) + "</div></div>"
+    end
+    return h
 end

@@ -205,6 +205,12 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [ ] D84. **La señal del puerto ARexx propio** (2026-11-09, tarea 63b, puerto ARexx como en Amelinium; plan aprobado
+      por el usuario). rexx_port crea su MsgPort con su bit de señal, pero el bucle de MUI espera con
+      mui_wait_event_signals(task_signal()) y no lo ve: con Tachyon quieto, una orden ARexx espera al siguiente
+      evento. Hace falta algo como `rexx_signal()` (la máscara, 0 sin puerto) para
+      mui_wait_event_signals(task_signal() | rexx_signal()), en dashc y en dash1, con su test. (MUI ya abre su
+      propio TACHYON.1 con las órdenes de serie de MUI; el de Dash va aparte, "TACHYON".)
 - [x] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
       abrir una página soltando su icono en la ventana de Tachyon). app_window y app_drop de Dash valen solo para las
       ventanas de window_create; las de MUI no. MUI lo trae de serie: MUIA_Window_AppWindow TRUE en la ventana y
@@ -6541,3 +6547,21 @@ Formato:
 - Velocidad: lo de siempre igual (la búsqueda recorre las 300 líneas como mucho).
 - tests/test_marcadores.dash: buscar (la última visita y las dos visitas de una dirección, sin mayúsculas, lo que no
   está), "quitar" en la lista y quitar una dirección. Pasa; compilan el navegador y los nueve catálogos.
+
+### 2026-11-09 — Tarea 41d: window.postMessage de verdad y las variantes de las páginas .html (xhr 845/1112 → 864/1131)
+- window.postMessage no hacía nada (function () {}). Ahora, como HTML: el mensaje clonado con structuredClone (lo
+  que no se clona, DataCloneError al momento) y, en otra vuelta, un MessageEvent "message" en la ventana con data,
+  origin y source; con un targetOrigin que no es el de la página no se entrega ("*" vale todo; "/" o sin él, el
+  propio); uno que no es una dirección, SyntaxError. Lo usan los polyfills de setImmediate y las páginas que se
+  hablan con sus marcos. tests/test_js_structuredclone.dash lo prueba (llega después, clonado, con origen y source;
+  a otro origen no; una función, DataCloneError).
+- tools/wpt_js.py: las páginas .html con <meta name=variant content="?..."> se pasan una vez por variante, como
+  wptserve (antes una sin variante, y las que eligen sus pruebas por location.search acababan sin ninguna); en el
+  informe el nombre lleva su consulta. Cambia también la lista de otras carpetas la próxima vez que se pasen (url:
+  16 páginas con variante, encoding 14, dom 2, dom/events 3, dom/ranges 2): al comparar, sumar las variantes por
+  fichero.
+- Velocidad: lo de siempre igual.
+- WPT xhr 845/1112 → 864/1131 (19 subpruebas nuevas, todas bien): xmlhttprequest-timeout-simple, aborted,
+  overrides, overridesexpires y twice 3/3, abortedonmain y synconmain 2/2; ninguno peor (las de -worker- siguen sin
+  nada: no hay Workers). Pasan structuredclone, xhr_sinc, fetch, iframe (2) y eventos (2).
+- D84 (rexx_signal, para la tarea 63b) pedida a freememlang-af: la lleva ella, en una rama, tras Dash 2.7.0.

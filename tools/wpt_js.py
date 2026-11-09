@@ -37,7 +37,7 @@ from medir_visor import MAQUINAS          # noqa: E402
 INFORME = r"""
 setup({output: false, timeout_multiplier: 5});  // (el emulador es lento: como hace wptrunner con las plataformas lentas)
 add_completion_callback(function (tests, status) {
-    var ruta = String(location.pathname).replace(/^\//, '');
+    var ruta = String(location.pathname).replace(/^\//, '') + String(location.search);
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
     var harness = ['OK', 'ERROR', 'TIMEOUT', 'PRECONDITION_FAILED'];
     var pasan = 0, l = [];
@@ -236,7 +236,11 @@ def pruebas(carpeta):
         except OSError:
             continue
         if "testharness.js" in t:
-            r.append(str(f.relative_to(WPT)))
+            # (con <meta name=variant content="?...">, una vez por variante, como wptserve; los espacios como %20 para
+            # que el nombre en el informe sea una sola palabra)
+            variantes = re.findall(r'<meta\s+name=["\']?variant["\']?\s+content=["\']([^"\']*)["\']', t, re.I)
+            for v in variantes or [""]:
+                r.append(str(f.relative_to(WPT)) + v.replace(" ", "%20"))
     return r
 
 

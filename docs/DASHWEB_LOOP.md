@@ -6632,3 +6632,18 @@ Formato:
 - Sin probar con órdenes de verdad del sistema (el emulador no tiene lha, lzx, unzip ni XAD): sus argumentos son
   los de su documentación.
 - Velocidad: nada en las páginas (solo al abrir un comprimido del disco).
+
+### 2026-11-09 — Tarea 64 (prioridad del usuario): YouTube al completo, cómo sale hoy (64a)
+- Medido como en la 38 (a mano, no es una batería): máquina RTG ancha (1680x1050), 256 MB, Tachyon por --gcc
+  (el de dashc no carga: ver abajo), https://www.youtube.com/ con TRAZA.
+- Portada: scripts hechos a los 73 s, "entera" a los 196-208 s, 58 MB de JavaScript y 144 MB libres al final; el
+  reproductor (base.js, 3 MB) llega a los 285 s. El diálogo de cookies sale bien (textos, iconos, botones; captura
+  a los 10 min). Con "Reject all" (clicar a los ~260 s): "Your YouTube History is off", como en Chrome sin cuenta y
+  con el historial apagado (YouTube ya no da vídeos así). Detalles: el texto "...cookies and data." se sale de su
+  recuadro; abajo, un icono suelto (el de carga, a medio pintar); antes de cerrar el diálogo, la caja de buscar
+  de arriba sale cortada. Sin errores de JavaScript en la traza.
+- tools/medir_visor --captura-en solo vale un momento (con varios, las tres capturas eran la misma).
+- Aviso: desde hoy el Tachyon de dashc no carga ("file is not executable", RC 10, en 3.1 y 3.2): tiene 66235
+  reubicaciones del código hacia sí mismo y dashc las escribía en un solo grupo (LoadSeg no acepta más de 65535).
+  Lo encontró y lo arregla freememlang-af (grupos de 32767, dashc/src/hunk.c, rama reloc-grupos). Mientras, las
+  medidas van por --gcc; no sacar ninguna versión de dashc hasta que esté en main y probado.

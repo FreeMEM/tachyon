@@ -1,0 +1,38 @@
+# Test: un ::before con content "" y solo relleno vertical ocupa su sitio (tarea 64b). Es el truco de la proporción:
+# las miniaturas de los resultados de YouTube dan su alto así (ytd-thumbnail::before { display: block; content: "";
+# padding-top: 56.11% }, con el enlace en position: absolute; inset: 0) y salían de 0 de alto. En un bloque, en un
+# elemento flex (flex: 1 1 1e-09px, como YouTube) y con relleno en px; con height ya iba.
+# expect-out: a 500x250 | b 500x100 | d 500x250 | g 500x30
+# expect-out: dis 1500x280 | th 500x280 | thumbnail 500x280
+# expect-out: nada 500x0
+
+import "../lib/maqueta.dash"
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    h = "<html><head><style>body { margin: 0 } .f { display: flex } .w { width: 500px } "
+    h = h + "#a::before { display: block; content: \"\"; padding-top: 50% } "
+    h = h + "#b::before { display: block; content: \"\"; padding-top: 100px } "
+    h = h + "#d { flex: 1 1 1e-09px; max-width: 500px } #d::before { display: block; content: \"\"; padding-top: 50% } "
+    h = h + "#g::before { display: block; content: \"\"; height: 30px } "
+    h = h + "#nada::before { display: block; content: \"\"; padding-top: 0px } "
+    h = h + "#dis { position: relative; display: flex; flex-direction: row; align-items: flex-start } "
+    h = h + ".vr[std] .th::before { display: block; content: \"\"; padding-top: 56.11% } .vr[std] .th { margin-right: 16px; max-width: 360px; min-width: 240px; flex: 1 1 1e-09px } "
+    h = h + ".vr[big][bs=\"BIG\"] .th { max-width: 500px; min-width: 240px } .th { display: block; position: relative } "
+    h = h + ".th #thumbnail { height: 100%; position: relative; display: block; overflow: hidden } .th #thumbnail { position: absolute; inset: 0px } "
+    h = h + "#meta { flex: 1 1 0px; min-width: 0 }</style></head><body>"
+    h = h + "<div id=a class=w></div><div id=b class=w></div><div class=f><div id=d></div><div>t</div></div><div id=g class=w></div><div id=nada class=w></div>"
+    h = h + "<div class=vr std big bs=BIG><div id=dis><div class=th id=th><a id=thumbnail href=x></a></div><div id=meta>título</div></div></div></body></html>"
+    doc = dom_desde_html5(h)
+    css_vista(1500, 600)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    p = maquetar(doc, 1500)
+    jsdom_vista(js, 1500, 600, 0, p.alto)
+    js_evaluar(js, "var r = function (id) { var b = document.getElementById(id).getBoundingClientRect(); return id + ' ' + Math.round(b.width) + 'x' + Math.round(b.height); }", "t.js")
+    Print js_evaluar(js, "['a', 'b', 'd', 'g'].map(r).join(' | ')", "t.js")
+    Print js_evaluar(js, "['dis', 'th', 'thumbnail'].map(r).join(' | ')", "t.js")
+    Print js_evaluar(js, "r('nada')", "t.js")
+end

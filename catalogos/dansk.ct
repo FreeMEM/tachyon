@@ -683,3 +683,24 @@ Indhold af %1
 MSG_478
 Overordnet skuffe
 ; Parent drawer
+MSG_480
+Pak ud...
+; Extract...
+MSG_481
+Intet på denne Amiga åbner denne slags fil. Der skal bruges %1 (eller XAD, xadmaster.library, som åbner næsten alle).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Hent %1 med Aminet
+; Get %1 with Aminet
+MSG_483
+Intet blev pakket ud.
+; Nothing was extracted.
+MSG_484
+Pak ud i en ny skuffe
+; Extract into a new drawer
+MSG_485
+Pakker %1 ud...
+; Extracting %1...
+MSG_486
+Kunne ikke pakke %1 ud: %2
+; Couldn't extract %1: %2

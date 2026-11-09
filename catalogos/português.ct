@@ -683,3 +683,24 @@ Conteúdo de %1
 MSG_478
 Gaveta superior
 ; Parent drawer
+MSG_480
+Extrair...
+; Extract...
+MSG_481
+Nada neste Amiga abre este tipo de ficheiro. É preciso %1 (ou XAD, xadmaster.library, que abre quase todos).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Obter %1 com o Aminet
+; Get %1 with Aminet
+MSG_483
+Não foi extraído nada.
+; Nothing was extracted.
+MSG_484
+Extrair para uma gaveta nova
+; Extract into a new drawer
+MSG_485
+A extrair %1...
+; Extracting %1...
+MSG_486
+Não foi possível extrair %1: %2
+; Couldn't extract %1: %2

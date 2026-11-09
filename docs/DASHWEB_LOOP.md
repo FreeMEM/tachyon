@@ -6610,3 +6610,25 @@ Formato:
 - Probado en la máquina RTG con gh_repo.html (GitHub guardado): READER da el README de FreeMEM/tachyon limpio, con su
   título (captura vista).
 - Velocidad: nada en la carga de las páginas (solo al pedirlo).
+
+### 2026-11-09 — Tarea 63d: abrir ficheros comprimidos con lo del sistema (como en Amelinium)
+- lib/archivos.dash: abrir un .lha, .lzh, .lzx, .zip, .tar, .tgz/.tar.gz, .tar.bz2, .gz, .7z o .rar del disco
+  (Abrir fichero, soltar su icono, un enlace file:) da una página con lo que tiene y "Extraer...". Primero las órdenes
+  del sistema que estén en el Path (Which): lha, lzx, unzip, tar, gzip, 7z, unrar, y si no xadUnFile de XAD
+  (xadmaster.library, que abre casi todos); un .lha sin ninguna, con lib/lha.dash; si no hay nada, qué hace falta y
+  un enlace a Aminet (aminet.net/search?query=...). Una OS 3.2 recién instalada no trae ninguna de esas órdenes.
+- lib/lha.dash: copia del descompresor de Aminet (cliente/src/lha.dash; con el visto bueno del usuario) con
+  lha_listar (lo que tiene, sin escribir). Arreglado en la copia: un cajón de nivel 2 que ya acaba en su separador
+  daba "Prueba//Prueba" y no se podía escribir (los .lha hechos con el lha de Unix); el de Aminet tiene el mismo
+  fallo (por decir a quien lleve Aminet).
+- tachyon:archivo?extraer=ruta: el diálogo de guardar con el nombre del archivo (se extrae en un cajón nuevo con
+  ese nombre) y luego enseña ese cajón. Se puede pedir desde la página del comprimido (file:), además de desde las
+  propias; pide el diálogo, así que no hace nada solo.
+- Textos 480-486 en los nueve catálogos (477, "Contents of %1", reutilizado).
+- tests/test_archivos.dash (el prueba.lha de Aminet en hexadecimal: un cajón, un fichero lh5 y un .readme): los
+  tipos, la lista con el enlace de extraer, extraer a RAM: (12 bytes, el .readme) y un .lzx sin lzx ni XAD (qué hace
+  falta y Aminet). Pasan con test_documento_cajon, buscadores, informe (la primera vez TIMEOUT, el emulador colgado;
+  sola, bien) y los 33 de maqueta.
+- Sin probar con órdenes de verdad del sistema (el emulador no tiene lha, lzx, unzip ni XAD): sus argumentos son
+  los de su documentación.
+- Velocidad: nada en las páginas (solo al abrir un comprimido del disco).

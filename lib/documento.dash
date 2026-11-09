@@ -17,6 +17,7 @@ import "jsdom.dash"
 import "recursos.dash"
 import "html5.dash"
 import "animacion.dash"
+import "archivos.dash"
 
 struct Documento
     direccion: String
@@ -183,6 +184,10 @@ func documento_texto(direccion: String, d: Documento) -> String
         end
         d.direccion = r.url
         return http_texto(r)
+    end
+    # (un comprimido del disco: lo que tiene, y cómo extraerlo; lib/archivos.dash, tarea 63d)
+    if str_starts(str_lower(direccion), "file:") and archivo_tipo(url_fichero(direccion)) != ""
+        return archivo_html(url_fichero(direccion))
     end
     t = file_read_text(url_fichero(direccion))
     if t == nil and str_starts(str_lower(direccion), "file:")

@@ -1,0 +1,142 @@
+# Ficheros comprimidos (tarea 63d, como en Amelinium): abrir uno del disco (.lha, .lzh, .lzx, .zip, .tar, .tgz, .gz,
+# .7z, .rar...) enseña lo que tiene, con un enlace para extraerlo. Con lo que haya en el sistema, sin descompresores
+# propios (usuario, 2026-11-09), salvo el de .lha, que es el de Aminet (lib/lha.dash): primero las órdenes del
+# sistema que lo saben hacer (en el Path: lha, lzx, unzip, tar, gzip, 7z, unrar; también los xadUnFile de XAD); si
+# no hay ninguna, se dice qué instalar y se ofrece Aminet, que lo instala.
+#
+#   tipo = archivo_tipo("Work:x.lzx")          # "lzx", o "" si no es un comprimido
+#   h = archivo_html("Work:x.lzx")             # la página con lo que tiene
+#   e = archivo_extraer("Work:x.lzx", "RAM:x/")   # "" si fue bien
+
+import "lha.dash"
+import "url.dash"
+import "texto.dash"
+import "idioma.dash"
+
+# Las extensiones (en minúsculas, la más larga primero) y su tipo
+func archivo_tipo(ruta: String) -> String
+    r = str_lower(ruta)
+    for par in [".tar.gz:tgz", ".tgz:tgz", ".tar.bz2:tbz", ".lha:lha", ".lzh:lha", ".lzx:lzx", ".zip:zip", ".tar:tar", ".gz:gz", ".7z:7z", ".rar:rar"]
+        p = str_find(par, ":")
+        if str_ends(r, par[:p])
+            return par[p + 1:]
+        end
+    end
+    return ""
+end
+
+# Si una orden está en el Path (Which, de AmigaDOS)
+func _archivo_hay(orden: String) -> Bool
+    run_capture("Which >NIL: " + orden, 5000)
+    return run_rc() == 0
+end
+
+func _archivo_q(ruta: String) -> String
+    return "\"" + ruta + "\""
+end
+
+# La orden del sistema que sabe hacerlo con un tipo: [listar, extraer] (extraer con %d, el cajón de destino), o []
+# si no hay ninguna. xadUnFile (de XAD, xadmaster.library) vale para casi todos.
+func _archivo_ordenes(tipo: String, ruta: String) -> [String]
+    q = _archivo_q(ruta)
+    var r: [String] = []
+    if tipo == "lha" and _archivo_hay("lha")
+        r = ["lha v " + q, "lha -m x " + q + " %d"]
+    elif tipo == "lzx" and _archivo_hay("lzx")
+        r = ["lzx v " + q, "lzx -m x " + q + " %d"]
+    elif tipo == "zip" and _archivo_hay("unzip")
+        r = ["unzip -l " + q, "unzip -o " + q + " -d %d"]
+    elif (tipo == "tar" or tipo == "tgz" or tipo == "tbz") and _archivo_hay("tar")
+        r = ["tar tvf " + q, "tar xf " + q + " -C %d"]
+    elif tipo == "gz" and _archivo_hay("gzip")
+        r = ["gzip -l " + q, "gzip -d -k " + q]
+    elif tipo == "7z" and _archivo_hay("7z")
+        r = ["7z l " + q, "7z x " + q + " -o%d"]
+    elif tipo == "rar" and _archivo_hay("unrar")
+        r = ["unrar l " + q, "unrar x " + q + " %d"]
+    end
+    if r.length == 0 and _archivo_hay("xadUnFile")
+        r = ["xadUnFile " + q + " LIST", "xadUnFile " + q + " %d"]
+    end
+    return r
+end
+
+# Lo que hace falta para un tipo, para decirlo (y buscarlo en Aminet)
+func archivo_falta(tipo: String) -> String
+    if tipo == "lzx"
+        return "lzx"
+    elif tipo == "zip"
+        return "unzip"
+    elif tipo == "7z"
+        return "7z"
+    elif tipo == "rar"
+        return "unrar"
+    elif tipo == "gz" or tipo == "tgz" or tipo == "tbz"
+        return "gzip"
+    end
+    return "xadmaster"
+end
+
+func _archivo_html(t: String) -> String
+    return str_replace(str_replace(str_replace(t, "&", "&amp;"), "<", "&lt;"), "\"", "&quot;")
+end
+
+# La página de un comprimido: lo que tiene y el enlace para extraerlo (tachyon:archivo?extraer=ruta); si no hay con
+# qué abrirlo, qué instalar y el enlace a Aminet
+func archivo_html(ruta: String) -> String
+    tipo = archivo_tipo(ruta)
+    titulo = _archivo_html(hueco(tr(477, "Contents of %1"), ruta))
+    h = "<title>" + titulo + "</title><style>body { font-family: sans-serif; margin: 16px 24px } td { padding: 1px 12px 1px 0 } "
+    h = h + ".t { text-align: right; color: #666 } pre { font-size: 13px; background: #f3f5f9; padding: 8px }</style><h1>" + titulo + "</h1>"
+    extraer = "<p><a href=\"tachyon:archivo?extraer=" + _archivo_html(ruta) + "\"><b>" + tr(480, "Extract...") + "</b></a></p>"
+    ordenes = _archivo_ordenes(tipo, ruta)
+    if ordenes.length > 0
+        salida = run_capture(ordenes[0], 30000)
+        return h + extraer + "<pre>" + _archivo_html(salida) + "</pre>"
+    end
+    if tipo == "lha"
+        e = lha_listar(ruta)
+        h = h + extraer + "<table>"
+        for l in lha_lista
+            p = str_find(l, "\t")
+            n = l[:p]
+            t = ""
+            if not str_ends(n, "/")
+                t = "" + (Int(l[p + 1:]) + 1023) / 1024 + " KB"
+            end
+            h = h + "<tr><td>" + _archivo_html(n) + "</td><td class=t>" + t + "</td></tr>"
+        end
+        h = h + "</table>"
+        if e != ""
+            h = h + "<p>" + _archivo_html(e) + "</p>"
+        end
+        return h
+    end
+    falta = archivo_falta(tipo)
+    h = h + "<p>" + hueco(tr(481, "Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them)."), "<b>" + falta + "</b>") + "</p>"
+    h = h + "<p><a href=\"https://aminet.net/search?query=" + falta + "\">" + hueco(tr(482, "Get %1 with Aminet"), falta) + "</a></p>"
+    return h
+end
+
+# Extrae el comprimido en el cajón destino (se crea): con la orden del sistema o, un .lha sin ella, con lib/lha.dash.
+# "" si fue bien; si no, lo que pasó
+func archivo_extraer(ruta: String, destino: String) -> String
+    tipo = archivo_tipo(ruta)
+    d = destino
+    if str_ends(d, "/")
+        d = d[:d.length - 1]
+    end
+    ordenes = _archivo_ordenes(tipo, ruta)
+    if ordenes.length > 0
+        dir_create(d)
+        salida = run_capture(str_replace(ordenes[1], "%d", _archivo_q(d + "/")), 120000)
+        if run_rc() > 5 or run_rc() < 0
+            return str_trim(salida)
+        end
+        return ""
+    end
+    if tipo == "lha"
+        return lha_extraer(ruta, d + "/")
+    end
+    return hueco(tr(481, "Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them)."), archivo_falta(tipo))
+end

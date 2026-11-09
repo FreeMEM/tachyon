@@ -683,3 +683,24 @@ Innhold i %1
 MSG_478
 Overordnet skuff
 ; Parent drawer
+MSG_480
+Pakk ut...
+; Extract...
+MSG_481
+Ingenting på denne Amigaen åpner denne typen fil. Det trengs %1 (eller XAD, xadmaster.library, som åpner nesten alle).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Hent %1 med Aminet
+; Get %1 with Aminet
+MSG_483
+Ingenting ble pakket ut.
+; Nothing was extracted.
+MSG_484
+Pakk ut i en ny skuff
+; Extract into a new drawer
+MSG_485
+Pakker ut %1...
+; Extracting %1...
+MSG_486
+Kunne ikke pakke ut %1: %2
+; Couldn't extract %1: %2

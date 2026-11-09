@@ -683,3 +683,24 @@ Inhoud van %1
 MSG_478
 Bovenliggende lade
 ; Parent drawer
+MSG_480
+Uitpakken...
+; Extract...
+MSG_481
+Niets op deze Amiga opent dit soort bestand. Er is %1 nodig (of XAD, xadmaster.library, dat bijna alles opent).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+%1 halen met Aminet
+; Get %1 with Aminet
+MSG_483
+Er is niets uitgepakt.
+; Nothing was extracted.
+MSG_484
+Uitpakken in een nieuwe lade
+; Extract into a new drawer
+MSG_485
+%1 uitpakken...
+; Extracting %1...
+MSG_486
+Kon %1 niet uitpakken: %2
+; Couldn't extract %1: %2

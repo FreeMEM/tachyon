@@ -454,3 +454,17 @@ MSG_477 (477//)
 Contents of %1
 MSG_478 (478//)
 Parent drawer
+MSG_480 (480//)
+Extract...
+MSG_481 (481//)
+Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482 (482//)
+Get %1 with Aminet
+MSG_483 (483//)
+Nothing was extracted.
+MSG_484 (484//)
+Extract into a new drawer
+MSG_485 (485//)
+Extracting %1...
+MSG_486 (486//)
+Couldn't extract %1: %2

@@ -804,6 +804,38 @@ func abrir(w: Ventana, direccion: String)
             preferencia_poner(FICHERO_PREFERENCIAS, "buscador", direccion[p + 6:])
         end
         d = documento_html("tachyon:buscadores", buscadores_html(buscador_elegido()))
+    elif str_starts(direccion, "tachyon:archivo")
+        # tachyon:archivo?extraer=ruta: el enlace de la página de un comprimido (lib/archivos.dash, tarea 63d). Dónde
+        # (el diálogo de guardar con su nombre: se extrae en un cajón nuevo con ese nombre) y luego ese cajón
+        p = str_find(direccion, "?extraer=")
+        h = "<title>" + tr(480, "Extract...") + "</title><p>" + tr(483, "Nothing was extracted.") + "</p>"
+        if p >= 0
+            ruta = url_deshacer(direccion[p + 9:])
+            nombre = ruta[dialog_cajon(ruta).length:]
+            if str_starts(nombre, "/")
+                nombre = nombre[1:]
+            end
+            q = str_find(nombre, ".")
+            if q > 0
+                nombre = nombre[:q]
+            end
+            destino = dialog_file_at(tr(484, "Extract into a new drawer"), "", true, dialog_cajon(ruta), nombre)
+            if destino != ""
+                dw_estado(w, hueco(tr(485, "Extracting %1..."), ruta))
+                e = archivo_extraer(ruta, destino)
+                if e == ""
+                    direccion = url_de_ruta(destino + "/")
+                    mui_set_text(w.v.url, direccion)
+                    if w.visto >= 0 and w.visto < w.pasos.length
+                        w.pasos[w.visto] = direccion
+                    end
+                    h = documento_cajon(destino + "/")
+                else
+                    h = "<title>" + tr(480, "Extract...") + "</title><p>" + hueco2(tr(486, "Couldn't extract %1: %2"), ruta, e) + "</p>"
+                end
+            end
+        end
+        d = documento_html(direccion, h)
     elif direccion == "tachyon:lectura"
         # el modo lectura de la página de antes (leer_pagina); vuelto a abrir sin ella (adelante, otra ventana), un aviso
         h = dw_lectura_html
@@ -1810,6 +1842,10 @@ end
 # borrar el historial, las cookies o los marcadores con un enlace (ni con location ni un refresh)
 func destino_permitido(w: Ventana, destino: String) -> String
     if tachyon_sin_accion(destino) == destino or (w.actual != nil and str_starts(w.actual.direccion, "tachyon:"))
+        return destino
+    end
+    # (extraer un comprimido: desde su página, que es file:; pide dónde con el diálogo, así que no hace nada solo)
+    if str_starts(destino, "tachyon:archivo?extraer=") and w.actual != nil and str_starts(w.actual.direccion, "file:")
         return destino
     end
     return tachyon_sin_accion(destino)

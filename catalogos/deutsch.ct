@@ -683,3 +683,24 @@ Inhalt von %1
 MSG_478
 Übergeordnete Schublade
 ; Parent drawer
+MSG_480
+Entpacken...
+; Extract...
+MSG_481
+Auf diesem Amiga öffnet nichts diese Art von Datei. Es braucht %1 (oder XAD, xadmaster.library, das fast alle öffnet).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+%1 mit Aminet holen
+; Get %1 with Aminet
+MSG_483
+Es wurde nichts entpackt.
+; Nothing was extracted.
+MSG_484
+In eine neue Schublade entpacken
+; Extract into a new drawer
+MSG_485
+Entpacke %1...
+; Extracting %1...
+MSG_486
+%1 konnte nicht entpackt werden: %2
+; Couldn't extract %1: %2

@@ -662,6 +662,12 @@ tarea, con el estilo de Dash.
       salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Pendiente: desplegar la descripción ("more", sin
       comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
       de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
+      (64g, ensayo del vídeo 2 en Coffin con 256 MB) Tachyon se cerraba sin decir nada: los resultados de YouTube se
+      comían la memoria hasta el último KB, y al abrir un vídeo la página de antes seguía entera mientras llegaba la
+      nueva. Hecho: el JavaScript de la página se para con menos de 12 MB libres (y sigue cuando vuelve a haber) y la
+      página de antes se suelta entera con menos de 64 MB. Pendiente: otro cierre en la página del vídeo abierta desde
+      los resultados (~40 s después, con 57 MB libres; justo al llegar la respuesta de ~1 MB de
+      accounts.google.com/v3/signin/identifier que pide su JavaScript).
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -6958,3 +6964,23 @@ Formato:
   salía en blanco (ahora se decodifica la imagen de donde se llegó) y, con la barra a la vista, el clic en el botón
   de pantalla completa se lo comía la barra (ahora la esquina es suya). Esc fuera de pantalla completa es el de MUI:
   cierra la ventana (y con la última, Tachyon).
+
+### 2026-11-10 — Tarea 64g: con poca memoria, el JavaScript se para en vez de caerse Tachyon
+
+- Ensayando el vídeo 2 en Coffin (Amiberry, 68040 JIT, 256 MB): Tachyon desaparecía con YouTube, sin guru ni aviso, y
+  la memoria que tenía no volvía al sistema (cada intento dejaba menos). Con TRAZA=Traspaso:traza.txt: la búsqueda
+  "demoscene" bajaba de 15 MB libres a 1 MB en 8 s (temporizadores, un estilo entero de 1001 cambios) y ahí se cortaba;
+  y al abrir un vídeo de los resultados, la página de antes seguía entera (solo se soltaba su JavaScript) mientras
+  llegaba la del vídeo.
+- src/dashweb.dash: js_sin_memoria(w), al empezar temporizadores(): con menos de dw_js_minima (12 MB; JSMINIMA=KB lo
+  cambia) se sueltan antes las pestañas de detrás (descartar_pestanas_bajo) y mem_trim; si no basta, el JavaScript de
+  la página se para (Documento.js_sin_memoria), lo dice la barra de estado (texto 528, en los nueve catálogos) y se
+  mira otra vez cada 2 s: sigue con el doble libre. Al llegar otra página, la de antes se suelta entera también con
+  menos de MEMORIA_PARA_DOS (64 MB) libres, no solo sin un hueco seguido de 16 MB.
+- tools/medir_visor.py --js-minima KB. Visto en FS-UAE (objetivo, tests/pages/reloj.html): con JSMINIMA=2000000 el
+  JavaScript queda parado (ni un temporizador en 40 s); sin él, 307 rondas. En Coffin: al abrir el vídeo, de 40 MB
+  libres a 155 MB. tests documento 11/11. Sin comprobar aún: que siga cuando vuelve la memoria (no hay cómo liberarla
+  desde fuera en la prueba).
+- Queda (64g): la página del vídeo abierta desde los resultados se cierra igual ~40 s después con 57 MB libres, justo
+  tras llegar la respuesta de ~1 MB de accounts.google.com/v3/signin/identifier (la misma llegó en la búsqueda sin
+  problema). Siguiente: reproducirlo en FS-UAE con --memcheck o la máquina rtgmmu (MuForce).

@@ -93,6 +93,7 @@ struct Documento
     n_maquetas: Int = 0
     ms_maquetas: Int = 0
     ms_temporizadores: Int = 0
+    js_sin_memoria: Bool = false   # su JavaScript, parado por falta de memoria (dashweb js_sin_memoria; tarea 64)
 end
 
 const DOCUMENTO_CARO = 150

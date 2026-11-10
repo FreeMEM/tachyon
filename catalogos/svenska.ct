@@ -827,3 +827,6 @@ Felsökningslogg för nätverket på: %1
 MSG_527
 Felsökningslogg för nätverket av
 ; Network debug log off
+MSG_528
+Lite minne: sidans JavaScript är pausat
+; Low memory: the page's JavaScript is paused

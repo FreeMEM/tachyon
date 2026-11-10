@@ -79,6 +79,7 @@ def main():
     ap.add_argument("--memcheck", action="store_true", help="build with ./dash --memcheck (memory errors to the output)")
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
+    ap.add_argument("--js-minima", metavar="KB", help="dashweb JSMINIMA=KB: below that free memory the page's JavaScript is paused")
     ap.add_argument("--cajas", metavar="TEXTO", help="dashweb CAJAS=TEXTO: when the page is whole, the boxes and layout style of the elements with TEXTO in their class (or that tag name)")
     ap.add_argument("--cajas-en", metavar="MS", help="dashweb CAJASEN=MS: with --cajas, also once MS ms after the page started (for a page that never gets whole)")
     ap.add_argument("--dibujos", metavar="Y0-Y1", help="dashweb DIBUJOS=Y0-Y1: when the page is whole, its drawings between those heights")
@@ -182,6 +183,8 @@ def main():
                 prog_args[0] += " JS=" + quote(args.js, safe="") + " JSEN=" + (args.js_en or "0")
             if args.poca_memoria:
                 prog_args[0] += " POCAMEMORIA=" + args.poca_memoria
+            if args.js_minima:
+                prog_args[0] += " JSMINIMA=" + args.js_minima
             if args.gc_siempre:
                 prog_args[0] += " GCSIEMPRE"
             if args.versiones:

@@ -646,7 +646,10 @@ tarea, con el estilo de Dash.
       maqueta de más; mirar si el texto distinto es cosa de Tachyon (espacios, nodos de texto, entidades). (b) El cursor
       que parpadea en el logo (animation steps(1) 1 s) se repinta cada ~170 ms para siempre: con steps(), repintar
       solo al cambiar de paso. (c) Medir antes y después también en el A1200 de pruebas. Con sus nombres en el
-      commit, las notas y Gracias.
+      commit, las notas y Gracias. (d) David (#1076): con la 0.9.3 se queda en "Fetching style sheets and scripts: 1 left",
+      como Oskis con Aminet (67): una hoja o script que no acaba en la red de su máquina (en el emulador llegan las 9
+      en 3 s). El tope de 15 s es sin recibir nada; pedirles el registro de depuración de la 0.9.4 para ver cuál y
+      en qué fase.
 - [~] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
       prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
       reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un

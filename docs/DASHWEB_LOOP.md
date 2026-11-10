@@ -650,7 +650,10 @@ tarea, con el estilo de Dash.
       con la página cargada; (e) de los resultados a un vídeo (carga entera la página del vídeo: por pushState su
       reproductor no se crea) y atrás. Tiempos: búsqueda entera ~220 s, la página de un vídeo 70-180 s; memoria del
       JavaScript ~100 MB (por eso no cabe en el A1200 de pruebas de 8 MB: el objetivo es una PiStorm con memoria).
-      De un vídeo a otro por los relacionados, también (64e). Pendiente: desplegar la descripción ("more", sin
+      De un vídeo a otro por los relacionados, también (64e). (64f, usuario 2026-11-10, sobre los controles de
+      YouTube encima del vídeo) Una barra de controles de Tachyon sobre el vídeo al pasar el ratón: reproducir/parar,
+      la línea de tiempo con lo bajado y clic para saltar, el tiempo, el volumen y pantalla completa (los de YouTube no
+      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Pendiente: desplegar la descripción ("more", sin
       comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
       de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:

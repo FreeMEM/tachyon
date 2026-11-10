@@ -164,6 +164,9 @@ Mode lecture
 MSG_54
 Inspecter
 ; Inspect
+MSG_55
+Journal de débogage réseau
+; Network debug log
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Mises en page (%1)
 MSG_525
 Minuteries JavaScript
 ; JavaScript timers
+MSG_526
+Journal de débogage réseau activé : %1
+; Network debug log on: %1
+MSG_527
+Journal de débogage réseau désactivé
+; Network debug log off

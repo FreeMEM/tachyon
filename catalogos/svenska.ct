@@ -164,6 +164,9 @@ Läsläge
 MSG_54
 Inspektera
 ; Inspect
+MSG_55
+Felsökningslogg för nätverket
+; Network debug log
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Layouter (%1)
 MSG_525
 JavaScript-timers
 ; JavaScript timers
+MSG_526
+Felsökningslogg för nätverket på: %1
+; Network debug log on: %1
+MSG_527
+Felsökningslogg för nätverket av
+; Network debug log off

@@ -108,6 +108,8 @@ MSG_53 (53//)
 Reader view
 MSG_54 (54//)
 Inspect
+MSG_55 (55//)
+Network debug log
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -544,3 +546,7 @@ MSG_524 (524//)
 Layouts (%1)
 MSG_525 (525//)
 JavaScript timers
+MSG_526 (526//)
+Network debug log on: %1
+MSG_527 (527//)
+Network debug log off

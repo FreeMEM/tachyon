@@ -73,6 +73,9 @@ const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
 const ID_CERRAR_PESTANA = 50   # (Amiga-W)
 const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
 const ID_INSPECCIONAR = 35     # menú Herramientas: Inspeccionar la página (Amiga-I; tarea 65)
+const ID_DEPURACION = 36       # menú Herramientas: el registro de depuración de red, a un fichero (tarea 67)
+# (al lado del programa: lo que se escribe ahí sigue aunque haya que reiniciar el Amiga, como no lo haría en RAM:)
+const DEPURACION_FICHERO = "PROGDIR:Tachyon-debug.txt"
 const MAX_PESTANAS = 8
 # y los del programa
 const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeout/setInterval de las páginas
@@ -966,6 +969,7 @@ func avanzar_carga(w: Ventana)
         end
         mui_set_value(w.v.progreso, 90)
         dw_estado(w, tr(110, "Fetching style sheets and scripts..."))
+        traza("llegó la página (" + c.respuesta.cuerpo.length + " bytes): se suelta la de antes")
         vista(w)
         # la de antes se queda pintada, pero sin su JavaScript: así no suma su memoria a la de la nueva
         if w.actual != nil
@@ -983,8 +987,10 @@ func avanzar_carga(w: Ventana)
                 mui_canvas_redraw(w.v.pagina)
             end
         end
+        traza("leyendo el HTML")
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
         w.preparando.t_red = time_ms() - w.empezada - w.preparando.t_html
+        traza("HTML leído en " + w.preparando.t_html + " ms: " + recursos_pendientes(w.preparando.recursos) + " hojas y scripts por traer")
     end
     if w.preparando == nil
         return
@@ -1657,6 +1663,7 @@ func tic(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
     avanzar_carga(w)
+    pendientes_a_la_traza(w)
     ir_pedido(w)
     # (la pestaña descartada que volvía a su sitio: con la página ya cargada, lo más cerca que se pueda)
     if w.desde_volver >= 0 and w.actual != nil and w.carga == nil and w.preparando == nil and imagenes_pendientes(w.actual.im) == 0
@@ -2052,6 +2059,53 @@ func barra_completa() -> Int
         videos_alternar(vs, dw_completa.nodo, dw_completa_de.actual.direccion)
     end
     return k
+end
+
+# El registro de depuración de red, encendido o apagado (tarea 67): la traza a DEPURACION_FICHERO, empezado de nuevo
+# con lo que es el Amiga (lo del informe de depuración: versiones, CPU, memoria, red y AmiSSL)
+func depuracion(si: Bool)
+    if si
+        traza_activa = true
+        traza_t0 = time_ms()
+        traza_a_fichero(DEPURACION_FICHERO, "Tachyon network debug log\n" + informe_texto(DASHWEB_VERSION, http_idiomas, dw_ultima_pagina) + "\n--- trace ---\n")
+    else
+        traza_a_fichero("", "")
+        traza_activa = false
+    end
+end
+
+# Depuración de red (tarea 67; lo pidió Oskis R.P): mientras una página se carga, cada 10 s, a la traza lo que queda
+# pendiente y en qué está (la página, sus hojas y scripts, las peticiones de su JavaScript, las imágenes)
+var dw_pendientes_t: Int = 0
+
+func pendientes_a_la_traza(w: Ventana)
+    if not traza_activa or time_ms() - dw_pendientes_t < 10000
+        return
+    end
+    if w.carga == nil and w.preparando == nil
+        return
+    end
+    dw_pendientes_t = time_ms()
+    traza("pendiente (" + (time_ms() - w.empezada) / 1000 + " s desde que se pidió " + w.carga_dir + "):")
+    if w.carga != nil
+        traza("  la página: " + http_estado(w.carga))
+    end
+    if w.preparando != nil and w.preparando.recursos != nil
+        for p in w.preparando.recursos.cola
+            if p.carga == nil
+                traza("  " + p.direccion + ": en cola")
+            else
+                traza("  " + p.direccion + ": " + http_estado(p.carga))
+            end
+        end
+    end
+    d = w.actual
+    if w.preparando != nil
+        d = w.preparando
+    end
+    if d != nil and d.js != 0
+        traza("  peticiones del JavaScript: " + jsdom_peticiones_pendientes(d.js))
+    end
 end
 
 # ¿n sigue colgando del documento doc?
@@ -2458,6 +2512,7 @@ func nueva_ventana(direccion: String) -> Ventana
         mui_window_screen(v.window, dw_pantalla)
     end
     mui_set_value(v.propia_pantalla, preferencia(FICHERO_PREFERENCIAS, "pantalla") == "si")
+    mui_set_value(v.depuracion_red, traza_fichero != "")
     w = Ventana(v, k)
     var sin_pasos: [String] = []
     w.pasos = sin_pasos
@@ -2727,10 +2782,20 @@ Main
         # cada argumento en su ventana (hasta 4); sin argumentos, la página de inicio
         # TRAZA: la línea de tiempo de las cargas por la salida (lib/traza.dash)
         paginas = 0
+        # (el registro de depuración de red, si se dejó encendido en el menú Herramientas; tarea 67)
+        if preferencia(FICHERO_PREFERENCIAS, "depuracion") == "si"
+            depuracion(true)
+        end
         for i in (0..arg_count() - 1)
             if arg(i) == "TRAZA"
                 traza_activa = true
                 traza_t0 = time_ms()
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+            elif str_starts(arg(i), "TRAZA=")
+                # TRAZA=fichero: lo mismo, a ese fichero (lo que se escribe ahí sigue aunque se cuelgue el Amiga)
+                traza_activa = true
+                traza_t0 = time_ms()
+                traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
                 traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
@@ -2767,7 +2832,7 @@ Main
             nueva_ventana(preferencia(FICHERO_PREFERENCIAS, "inicio"))
         end
         for i in (0..arg_count() - 1)
-            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=") and not str_starts(arg(i), "JS=") and not str_starts(arg(i), "JSEN=")
+            if arg(i) != "TRAZA" and not str_starts(arg(i), "TRAZA=") and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=") and not str_starts(arg(i), "JS=") and not str_starts(arg(i), "JSEN=")
                 nueva_ventana(arg(i))
             end
         end
@@ -3069,6 +3134,22 @@ Main
                 preferencia_poner(FICHERO_PREFERENCIAS, "avisar_versiones", "si")
                 dw_estado(w, tr(125, "Checking for a new version..."))
                 versiones_mirar(true)
+            end
+            if ev == ID_DEPURACION
+                si = mui_get_value(w.v.depuracion_red) != 0
+                depuracion(si)
+                if si
+                    preferencia_poner(FICHERO_PREFERENCIAS, "depuracion", "si")
+                    dw_estado(w, hueco(tr(526, "Network debug log on: %1"), DEPURACION_FICHERO))
+                else
+                    preferencia_poner(FICHERO_PREFERENCIAS, "depuracion", "no")
+                    dw_estado(w, tr(527, "Network debug log off"))
+                end
+                for o in dw_ventanas
+                    if o.abierta
+                        mui_set_value(o.v.depuracion_red, si)
+                    end
+                end
             end
             if ev == ID_PANTALLA
                 si = mui_get_value(w.v.propia_pantalla) != 0

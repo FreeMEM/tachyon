@@ -164,6 +164,9 @@ Lesevisning
 MSG_54
 Inspiser
 ; Inspect
+MSG_55
+Feilsøkingslogg for nettverket
+; Network debug log
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Layouter (%1)
 MSG_525
 JavaScript-tidtakere
 ; JavaScript timers
+MSG_526
+Feilsøkingslogg for nettverket på: %1
+; Network debug log on: %1
+MSG_527
+Feilsøkingslogg for nettverket av
+; Network debug log off

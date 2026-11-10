@@ -164,6 +164,9 @@ Modalità lettura
 MSG_54
 Ispeziona
 ; Inspect
+MSG_55
+Registro di debug della rete
+; Network debug log
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Impaginazioni (%1)
 MSG_525
 Timer di JavaScript
 ; JavaScript timers
+MSG_526
+Registro di debug della rete attivo: %1
+; Network debug log on: %1
+MSG_527
+Registro di debug della rete spento
+; Network debug log off

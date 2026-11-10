@@ -164,6 +164,9 @@ Leesweergave
 MSG_54
 Inspecteren
 ; Inspect
+MSG_55
+Netwerk-foutopsporingslog
+; Network debug log
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Opmaken (%1)
 MSG_525
 JavaScript-timers
 ; JavaScript timers
+MSG_526
+Netwerk-foutopsporingslog aan: %1
+; Network debug log on: %1
+MSG_527
+Netwerk-foutopsporingslog uit
+; Network debug log off

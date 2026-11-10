@@ -201,6 +201,13 @@
               "check": true,
               "event": 51,
               "tr": 52
+            },
+            {
+              "label": "Network debug log",
+              "name": "depuracion_red",
+              "check": true,
+              "event": 36,
+              "tr": 55
             }
           ],
           "tr": 18

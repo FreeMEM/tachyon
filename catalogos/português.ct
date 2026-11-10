@@ -164,6 +164,9 @@ Modo de leitura
 MSG_54
 Inspecionar
 ; Inspect
+MSG_55
+Registo de depuração da rede
+; Network debug log
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Paginações (%1)
 MSG_525
 Temporizadores de JavaScript
 ; JavaScript timers
+MSG_526
+Registo de depuração da rede ligado: %1
+; Network debug log on: %1
+MSG_527
+Registo de depuração da rede desligado
+; Network debug log off

@@ -614,6 +614,12 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 67. **Tachyon parado en "Trayendo hojas de estilo y scripts..." en una PiStorm, y lento (lo contó Oskis R.P,
+      2026-11-10, por la sesión telegram; prioridad).** Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi: desde los
+      resultados de DuckDuckGo, el enlace de Aminet se quedó más de un minuto en "Trayendo hojas..." (sin la cuenta
+      de lo que falta: la vuelta siguiente no llegó) y tuvo que reiniciar; escrito a mano, aminet.net tarda 5-10 s,
+      y va mucho más lento que IBrowse y Amelinium en su máquina. (a) un registro de depuración de red que la gente
+      pueda mandar (hecho: 67a); (b) con lo que llegue, encontrar el atasco y la lentitud.
 - [ ] 66. **Vídeo nuevo de Tachyon cuando la 64 y la 65 estén finas (usuario, 2026-11-09: "cuando esté fino molaría
       hacer un vídeo con el estilo de los hechos en otras ocasiones publicados en la web de tachyon o forja").** Con el
       estilo y las herramientas de los anteriores (~/.cache/video-tachyon: tomar.sh en Coffin con Amiberry, montar.py;
@@ -6929,3 +6935,22 @@ Formato:
 - La duración: MintVID no la daba; third_party/mintvid/core/mr_demux.c mr_demux_video_frames (las imágenes del índice
   del MP4) y dashweb_video.c dwv_duracion; lib/video.dash video_duracion.
 - Visto (watch?v=Du47RT74_9c): pausado a los 6 s, la barra con su tiempo y la línea. Pasan video (4).
+
+### 2026-11-10 — Tarea 67a: registro de depuración de red (lo pidió Oskis R.P)
+- Oskis R.P (Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi): desde los resultados de DuckDuckGo, el enlace de Aminet
+  se quedó más de un minuto en "Trayendo hojas de estilo y scripts..." sin la cuenta de lo que falta, y va mucho más
+  lento que IBrowse y Amelinium. En el emulador no pasa: el salto de DuckDuckGo (duckduckgo.com/l/?uddg=..., un
+  <script> con window.parent.location.replace) y aminet.net/tree en 3,3 s. Que el estado no pasara a "%1 left" dice
+  que la vuelta siguiente no llegó (algo síncrono se colgó, no la red). Sin PiStorm, hace falta su registro:
+- Herramientas > Network debug log (con marca; se recuerda en Tachyon.prefs, "depuracion"): la traza a
+  PROGDIR:Tachyon-debug.txt, empezada de nuevo con lo del informe (versiones, CPU, memoria, red, AmiSSL); también
+  TRAZA=fichero desde la Shell. lib/traza.dash traza_a_fichero: cada línea se añade abriendo y cerrando el fichero,
+  para que siga ahí aunque haya que reiniciar.
+- Cada carga, en su línea "llega": DNS, TCP y TLS (lib/red.dash: t_dns, t_tcp, t_tls de net_bg_state/net_bg_stage;
+  "sitio" si esperó en la tabla de conexiones; "reusada" si la conexión venía de otra), la espera del primer byte y
+  la bajada (lib/http.dash t_enviada, t_primer, http_fases). Mientras una página carga, cada 10 s, lo pendiente y en
+  qué está (http_estado: buscando el nombre, conectando, negociando TLS, esperando respuesta, recibiendo...):
+  src/dashweb.dash pendientes_a_la_traza. Y antes y después de lo síncrono de la carga (soltar la página de antes,
+  leer el HTML, los scripts), para ver dónde se cuelga si se cuelga.
+- Visto: "llega https://duckduckgo.com/l/...: 200, 264 bytes en 628 ms (DNS 118 ms, TCP 169 ms, TLS 236 ms,
+  espera 101 ms, ...)". tests/test_traza_fichero.dash (nuevo). Textos 55, 526 y 527 en los nueve catálogos.

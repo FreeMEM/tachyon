@@ -45,6 +45,34 @@ struct Conexion
     empezada: Int = 0      # time_ms de cuando se pidió la conexión
     reintentos: Int = 0
     nul: Bool = false      # red_leer_linea vio un byte 0 (str_from_buffer lo da como espacio; lib/http.dash)
+    # las fases al abrirla, en ms desde empezada (depuración de red, tarea 67; -1: aún no): el nombre resuelto
+    # (DNS), la conexión TCP hecha y la TLS negociada; espera_sitio: ms que esperó sitio en la tabla de conexiones
+    t_dns: Int = -1
+    t_tcp: Int = -1
+    t_tls: Int = -1
+    espera_sitio: Int = 0
+end
+
+# "DNS 120 ms, TCP 80 ms, TLS 900 ms" (lo que se sabe), para la traza
+func red_fases(c: Conexion) -> String
+    t = ""
+    if c.espera_sitio > 0
+        t = "sitio " + c.espera_sitio + " ms, "
+    end
+    if c.t_dns >= 0
+        t = t + "DNS " + c.t_dns + " ms"
+    else
+        t = t + "DNS ?"
+    end
+    if c.t_tcp >= 0 and c.t_dns >= 0
+        t = t + ", TCP " + (c.t_tcp - c.t_dns) + " ms"
+    elif c.t_tcp >= 0
+        t = t + ", DNS+TCP " + c.t_tcp + " ms"
+    end
+    if c.con_tls and c.t_tls >= 0 and c.t_tcp >= 0
+        t = t + ", TLS " + (c.t_tls - c.t_tcp) + " ms"
+    end
+    return t
 end
 
 # Sin ninguna conexión, la tarea de la red acaba tras esto (ms); dashweb lo sube y llama a red_terminar al salir
@@ -126,6 +154,7 @@ func red_abrir_avanzar(c: Conexion) -> Int
         end
         if c.sock >= 0
             c.fase = 1
+            c.espera_sitio = time_ms() - c.empezada
             c.empezada = time_ms()
             return 0
         end
@@ -145,7 +174,20 @@ func red_abrir_avanzar(c: Conexion) -> Int
         red_cerrar(c)
         return -1
     end
+    ahora = time_ms() - c.empezada
+    if e == 2 and c.t_dns < 0 and net_bg_stage(c.sock) >= 1
+        c.t_dns = ahora
+    end
+    if e == 3 and c.t_tcp < 0
+        c.t_tcp = ahora
+    end
     if e == 4
+        if c.t_tcp < 0
+            c.t_tcp = ahora
+        end
+        if c.con_tls and c.t_tls < 0
+            c.t_tls = ahora
+        end
         c.fase = 0
         return 1
     end

@@ -164,6 +164,9 @@ Leseansicht
 MSG_54
 Untersuchen
 ; Inspect
+MSG_55
+Netzwerk-Debugprotokoll
+; Network debug log
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -818,3 +821,9 @@ Layouts (%1)
 MSG_525
 JavaScript-Timer
 ; JavaScript timers
+MSG_526
+Netzwerk-Debugprotokoll an: %1
+; Network debug log on: %1
+MSG_527
+Netzwerk-Debugprotokoll aus
+; Network debug log off

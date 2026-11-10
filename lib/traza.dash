@@ -1,12 +1,44 @@
 # La línea de tiempo de una carga (tarea 33): con traza_activa, cada paso sale por la salida con los ms desde
 # traza_t0 y la memoria libre ("[1234 98000K] llega https://...: 200, 5120 bytes en 830 ms"). dashweb la enciende con el argumento TRAZA
 # (tools/medir_visor.py --traza). Apagada no cuesta nada: quien la llama mira antes traza_activa.
+#
+# A un fichero (tarea 67, depuración de red; lo pidió Oskis R.P: Tachyon se le quedaba parado en una PiStorm): con
+# traza_a_fichero, cada línea va además a ese fichero, abriéndolo, añadiendo al final y cerrándolo, para que lo
+# escrito siga ahí aunque haya que reiniciar el Amiga (más lento: solo mientras se depura).
 
 var traza_activa: Bool = false
 var traza_t0: Int = 0
+var traza_fichero: String = ""
 
 func traza(texto: String)
     if traza_activa
-        Print "[" + (time_ms() - traza_t0) + " " + mem_total() / 1024 + "K] " + texto
+        l = "[" + (time_ms() - traza_t0) + " " + mem_total() / 1024 + "K] " + texto
+        if traza_fichero != ""
+            _traza_al_fichero(l)
+        else
+            Print l
+        end
     end
+end
+
+# La traza, desde ahora, a ese fichero (empezado de nuevo, con cabecera); "" vuelve a la salida
+func traza_a_fichero(nombre: String, cabecera: String)
+    traza_fichero = nombre
+    if nombre == ""
+        return
+    end
+    file_write_text(nombre, cabecera)
+end
+
+func _traza_al_fichero(l: String)
+    f = file_open(traza_fichero, 1004)
+    if f == 0
+        f = file_open(traza_fichero, 1006)
+    end
+    if f == 0
+        return
+    end
+    file_seek(f, 0, 1)
+    file_write_line(f, l)
+    file_close(f)
 end

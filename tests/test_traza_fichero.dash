@@ -1,0 +1,20 @@
+# Test: la traza a un fichero (tarea 67, depuración de red; lo pidió Oskis R.P): empieza con su cabecera y cada línea
+# se añade al final (abriéndolo y cerrándolo: sigue ahí aunque el Amiga se cuelgue); "" vuelve a la salida.
+# expect-out: cabecera true | uno true | dos true | líneas 3
+# expect-out: a la salida
+
+import "../lib/traza.dash"
+
+Main
+    f = "T:traza_prueba.txt"
+    traza_activa = true
+    traza_a_fichero(f, "Cabecera\n")
+    traza("uno")
+    traza("dos")
+    t = file_read_text(f)
+    Print "cabecera " + str_starts(t, "Cabecera\n") + " | uno " + (str_find(t, "] uno") > 0) + " | dos " + (str_find(t, "] dos") > str_find(t, "] uno")) + " | líneas " + (str_split(str_trim(t), "\n").length)
+    traza_a_fichero("", "")
+    traza_activa = false
+    Print "a la salida"
+    file_delete(f)
+end

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language español
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Página
 MSG_51
 Abrir fichero...
 ; Open file...
+MSG_52
+En su propia pantalla
+; Open on its own screen
+MSG_53
+Modo lectura
+; Reader view
+MSG_54
+Inspeccionar
+; Inspect
+MSG_55
+Registro de depuración de red
+; Network debug log
 MSG_100
 Esta página no se guarda en marcadores
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Sin guardar: %1
 MSG_167
 Guardada en %1
 ; Saved in %1
+MSG_168
+Tachyon se abrirá en su propia pantalla la próxima vez
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon se abrirá en la pantalla del Workbench la próxima vez
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Modo lectura
+; Reader view
+MSG_171
+Abre una página y elige Modo lectura en el menú Navegar.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+En esta página no hay ningún artículo que leer.
+; There is no article to read on this page.
 MSG_300
 Su versión sin JavaScript: ligera, la que mejor va en un Amiga. Privado.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ Hoy
 MSG_346
 Ayer
 ; Yesterday
+MSG_347
+Buscar
+; Search
+MSG_348
+Nada del historial tiene: %1
+; Nothing in the history matches: %1
+MSG_349
+Última visita: %1. Visitas: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 No hay ninguna guardada.
 ; None stored.
@@ -653,3 +689,144 @@ Contenido de %1
 MSG_478
 Cajón superior
 ; Parent drawer
+MSG_480
+Extraer...
+; Extract...
+MSG_481
+En este Amiga no hay nada que abra este tipo de fichero. Hace falta %1 (o XAD, xadmaster.library, que abre casi todos).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Buscar %1 en Aminet
+; Look for %1 on Aminet
+MSG_483
+No se ha extraído nada.
+; Nothing was extracted.
+MSG_484
+Extraer en un cajón nuevo
+; Extract into a new drawer
+MSG_485
+Extrayendo %1...
+; Extracting %1...
+MSG_486
+No se pudo extraer %1: %2
+; Couldn't extract %1: %2
+MSG_487
+Nada todavía.
+; Nothing yet.
+MSG_488
+Ejecutar
+; Run
+MSG_489
+Método
+; Method
+MSG_490
+Estado
+; Status
+MSG_491
+Tipo
+; Type
+MSG_492
+Dirección
+; Address
+MSG_493
+%1 peticiones, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Memoria fast libre
+; Free fast memory
+MSG_495
+Memoria chip libre
+; Free chip memory
+MSG_496
+Mayor bloque libre
+; Largest free block
+MSG_497
+JavaScript de esta página
+; JavaScript of this page
+MSG_498
+Imágenes de esta página
+; Pictures of this page
+MSG_499
+Elementos
+; Elements
+MSG_500
+Cosas que pintar
+; Things to draw
+MSG_501
+Ninguna.
+; None.
+MSG_502
+Caja
+; Box
+MSG_505
+Tamaño de la página
+; Page size
+MSG_506
+Inspeccionar
+; Inspect
+MSG_507
+Consola
+; Console
+MSG_508
+Elementos
+; Elements
+MSG_509
+Red
+; Network
+MSG_510
+Memoria
+; Memory
+MSG_511
+Aplicación
+; Application
+MSG_512
+Tiempos
+; Timings
+MSG_513
+Refrescar
+; Refresh
+MSG_514
+Y %1 más: elige uno para abrir su rama.
+; And %1 more: choose one to open its branch.
+MSG_515
+No hay sitio para otra ventana
+; No room for another window
+MSG_516
+La ventana que se inspeccionaba está cerrada.
+; The window that was inspected is closed.
+MSG_517
+Bajar la página
+; Download the page
+MSG_518
+Leer el HTML
+; Read the HTML
+MSG_519
+Esperar el CSS y los scripts
+; Wait for CSS and scripts
+MSG_520
+Ejecutar los scripts
+; Run the scripts
+MSG_521
+Estilo
+; Style
+MSG_522
+Primera maqueta
+; First layout
+MSG_523
+Hasta tenerla entera (con imágenes)
+; Until complete (with pictures)
+MSG_524
+Maquetas (%1)
+; Layouts (%1)
+MSG_525
+Temporizadores del JavaScript
+; JavaScript timers
+MSG_526
+Registro de depuración de red encendido: %1
+; Network debug log on: %1
+MSG_527
+Registro de depuración de red apagado
+; Network debug log off
+MSG_528
+Poca memoria: se ha parado el JavaScript de la página
+; Low memory: the page's JavaScript was stopped

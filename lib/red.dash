@@ -44,6 +44,35 @@ struct Conexion
     puerto: Int = 0
     empezada: Int = 0      # time_ms de cuando se pidió la conexión
     reintentos: Int = 0
+    nul: Bool = false      # red_leer_linea vio un byte 0 (str_from_buffer lo da como espacio; lib/http.dash)
+    # las fases al abrirla, en ms desde empezada (depuración de red, tarea 67; -1: aún no): el nombre resuelto
+    # (DNS), la conexión TCP hecha y la TLS negociada; espera_sitio: ms que esperó sitio en la tabla de conexiones
+    t_dns: Int = -1
+    t_tcp: Int = -1
+    t_tls: Int = -1
+    espera_sitio: Int = 0
+end
+
+# "DNS 120 ms, TCP 80 ms, TLS 900 ms" (lo que se sabe), para la traza
+func red_fases(c: Conexion) -> String
+    t = ""
+    if c.espera_sitio > 0
+        t = "sitio " + c.espera_sitio + " ms, "
+    end
+    if c.t_dns >= 0
+        t = t + "DNS " + c.t_dns + " ms"
+    else
+        t = t + "DNS ?"
+    end
+    if c.t_tcp >= 0 and c.t_dns >= 0
+        t = t + ", TCP " + (c.t_tcp - c.t_dns) + " ms"
+    elif c.t_tcp >= 0
+        t = t + ", DNS+TCP " + c.t_tcp + " ms"
+    end
+    if c.con_tls and c.t_tls >= 0 and c.t_tcp >= 0
+        t = t + ", TLS " + (c.t_tls - c.t_tcp) + " ms"
+    end
+    return t
 end
 
 # Sin ninguna conexión, la tarea de la red acaba tras esto (ms); dashweb lo sube y llama a red_terminar al salir
@@ -125,6 +154,7 @@ func red_abrir_avanzar(c: Conexion) -> Int
         end
         if c.sock >= 0
             c.fase = 1
+            c.espera_sitio = time_ms() - c.empezada
             c.empezada = time_ms()
             return 0
         end
@@ -144,7 +174,20 @@ func red_abrir_avanzar(c: Conexion) -> Int
         red_cerrar(c)
         return -1
     end
+    ahora = time_ms() - c.empezada
+    if e == 2 and c.t_dns < 0 and net_bg_stage(c.sock) >= 1
+        c.t_dns = ahora
+    end
+    if e == 3 and c.t_tcp < 0
+        c.t_tcp = ahora
+    end
     if e == 4
+        if c.t_tcp < 0
+            c.t_tcp = ahora
+        end
+        if c.con_tls and c.t_tls < 0
+            c.t_tls = ahora
+        end
         c.fase = 0
         return 1
     end
@@ -190,6 +233,21 @@ func red_enviar(c: Conexion, texto: String) -> Bool
     return ok
 end
 
+# Lo mismo con n bytes de un búfer (un cuerpo binario: lib/http.dash, _carga_enviar); el búfer se puede soltar luego
+func red_enviar_bufer(c: Conexion, b: Int, n: Int) -> Bool
+    if c.cerrada
+        return false
+    end
+    if n <= 0
+        return true
+    end
+    ok = net_bg_send_buffer(c.sock, b, n)
+    if not ok
+        c.error = "out of memory"
+    end
+    return ok
+end
+
 # Sitio para un trozo más al final del buffer: lo no leído pasa al principio (sin solaparse)
 # o a un buffer más grande
 func _red_sitio(c: Conexion)
@@ -205,6 +263,13 @@ func _red_sitio(c: Conexion)
             cap = cap * 2
         end
         nuevo = buffer_alloc(cap)
+        if nuevo == 0
+            # sin memoria para el doble: la conexión acaba con ese error (antes se copiaba a la dirección 0 y el
+            # Amiga se reiniciaba: un vídeo de YouTube de 25 minutos en Coffin con 256 MB; tarea 64g)
+            c.error = "out of memory"
+            c.cerrada = true
+            return
+        end
         buffer_copy(nuevo, 0, c.buf, c.ini, sin_leer)
         buffer_free(c.buf)
         c.buf = nuevo
@@ -212,6 +277,17 @@ func _red_sitio(c: Conexion)
     end
     c.ini = 0
     c.fin = sin_leer
+end
+
+# ¿Puede crecer el búfer de c, si le hace falta pronto, y quedar reserva bytes libres? Al llenarse pide uno del doble
+# y suelta el de antes después de copiar: con lo que llega de un vídeo largo, el Amiga se quedaba sin memoria
+# (lib/videos.dash deja de traer antes; tarea 64g)
+func red_cabe_crecer(c: Conexion, reserva: Int) -> Bool
+    if c == nil or c.buf == 0 or c.cap - c.fin >= RED_TROZO * 16
+        return true
+    end
+    # (dividiendo: el doble de un búfer grande no cabe en 32 bits)
+    return c.cap <= mem_largest() / 2 and c.cap <= (mem_total() - reserva) / 2
 end
 
 # Trae otro trozo (espera hasta c.espera); false si la conexión se cerró o no llegó nada a tiempo
@@ -247,6 +323,9 @@ func red_recibir_ya(c: Conexion) -> Int
         return 0
     end
     _red_sitio(c)
+    if c.cerrada
+        return -1
+    end
     n = net_bg_recv(c.sock, c.buf + c.fin, c.cap - c.fin)
     if n < 0
         c.cerrada = true
@@ -284,7 +363,11 @@ func red_leer_linea(c: Conexion) -> String
     i = c.ini
     while true
         while i < c.fin
-            if buffer_get_byte(c.buf, i) == 10
+            b = buffer_get_byte(c.buf, i)
+            if b == 0
+                c.nul = true
+            end
+            if b == 10
                 fin = i
                 if fin > c.ini and buffer_get_byte(c.buf, fin - 1) == 13
                     fin = fin - 1

@@ -106,8 +106,20 @@ static int _js_es_utf8 = 0;
 /* Past the limit, first an "interrupted" that the script can catch (its catch and finally run: Preact's signals in
    xataka.com, cut inside a try/finally, kept a computed marked as running and every click after gave "Cycle
    detected"; tarea 42e); if it goes on 5 s more, one that it cannot. */
+/* With pictures decoding in their own processes (lib/imagen_dec.dash, priority -1) the JavaScript lets go of the CPU
+   one tick every 100 ms (js_ceder): Exec did not share it between them and YouTube, whose scripts run for seconds at a
+   time, saw each thumbnail 300 s late (alone, 0.8 s; letting go like this, 2.3 s while busy) */
+static int _js_ceder = 0;
+static ULONG _js_cedido = 0;
 static int _js_interrumpir(JSRuntime *rt, void *o) {
     ULONG t;
+    if (_js_ceder) {
+        t = _js_ms();
+        if (t - _js_cedido >= 100UL) {
+            Delay(1);
+            _js_cedido = _js_ms();
+        }
+    }
     if (_js_tope <= 0)
         return 0;
     t = _js_ms() - _js_desde;
@@ -819,6 +831,10 @@ void js_tope(LONG segundos)
 {
     _js_tope = segundos;
 }
+void js_ceder(LONG si)
+{
+    _js_ceder = si != 0;
+}
 LONG js_memoria(LONG js)
 {
     _JsMotor *m = (_JsMotor *)js;
@@ -1517,6 +1533,19 @@ static JSValue _jsdom_lista(JSContext *ctx, DashArrayLong *l) {
 #define _JSDOM_ESTE_PONER(nombre) _Dash_Nodo *n = _jsdom_nodo(ctx, this_val); \
     if (!n) { JS_DefinePropertyValueStr(ctx, this_val, nombre, JS_DupValue(ctx, v), JS_PROP_C_W_E); return JS_UNDEFINED; }
 
+/* ¿n está en un documento de XML (el de DOMParser, con el atributo "xml")? Su tagName va tal cual, no en mayúsculas */
+static int _jsdom_en_xml(_Dash_Nodo *n) {
+    LONG i, k;
+    while (n->padre) n = n->padre;
+    if (n->tipo != DOM_DOCUMENTO || !n->atributos) return 0;
+    k = DashArray_length(n->atributos);
+    for (i = 0; i < k; i++) {
+        _Dash_Atributo *at = (_Dash_Atributo *)DashArray_get(n->atributos, i);
+        if (at->nombre && !strcmp((const char *)at->nombre, "xml")) return 1;
+    }
+    return 0;
+}
+
 static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     char *t;
     JSValue v;
@@ -1525,6 +1554,7 @@ static JSValue _jsdom_tagName(JSContext *ctx, JSValueConst this_val) {
     if (n->tipo != DOM_ELEMENTO)
         return JS_NewString(ctx, n->tipo == DOM_TEXTO ? "#text" : n->tipo == DOM_COMENTARIO ? "#comment"
                                  : n->tipo == DOM_FRAGMENTO ? "#document-fragment" : "#document");
+    if (_jsdom_en_xml(n)) return _jsdom_cadena(ctx, n->nombre);
     t = strdup((const char *)n->nombre);
     if (!t) return JS_EXCEPTION;
     { char *p; for (p = t; *p; p++) if (*p >= 'a' && *p <= 'z') *p -= 32; }
@@ -1538,8 +1568,17 @@ static JSValue _jsdom_nodeType(JSContext *ctx, JSValueConst this_val) {
     return JS_NewInt32(ctx, n->tipo);
 }
 
+/* the text as the page had it, in UTF-8, if something in it does not fit in Latin-1 (lib/jsdom.dash
+   jsdom_texto_unicode: React compared its text with the changed one, error #418; tarea 68); else the Latin-1 one */
+static JSValue _jsdom_texto_js(JSContext *ctx, _Dash_Nodo *n, STRPTR latin1) {
+    STRPTR u = jsdom_texto_unicode(n);
+    if (u && *u) return JS_NewString(ctx, (const char *)u);
+    return _jsdom_cadena(ctx, latin1);
+}
+
 static JSValue _jsdom_textContent(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
+    if (n->tipo == DOM_TEXTO || n->tipo == DOM_ELEMENTO) return _jsdom_texto_js(ctx, n, jsdom_texto(n));
     return _jsdom_cadena(ctx, jsdom_texto(n));
 }
 
@@ -2279,6 +2318,7 @@ static JSValue _jsdom_outerHTML(JSContext *ctx, JSValueConst this_val) {
 static JSValue _jsdom_nodeValue(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
     if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_NULL;
+    if (n->tipo == DOM_TEXTO) return _jsdom_texto_js(ctx, n, n->texto);
     return _jsdom_cadena(ctx, n->texto);
 }
 
@@ -2344,6 +2384,31 @@ static JSValue _jsdom_caja(JSContext *ctx, JSValueConst this_val, int argc, JSVa
 
 /* __dashweb_vista(): [width, height, scroll y, page height] (jsdom_vista) */
 /* __dashweb_pedir(id, method, url, headers "k: v\n...", body): a request of XMLHttpRequest/fetch (jsdom_pedir) */
+/* __dashweb_esperar(id): XMLHttpRequest síncrono; la petición id acaba (y se entrega) antes de volver */
+static JSValue _jsdom_esperar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsDom *d = _jsdom_de(ctx);
+    int32_t id = 0;
+    if (!d || argc < 1 || JS_ToInt32(ctx, &id, argv[0])) return JS_UNDEFINED;
+    jsdom_esperar_peticion(d->motor, id);
+    return JS_UNDEFINED;
+}
+
+/* __dashweb_dda(obj): el objeto se porta como document.all en los navegadores ([[IsHTMLDDA]], anexo B de ECMAScript):
+   typeof da "undefined", es falso y == null, pero no === undefined (polymer-resin de YouTube lo distingue así) */
+static JSValue _jsdom_dda(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    if (argc >= 1 && JS_IsObject(argv[0])) JS_SetIsHTMLDDA(ctx, argv[0]);
+    return JS_UNDEFINED;
+}
+
+/* __dashweb_cancelar(id): abort() de XMLHttpRequest; la petición id se corta y deja su conexión libre */
+static JSValue _jsdom_cancelar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsDom *d = _jsdom_de(ctx);
+    int32_t id = 0;
+    if (!d || argc < 1 || JS_ToInt32(ctx, &id, argv[0])) return JS_UNDEFINED;
+    jsdom_cancelar_peticion(d->motor, id);
+    return JS_UNDEFINED;
+}
+
 static JSValue _jsdom_pedir(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     _JsDom *d = _jsdom_de(ctx);
     int32_t id = 0;
@@ -2594,6 +2659,15 @@ static JSValue _jsdom_navegar(JSContext *ctx, JSValueConst this_val, int argc, J
     char *u = _jsdom_arg(ctx, argc, argv, 0);
     if (u) jsdom_navegar(_jsdom_de(ctx)->doc, (STRPTR)u, argc > 1 && JS_ToBool(ctx, argv[1]));
     _jsdom_soltar(u);
+    return JS_UNDEFINED;
+}
+
+/* __dashweb_historia(texto): history.pushState/replaceState/go de la página ("push U", "replace U", "go N",
+   "fuera N"; jsdom_historia, que Tachyon lee en el siguiente tic; tarea 64d) */
+static JSValue _jsdom_historia(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *t = _jsdom_arg(ctx, argc, argv, 0);
+    if (t) jsdom_historia(_jsdom_de(ctx)->doc, (STRPTR)t);
+    _jsdom_soltar(t);
     return JS_UNDEFINED;
 }
 
@@ -2885,10 +2959,14 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_esperar", JS_NewCFunction(m->ctx, _jsdom_esperar, "__dashweb_esperar", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_cancelar", JS_NewCFunction(m->ctx, _jsdom_cancelar, "__dashweb_cancelar", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_dda", JS_NewCFunction(m->ctx, _jsdom_dda, "__dashweb_dda", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galleta", JS_NewCFunction(m->ctx, _jsdom_galleta, "__dashweb_galleta", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_navegar", JS_NewCFunction(m->ctx, _jsdom_navegar, "__dashweb_navegar", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_historia", JS_NewCFunction(m->ctx, _jsdom_historia, "__dashweb_historia", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_es_nodo", JS_NewCFunction(m->ctx, _jsdom_es_nodo, "__dashweb_es_nodo", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Side
 MSG_51
 Åpne fil...
 ; Open file...
+MSG_52
+Åpne på egen skjerm
+; Open on its own screen
+MSG_53
+Lesevisning
+; Reader view
+MSG_54
+Inspiser
+; Inspect
+MSG_55
+Feilsøkingslogg for nettverket
+; Network debug log
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Ikke lagret: %1
 MSG_167
 Lagret i %1
 ; Saved in %1
+MSG_168
+Tachyon åpnes på sin egen skjerm neste gang
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon åpnes på Workbench-skjermen neste gang
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Lesevisning
+; Reader view
+MSG_171
+Åpne en side og velg Lesevisning i menyen Naviger.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Det finnes ingen artikkel å lese på denne siden.
+; There is no article to read on this page.
 MSG_300
 Versjonen uten JavaScript: lett, den som går best på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ I dag
 MSG_346
 I går
 ; Yesterday
+MSG_347
+Søk
+; Search
+MSG_348
+Ingenting i loggen inneholder: %1
+; Nothing in the history matches: %1
+MSG_349
+Siste besøk: %1. Besøk: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Ingen lagret.
 ; None stored.
@@ -653,3 +689,144 @@ Innhold i %1
 MSG_478
 Overordnet skuff
 ; Parent drawer
+MSG_480
+Pakk ut...
+; Extract...
+MSG_481
+Ingenting på denne Amigaen åpner denne typen fil. Det trengs %1 (eller XAD, xadmaster.library, som åpner nesten alle).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Søk etter %1 på Aminet
+; Look for %1 on Aminet
+MSG_483
+Ingenting ble pakket ut.
+; Nothing was extracted.
+MSG_484
+Pakk ut i en ny skuff
+; Extract into a new drawer
+MSG_485
+Pakker ut %1...
+; Extracting %1...
+MSG_486
+Kunne ikke pakke ut %1: %2
+; Couldn't extract %1: %2
+MSG_487
+Ingenting ennå.
+; Nothing yet.
+MSG_488
+Kjør
+; Run
+MSG_489
+Metode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adresse
+; Address
+MSG_493
+%1 forespørsler, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Ledig fast-minne
+; Free fast memory
+MSG_495
+Ledig chip-minne
+; Free chip memory
+MSG_496
+Største ledige blokk
+; Largest free block
+MSG_497
+JavaScript på denne siden
+; JavaScript of this page
+MSG_498
+Bilder på denne siden
+; Pictures of this page
+MSG_499
+Elementer
+; Elements
+MSG_500
+Ting å tegne
+; Things to draw
+MSG_501
+Ingen.
+; None.
+MSG_502
+Boks
+; Box
+MSG_505
+Sidestørrelse
+; Page size
+MSG_506
+Inspiser
+; Inspect
+MSG_507
+Konsoll
+; Console
+MSG_508
+Elementer
+; Elements
+MSG_509
+Nettverk
+; Network
+MSG_510
+Minne
+; Memory
+MSG_511
+Program
+; Application
+MSG_512
+Tider
+; Timings
+MSG_513
+Oppdater
+; Refresh
+MSG_514
+Og %1 til: velg ett for å åpne grenen.
+; And %1 more: choose one to open its branch.
+MSG_515
+Ikke plass til et vindu til
+; No room for another window
+MSG_516
+Vinduet som ble inspisert er lukket.
+; The window that was inspected is closed.
+MSG_517
+Last ned siden
+; Download the page
+MSG_518
+Les HTML
+; Read the HTML
+MSG_519
+Vent på CSS og skript
+; Wait for CSS and scripts
+MSG_520
+Kjør skriptene
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Første layout
+; First layout
+MSG_523
+Til komplett (med bilder)
+; Until complete (with pictures)
+MSG_524
+Layouter (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-tidtakere
+; JavaScript timers
+MSG_526
+Feilsøkingslogg for nettverket på: %1
+; Network debug log on: %1
+MSG_527
+Feilsøkingslogg for nettverket av
+; Network debug log off
+MSG_528
+Lite minne: sidens JavaScript er stoppet
+; Low memory: the page's JavaScript was stopped

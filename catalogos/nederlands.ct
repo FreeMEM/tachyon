@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Pagina
 MSG_51
 Bestand openen...
 ; Open file...
+MSG_52
+Op eigen scherm openen
+; Open on its own screen
+MSG_53
+Leesweergave
+; Reader view
+MSG_54
+Inspecteren
+; Inspect
+MSG_55
+Netwerk-foutopsporingslog
+; Network debug log
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Niet opgeslagen: %1
 MSG_167
 Opgeslagen in %1
 ; Saved in %1
+MSG_168
+Tachyon opent de volgende keer op een eigen scherm
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon opent de volgende keer op het Workbench-scherm
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Leesweergave
+; Reader view
+MSG_171
+Open een pagina en kies Leesweergave in het menu Navigeren.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Op deze pagina staat geen artikel om te lezen.
+; There is no article to read on this page.
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ Vandaag
 MSG_346
 Gisteren
 ; Yesterday
+MSG_347
+Zoeken
+; Search
+MSG_348
+Niets in de geschiedenis bevat: %1
+; Nothing in the history matches: %1
+MSG_349
+Laatste bezoek: %1. Bezoeken: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Geen opgeslagen.
 ; None stored.
@@ -653,3 +689,144 @@ Inhoud van %1
 MSG_478
 Bovenliggende lade
 ; Parent drawer
+MSG_480
+Uitpakken...
+; Extract...
+MSG_481
+Niets op deze Amiga opent dit soort bestand. Er is %1 nodig (of XAD, xadmaster.library, dat bijna alles opent).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+%1 zoeken op Aminet
+; Look for %1 on Aminet
+MSG_483
+Er is niets uitgepakt.
+; Nothing was extracted.
+MSG_484
+Uitpakken in een nieuwe lade
+; Extract into a new drawer
+MSG_485
+%1 uitpakken...
+; Extracting %1...
+MSG_486
+Kon %1 niet uitpakken: %2
+; Couldn't extract %1: %2
+MSG_487
+Nog niets.
+; Nothing yet.
+MSG_488
+Uitvoeren
+; Run
+MSG_489
+Methode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adres
+; Address
+MSG_493
+%1 verzoeken, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Vrij fast-geheugen
+; Free fast memory
+MSG_495
+Vrij chip-geheugen
+; Free chip memory
+MSG_496
+Grootste vrije blok
+; Largest free block
+MSG_497
+JavaScript van deze pagina
+; JavaScript of this page
+MSG_498
+Afbeeldingen van deze pagina
+; Pictures of this page
+MSG_499
+Elementen
+; Elements
+MSG_500
+Dingen om te tekenen
+; Things to draw
+MSG_501
+Geen.
+; None.
+MSG_502
+Vak
+; Box
+MSG_505
+Paginagrootte
+; Page size
+MSG_506
+Inspecteren
+; Inspect
+MSG_507
+Console
+; Console
+MSG_508
+Elementen
+; Elements
+MSG_509
+Netwerk
+; Network
+MSG_510
+Geheugen
+; Memory
+MSG_511
+Toepassing
+; Application
+MSG_512
+Tijden
+; Timings
+MSG_513
+Vernieuwen
+; Refresh
+MSG_514
+En nog %1: kies er een om zijn tak te openen.
+; And %1 more: choose one to open its branch.
+MSG_515
+Geen ruimte voor nog een venster
+; No room for another window
+MSG_516
+Het geïnspecteerde venster is gesloten.
+; The window that was inspected is closed.
+MSG_517
+De pagina downloaden
+; Download the page
+MSG_518
+De HTML lezen
+; Read the HTML
+MSG_519
+Wachten op CSS en scripts
+; Wait for CSS and scripts
+MSG_520
+De scripts uitvoeren
+; Run the scripts
+MSG_521
+Stijl
+; Style
+MSG_522
+Eerste opmaak
+; First layout
+MSG_523
+Tot compleet (met afbeeldingen)
+; Until complete (with pictures)
+MSG_524
+Opmaken (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-timers
+; JavaScript timers
+MSG_526
+Netwerk-foutopsporingslog aan: %1
+; Network debug log on: %1
+MSG_527
+Netwerk-foutopsporingslog uit
+; Network debug log off
+MSG_528
+Weinig geheugen: het JavaScript van de pagina is gestopt
+; Low memory: the page's JavaScript was stopped

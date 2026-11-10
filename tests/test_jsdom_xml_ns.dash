@@ -1,0 +1,28 @@
+# Test: espacios de nombres en XML (tarea 41d, WPT domparsing): DOMParser resuelve los xmlns (namespaceURI y prefix
+# de elementos y atributos), XMLSerializer pone los xmlns que hacen falta y genera ns1 para un atributo con espacio
+# de nombres sin prefijo, <a/> sin hijos; namespaceURI de un elemento dentro de <svg> es el de SVG, el de
+# createElement("svg") el de XHTML, y el de un texto undefined.
+# memcheck
+# expect-out: leido: urn:a p urn:b null | <r xmlns="urn:a" xmlns:p="urn:b"><p:h p:x="1"/><c>t</c></r>
+# expect-out: generado: <q xmlns:ns1="uri" ns1:name="v"/>
+# expect-out: svg: http://www.w3.org/2000/svg http://www.w3.org/1999/xhtml http://www.w3.org/1999/xhtml undefined
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<!doctype html><html><head></head><body><svg><circle r=1></circle></svg><p>x</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var d = new DOMParser().parseFromString('<r xmlns=\"urn:a\" xmlns:p=\"urn:b\"><p:h p:x=\"1\"/><c>t</c></r>', 'application/xml');"
+    c = c + "var h = d.documentElement.firstChild, s = new XMLSerializer();"
+    c = c + "'leido: ' + d.documentElement.namespaceURI + ' ' + h.prefix + ' ' + h.namespaceURI + ' ' + d.documentElement.lastChild.prefix + ' | ' + s.serializeToString(d)"
+    Print js_evaluar(js, c, "t.js")
+    c = "var x = document.implementation.createDocument(null, null, null), q = x.createElementNS(null, 'q'); q.setAttributeNS('uri', 'name', 'v');"
+    c = c + "'generado: ' + new XMLSerializer().serializeToString(q)"
+    Print js_evaluar(js, c, "t.js")
+    c = "'svg: ' + document.querySelector('circle').namespaceURI + ' ' + document.createElement('svg').namespaceURI + ' ' + document.querySelector('p').namespaceURI + ' ' + document.querySelector('p').firstChild.namespaceURI"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

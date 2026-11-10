@@ -33,6 +33,7 @@ struct Animacion
     fondo: Int = -1
     sombra: String = ""
     em: Int = 16
+    prog_ultimo: Int = -2    # el punto (animacion_punto) del último fotograma pintado (animaciones_quietas)
 end
 
 # Las animaciones de n que tienen @keyframes (vacía si ninguna)
@@ -192,8 +193,9 @@ func _milesimas(t: String) -> Int
     return signo * (Int("0" + a[:p]) * 1000 + Int(dec[:3]))
 end
 
-# En qué punto de sus fotogramas (0-1000) va a los ms dados; -1 si entonces no hace nada (antes de empezar
-# sin backwards, o acabada sin forwards)
+# En qué punto de sus fotogramas (0-1000) va a los ms dados, sin la curva (animacion_valor la aplica en cada tramo
+# entre dos fotogramas, como dice CSS); -1 si entonces no hace nada (antes de empezar sin backwards, o acabada sin
+# forwards)
 func animacion_progreso(a: Animacion, ms: Int) -> Int
     if a.duracion <= 0
         return -1
@@ -224,7 +226,28 @@ func animacion_progreso(a: Animacion, ms: Int) -> Int
     if al_reves
         parte = 1000 - parte
     end
-    return animacion_curva(a.curva, parte)
+    return parte
+end
+
+# El tramo entre fotogramas donde está p y su punto en él con la curva, en un número (para animaciones_quietas: si
+# no cambia, nada ha cambiado; con steps(), solo al cambiar de paso); -1 si p < 0
+func animacion_punto(a: Animacion, p: Int) -> Int
+    if p < 0
+        return -1
+    end
+    s0 = 0
+    s1 = 1000
+    for f in a.cuadros
+        if f.pos <= p and f.pos > s0 and f.pos < 1000
+            s0 = f.pos
+        elif f.pos > p and f.pos < s1
+            s1 = f.pos
+        end
+    end
+    if s1 <= s0
+        return s0 * 1001
+    end
+    return s0 * 1001 + animacion_curva(a.curva, (p - s0) * 1000 / (s1 - s0))
 end
 
 # La función de tiempo en x (0-1000)
@@ -347,7 +370,8 @@ func animacion_valor(a: Animacion, propiedad: String, p: Int) -> String
     elif despues == ""
         return antes
     end
-    return animacion_mezcla(antes, despues, (p - antes_pos) * 1000 / (despues_pos - antes_pos))
+    # (la curva, en este tramo: steps(1) entre 0 % y 50 % se queda en el primero, como el cursor que parpadea)
+    return animacion_mezcla(antes, despues, animacion_curva(a.curva, (p - antes_pos) * 1000 / (despues_pos - antes_pos)))
 end
 
 func _decl_valor(decl: [Declaracion], propiedad: String) -> String
@@ -553,6 +577,28 @@ end
 # lo escala alrededor del centro de su caja (scale: cajas e imágenes de tamaño, el texto solo de sitio y velado por
 # debajo de 0,3), lo recolorea (color, background-color), rehace su sombra (box-shadow) y lo esconde si su opacity
 # baja de 0,5 (el pintor no mezcla texto); true si alguna sigue viva (hace falta otro fotograma)
+# ¿Ninguna está en otro punto que en el último fotograma pintado? Con steps() (el cursor que parpadea en el logo de
+# dash.freemem.space: steps(1) en 1 s) cambian dos veces por segundo y se repintaban en cada fotograma, con la CPU
+# al 96 % para siempre (tarea 68; lo contó David Martínez)
+func animaciones_quietas(anims: [Animacion], ms: Int) -> Bool
+    for a in anims
+        if animacion_punto(a, animacion_progreso(a, ms)) != a.prog_ultimo
+            return false
+        end
+    end
+    return true
+end
+
+# ¿Alguna sigue viva a los ms dados? (lo mismo que dice animar)
+func animaciones_vivas(anims: [Animacion], ms: Int) -> Bool
+    for a in anims
+        if a.vueltas < 0 or ms < a.retardo + a.vueltas / 100 * a.duracion / 10
+            return true
+        end
+    end
+    return false
+end
+
 func animar(p: Pagina, anims: [Animacion], ms: Int) -> Bool
     viva = false
     # cómo estaba cada dibujo antes de animarse
@@ -579,6 +625,7 @@ func animar(p: Pagina, anims: [Animacion], ms: Int) -> Bool
         a.fondo = -1
         a.sombra = ""
         prog = animacion_progreso(a, ms)
+        a.prog_ultimo = animacion_punto(a, prog)
         if a.vueltas < 0 or ms < a.retardo + a.vueltas / 100 * a.duracion / 10
             viva = true
         end

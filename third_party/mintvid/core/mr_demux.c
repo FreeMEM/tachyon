@@ -313,6 +313,12 @@ void mr_demux_rewind(mr_demux *d)
     else mr_raw_mpeg4_rewind(&d->u.raw_mpeg4);
 }
 
+/* (Tachyon, tarea 64f) Las imágenes del vídeo de un MOV/MP4 (su índice), para su duración; 0 si no se sabe */
+uint32_t mr_demux_video_frames(const mr_demux *d)
+{
+    return d && d->kind == MR_CONTAINER_MOV ? mr_mov_sample_count(&d->u.mov) : 0;
+}
+
 int mr_demux_can_seek(const mr_demux *d)
 {
     /* Excludes network sources on principle even though mr_mov_seek() itself

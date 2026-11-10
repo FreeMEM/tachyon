@@ -81,6 +81,47 @@ end
     return dom_texto(n)
 end
 
+# El texto de n (textContent; nodeValue de un texto) en UTF-8 si alguno de dentro tiene algo que no cabe en Latin-1
+# (Nodo.unicode, mientras valga); "" si no, y entonces vale jsdom_texto (tarea 68: React y el error #418)
+@export func jsdom_texto_unicode(n: Nodo) -> String
+    if not dom_hay_unicode or (n.tipo != DOM_TEXTO and n.tipo != DOM_ELEMENTO and n.tipo != DOM_DOCUMENTO) or not _jsdom_con_unicode(n)
+        return ""
+    end
+    return _jsdom_unicode_de(n)
+end
+
+func _jsdom_unicode_vale(n: Nodo) -> Bool
+    return n.unicode != nil and utf8_a_latin1(n.unicode) == n.texto
+end
+
+func _jsdom_con_unicode(n: Nodo) -> Bool
+    if n.tipo == DOM_TEXTO
+        return _jsdom_unicode_vale(n)
+    end
+    for h in n.hijos
+        if (h.tipo == DOM_TEXTO or h.tipo == DOM_ELEMENTO) and _jsdom_con_unicode(h)
+            return true
+        end
+    end
+    return false
+end
+
+func _jsdom_unicode_de(n: Nodo) -> String
+    if n.tipo == DOM_TEXTO
+        if _jsdom_unicode_vale(n)
+            return n.unicode
+        end
+        return latin1_a_utf8(n.texto)
+    end
+    r = ""
+    for h in n.hijos
+        if h.tipo == DOM_TEXTO or h.tipo == DOM_ELEMENTO
+            r = r + _jsdom_unicode_de(h)
+        end
+    end
+    return r
+end
+
 # textContent = t: los hijos se cambian por un texto
 @export func jsdom_poner_texto(n: Nodo, t: String)
     if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION
@@ -781,6 +822,8 @@ struct PeticionJS
     cuerpo: String = ""
     tipo: String = ""
     extra: String = ""
+    agente: String = ""    # el User-Agent que puso la página ("" el de Tachyon)
+    binario: Bool = false  # el cuerpo son bytes (escapados: lib/http.dash http_binario_largo)
 end
 
 # Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
@@ -806,7 +849,7 @@ func _jsdom_peticiones_empezar(js: Int)
         end
         if p.js == js and p.en_cola
             p.en_cola = false
-            p.carga = http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000)
+            p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
             activas = activas + 1
         end
     end
@@ -818,6 +861,8 @@ var jsdom_peticiones: [PeticionJS] = []
 @export func jsdom_pedir(js: Int, id: Int, metodo: String, url: String, cabeceras: String, cuerpo: String)
     tipo = ""
     extra = ""
+    agente = ""
+    binario = false
     for linea in str_split(cabeceras, "\n")
         p = str_find(linea, ":")
         if p <= 0
@@ -825,9 +870,15 @@ var jsdom_peticiones: [PeticionJS] = []
         end
         nombre = str_lower(str_trim(linea[:p]))
         valor = str_trim(linea[p + 1:])
-        if nombre == "content-type"
+        if nombre == "content-type" and metodo != "GET" and metodo != "HEAD" and valor != ""
             tipo = valor
-        elif nombre == "host" or nombre == "content-length" or nombre == "cookie" or nombre == "connection" or nombre == "user-agent" or nombre == "accept-encoding" or str_starts(nombre, "sec-") or str_starts(nombre, "proxy-")
+        elif nombre == "x-tachyon-binario"
+            # (la marca del preludio: el cuerpo son bytes escapados; no sale)
+            binario = true
+        elif nombre == "user-agent"
+            # (ya no es una cabecera prohibida en Fetch: la página puede poner la suya)
+            agente = valor
+        elif nombre == "host" or nombre == "content-length" or nombre == "cookie" or nombre == "connection" or nombre == "accept-encoding" or str_starts(nombre, "sec-") or str_starts(nombre, "proxy-")
             continue
         else
             if extra != ""
@@ -835,9 +886,6 @@ var jsdom_peticiones: [PeticionJS] = []
             end
             extra = extra + str_trim(linea[:p]) + ": " + valor
         end
-    end
-    if tipo == "" and cuerpo != "" and metodo != "GET"
-        tipo = "text/plain;charset=UTF-8"
     end
     if URL_RASTREO_BLOQUEAR and url_rastreador(url)
         # (un rastreador: no se pide; en el siguiente avance, un error de red; también los <script> que mete el
@@ -854,8 +902,61 @@ var jsdom_peticiones: [PeticionJS] = []
     p.cuerpo = cuerpo
     p.tipo = tipo
     p.extra = extra
+    p.agente = agente
+    p.binario = binario
     jsdom_peticiones.push(p)
     _jsdom_peticiones_empezar(js)
+end
+
+# XMLHttpRequest síncrono (open(..., false)): la petición id de ese motor empieza ya (sin esperar turno en la cola)
+# y se avanza hasta que acaba; se entrega al JavaScript como las demás (__dashweb_respuesta) antes de volver de
+# send(). Algunas webs y librerías viejas aún lo usan (WPT xhr)
+@export func jsdom_esperar_peticion(js: Int, id: Int)
+    i = 0
+    while i < jsdom_peticiones.length
+        p = jsdom_peticiones[i]
+        if p.js == js and p.id == id
+            if p.en_cola
+                p.en_cola = false
+                p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
+            end
+            if p.carga == nil
+                jsdom_peticiones.remove(i)
+                _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
+                return
+            end
+            while not http_avanzar(p.carga)
+                time_delay(1)
+            end
+            r = p.carga.respuesta
+            cab = ""
+            for k in r.cabeceras.keys()
+                cab = cab + k + ": " + r.cabeceras[k] + "\r\n"
+            end
+            jsdom_peticiones.remove(i)
+            _jsdom_responder(js, p.id, r.estado, r.razon, cab, r.url, r.cuerpo, r.error)
+            return
+        end
+        i = i + 1
+    end
+end
+
+# (desde __dashweb_cancelar: abort() de XMLHttpRequest) la petición id de ese motor se corta y deja su sitio a las de
+# la cola; antes seguía hasta acabar y ocupaba una de las seis
+@export func jsdom_cancelar_peticion(js: Int, id: Int)
+    i = 0
+    while i < jsdom_peticiones.length
+        p = jsdom_peticiones[i]
+        if p.js == js and p.id == id
+            if p.carga != nil
+                http_cancelar(p.carga)
+            end
+            jsdom_peticiones.remove(i)
+            _jsdom_peticiones_empezar(js)
+            return
+        end
+        i = i + 1
+    end
 end
 
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
@@ -966,6 +1067,25 @@ end
         s = "1"
     end
     _jsdom_doc_atributo(doc, "ir_sustituir", s)
+end
+
+# history.pushState, replaceState y go de la página (tarea 64d): "push U", "replace U", "go N" o "fuera N", una por
+# línea en el atributo "historia" del documento, en orden; dashweb las lee y las borra en el siguiente tic
+@export func jsdom_historia(doc: Nodo, t: String)
+    antes = dom_atributo(doc, "historia")
+    if antes != ""
+        antes = antes + "\n"
+    end
+    _jsdom_doc_atributo(doc, "historia", antes + t)
+end
+
+# Lo que quedó apuntado por jsdom_historia (y se borra)
+func jsdom_historia_tomar(doc: Nodo) -> String
+    r = dom_atributo(doc, "historia")
+    if r != ""
+        _jsdom_doc_atributo(doc, "historia", "")
+    end
+    return r
 end
 
 func _jsdom_doc_atributo(doc: Nodo, nombre: String, valor: String)

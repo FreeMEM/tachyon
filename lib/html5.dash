@@ -91,7 +91,14 @@ func _h5_copiar(h: Int, id: Int, padre: Nodo)
         elif t == DOM_TEXTO and padre.nombre == "script"
             dom_agregar(padre, dom_nodo(t, "", utf8_a_js(_h5_texto_de(h, c))))
         elif t == DOM_TEXTO or t == DOM_COMENTARIO
-            dom_agregar(padre, dom_nodo(t, "", utf8_a_latin1(_h5_texto_de(h, c))))
+            crudo = _h5_texto_de(h, c)
+            nt = dom_nodo(t, "", utf8_a_latin1(crudo))
+            # (lo que no cabe en Latin-1, también como llegó: para el JavaScript; tarea 68)
+            if t == DOM_TEXTO and texto_fuera_de_latin1(crudo)
+                nt.unicode = crudo
+                dom_hay_unicode = true
+            end
+            dom_agregar(padre, nt)
         elif t == DOM_TIPO_DOC
             ids = str_split(utf8_a_latin1(_h5_texto_de(h, c)), "\n")
             if ids.length == 2

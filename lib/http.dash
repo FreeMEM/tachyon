@@ -160,6 +160,11 @@ end
 # (HTML, CSS y JS ocupan de 4 a 6 veces menos); lo que va a un fichero (imágenes, vídeo, fuentes) llega tal cual
 # (extra: cabeceras de más, "Nombre: valor" separadas por \r\n, las del XMLHttpRequest y el fetch del JavaScript)
 func _http_peticion(u: Url, metodo: String, cuerpo: String, tipo: String, agente: String, seguir: Bool, comprimir: Bool, extra: String) -> String
+    return _http_peticion_con(u, metodo, cuerpo, cuerpo.length, tipo, agente, seguir, comprimir, extra) + cuerpo
+end
+
+# La cabecera de la petición (hasta la línea en blanco), con el largo del cuerpo que irá detrás
+func _http_peticion_con(u: Url, metodo: String, cuerpo: String, largo: Int, tipo: String, agente: String, seguir: Bool, comprimir: Bool, extra: String) -> String
     ruta = u.ruta
     if ruta == ""
         ruta = "/"
@@ -196,23 +201,82 @@ func _http_peticion(u: Url, metodo: String, cuerpo: String, tipo: String, agente
     if extra != ""
         peticion = peticion + "\r\n" + extra
     end
-    if metodo == "POST" or (cuerpo != "" and metodo != "GET" and metodo != "HEAD")
+    # (sin cuerpo, un POST o un PUT llevan Content-Length: 0; Fetch, WPT xhr)
+    if metodo == "POST" or metodo == "PUT" or (cuerpo != "" and metodo != "GET" and metodo != "HEAD")
         if tipo != ""
             peticion = peticion + "\r\nContent-Type: " + tipo
         end
-        peticion = peticion + "\r\nContent-Length: " + cuerpo.length
+        peticion = peticion + "\r\nContent-Length: " + largo
     end
-    return peticion + "\r\n\r\n" + cuerpo
+    return peticion + "\r\n\r\n"
+end
+
+# Un cuerpo binario va por el JavaScript y Dash como texto escapado (los textos de Dash no llevan el byte 0): el 0 es
+# 1 2 y el 1, 1 1 (tarea 64d: YouTube manda sus peticiones a youtubei comprimidas con gzip, y llegaban como
+# "31,139,8,0,..." o como UTF-8 roto). Cuántos bytes son de verdad
+func http_binario_largo(t: String) -> Int
+    n = 0
+    i = 0
+    while i < t.length
+        if str_code(t, i) == 1
+            i = i + 1
+        end
+        n = n + 1
+        i = i + 1
+    end
+    return n
+end
+
+# Los bytes de verdad en un búfer nuevo (de http_binario_largo bytes; 0 si no hay memoria)
+func http_binario_bufer(t: String) -> Int
+    n = http_binario_largo(t)
+    b = buffer_alloc(n + 1)
+    if b == 0
+        return 0
+    end
+    i = 0
+    k = 0
+    while i < t.length
+        c = str_code(t, i)
+        if c == 1 and i + 1 < t.length
+            i = i + 1
+            if str_code(t, i) == 2
+                c = 0
+            end
+        end
+        buffer_set_byte(b, k, c)
+        k = k + 1
+        i = i + 1
+    end
+    return b
+end
+
+# La petición entera de una carga: con un cuerpo binario, la cabecera como texto y el cuerpo desde un búfer
+func _carga_enviar(c: Carga) -> Bool
+    if not c.binario or c.cuerpo == ""
+        return red_enviar(c.conexion, _http_peticion(c.actual, c.metodo, c.cuerpo, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+    end
+    n = http_binario_largo(c.cuerpo)
+    if not red_enviar(c.conexion, _http_peticion_con(c.actual, c.metodo, c.cuerpo, n, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+        return false
+    end
+    b = http_binario_bufer(c.cuerpo)
+    if b == 0
+        return false
+    end
+    ok = red_enviar_bufer(c.conexion, b, n)
+    buffer_free(b)
+    return ok
 end
 
 # Lee la respuesta (estado, cabeceras y cuerpo, a r.cuerpo o al fichero) y cierra la conexión
 func _http_leer(c: Conexion, r: Respuesta, fichero: String)
-    _http_leer_respuesta(c, r, fichero)
+    _http_leer_respuesta(c, r, fichero, false)
     red_cerrar(c)
 end
 
-# Lo mismo sin cerrarla
-func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String)
+# Lo mismo sin cerrarla. cabeza: la respuesta a un HEAD, que no trae cuerpo aunque diga su Content-Length
+func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String, cabeza: Bool)
     _leer_estado(c, r)
     if r.error == ""
         _leer_cabeceras(c, r)
@@ -225,7 +289,7 @@ func _http_leer_respuesta(c: Conexion, r: Respuesta, fichero: String)
                 r.error = hueco(tr(410, "can't write %1"), fichero)
             end
         end
-        if r.error == ""
+        if r.error == "" and not cabeza
             _leer_cuerpo(c, r, f)
         end
         if f != 0
@@ -264,6 +328,7 @@ end
 
 # "Nombre: valor" hasta una línea vacía; nombres en minúsculas
 func _leer_cabeceras(c: Conexion, r: Respuesta)
+    c.nul = false
     linea = red_leer_linea(c)
     while linea != nil and linea != ""
         p = str_find(linea, ":")
@@ -285,8 +350,15 @@ func _leer_cabeceras(c: Conexion, r: Respuesta)
         end
         linea = red_leer_linea(c)
     end
-    if linea == nil
+    # (el cierre después de alguna cabecera, sin la línea vacía, también las acaba, como en los navegadores: los .asis
+    # de WPT xhr; sin ninguna, cortada)
+    if linea == nil and r.cabeceras.length == 0
         r.error = tr(404, "cut headers")
+        return
+    end
+    # (un byte 0 en las cabeceras: error de red, como en los navegadores; Fetch, WPT xhr/headers-normalize-response)
+    if c.nul
+        r.error = tr(402, "an answer that isn't HTTP")
         return
     end
     if r.cabeceras.has("content-type")
@@ -499,11 +571,15 @@ struct Carga
     extra: String = ""     # cabeceras de más ("Nombre: valor" separadas por \r\n; XMLHttpRequest y fetch)
     tipo: String = ""      # su Content-Type
     agente: String = ""    # el User-Agent, si no es el de dashweb (http_con_agente)
+    binario: Bool = false  # cuerpo con bytes cualesquiera, escapado (http_binario_escapar): sale de un búfer
     cabecera: Int = -1     # bytes de la línea de estado y las cabeceras, cuando ya llegaron (http_parcial)
     enviada: Bool = false  # la petición ya salió por la conexión
     reusada: Bool = false  # la conexión venía de otra respuesta (si resulta cerrada, se abre otra)
     otra: Bool = false     # ya se abrió otra porque el servidor cerró una nueva sin responder
+    nueva: Bool = false    # con una conexión nueva, sin reusar una libre (http_empezar_nueva)
     t0: Int = 0            # time_ms de cuando se pidió (traza)
+    t_enviada: Int = 0     # time_ms de cuando salió la petición y del primer byte de la respuesta (depuración de red)
+    t_primer: Int = 0
     # http_volcar: el cuerpo de una respuesta 2xx va a su fichero según llega, sin juntarlo entero en memoria (un
     # .lha grande agotaba la memoria; tarea 40b). volcando: ya se escribe en el fichero f; restan: bytes del cuerpo
     # que faltan (-1: hasta el cierre)
@@ -586,6 +662,20 @@ func http_empezar_a_fichero(direccion: String, fichero: String, espera_ms: Int) 
     return c
 end
 
+# Lo mismo que http_empezar, con una conexión nueva aunque haya una libre de ese servidor: para el segundo intento de
+# lo que se quedó a medias (una libre que el wifi o el router dejó muerta sin cerrarla; tarea 68)
+func http_empezar_nueva(direccion: String, espera_ms: Int) -> Carga
+    var sin: Conexion = nil
+    c = Carga(url_parse(direccion), sin, espera_ms, 0, false, _respuesta_vacia(direccion), -1, time_ms())
+    c.t0 = c.ultimo
+    c.nueva = true
+    if traza_activa
+        traza("pide " + direccion + " (otra vez, con una conexión nueva)")
+    end
+    _carga_conectar(c)
+    return c
+end
+
 # POST sin esperar: el cuerpo (application/x-www-form-urlencoded si tipo es "")
 func http_empezar_post(direccion: String, cuerpo: String, tipo: String, espera_ms: Int) -> Carga
     var sin: Conexion = nil
@@ -617,6 +707,39 @@ func http_empezar_metodo(direccion: String, metodo: String, cuerpo: String, tipo
     return c
 end
 
+# Las peticiones que acabaron, para la sección Red de Inspeccionar (tarea 65): las últimas HTTP_REGISTRO_MAX, de la
+# más antigua a la última, una por línea: "ms_desde_que_empezó tab método tab estado tab bytes tab ms tab tipo tab
+# dirección" (tipo: el Content-Type sin parámetros; estado 0 si falló, con el error en su lugar)
+const HTTP_REGISTRO_MAX = 300
+var http_registro: [String] = []
+
+func http_apuntar(c: Carga, bytes: Int)
+    r = c.respuesta
+    metodo = c.metodo
+    if metodo == ""
+        metodo = "GET"
+    end
+    estado = "" + r.estado
+    if r.error != ""
+        estado = "0 " + r.error
+    end
+    tipo = r.tipo
+    pc = str_find(tipo, ";")
+    if pc >= 0
+        tipo = tipo[:pc]
+    end
+    http_registro.push("" + c.t0 + "\t" + metodo + "\t" + estado + "\t" + bytes + "\t" + (time_ms() - c.t0) + "\t" + str_trim(tipo) + "\t" + url_text(c.actual))
+    while http_registro.length > HTTP_REGISTRO_MAX
+        http_registro.remove(0)
+    end
+end
+
+# La misma carga con su cuerpo binario (escapado; http_binario_largo), antes de su primer http_avanzar
+func http_con_binario(c: Carga, si: Bool) -> Carga
+    c.binario = si
+    return c
+end
+
 # La misma carga con otro User-Agent (antes de su primer http_avanzar: la petición aún no se ha mandado)
 func http_con_agente(c: Carga, agente: String) -> Carga
     c.agente = agente
@@ -639,7 +762,7 @@ func _carga_conectar(c: Carga)
         c.hecha = true
         return
     end
-    if http_seguir
+    if http_seguir and not c.nueva
         libre = _http_libre(u.host, url_port(u), u.esquema == "https")
         if libre != nil
             c.conexion = libre
@@ -678,6 +801,17 @@ func http_avanzar(c: Carga) -> Bool
         end
         abierta = red_abrir_avanzar(c.conexion)
         if abierta == 0
+            # (abriéndose: el nombre, la conexión o la TLS que no acaban en la tarea de red no tenían tope y la hoja
+            # o el script se quedaba ahí, "1 left", para siempre; tarea 68. Esperando sitio en la tabla, el suyo)
+            if c.conexion.fase != 3 and c.espera > 0 and time_ms() - c.ultimo > c.espera
+                c.respuesta.error = tr(439, "timed out connecting")
+                red_cerrar(c.conexion)
+                c.hecha = true
+                if traza_activa
+                    traza("sin acabar de abrirse en " + (time_ms() - c.ultimo) + " ms (" + red_fase(c.conexion) + "): " + url_text(c.actual))
+                end
+                return true
+            end
             return false
         end
         if abierta < 0
@@ -688,7 +822,7 @@ func http_avanzar(c: Carga) -> Bool
         end
     end
     if not c.enviada
-        if not red_enviar(c.conexion, _http_peticion(c.actual, c.metodo, c.cuerpo, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+        if not _carga_enviar(c)
             if c.reusada
                 _carga_otra_conexion(c)
                 return false
@@ -700,6 +834,8 @@ func http_avanzar(c: Carga) -> Bool
         end
         c.enviada = true
         c.ultimo = time_ms()
+        c.t_enviada = c.ultimo
+        c.t_primer = 0
         if traza_activa
             reusada = ""
             if c.reusada
@@ -711,6 +847,9 @@ func http_avanzar(c: Carga) -> Bool
     n = red_recibir_ya(c.conexion)
     while n > 0
         c.ultimo = time_ms()
+        if c.t_primer == 0
+            c.t_primer = c.ultimo
+        end
         n = red_recibir_ya(c.conexion)
     end
     if n < 0 and c.reusada and red_pendientes(c.conexion) == 0
@@ -737,7 +876,7 @@ func http_avanzar(c: Carga) -> Bool
         return _carga_volcar(c, n < 0)
     end
     if c.total == -1
-        c.total = _carga_total(c.conexion)
+        c.total = _carga_total(c.conexion, c.metodo == "HEAD")
     end
     if c.total == -3
         # chunked: entera cuando ha llegado el trozo de tamaño 0 y sus cabeceras finales
@@ -756,7 +895,7 @@ func http_avanzar(c: Carga) -> Bool
         end
         return false
     end
-    _http_leer_respuesta(c.conexion, c.respuesta, c.fichero)
+    _http_leer_respuesta(c.conexion, c.respuesta, c.fichero, c.metodo == "HEAD")
     _http_cookies(c.actual, c.respuesta)
     r = c.respuesta
     _http_soltar(c.conexion, r, n < 0)
@@ -767,8 +906,9 @@ func http_avanzar(c: Carga) -> Bool
         else
             c.redirecciones = c.redirecciones + 1
             c.actual = url_resolve(c.actual, r.cabeceras["location"])
-            if r.estado != 307 and r.estado != 308
-                # tras un POST, la redirección se sigue con GET (como los navegadores)
+            # (con GET y sin cuerpo: un POST tras 301 o 302, y tras 303 todo lo que no es GET ni HEAD; lo demás sigue
+            # con su método, también HEAD; Fetch, WPT xhr/send-redirect)
+            if (c.metodo == "POST" and (r.estado == 301 or r.estado == 302)) or (r.estado == 303 and c.metodo != "GET" and c.metodo != "HEAD")
                 c.metodo = "GET"
                 c.cuerpo = ""
             end
@@ -777,10 +917,56 @@ func http_avanzar(c: Carga) -> Bool
         end
     end
     c.hecha = true
+    http_apuntar(c, r.cuerpo.length + r.bytes)
     if traza_activa
-        traza("llega " + url_text(c.actual) + ": " + r.estado + " " + r.error + ", " + (r.cuerpo.length + r.bytes) + " bytes en " + (time_ms() - c.t0) + " ms")
+        traza("llega " + url_text(c.actual) + ": " + r.estado + " " + r.error + ", " + (r.cuerpo.length + r.bytes) + " bytes en " + (time_ms() - c.t0) + " ms" + http_fases(c))
     end
     return true
+end
+
+# En qué está una carga que aún no ha acabado, para la traza (depuración de red, tarea 67): "buscando el nombre 12 s",
+# "conectando", "negociando TLS", "esperando sitio", "esperando respuesta 8 s", "recibiendo: 2048 bytes, el último
+# hace 3 s"
+func http_estado(c: Carga) -> String
+    ahora = time_ms()
+    if c.hecha
+        return "hecha"
+    end
+    if c.conexion == nil
+        return "sin conexión aún " + (ahora - c.t0) / 1000 + " s"
+    end
+    f = red_fase(c.conexion)
+    if f == "buscando"
+        return "buscando el nombre (DNS) " + (ahora - c.conexion.empezada) / 1000 + " s"
+    elif f == "conectando"
+        return "conectando (TCP) " + (ahora - c.conexion.empezada) / 1000 + " s"
+    elif f == "negociando"
+        return "negociando TLS " + (ahora - c.conexion.empezada) / 1000 + " s"
+    elif f == "esperando"
+        return "esperando sitio en la tabla de conexiones " + (ahora - c.conexion.empezada) / 1000 + " s"
+    end
+    if not c.enviada
+        return "abierta, sin enviar"
+    end
+    if c.t_primer == 0
+        return "enviada, esperando respuesta " + (ahora - c.t_enviada) / 1000 + " s"
+    end
+    return "recibiendo: " + red_pendientes(c.conexion) + " bytes, el último hace " + (ahora - c.ultimo) / 1000 + " s"
+end
+
+# " (DNS 120 ms, TCP 80 ms, TLS 900 ms, espera 300 ms, bajada 50 ms)": las fases de una carga para la traza (tarea
+# 67); con la conexión de otra respuesta, "reusada" en lugar de DNS, TCP y TLS
+func http_fases(c: Carga) -> String
+    t = " ("
+    if c.reusada
+        t = t + "reusada"
+    elif c.conexion != nil
+        t = t + red_fases(c.conexion)
+    end
+    if c.t_enviada > 0 and c.t_primer > 0
+        t = t + ", espera " + (c.t_primer - c.t_enviada) + " ms, bajada " + (time_ms() - c.t_primer) + " ms"
+    end
+    return t + ")"
 end
 
 # Lo que ha llegado, al fichero (cerrada: el servidor cerró la conexión); true cuando acaba
@@ -823,6 +1009,7 @@ func _carga_volcar(c: Carga, cerrada: Bool) -> Bool
         red_cerrar(c.conexion)
     end
     c.hecha = true
+    http_apuntar(c, r.bytes)
     if traza_activa
         traza("llega " + url_text(c.actual) + ": " + r.estado + " " + r.error + ", " + r.bytes + " bytes (volcados) en " + (time_ms() - c.t0) + " ms")
     end
@@ -914,6 +1101,14 @@ func http_parcial(c: Carga) -> Int
 end
 
 # Bytes del cuerpo que ya han llegado (con http_parcial) y los que tendrá entero
+# ¿Cabe que siga llegando (lib/red.dash red_cabe_crecer) dejando reserva bytes libres?
+func http_cabe_crecer(c: Carga, reserva: Int) -> Bool
+    if c == nil or c.conexion == nil
+        return true
+    end
+    return red_cabe_crecer(c.conexion, reserva)
+end
+
 func http_parcial_listos(c: Carga) -> Int
     if http_parcial(c) == 0
         return 0
@@ -942,15 +1137,16 @@ func _carga_cabecera(c: Conexion) -> Int
 end
 
 # Cabeceras + Content-Length cuando ya llegaron las cabeceras: el tamaño de la respuesta entera;
-# -1 si aún no han llegado, -2 si no lo dicen (hasta el cierre), -3 chunked (_chunked_fin)
-func _carga_total(c: Conexion) -> Int
+# -1 si aún no han llegado, -2 si no lo dicen (hasta el cierre), -3 chunked (_chunked_fin). cabeza: la respuesta a
+# un HEAD, sin cuerpo aunque diga su Content-Length (antes se esperaba hasta el plazo y daba "timed out"; WPT xhr)
+func _carga_total(c: Conexion, cabeza: Bool) -> Int
     n = red_pendientes(c)
     i = 0
     while i + 3 < n
         if buffer_get_byte(c.buf, c.ini + i) == 13 and buffer_get_byte(c.buf, c.ini + i + 1) == 10 and buffer_get_byte(c.buf, c.ini + i + 2) == 13 and buffer_get_byte(c.buf, c.ini + i + 3) == 10
             cabeceras = str_lower(str_from_buffer(c.buf, c.ini, i))
             estado = Int(cabeceras[9:12])
-            if estado == 204 or estado == 304 or (estado >= 100 and estado < 200)
+            if cabeza or estado == 204 or estado == 304 or (estado >= 100 and estado < 200)
                 return i + 4          # sin cuerpo
             end
             if str_find(cabeceras, "\ntransfer-encoding:") >= 0 and str_find(cabeceras, "chunked") >= 0

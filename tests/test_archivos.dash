@@ -1,0 +1,32 @@
+# Test: ficheros comprimidos (lib/archivos.dash y lib/lha.dash, tarea 63d): el tipo por la extensión; un .lha sin
+# orden lha en el sistema (el emulador no la tiene) se lista y se extrae con lib/lha.dash (un cajón, un fichero lh5
+# y un .readme); un .lzx sin lzx ni XAD dice qué hace falta y lleva a buscarlo en Aminet.
+# memcheck
+# expect-out: tipos: lha lha lzx zip tgz tgz [] []
+# expect-out: lista: true true true true
+# expect-out: extraído: [] 12 true
+# expect-out: lzx: true true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/archivos.dash"
+
+Main
+    Print "tipos: " + archivo_tipo("Work:a.lha") + " " + archivo_tipo("x.LZH") + " " + archivo_tipo("b.lzx") + " " + archivo_tipo("c.zip") + " " + archivo_tipo("d.tar.gz") + " " + archivo_tipo("e.tgz") + " [" + archivo_tipo("f.html") + "] [" + archivo_tipo("lha") + "]"
+    hex = "38002d6c68642d000000000000000066bcf06a200200005505000033ec0300010a0002507275656261ff050050ed41070051e803e80300003e002d6c68302d0c0000000c00000066bcf06a2002d66b55050000a1800900015072756562610a0002507275656261ff050050a481070051e803e8030000000003f3000000004eaefe5c3b002d6c68352d700000009700000066bcf06a20026539550500003a8b1000015072756562612e726561646d65050050a481070051e803e80300000070539369a83f3df009d2e63b818c7893b9d9e7a9acdac7052529267ce4700b1000d19e76456eeebf67274d5355188bb42b6752f620fab585fc23e4219cf741d0af18c87c70197d997ff21d563df9c4e900f44b43495eae98620f586c6c506aad918f5edf390c4f514a00645c32600000"
+    n = hex.length / 2
+    b = buffer_alloc(n)
+    for i in (0..n - 1)
+        buffer_set_byte(b, i, str_to_int(hex[i * 2:i * 2 + 2], 16))
+    end
+    file_save("RAM:tprueba.lha", b, n)
+    buffer_free(b)
+    h = archivo_html("RAM:tprueba.lha")
+    Print "lista: " + str_contains(h, "Prueba/Prueba") + " " + str_contains(h, "Prueba.readme") + " " + str_contains(h, "Prueba/</td>") + " " + str_contains(h, "tachyon:archivo?extraer=RAM:tprueba.lha")
+    e = archivo_extraer("RAM:tprueba.lha", "RAM:tsal/")
+    Print "extraído: [" + e + "] " + file_size("RAM:tsal/Prueba/Prueba") + " " + file_exists("RAM:tsal/Prueba.readme")
+    file_write_text("RAM:tprueba.lzx", "")
+    z = archivo_html("RAM:tprueba.lzx")
+    Print "lzx: " + str_contains(z, "It needs <b>lzx</b>") + " " + str_contains(z, "https://aminet.net/search?query=lzx")
+    file_delete("RAM:tprueba.lha")
+    file_delete("RAM:tprueba.lzx")
+end

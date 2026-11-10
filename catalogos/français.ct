@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language français
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Page
 MSG_51
 Ouvrir un fichier...
 ; Open file...
+MSG_52
+Ouvrir sur son propre écran
+; Open on its own screen
+MSG_53
+Mode lecture
+; Reader view
+MSG_54
+Inspecter
+; Inspect
+MSG_55
+Journal de débogage réseau
+; Network debug log
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Non enregistré : %1
 MSG_167
 Enregistrée dans %1
 ; Saved in %1
+MSG_168
+Tachyon s'ouvrira sur son propre écran la prochaine fois
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon s'ouvrira sur l'écran du Workbench la prochaine fois
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Mode lecture
+; Reader view
+MSG_171
+Ouvrez une page et choisissez Mode lecture dans le menu Naviguer.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Cette page n'a pas d'article à lire.
+; There is no article to read on this page.
 MSG_300
 Sa version sans JavaScript : légère, celle qui marche le mieux sur un Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ Aujourd'hui
 MSG_346
 Hier
 ; Yesterday
+MSG_347
+Rechercher
+; Search
+MSG_348
+Rien dans l'historique ne contient : %1
+; Nothing in the history matches: %1
+MSG_349
+Dernière visite : %1. Visites : %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Aucun enregistré.
 ; None stored.
@@ -653,3 +689,144 @@ Contenu de %1
 MSG_478
 Tiroir parent
 ; Parent drawer
+MSG_480
+Extraire...
+; Extract...
+MSG_481
+Rien sur cet Amiga n'ouvre ce type de fichier. Il faut %1 (ou XAD, xadmaster.library, qui les ouvre presque tous).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Chercher %1 sur Aminet
+; Look for %1 on Aminet
+MSG_483
+Rien n'a été extrait.
+; Nothing was extracted.
+MSG_484
+Extraire dans un nouveau tiroir
+; Extract into a new drawer
+MSG_485
+Extraction de %1...
+; Extracting %1...
+MSG_486
+Impossible d'extraire %1 : %2
+; Couldn't extract %1: %2
+MSG_487
+Rien pour l'instant.
+; Nothing yet.
+MSG_488
+Exécuter
+; Run
+MSG_489
+Méthode
+; Method
+MSG_490
+État
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adresse
+; Address
+MSG_493
+%1 requêtes, %2 Ko.
+; %1 requests, %2 KB.
+MSG_494
+Mémoire fast libre
+; Free fast memory
+MSG_495
+Mémoire chip libre
+; Free chip memory
+MSG_496
+Plus grand bloc libre
+; Largest free block
+MSG_497
+JavaScript de cette page
+; JavaScript of this page
+MSG_498
+Images de cette page
+; Pictures of this page
+MSG_499
+Éléments
+; Elements
+MSG_500
+Choses à dessiner
+; Things to draw
+MSG_501
+Aucun.
+; None.
+MSG_502
+Boîte
+; Box
+MSG_505
+Taille de la page
+; Page size
+MSG_506
+Inspecter
+; Inspect
+MSG_507
+Console
+; Console
+MSG_508
+Éléments
+; Elements
+MSG_509
+Réseau
+; Network
+MSG_510
+Mémoire
+; Memory
+MSG_511
+Application
+; Application
+MSG_512
+Temps
+; Timings
+MSG_513
+Actualiser
+; Refresh
+MSG_514
+Et %1 de plus : choisissez-en un pour ouvrir sa branche.
+; And %1 more: choose one to open its branch.
+MSG_515
+Pas de place pour une autre fenêtre
+; No room for another window
+MSG_516
+La fenêtre inspectée est fermée.
+; The window that was inspected is closed.
+MSG_517
+Télécharger la page
+; Download the page
+MSG_518
+Lire le HTML
+; Read the HTML
+MSG_519
+Attendre le CSS et les scripts
+; Wait for CSS and scripts
+MSG_520
+Exécuter les scripts
+; Run the scripts
+MSG_521
+Style
+; Style
+MSG_522
+Première mise en page
+; First layout
+MSG_523
+Jusqu'à complète (avec images)
+; Until complete (with pictures)
+MSG_524
+Mises en page (%1)
+; Layouts (%1)
+MSG_525
+Minuteries JavaScript
+; JavaScript timers
+MSG_526
+Journal de débogage réseau activé : %1
+; Network debug log on: %1
+MSG_527
+Journal de débogage réseau désactivé
+; Network debug log off
+MSG_528
+Mémoire insuffisante : le JavaScript de la page a été arrêté
+; Low memory: the page's JavaScript was stopped

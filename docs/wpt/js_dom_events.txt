@@ -1,4 +1,4 @@
-WPT TOTAL dom/events: 509/673 subpruebas en 97 de 97 ficheros
+WPT TOTAL dom/events: 509/674 subpruebas en 97 de 97 ficheros
 
 WPT FILE dom/events/AddEventListenerOptions-once.any.html 4/4 OK
 WPT FILE dom/events/AddEventListenerOptions-passive.any.html 4/5 OK
@@ -48,7 +48,7 @@ WPT FILE dom/events/Event-timestamp-high-resolution.https.html 0/1 OK
 WPT FILE dom/events/Event-timestamp-safe-resolution.html 1/1 OK
 WPT FILE dom/events/Event-type-empty.html 2/2 OK
 WPT FILE dom/events/Event-type.html 3/3 OK
-WPT FILE dom/events/EventListener-handleEvent-cross-realm.html 0/5 TIMEOUT 
+WPT FILE dom/events/EventListener-handleEvent-cross-realm.html 0/5 OK
 WPT FILE dom/events/EventListener-handleEvent.html 6/6 OK
 WPT FILE dom/events/EventListener-invoke-legacy.html 0/6 TIMEOUT 
 WPT FILE dom/events/EventListenerOptions-capture.html 2/4 OK
@@ -67,15 +67,15 @@ WPT FILE dom/events/element-click.html 3/3 OK
 WPT FILE dom/events/event-disabled-dynamic.html 1/1 OK
 WPT FILE dom/events/event-global-event-targets.html 3/5 OK
 WPT FILE dom/events/event-global-extra.window.html 1/6 OK
-WPT FILE dom/events/event-global-is-still-set-when-coercing-beforeunload-result.html 0/0 TIMEOUT 
-WPT FILE dom/events/event-global-is-still-set-when-reporting-exception-onerror.html 0/1 TIMEOUT 
+WPT FILE dom/events/event-global-is-still-set-when-coercing-beforeunload-result.html 0/1 OK
+WPT FILE dom/events/event-global-is-still-set-when-reporting-exception-onerror.html 0/1 OK
 WPT FILE dom/events/event-global-replaceable.html 2/2 OK
 WPT FILE dom/events/event-global-set-before-handleEvent-lookup.window.html 1/1 OK
 WPT FILE dom/events/event-global.html 6/8 TIMEOUT 
 WPT FILE dom/events/event-handler-attribute-replace-preserves-passive.html 2/2 OK
 WPT FILE dom/events/event-listener-not-fully-active-adopted-node.html 0/5 OK
 WPT FILE dom/events/event-listener-not-fully-active-callback.html 2/4 OK
-WPT FILE dom/events/event-listener-not-fully-active-navigated.html 0/3 OK
+WPT FILE dom/events/event-listener-not-fully-active-navigated.html 0/3 TIMEOUT 
 WPT FILE dom/events/event-listener-not-fully-active-target.html 1/16 OK
 WPT FILE dom/events/event-src-element-nullable.html 1/1 OK
 WPT FILE dom/events/focus-event-document-move.html 0/1 TIMEOUT 
@@ -156,11 +156,11 @@ WPT SUB FAIL dom/events/Event-stopPropagation-cancel-bubbling.html | Event-stopP
 WPT SUB FAIL dom/events/Event-subclasses-constructors.html | UIEvent constructor (view argument with wrong type) | assert_throws_js: function "function() { new UIEvent("x", { view: 7 }) }" did not throw
 WPT SUB FAIL dom/events/Event-timestamp-cross-realm-getter.html | event.timeStamp is initialized using event's relevant global object | cannot convert to object
 WPT SUB FAIL dom/events/Event-timestamp-high-resolution.https.html | Constructed GamepadEvent timestamp should be high resolution and have the same time origin as performance.now() | not a function
-WPT SUB TIMEOUT dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object without 'handleEvent' property | Test timed out
-WPT SUB TIMEOUT dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object with non-callable 'handleEvent' property | Test timed out
-WPT SUB TIMEOUT dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object with revoked Proxy as 'handleEvent' property | Test timed out
-WPT SUB TIMEOUT dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm non-callable revoked Proxy | Test timed out
-WPT SUB TIMEOUT dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm callable revoked Proxy | Test timed out
+WPT SUB FAIL dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object without 'handleEvent' property | 'eventListenerGlobalObject' is not defined
+WPT SUB FAIL dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object with non-callable 'handleEvent' property | 'eventListenerGlobalObject' is not defined
+WPT SUB FAIL dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm plain object with revoked Proxy as 'handleEvent' property | 'eventListenerGlobalObject' is not defined
+WPT SUB FAIL dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm non-callable revoked Proxy | 'eventListenerGlobalObject' is not defined
+WPT SUB FAIL dom/events/EventListener-handleEvent-cross-realm.html | EventListener is cross-realm callable revoked Proxy | 'eventListenerGlobalObject' is not defined
 WPT SUB TIMEOUT dom/events/EventListener-invoke-legacy.html | Listener of transitionend | Test timed out
 WPT SUB TIMEOUT dom/events/EventListener-invoke-legacy.html | Legacy listener of transitionend | Test timed out
 WPT SUB TIMEOUT dom/events/EventListener-invoke-legacy.html | Listener of animationend | Test timed out
@@ -178,20 +178,21 @@ WPT SUB FAIL dom/events/event-global-extra.window.html | window.event for constr
 WPT SUB FAIL dom/events/event-global-extra.window.html | window.event for constructors from another global: XMLHttpRequest | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
 WPT SUB FAIL dom/events/event-global-extra.window.html | window.event and moving an element post-dispatch | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
 WPT SUB FAIL dom/events/event-global-extra.window.html | window.event should not be affected by nodes moving post-dispatch | assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
-WPT SUB FAIL dom/events/event-global-extra.window.html | Listener from a different global | Invalid URL 'http://127.0.0.1:40881/dom/events/resources/event-global-extra-frame.html'
-WPT SUB TIMEOUT dom/events/event-global-is-still-set-when-reporting-exception-onerror.html | window.onerror handler restores window.event after it reports an exception | Test timed out
+WPT SUB FAIL dom/events/event-global-extra.window.html | Listener from a different global | 'frameState' is not defined
+WPT SUB FAIL dom/events/event-global-is-still-set-when-coercing-beforeunload-result.html | window.event is still set when 'beforeunload' result is coerced to string | 'iframe' is not defined
+WPT SUB FAIL dom/events/event-global-is-still-set-when-reporting-exception-onerror.html | window.onerror handler restores window.event after it reports an exception | cannot read property 'Function' of undefined
 WPT SUB TIMEOUT dom/events/event-global.html | window.event is undefined if the target is in a shadow tree (event dispatched inside shadow tree) | Test timed out
 WPT SUB FAIL dom/events/event-global.html | window.event is undefined inside window.onerror if the target is in a shadow tree (ErrorEvent dispatched inside shadow tree) | assert_true: expected true got false
-WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Node created in an iframe's realm and adopted into this document, iframe removed | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Node created in this realm and adopted into an iframe's document, iframe removed | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Adopting the target into a fully active iframe's document during dispatch | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Adopting the target into a removed iframe's document during dispatch | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Event from a node created in a removed iframe's realm still reaches listeners in this document | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Node created in an iframe's realm and adopted into this document, iframe removed | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'createElement' of undefined"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Node created in this realm and adopted into an iframe's document, iframe removed | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'document' of undefined"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Adopting the target into a fully active iframe's document during dispatch | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'document' of undefined"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Adopting the target into a removed iframe's document during dispatch | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'document' of undefined"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-adopted-node.html | Event from a node created in a removed iframe's realm still reaches listeners in this document | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'createElement' of undefined"
 WPT SUB FAIL dom/events/event-listener-not-fully-active-callback.html | Function callback from a removed iframe, with a fully active target | assert_equals: the callback runs while the iframe is attached expected 1 but got 0
 WPT SUB FAIL dom/events/event-listener-not-fully-active-callback.html | Listener added from a removed iframe, with a fully active target and callback | promise_test: Unhandled rejection with value: object "TypeError: not a function"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-navigated.html | Targets in a document that its iframe has navigated away from | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/dom/events/resources/not-fully-active-frame.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-navigated.html | Targets in a nested iframe whose parent document is no longer fully active | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/common/blank.html'"
-WPT SUB FAIL dom/events/event-listener-not-fully-active-navigated.html | Targets in a nested iframe whose parent iframe was removed | promise_test: Unhandled rejection with value: object "SyntaxError: Invalid URL 'http://127.0.0.1:40881/common/blank.html'"
+WPT SUB FAIL dom/events/event-listener-not-fully-active-navigated.html | Targets in a document that its iframe has navigated away from | promise_test: Unhandled rejection with value: object "TypeError: cannot convert to object"
+WPT SUB TIMEOUT dom/events/event-listener-not-fully-active-navigated.html | Targets in a nested iframe whose parent document is no longer fully active | Test timed out
+WPT SUB NOTRUN dom/events/event-listener-not-fully-active-navigated.html | Targets in a nested iframe whose parent iframe was removed | 
 WPT SUB FAIL dom/events/event-listener-not-fully-active-target.html | EventTarget created in a removed iframe | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'addEventListener' of undefined"
 WPT SUB FAIL dom/events/event-listener-not-fully-active-target.html | EventTarget created in a removed iframe, with an event from that iframe | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'addEventListener' of undefined"
 WPT SUB FAIL dom/events/event-listener-not-fully-active-target.html | EventTarget created in a removed iframe, with a listener added after removal | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'addEventListener' of undefined"

@@ -1,0 +1,37 @@
+# Test: hojas que se atascan (tarea 68; dash.freemem.space se quedaba en "1 left" en las máquinas de David Martínez y
+# Oskis R.P). Una que no contesta (/mudo) se da por perdida a los recurso_espera_ms sin recibir nada, se pide otra vez
+# con una conexión nueva y, si tampoco, queda como "" y la página sigue; una que llega a gotas (/gotas, un byte cada
+# 0,5 s) se corta a los recurso_lento_ms. La buena (estilo.css) llega igual.
+# emu-server: http.py 40896
+# expect-out: faltan al empezar: 3
+# expect-out: acabadas a tiempo: true
+# expect-out: mudo: [] gotas: [] estilo: 37
+# expect-out: intentos de más: true
+
+import "../lib/recursos.dash"
+
+Main
+    recurso_espera_ms = 2000
+    recurso_lento_ms = 4000
+    base = "http://127.0.0.1:40896/pages/x.html"
+    doc = dom_desde_html("<head><link rel=stylesheet href=/mudo.css><link rel=stylesheet href=/gotas.css><link rel=stylesheet href=/estilo.css></head><body><p>a</p></body>")
+    r = recursos_nuevos()
+    recursos_del_documento(r, doc, base)
+    Print "faltan al empezar: " + recursos_pendientes(r)
+    t0 = time_ms()
+    reintentos = 0
+    while recursos_pendientes(r) > 0 and time_ms() - t0 < 60000
+        for p in r.cola
+            if p.intentos > 1
+                reintentos = reintentos + 1
+            end
+        end
+        recursos_avanzar(r)
+        time_delay(2)
+    end
+    t = time_ms() - t0
+    # (cada una, dos intentos: 2 x 2 s la muda y 2 x 4 s la de gotas; con la red del emulador, de sobra en 30 s)
+    Print "acabadas a tiempo: " + (recursos_pendientes(r) == 0 and t < 30000)
+    Print "mudo: [" + r.traidos["http://127.0.0.1:40896/mudo.css"] + "] gotas: [" + r.traidos["http://127.0.0.1:40896/gotas.css"] + "] estilo: " + r.traidos["http://127.0.0.1:40896/estilo.css"].length
+    Print "intentos de más: " + (reintentos > 0)
+end

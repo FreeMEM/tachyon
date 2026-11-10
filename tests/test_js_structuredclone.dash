@@ -1,8 +1,10 @@
 # Test: structuredClone (HTML; tarea 41d, WPT url/historical): copia honda de objetos, listas, Date, Map, Set,
 # ArrayBuffer y vistas, con las referencias circulares y repetidas; la clase propia queda en objeto llano; funciones,
-# nodos y URL dan DataCloneError (un DOMException).
+# nodos y URL dan DataCloneError (un DOMException). window.postMessage: el mensaje clonado llega después, como
+# "message" en la ventana con su origen y source; a otro origen no llega; lo que no se clona, DataCloneError ya.
 # memcheck
 # expect-out: honda: true 2 | fecha: true | mapa: b 1 | circular: true | repetida: true | vista: 3 7 | clase: false 5 | funcion: DataCloneError 25 | nodo: DataCloneError | url: DataCloneError
+# expect-out: mensajes: 0 | 1 true http://a.example true, 3 true http://a.example true | DataCloneError
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"
@@ -24,5 +26,15 @@ Main
     c = c + "try { structuredClone(document.body); } catch (e) { r += ' | nodo: ' + e.name; }"
     c = c + "try { structuredClone(new URL('about:blank')); } catch (e) { r += ' | url: ' + e.name; } r"
     Print js_evaluar(js, c, "t.js")
+    js_evaluar(js, "__dashweb_lugar('http://a.example/p.html')", "t.js")
+    c = "var got = [], enviado = {n: 1}; addEventListener('message', function (e) { got.push(e.data.n + ' ' + (e.data !== enviado) + ' ' + e.origin + ' ' + (e.source === window)); });"
+    c = c + "postMessage(enviado, '*'); postMessage({n: 2}, 'http://otro.example'); postMessage({n: 3}); var sinc = got.length, err = '';"
+    c = c + "try { postMessage(function () {}, '*'); } catch (e) { err = e.name; } ''"
+    js_evaluar(js, c, "t.js")
+    for i in (1..3)
+        jsdom_temporizadores(js)
+        time_delay(1)
+    end
+    Print js_evaluar(js, "'mensajes: ' + sinc + ' | ' + got.join(', ') + ' | ' + err", "t.js")
     js_liberar(js)
 end

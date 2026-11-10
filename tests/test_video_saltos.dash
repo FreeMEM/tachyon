@@ -1,0 +1,41 @@
+# Test: saltar en un vídeo (tarea 64d: avanzar y retroceder en YouTube con las flechas): video_ir va al fotograma
+# clave de antes más cercano (un MP4 H.264 de 3 s a 10 imágenes/s con uno cada 5, hecho con ffmpeg: 0, 500,
+# 1000... ms) y lo siguiente sale desde ahí, con su instante; hacia atrás también, y cerca del final.
+# emu-server: http.py 40864
+# memcheck
+# emu-config: cpu = 68030
+# emu-config: zorro_iii_memory = 65536
+# expect-out: a 1200: 1000 | primera 1000 | hasta el final 20
+# expect-out: a 0: 0 | primera 0 | hasta el final 30
+# expect-out: a 2700: 2500 | primera 2500 | hasta el final 5
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/video.dash"
+import "../lib/http.dash"
+
+func probar(v: Int, ms: Int) -> String
+    r = "a " + ms + ": " + video_ir(v, ms)
+    n = 0
+    while video_siguiente(v) == 1
+        n = n + 1
+        if n == 1
+            r = r + " | primera " + video_ms(v)
+        end
+    end
+    return r + " | hasta el final " + n
+end
+
+Main
+    f = "T:video_saltos.mp4"
+    http_a_fichero("http://127.0.0.1:40864/pages/video_saltos.mp4", f, 10000)
+    v = video_abrir(f)
+    if v == 0
+        Print "no se abre"
+        return
+    end
+    Print probar(v, 1200)
+    Print probar(v, 0)
+    Print probar(v, 2700)
+    video_cerrar(v)
+    file_delete(f)
+end

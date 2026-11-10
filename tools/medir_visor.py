@@ -61,6 +61,8 @@ def main():
                     help="tools/amiga/clicar.dash in the background: clicks and keys in that window")
     ap.add_argument("--memoria", type=int, metavar="MB", help="Zorro III memory of the 68040 machines (default 128): "
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
+    ap.add_argument("--arexx", metavar="'ORDEN|ORDEN|...'", help="tools/amiga/arexx.dash in the background: these ARexx "
+                    "commands to the TACHYON port, one every 4 s, once it exists; its answers in bg0.txt (with --guardar)")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
     ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
@@ -77,6 +79,7 @@ def main():
     ap.add_argument("--memcheck", action="store_true", help="build with ./dash --memcheck (memory errors to the output)")
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
+    ap.add_argument("--js-minima", metavar="KB", help="dashweb JSMINIMA=KB: below that free memory the page's JavaScript is paused")
     ap.add_argument("--cajas", metavar="TEXTO", help="dashweb CAJAS=TEXTO: when the page is whole, the boxes and layout style of the elements with TEXTO in their class (or that tag name)")
     ap.add_argument("--cajas-en", metavar="MS", help="dashweb CAJASEN=MS: with --cajas, also once MS ms after the page started (for a page that never gets whole)")
     ap.add_argument("--dibujos", metavar="Y0-Y1", help="dashweb DIBUJOS=Y0-Y1: when the page is whole, its drawings between those heights")
@@ -142,9 +145,14 @@ def main():
             Path(args.guardar).mkdir(parents=True, exist_ok=True)
             shutil.copy(exe, Path(args.guardar) / "programa")
         modo = ["tls-lento"] if args.tls_lento else ["tls"] if args.tls else []
-        server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
-                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        time.sleep(3 if modo else 1)
+        # el servidor de tests/servers solo si alguna página es suya (una web de fuera no lo usa: así no ocupa el
+        # puerto de las pruebas de otras sesiones y va sin el cerrojo de la red)
+        propio = args.local or args.versiones or any("://" not in p and not p.startswith("tachyon:") for p in (args.pagina or "").split(",") if args.pagina)
+        server = None
+        if propio:
+            server = subprocess.Popen([sys.executable, str(ROOT / "tests" / "servers" / "http.py"), str(PORT)] + modo,
+                                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            time.sleep(3 if modo else 1)
         if args.dns_lento:
             shim = Path(tmp) / "dns_lento.so"
             subprocess.run(["gcc", "-shared", "-fPIC", "-O2", "-o", str(shim),
@@ -175,6 +183,8 @@ def main():
                 prog_args[0] += " JS=" + quote(args.js, safe="") + " JSEN=" + (args.js_en or "0")
             if args.poca_memoria:
                 prog_args[0] += " POCAMEMORIA=" + args.poca_memoria
+            if args.js_minima:
+                prog_args[0] += " JSMINIMA=" + args.js_minima
             if args.gc_siempre:
                 prog_args[0] += " GCSIEMPRE"
             if args.versiones:
@@ -188,6 +198,8 @@ def main():
             fondo = []
             if args.acciones:
                 fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
+            if args.arexx:
+                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), 'TACHYON "' + args.arexx + '"'))
             if args.latido:
                 fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,
@@ -198,8 +210,9 @@ def main():
                                screenshot=shot, system=args.sistema, keep=args.guardar,
                                background=fondo or None, args=prog_args, workbench=args.workbench)[0]
         finally:
-            server.kill()
-            server.wait()
+            if server:
+                server.kill()
+                server.wait()
     print(f"{args.maquina}, programa de {size} bytes, rc {out.rc}")
     print(out.output or "(sin salida)")
 

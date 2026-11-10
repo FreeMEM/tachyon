@@ -116,6 +116,10 @@ typedef struct {
     long ms;
     dwv_bajando *bajando;  /* el fichero aún se baja (de la fuente de MintVID: vive hasta mr_demux_close) */
     char codecs[200];
+    long base;           /* tras dwv_ir: el número de imagen del fotograma clave al que se saltó */
+    int recien;          /* tras dwv_ir: el retraso de reordenar se mide otra vez con la primera imagen */
+    long reloj_base;     /* tras dwv_ir: el ms del vídeo donde se saltó... */
+    long reloj_desde;    /* ...y lo que había sonado entonces (audio_elapsed_ms no vuelve a 0) */
 } dwv;
 
 #ifndef DWV_SIN_SONIDO
@@ -230,7 +234,7 @@ static long dwv_ms_de(dwv *v, long indice)
 
 static long dwv_imagen(dwv *v, int del_paquete)
 {
-    if (v->n == 0) v->retraso = v->paquetes - 1;
+    if (v->n == 0 || v->recien) { v->retraso = v->paquetes - 1 - v->base; v->recien = 0; }
     if (del_paquete) v->ms = dwv_ms_de(v, v->paquetes - 1 - v->retraso);
     else v->ms = v->ms >= 0 ? v->ms + dwv_ms_de(v, 1) : dwv_ms_de(v, v->n);   /* las que quedaban dentro */
     v->n++;
@@ -289,7 +293,7 @@ long dwv_reloj(long h)
     dwv *v = (dwv *)h;
     if (!v->au || !v->sonando) return -1;
     audio_service(v->au);
-    return (long)audio_elapsed_ms(v->au);
+    return v->reloj_base + (long)audio_elapsed_ms(v->au) - v->reloj_desde;
 }
 
 /* Lo que pide Paula entre imagen e imagen (llenar sus búferes): llamarlo a menudo */
@@ -308,6 +312,53 @@ void dwv_pausa(long h, long pausa)
 
 #endif
 long dwv_con_sonido(long h) { return ((dwv *)h)->au != NULL; }
+
+/* Lo que dura el vídeo en ms (de su índice: MP4/MOV), o -1 si no se sabe (tarea 64f: la línea de tiempo) */
+long dwv_duracion(long h)
+{
+    dwv *v = (dwv *)h;
+    const mr_video_info *vi;
+    uint32_t n;
+    if (!v || !v->dx) return -1;
+    vi = mr_demux_video(v->dx);
+    n = mr_demux_video_frames(v->dx);
+    if (!vi || !vi->rate || !n) return -1;
+    return (long)((unsigned long long)n * 1000u * vi->scale / vi->rate);
+}
+
+/* Saltar a ms del vídeo (tarea 64d: avanzar y retroceder en YouTube): al fotograma clave de antes más cercano
+   (mr_demux_seek, MP4 con su índice), con el decodificador de vídeo y el de sonido vacíos y la cola de Paula
+   tirada; el reloj sigue desde ahí. El ms al que se llegó, o -1 si no se puede (un formato sin índice). Si lo de
+   ese punto aún no se ha bajado, dwv_siguiente espera a que llegue (2). */
+long dwv_ir(long h, long ms)
+{
+    dwv *v = (dwv *)h;
+    uint64_t llegado = 0;
+    const mr_video_info *vi;
+    if (!v || !v->dx || !mr_demux_can_seek(v->dx)) return -1;
+    if (mr_demux_seek(v->dx, (uint64_t)(ms < 0 ? 0 : ms) * 1000u, &llegado) != MR_OK) return -1;
+    if (v->abierto) mr_decoder_reset(&v->dec);
+#ifndef DWV_SIN_SONIDO
+    if (v->ad) mr_audio_decoder_reset(v->ad);
+    if (v->au) {
+        audio_set_running(v->au, 0);
+        audio_flush(v->au);
+        v->sonando = 0;
+        v->reloj_desde = (long)audio_elapsed_ms(v->au);
+    }
+#endif
+    v->reloj_base = (long)(llegado / 1000u);
+    vi = mr_demux_video(v->dx);
+    /* (dwv_imagen saca el ms del número de paquete menos el retraso de reordenar, que vuelve a medir) */
+    v->base = vi && vi->scale ? (long)((llegado * vi->rate) / (1000000ull * vi->scale)) : 0;
+    v->paquetes = v->base;
+    v->recien = 1;
+    v->tras_paquete = 0;
+    v->vaciando = 0;
+    if (v->bajando) v->bajando->falta = 0;
+    v->ms = v->reloj_base;
+    return v->reloj_base;
+}
 
 void dwv_cerrar(long h)
 {

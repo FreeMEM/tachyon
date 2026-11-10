@@ -1,0 +1,28 @@
+# Test: el texto de la página con algo que no cabe en Latin-1 ("→", comillas tipográficas) lo ve el JavaScript tal
+# como llegó (tarea 68; lo contó David Martínez): React comparaba su texto con el cambiado por latin1_de y daba el
+# error #418 en dash.freemem.space y rehacía la página entera. Lo de Latin-1 sigue igual (é), y si el JavaScript
+# cambia el texto, vale el nuevo. Lo que se pinta sigue en Latin-1.
+# expect-out: nodeValue true | textContent true | p true | latin1 true
+# expect-out: cambiado: true
+# expect-out: dom: antes -> ahora
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+# memcheck
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    # (los bytes en UTF-8: → es E2 86 92, ’ es E2 80 99, é es C3 A9)
+    flecha = str_char(226) + str_char(134) + str_char(146)
+    comilla = str_char(226) + str_char(128) + str_char(153)
+    e = str_char(195) + str_char(169)
+    doc = dom_desde_html5_utf8("<html><body><p id=a>antes " + flecha + " ahora</p><p id=b>it" + comilla + "s caf" + e + "</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "var a = document.getElementById('a'), b = document.getElementById('b'); 'nodeValue ' + (a.firstChild.nodeValue == 'antes \\u2192 ahora') + ' | textContent ' + (a.textContent == 'antes \\u2192 ahora') + ' | p ' + (b.textContent == 'it\\u2019s caf\\u00e9') + ' | latin1 ' + (document.body.textContent.indexOf('caf\\u00e9') >= 0)", "t.js")
+    Print js_evaluar(js, "a.firstChild.nodeValue = 'nuevo'; 'cambiado: ' + (a.textContent == 'nuevo')", "t.js")
+    js_liberar(js)
+    p = dom_buscar(doc, "p")
+    p.hijos[0].texto = utf8_a_latin1("antes " + flecha + " ahora")
+    Print "dom: " + p.hijos[0].texto
+end

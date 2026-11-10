@@ -1,0 +1,369 @@
+# Inspeccionar (tarea 65, como las herramientas de Chrome; usuario, 2026-11-09): la página tachyon:inspeccionar con lo
+# que pasa en la página de otra ventana, en secciones: Consola (lo que dijo el JavaScript y una línea para evaluar),
+# Elementos (el árbol del DOM; el elegido, con su caja y su estilo calculado), Red (lo que se pidió), Memoria,
+# Aplicación (cookies, localStorage y sessionStorage) y Tiempos. Sin coste mientras no se abre: solo el registro de
+# la red (lib/http.dash http_registro) se apunta siempre.
+#
+#   h = inspeccionar_html(d, "0.1.3", consola)   # d: el documento que se mira; la ruta del elemento elegido ("" el
+#                                                # <html>); consola: lo evaluado desde la página, ya en HTML
+
+import "documento.dash"
+
+# Hasta cuántos elementos enseña el árbol (YouTube tiene miles: lo de más se cuenta)
+const INSP_ELEMENTOS_MAX = 1200
+# Las líneas de la consola y las peticiones que enseña, como mucho (las últimas)
+const INSP_CONSOLA_MAX = 200
+const INSP_RED_MAX = 200
+
+# Un texto para ponerlo en el HTML de la página
+func inspeccionar_escapar(t: String) -> String
+    return _insp_escapar(t)
+end
+
+func _insp_escapar(t: String) -> String
+    return str_replace(str_replace(str_replace(str_replace(t, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "\"", "&quot;")
+end
+
+# El elemento de la ruta ("0.1.3": el hijo 0 del documento, su hijo 1...; contando solo elementos); nil si no está
+func inspeccionar_nodo(doc: Nodo, ruta: String) -> Nodo
+    n = doc
+    if ruta == ""
+        return n
+    end
+    for parte in str_split(ruta, ".")
+        k = Int(parte)
+        i = 0
+        siguiente = n
+        encontrado = false
+        for h in n.hijos
+            if h.tipo == DOM_ELEMENTO
+                if i == k
+                    siguiente = h
+                    encontrado = true
+                    break
+                end
+                i = i + 1
+            end
+        end
+        if not encontrado
+            var nada: Nodo = nil
+            return nada
+        end
+        n = siguiente
+    end
+    return n
+end
+
+# "<div id=x class=a b>": la etiqueta de un elemento como en el árbol
+func _insp_etiqueta(n: Nodo) -> String
+    t = "&lt;" + n.nombre
+    id = dom_id(n)
+    if id != ""
+        t = t + " <span class=atr>id</span>=<span class=val>" + _insp_escapar(id) + "</span>"
+    end
+    c = str_trim(dom_atributo(n, "class"))
+    if c != ""
+        if c.length > 60
+            c = c[:60] + "..."
+        end
+        t = t + " <span class=atr>class</span>=<span class=val>" + _insp_escapar(c) + "</span>"
+    end
+    return t + "&gt;"
+end
+
+# Las líneas del árbol: hasta 3 niveles, y abierto el camino hasta el elegido (como desplegar en Chrome)
+func _insp_arbol(n: Nodo, ruta: String, nivel: Int, elegida: String, cuenta: [Int]) -> String
+    t = ""
+    i = 0
+    for h in n.hijos
+        if h.tipo != DOM_ELEMENTO
+            continue
+        end
+        r = "" + i
+        if ruta != ""
+            r = ruta + "." + i
+        end
+        i = i + 1
+        cuenta[0] = cuenta[0] + 1
+        if cuenta[0] > INSP_ELEMENTOS_MAX
+            continue
+        end
+        hijos = 0
+        for x in h.hijos
+            if x.tipo == DOM_ELEMENTO
+                hijos = hijos + 1
+            end
+        end
+        abierto = nivel < 3 or elegida == r or str_starts(elegida, r + ".")
+        marca = " "
+        if hijos > 0 and abierto
+            marca = "-"
+        elif hijos > 0
+            marca = "+"
+        end
+        clase = ""
+        if r == elegida
+            clase = " class=elegido"
+        end
+        t = t + "<div style=\"margin-left:" + (nivel * 14) + "px\"" + clase + ">" + marca + " <a href=\"tachyon:inspeccionar?nodo=" + r + "#elementos\">" + _insp_etiqueta(h) + "</a>"
+        if hijos > 0 and not abierto
+            t = t + " <span class=gris>(" + hijos + ")</span>"
+        end
+        texto = ""
+        for x in h.hijos
+            if x.tipo == DOM_TEXTO
+                texto = texto + x.texto
+            end
+        end
+        texto = str_trim(texto)
+        if texto != ""
+            if texto.length > 50
+                texto = texto[:50] + "..."
+            end
+            t = t + " <span class=gris>" + _insp_escapar(texto) + "</span>"
+        end
+        t = t + "</div>"
+        if abierto
+            t = t + _insp_arbol(h, r, nivel + 1, elegida, cuenta)
+        end
+    end
+    return t
+end
+
+# La consola: lo último del registro de lib/js.dash (lo de todas las páginas, lo último abajo)
+func _insp_consola(consola: String) -> String
+    lineas = str_split(registro_texto(), "\n")
+    desde = 0
+    if lineas.length > INSP_CONSOLA_MAX
+        desde = lineas.length - INSP_CONSOLA_MAX
+    end
+    t = ""
+    i = desde
+    while i < lineas.length
+        l = lineas[i]
+        if l != ""
+            clase = ""
+            if str_find(l, "JS: ") >= 0 or str_find(l, "rror") >= 0
+                clase = " class=error"
+            end
+            t = t + "<div" + clase + ">" + _insp_escapar(l) + "</div>"
+        end
+        i = i + 1
+    end
+    if t == ""
+        t = "<p class=gris>" + tr(487, "Nothing yet.") + "</p>"
+    end
+    t = "<div class=consola>" + t + consola + "</div>"
+    t = t + "<form action=\"tachyon:inspeccionar\" method=get>&gt; <input name=js size=70> <input type=submit value=\"" + tr(488, "Run") + "\"></form>"
+    return t
+end
+
+# La red: lo que se pidió (todo Tachyon, lo último abajo)
+func _insp_red() -> String
+    if http_registro.length == 0
+        return "<p class=gris>" + tr(487, "Nothing yet.") + "</p>"
+    end
+    t = "<table><tr><th>" + tr(489, "Method") + "</th><th>" + tr(490, "Status") + "</th><th>" + tr(491, "Type") + "</th><th>KB</th><th>ms</th><th>" + tr(492, "Address") + "</th></tr>"
+    desde = 0
+    if http_registro.length > INSP_RED_MAX
+        desde = http_registro.length - INSP_RED_MAX
+    end
+    total = 0
+    i = desde
+    while i < http_registro.length
+        c = str_split(http_registro[i], "\t")
+        if c.length >= 7
+            clase = ""
+            if str_starts(c[2], "0") or str_starts(c[2], "4") or str_starts(c[2], "5")
+                clase = " class=error"
+            end
+            u = c[6]
+            if u.length > 90
+                u = u[:90] + "..."
+            end
+            kb = (Int(c[3]) + 1023) / 1024
+            total = total + Int(c[3])
+            t = t + "<tr" + clase + "><td>" + c[1] + "</td><td>" + _insp_escapar(c[2]) + "</td><td>" + _insp_escapar(c[5]) + "</td><td class=num>" + kb + "</td><td class=num>" + c[4] + "</td><td>" + _insp_escapar(u) + "</td></tr>"
+        end
+        i = i + 1
+    end
+    return "<p>" + hueco2(tr(493, "%1 requests, %2 KB."), "" + (http_registro.length - desde), "" + total / 1024) + "</p>" + t + "</table>"
+end
+
+func _insp_fila(nombre: String, valor: String) -> String
+    return "<tr><td>" + nombre + "</td><td class=num>" + valor + "</td></tr>"
+end
+
+func _insp_contar(n: Nodo) -> Int
+    c = 0
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            c = c + 1 + _insp_contar(h)
+        end
+    end
+    return c
+end
+
+# Memoria: la del Amiga y lo de esta página
+func _insp_memoria(d: Documento) -> String
+    t = "<table>"
+    t = t + _insp_fila(tr(494, "Free fast memory"), "" + mem_fast_free() / 1024 + " KB")
+    t = t + _insp_fila(tr(495, "Free chip memory"), "" + mem_chip_free() / 1024 + " KB")
+    t = t + _insp_fila(tr(496, "Largest free block"), "" + mem_largest() / 1024 + " KB")
+    if d.js != 0
+        t = t + _insp_fila(tr(497, "JavaScript of this page"), "" + js_memoria(d.js) / 1024 + " KB")
+    end
+    t = t + _insp_fila(tr(498, "Pictures of this page"), str_replace(str_replace(imagenes_kb(d.im), "imágenes ", ""), " y copias ", " + "))
+    t = t + _insp_fila(tr(499, "Elements"), "" + _insp_contar(d.doc))
+    if d.pagina != nil
+        t = t + _insp_fila(tr(500, "Things to draw"), "" + d.pagina.dibujos.length)
+    end
+    return t + "</table>"
+end
+
+# Aplicación: las cookies del sitio y lo de localStorage y sessionStorage (del JavaScript de la página)
+func _insp_aplicacion(d: Documento) -> String
+    u = url_parse(d.direccion)
+    t = "<h3>Cookies</h3>"
+    filas = ""
+    for c in cookies_todas
+        dom = c.dominio
+        if str_starts(dom, ".")
+            dom = dom[1:]
+        end
+        if u.host == dom or str_ends(u.host, "." + dom)
+            v = c.valor
+            if v.length > 60
+                v = v[:60] + "..."
+            end
+            filas = filas + "<tr><td>" + _insp_escapar(c.nombre) + "</td><td class=gris>" + _insp_escapar(v) + "</td><td>" + _insp_escapar(c.dominio) + "</td></tr>"
+        end
+    end
+    if filas == ""
+        t = t + "<p class=gris>" + tr(501, "None.") + "</p>"
+    else
+        t = t + "<table>" + filas + "</table>"
+    end
+    if d.js == 0
+        return t
+    end
+    for almacen in ["localStorage", "sessionStorage"]
+        t = t + "<h3>" + almacen + "</h3>"
+        lista = js_evaluar(d.js, "(function(){try{var s=" + almacen + ",r=[];for(var i=0;i<s.length&&i<200;i++){var k=s.key(i),v=String(s.getItem(k));r.push(k+'\\t'+(v.length>80?v.slice(0,80)+'...':v));}return r.join('\\n');}catch(e){return '';}})()", "inspeccionar")
+        if lista == ""
+            t = t + "<p class=gris>" + tr(501, "None.") + "</p>"
+        else
+            t = t + "<table>"
+            for l in str_split(lista, "\n")
+                p = str_find(l, "\t")
+                if p >= 0
+                    t = t + "<tr><td>" + _insp_escapar(l[:p]) + "</td><td class=gris>" + _insp_escapar(l[p + 1:]) + "</td></tr>"
+                end
+            end
+            t = t + "</table>"
+        end
+    end
+    return t
+end
+
+# ¿a va antes que b? (por sus códigos: los nombres de las propiedades de CSS)
+func _insp_antes(a: String, b: String) -> Bool
+    i = 0
+    while i < a.length and i < b.length
+        ca = str_code(a, i)
+        cb = str_code(b, i)
+        if ca != cb
+            return ca < cb
+        end
+        i = i + 1
+    end
+    return a.length < b.length
+end
+
+# Una copia ordenada (por inserción: son pocas)
+func _insp_ordenadas(l: [String]) -> [String]
+    var r: [String] = []
+    for x in l
+        i = r.length
+        r.push(x)
+        while i > 0 and _insp_antes(x, r[i - 1])
+            r[i] = r[i - 1]
+            i = i - 1
+        end
+        r[i] = x
+    end
+    return r
+end
+
+# El elegido: su caja y su estilo calculado
+func _insp_elegido(n: Nodo) -> String
+    if n == nil or n.tipo != DOM_ELEMENTO
+        return ""
+    end
+    t = "<div class=elegido_info><b>" + _insp_etiqueta(n) + "</b><br>"
+    t = t + tr(502, "Box") + ": " + n.caja_x + ", " + n.caja_y + " " + n.caja_w + "x" + n.caja_h + "<br>"
+    if n.estilo != nil
+        claves = _insp_ordenadas(n.estilo.keys())
+        t = t + "<table>"
+        for k in claves
+            if not str_starts(k, "--")
+                t = t + "<tr><td>" + _insp_escapar(k) + "</td><td class=gris>" + _insp_escapar(n.estilo[k]) + "</td></tr>"
+            end
+        end
+        t = t + "</table>"
+    end
+    return t + "</div>"
+end
+
+# Tiempos: las fases de la carga (como la cascada de Chrome, en números) y lo que se juntó después
+func _insp_ms(ms: Int) -> String
+    if ms < 0
+        return "-"
+    end
+    return "" + ms + " ms"
+end
+
+func _insp_tiempos(d: Documento) -> String
+    t = "<table>"
+    t = t + _insp_fila(tr(517, "Download the page"), _insp_ms(d.t_red))
+    t = t + _insp_fila(tr(518, "Read the HTML"), _insp_ms(d.t_html))
+    t = t + _insp_fila(tr(519, "Wait for CSS and scripts"), _insp_ms(d.t_recursos))
+    t = t + _insp_fila(tr(520, "Run the scripts"), _insp_ms(d.t_js))
+    t = t + _insp_fila(tr(521, "Style"), _insp_ms(d.t_estilo))
+    t = t + _insp_fila(tr(522, "First layout"), _insp_ms(d.t_maqueta))
+    t = t + _insp_fila(tr(523, "Until complete (with pictures)"), _insp_ms(d.t_entera))
+    t = t + _insp_fila(hueco(tr(524, "Layouts (%1)"), "" + d.n_maquetas), _insp_ms(d.ms_maquetas))
+    t = t + _insp_fila(tr(525, "JavaScript timers"), _insp_ms(d.ms_temporizadores))
+    t = t + _insp_fila(tr(505, "Page size"), "" + d.bytes / 1024 + " KB")
+    return t + "</table>"
+end
+
+func inspeccionar_html(d: Documento, elegida: String, consola: String) -> String
+    h = "<html><head><title>" + tr(506, "Inspect") + "</title><style>"
+    h = h + "body { font-family: sans-serif; margin: 10px; font-size: 13px } h2 { color: #036; border-bottom: 1px solid #9ab; margin-top: 18px } "
+    h = h + "td, th { padding: 1px 6px; vertical-align: top; text-align: left } .gris { color: #666 } .num { text-align: right } "
+    h = h + ".error { color: #b00 } .atr { color: #94a } .val { color: #25a } .elegido { background: #dde8ff } "
+    h = h + ".consola { font-family: monospace; background: #f4f4f4; padding: 4px; margin-bottom: 4px } .elegido_info { background: #f4f4f4; padding: 6px; margin-top: 8px } "
+    h = h + "</style></head><body>"
+    h = h + "<h1>" + tr(506, "Inspect") + ": " + _insp_escapar(d.titulo) + "</h1><p class=gris>" + _insp_escapar(d.direccion) + "</p>"
+    h = h + "<p><a href=\"#consola\">" + tr(507, "Console") + "</a> | <a href=\"#elementos\">" + tr(508, "Elements") + "</a> | <a href=\"#red\">" + tr(509, "Network") + "</a>"
+    h = h + " | <a href=\"#memoria\">" + tr(510, "Memory") + "</a> | <a href=\"#aplicacion\">" + tr(511, "Application") + "</a> | <a href=\"#tiempos\">" + tr(512, "Timings") + "</a>"
+    h = h + " | <a href=\"tachyon:inspeccionar\">" + tr(513, "Refresh") + "</a></p>"
+    h = h + "<h2 id=consola>" + tr(507, "Console") + "</h2>" + _insp_consola(consola)
+    h = h + "<h2 id=elementos>" + tr(508, "Elements") + "</h2>"
+    if d.doc != nil
+        var cuenta: [Int] = [0]
+        h = h + "<div style=\"font-family: monospace\">" + _insp_arbol(d.doc, "", 0, elegida, cuenta) + "</div>"
+        if cuenta[0] > INSP_ELEMENTOS_MAX
+            h = h + "<p class=gris>" + hueco(tr(514, "And %1 more: choose one to open its branch."), "" + (cuenta[0] - INSP_ELEMENTOS_MAX)) + "</p>"
+        end
+        if elegida != ""
+            h = h + _insp_elegido(inspeccionar_nodo(d.doc, elegida))
+        end
+    end
+    h = h + "<h2 id=red>" + tr(509, "Network") + "</h2>" + _insp_red()
+    h = h + "<h2 id=memoria>" + tr(510, "Memory") + "</h2>" + _insp_memoria(d)
+    h = h + "<h2 id=aplicacion>" + tr(511, "Application") + "</h2>" + _insp_aplicacion(d)
+    h = h + "<h2 id=tiempos>" + tr(512, "Timings") + "</h2>" + _insp_tiempos(d)
+    return h + "</body></html>"
+end

@@ -1026,15 +1026,42 @@ func _video_cartel(im: Imagenes, d: Dibujo, x: Int, y: Int, x0: Int, y0: Int, x1
     return true
 end
 
-# Solo los vídeos de la franja [desde, desde + alto) (una imagen nueva: no hace falta pintar la página entera)
-func pintar_videos(p: Pagina, desde: Int, x0: Int, y0: Int, ancho: Int, alto: Int)
+# Solo los vídeos de la franja [desde, desde + alto) (una imagen nueva: no hace falta pintar la página entera). Uno
+# que tapa algo pintado después (el aviso de cookies de YouTube sobre su reproductor) se pinta con su zona entera, en
+# su orden: si no, la imagen nueva quedaba encima de lo de delante (tarea 64c)
+func pintar_videos(p: Pagina, im: Imagenes, desde: Int, x0: Int, y0: Int, ancho: Int, alto: Int)
+    i = 0
     for d in p.dibujos
+        i = i + 1
         # (los que aún enseñan su cartel no cambian: necesitan las imágenes, que aquí no están)
         if d.tipo == D_VIDEO and d.y + d.alto > desde and d.y < desde + alto and not videos_sin_empezar(pintor_videos, d.nodo)
-            var sin: Imagenes = nil
-            _video_dibujo(d, sin, x0 + d.x, y0 + d.y - desde, x0, y0, x0 + ancho - 1, y0 + alto - 1)
+            if _tapado(p, i, d)
+                pintor_zona = true
+                pintor_zx0 = x0 + d.x
+                pintor_zy0 = y0 + d.y - desde
+                pintor_zx1 = x0 + d.x + d.ancho - 1
+                pintor_zy1 = y0 + d.y - desde + d.alto - 1
+                pintar(p, im, desde, x0, y0, ancho, alto)
+                pintor_zona = false
+            else
+                var sin: Imagenes = nil
+                _video_dibujo(d, sin, x0 + d.x, y0 + d.y - desde, x0, y0, x0 + ancho - 1, y0 + alto - 1)
+            end
         end
     end
+end
+
+# ¿Algún dibujo de después del i-ésimo (lo de delante) se mete en el recuadro de v?
+func _tapado(p: Pagina, i: Int, v: Dibujo) -> Bool
+    k = i
+    while k < p.dibujos.length
+        d = p.dibujos[k]
+        if d.x < v.x + v.ancho and d.x + d.ancho > v.x and d.y < v.y + v.alto and d.y + d.alto > v.y
+            return true
+        end
+        k = k + 1
+    end
+    return false
 end
 
 # === Cajas con las esquinas redondeadas (border-radius) ===

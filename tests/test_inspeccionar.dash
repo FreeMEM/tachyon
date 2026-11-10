@@ -1,0 +1,33 @@
+# Test: la página de Inspeccionar (tarea 65; lib/inspeccionar.dash): sus secciones; el árbol con la etiqueta, id y class
+# de cada elemento y el camino abierto hasta el elegido; el elegido con su caja y su estilo calculado (ordenado);
+# localStorage de la página; las cookies de su sitio; lo que dijo su JavaScript; el registro de la red.
+# expect-out: dicho por la pagina
+# expect-out: secciones 6
+# expect-out: árbol: true true | elegido: true caja true estilo true orden true
+# expect-out: almacen: true | cookie: true | consola: true | red: true
+# expect-out: ruta 0.1.0: p
+
+import "../lib/inspeccionar.dash"
+
+func tiene(h: String, t: String) -> Bool
+    return str_find(h, t) >= 0
+end
+
+Main
+    cookies_recibir(url_parse("http://x.com/a"), "sabor=chocolate")
+    d = documento_html("http://x.com/a", "<html><head><title>Prueba</title><style>#u { color: red; width: 50px }</style></head><body><p id=u class='uno dos'>hola</p><script>localStorage.setItem('clave', 'valor42'); console.log('dicho por la pagina');</script></body></html>")
+    documento_maquetar(d, 640)
+    http_registro.push("0\tGET\t200\t2048\t15\ttext/html\thttp://x.com/a")
+    h = inspeccionar_html(d, "0.1.0", "")
+    n = 0
+    for s in ["id=consola", "id=elementos", "id=red", "id=memoria", "id=aplicacion", "id=tiempos"]
+        if tiene(h, s)
+            n = n + 1
+        end
+    end
+    Print "secciones " + n
+    Print "árbol: " + tiene(h, "nodo=0.1.0#elementos") + " " + tiene(h, "uno dos") + " | elegido: " + tiene(h, "class=elegido") + " caja " + tiene(h, "Box: ") + " estilo " + tiene(h, "<td>color</td>") + " orden " + (str_find(h, "<td>color</td>") < str_find(h, "<td>width</td>"))
+    Print "almacen: " + tiene(h, "valor42") + " | cookie: " + tiene(h, "chocolate") + " | consola: " + tiene(h, "dicho por la pagina") + " | red: " + tiene(h, "text/html")
+    Print "ruta 0.1.0: " + inspeccionar_nodo(d.doc, "0.1.0").nombre
+    documento_liberar(d)
+end

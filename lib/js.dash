@@ -65,6 +65,10 @@ end
 # Los segundos que puede durar un script, una llamada o un trabajo antes de cortarlo (0: sin tope; por omisión 30)
 @extern("js") func js_tope(segundos: Int)
 
+# Con 1, el JavaScript suelta la CPU un tic cada 100 ms (mientras se decodifican imágenes en otro proceso, que si
+# no apenas avanzan: lib/imagenes.dash)
+@extern("js") func js_ceder(si: Int)
+
 # Bytes que usa ahora el JavaScript de este motor (lo que ha pedido a malloc)
 @extern("js") func js_memoria(js: Int) -> Int
 

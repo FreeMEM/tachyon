@@ -1,0 +1,28 @@
+# Test: una caja position: fixed (o absolute) sin width mide lo que pide su contenido sin pasar de lo que queda hasta
+# el borde: el contenedor menos left y right (CSS 2.1 10.3.7). El diálogo de cookies de YouTube (iron-fit) se mide
+# con el left de la vez anterior y, con el ancho entero, salía más ancho que la ventana y en un left negativo (tarea
+# 64c). Con texto largo, corto y con left; con left y right a la vez, lo de en medio.
+# expect-out: con left 700: cabe true | sin left: ancho true | corto 40 | entre 200 600: 400
+
+import "../lib/maqueta.dash"
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    largo = "Non-personalised content and ads are influenced by things like the content that you are currently viewing and your location and more and more text here."
+    h = "<html><head><style>body { margin: 0 } p { margin: 0 }</style></head><body>"
+    h = h + "<div id=a style='position:fixed'><p>" + largo + "</p></div>"
+    h = h + "<div id=c style='position:fixed;left:700px'><p>" + largo + "</p></div>"
+    h = h + "<div id=d style='position:fixed'><p>corto</p></div>"
+    h = h + "<div id=f style='position:fixed;left:200px;right:400px'><p>x</p></div>"
+    h = h + "</body></html>"
+    doc = dom_desde_html5(h)
+    css_vista(1000, 600)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    p = maquetar(doc, 1000)
+    jsdom_vista(js, 1000, 600, 0, p.alto)
+    js_evaluar(js, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
+    Print js_evaluar(js, "'con left 700: cabe ' + (r('c').left == 700 && r('c').right <= 1000) + ' | sin left: ancho ' + (r('a').width > 900) + ' | corto ' + Math.round(r('d').width) + ' | entre 200 600: ' + Math.round(r('f').width)", "t.js")
+end

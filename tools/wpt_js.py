@@ -37,7 +37,7 @@ from medir_visor import MAQUINAS          # noqa: E402
 INFORME = r"""
 setup({output: false, timeout_multiplier: 5});  // (el emulador es lento: como hace wptrunner con las plataformas lentas)
 add_completion_callback(function (tests, status) {
-    var ruta = String(location.pathname).replace(/^\//, '');
+    var ruta = String(location.pathname).replace(/^\//, '') + String(location.search);
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
     var harness = ['OK', 'ERROR', 'TIMEOUT', 'PRECONDITION_FAILED'];
     var pasan = 0, l = [];
@@ -55,63 +55,165 @@ add_completion_callback(function (tests, status) {
 """
 
 
-def _manejador(camino):
-    """Un .py de wptserve (def main(request, response)) de la copia de WPT, con lo poco que usan los de las carpetas
-    pasadas: request.GET.first/get, request.headers, response.headers.set y lo que devuelve main (texto, o
-    (cabeceras, cuerpo), o (estado, cabeceras, cuerpo)). None si no es uno."""
+def _manejador(camino, metodo="GET", cabeceras=None, cuerpo=b""):
+    """Un .py de wptserve (def main(request, response)) de la copia de WPT, con lo que usan los de las carpetas pasadas:
+    request.method, GET, POST, headers, body, url; response.headers.set/append, status, content y writer; y lo que
+    devuelve main (texto, (cabeceras, cuerpo) o (estado, cabeceras, cuerpo)). None si no es uno."""
     import types
     import urllib.parse
     ruta, _, consulta = camino.partition("?")
     f = WPT / urllib.parse.unquote(ruta).lstrip("/")
     if f.suffix != ".py" or not f.is_file():
         return None
+    def b(x):
+        return x.encode("latin-1") if isinstance(x, str) else x
+    def t(x):
+        return x.decode("latin-1") if isinstance(x, bytes) else str(x)
     utiles = types.ModuleType("wptserve.utils")
-    utiles.isomorphic_decode = lambda b: b.decode("latin-1") if isinstance(b, bytes) else b
-    utiles.isomorphic_encode = lambda t: t.encode("latin-1") if isinstance(t, str) else t
+    utiles.isomorphic_decode = lambda x: x.decode("latin-1") if isinstance(x, bytes) else x
+    utiles.isomorphic_encode = lambda x: x.encode("latin-1") if isinstance(x, str) else x
     wptserve = types.ModuleType("wptserve")
     wptserve.utils = utiles
     sys.modules.setdefault("wptserve", wptserve)
     sys.modules.setdefault("wptserve.utils", utiles)
-    q = urllib.parse.parse_qs(consulta, keep_blank_values=True)
 
-    class Get:
+    class Tabla:
+        def __init__(self, pares):
+            self.d = {}
+            for k, v in pares:
+                self.d.setdefault(t(k).lower() if self.minus else t(k), []).append(v if hasattr(v, "filename") else b(v))
+        minus = False
         def first(self, k, defecto=None):
-            k = k.decode("latin-1") if isinstance(k, bytes) else k
-            return q[k][0].encode("latin-1") if k in q else defecto
-        get = first
-
+            k = t(k).lower() if self.minus else t(k)
+            return self.d[k][0] if k in self.d else defecto
+        def get(self, k, defecto=None):
+            return self.first(k, defecto)
+        def get_list(self, k):
+            return self.d.get(t(k).lower() if self.minus else t(k), [])
         def __contains__(self, k):
-            return (k.decode("latin-1") if isinstance(k, bytes) else k) in q
+            return (t(k).lower() if self.minus else t(k)) in self.d
+        def __getitem__(self, k):
+            v = self.first(k)
+            if v is None:
+                raise KeyError(k)
+            return v
+        def keys(self):
+            return [b(k) for k in self.d]
+        def items(self):
+            return [(b(k), v[0]) for k, v in self.d.items()]
+        def __iter__(self):
+            return iter(self.keys())
 
-    class Cabeceras(list):
+    class TablaPost(Tabla):
+        # (como MultiDict de wptserve: items() con la lista de valores de cada clave)
+        def items(self):
+            return [(b(k), v) for k, v in self.d.items()]
+
+    class Fichero:
+        # (una parte de multipart/form-data con filename, como la de cgi.FieldStorage que da wptserve)
+        def __init__(self, nombre, tipo, datos):
+            import io
+            self.filename, self.value, self.file = nombre, datos, io.BytesIO(datos)
+            self.headers = {"Content-Type": tipo}
+
+    class Cabeceras(Tabla):
+        minus = True
+
+    cab = Cabeceras(list((cabeceras or {}).items()))
+    tipo = t(cab.first("content-type", b""))
+    post = urllib.parse.parse_qsl(cuerpo.decode("latin-1"), keep_blank_values=True) if "urlencoded" in tipo else []
+    if "multipart/form-data" in tipo:
+        # (como wptserve: cada parte con su name; el valor tal cual, sin el CRLF del final)
+        import re as _re
+        m = _re.search(r'boundary="?([^";]+)"?', tipo)
+        for parte in (cuerpo.split(b"--" + m.group(1).encode("latin-1"))[1:] if m else []):
+            if parte.startswith(b"--") or b"\r\n\r\n" not in parte:
+                continue
+            cab_p, valor = parte.split(b"\r\n\r\n", 1)
+            nombre = _re.search(rb'\bname="([^"]*)"', cab_p)
+            valor = valor[:-2] if valor.endswith(b"\r\n") else valor
+            fichero = _re.search(rb'filename="([^"]*)"', cab_p)
+            if fichero:
+                ct = _re.search(rb'(?i)content-type:[ \t]*([^\r\n]*)', cab_p)
+                valor = Fichero(fichero.group(1).decode("latin-1"), ct.group(1).decode("latin-1") if ct else None, valor)
+            if nombre:
+                post.append((nombre.group(1).decode("latin-1"), valor))
+
+    class Respuesta(list):
         def set(self, k, v):
-            k = k.decode("latin-1") if isinstance(k, bytes) else k
-            self[:] = [(a, b) for a, b in self if a.lower() != k.lower()]
-            self.append((k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
-        append_header = set
+            k = t(k)
+            self[:] = [(a, c) for a, c in self if a.lower() != k.lower()]
+            self.append((k, t(v)))
+        def append_header(self, k, v):
+            self.append((t(k), t(v)))
+        def append(self, k, v=None):
+            # (headers.append(nombre, valor) de wptserve; con un solo argumento, el de la lista)
+            list.append(self, k if v is None else (t(k), t(v)))
+        def get(self, k, defecto=None):
+            for a, c in self:
+                if a.lower() == t(k).lower():
+                    return b(c)
+            return defecto
+        def __contains__(self, k):
+            return any(a.lower() == t(k).lower() for a, c in self) if isinstance(k, (str, bytes)) else list.__contains__(self, k)
 
-    peticion = types.SimpleNamespace(GET=Get(), headers={}, url_parts=None)
-    respuesta = types.SimpleNamespace(headers=Cabeceras(), status=200)
-    espacio = {"__name__": "wpt_manejador"}
+    salida = {"escrito": None}
+
+    class Escritor:
+        def __init__(self, r):
+            self.r = r
+            self.partes = []
+        def write_status(self, code, message=None):
+            self.r.status = code
+        def write_header(self, k, v):
+            self.r.headers.append((t(k), t(v)))
+        def end_headers(self):
+            pass
+        def write_content(self, x):
+            self.partes.append(b(x))
+        def write(self, x):
+            self.partes.append(b(x))
+        def flush(self):
+            pass
+
+    u = urllib.parse.urlsplit("http://127.0.0.1:%d%s" % (PUERTO, camino))
+    peticion = types.SimpleNamespace(method=metodo, GET=Tabla(urllib.parse.parse_qsl(consulta, keep_blank_values=True, encoding="latin-1")),
+                                     POST=TablaPost(post), headers=cab, body=cuerpo, url=u.geturl(), url_parts=u,
+                                     request_path=camino,
+                                     raw_headers=types.SimpleNamespace(raw_items=lambda: list((cabeceras or {}).items())),
+                                     cookies={}, server=types.SimpleNamespace(stash=None))
+    respuesta = types.SimpleNamespace(headers=Respuesta(), status=200, content=None, add_required_headers=True)
+    respuesta.writer = Escritor(respuesta)
+    respuesta.write_status_headers = lambda: None
+    salida["escrito"] = respuesta.writer
+    espacio = {"__name__": "wpt_manejador", "__file__": str(f)}
     try:
         exec(compile(f.read_text(encoding="utf-8"), str(f), "exec"), espacio)
         r = espacio["main"](peticion, respuesta)
     except Exception as e:
-        return 500, [("Content-Type", "text/plain")], ("manejador: %s" % e).encode()
-    estado, cabeceras = respuesta.status, list(respuesta.headers)
+        return 500, [("Content-Type", "text/plain")], ("manejador: %s" % e).encode(), None
+    estado, extra = respuesta.status, []
     if isinstance(r, tuple):
         if len(r) == 3:
             estado, extra, r = r
         else:
             extra, r = r
-        for k, v in extra:
-            cabeceras.append((k.decode("latin-1") if isinstance(k, bytes) else k, v.decode("latin-1") if isinstance(v, bytes) else str(v)))
+    for k, v in extra:
+        respuesta.headers.append((t(k), t(v)))
+    razon = None
     if isinstance(estado, tuple):
-        estado = estado[0]
-    if not any(k.lower() == "content-type" for k, _ in cabeceras):
-        cabeceras.append(("Content-Type", "text/html"))
-    cuerpo = r.encode("utf-8") if isinstance(r, str) else (r or b"")
-    return int(estado), cabeceras, cuerpo
+        estado, razon = estado[0], t(estado[1]) if len(estado) > 1 else None
+    if r is None and not respuesta.add_required_headers:
+        # (el manejador escribe la respuesta HTTP entera con writer, línea de estado incluida: tal cual)
+        return None, [], b"".join(respuesta.writer.partes), None
+    if r is None:
+        r = respuesta.content if respuesta.content is not None else b"".join(respuesta.writer.partes)
+    if isinstance(r, list):
+        r = b"".join(b(x) for x in r)
+    if not any(k.lower() == "content-type" for k, _ in respuesta.headers):
+        respuesta.headers.append(("Content-Type", "text/html"))
+    cuerpo_r = r.encode("utf-8") if isinstance(r, str) else (r or b"")
+    return int(estado), list(respuesta.headers), cuerpo_r, razon
 
 
 def pruebas(carpeta):
@@ -134,7 +236,11 @@ def pruebas(carpeta):
         except OSError:
             continue
         if "testharness.js" in t:
-            r.append(str(f.relative_to(WPT)))
+            # (con <meta name=variant content="?...">, una vez por variante, como wptserve; los espacios como %20 para
+            # que el nombre en el informe sea una sola palabra)
+            variantes = re.findall(r'<meta\s+name=["\']?variant["\']?\s+content=["\']([^"\']*)["\']', t, re.I)
+            for v in variantes or [""]:
+                r.append(str(f.relative_to(WPT)) + v.replace(" ", "%20"))
     return r
 
 
@@ -190,6 +296,52 @@ def main():
         def log_message(self, *x):
             pass
 
+        def _metodo(self, metodo):
+            n = int(self.headers.get("Content-Length") or 0)
+            cuerpo = self.rfile.read(n) if n else b""
+            py = _manejador(self.path, metodo, dict(self.headers.items()), cuerpo)
+            if py is None:
+                if metodo == "HEAD":
+                    return super().do_HEAD()
+                self.send_response(405)
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
+            estado, cabeceras, salida, razon = py
+            if estado is None:
+                self.close_connection = True
+                self.wfile.write(salida)
+                return
+            self.send_response(estado, razon)
+            for k, v in cabeceras:
+                self.send_header(k, v)
+            if not any(k.lower() in ("content-length", "transfer-encoding") for k, _ in cabeceras):
+                self.send_header("Content-Length", str(len(salida)))
+            self.end_headers()
+            if metodo != "HEAD":
+                self.wfile.write(salida)
+
+        def __getattr__(self, nombre):
+            # (cualquier otro método, como los inventados de los tests de xhr: al manejador .py)
+            if nombre.startswith("do_"):
+                return lambda: self._metodo(nombre[3:])
+            raise AttributeError(nombre)
+
+        def do_POST(self):
+            self._metodo("POST")
+
+        def do_PUT(self):
+            self._metodo("PUT")
+
+        def do_DELETE(self):
+            self._metodo("DELETE")
+
+        def do_OPTIONS(self):
+            self._metodo("OPTIONS")
+
+        def do_HEAD(self):
+            self._metodo("HEAD")
+
         def do_GET(self):
             if self.path.split("?")[0] == "/resources/testharnessreport.js":
                 cuerpo = INFORME.encode()
@@ -199,15 +351,27 @@ def main():
                 self.end_headers()
                 self.wfile.write(cuerpo)
                 return
-            py = _manejador(self.path)
+            py = _manejador(self.path, "GET", dict(self.headers.items()))
             if py is not None:
-                estado, cabeceras, cuerpo = py
-                self.send_response(estado)
+                estado, cabeceras, cuerpo, razon = py
+                if estado is None:
+                    self.close_connection = True
+                    self.wfile.write(cuerpo)
+                    return
+                self.send_response(estado, razon)
                 for k, v in cabeceras:
                     self.send_header(k, v)
-                self.send_header("Content-Length", str(len(cuerpo)))
+                if not any(k.lower() in ("content-length", "transfer-encoding") for k, _ in cabeceras):
+                    self.send_header("Content-Length", str(len(cuerpo)))
                 self.end_headers()
                 self.wfile.write(cuerpo)
+                return
+            # (un .asis es la respuesta HTTP entera tal cual, línea de estado y cabeceras incluidas, como en wptserve)
+            ruta = self.translate_path(self.path.split("?")[0])
+            if ruta.endswith(".asis") and os.path.isfile(ruta):
+                self.close_connection = True
+                with open(ruta, "rb") as f:
+                    self.wfile.write(f.read())
                 return
             env = _envoltorio(self.path.split("?")[0])
             if env is not None:

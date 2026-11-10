@@ -20,6 +20,8 @@ import "../lib/buscadores.dash"
 import "../lib/descargas.dash"
 import "../lib/idioma.dash"
 import "../lib/informe.dash"
+import "../lib/lectura.dash"
+import "../lib/inspeccionar.dash"
 
 # desde el icono del Workbench, lo que escribe (console.log de las páginas, «entera en») no abre una consola
 @workbench_output "NIL:"
@@ -64,10 +66,16 @@ const ID_INFORME = 30          # menú Proyecto: enviar un informe de depuració
 const ID_GUARDAR_PAGINA = 31   # menú Proyecto (Amiga-S) y el del botón derecho sobre la página (tarea 57)
 const ID_GUARDAR_ENLACE = 32   # el del botón derecho: el enlace donde se pulsó, a un fichero
 const ID_ABRIR_FICHERO = 33    # menú Proyecto (Amiga-O): una página del disco (tarea 60)
+const ID_LECTURA = 34          # menú Navegar (Amiga-E): el modo lectura de la página (tarea 63c)
 const ID_PESTANA = 40          # + número de pestaña: su botón de la barra de pestañas (tarea 46)
 const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
 const ID_CERRAR_PESTANA = 50   # (Amiga-W)
+const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
+const ID_INSPECCIONAR = 35     # menú Herramientas: Inspeccionar la página (Amiga-I; tarea 65)
+const ID_DEPURACION = 36       # menú Herramientas: el registro de depuración de red, a un fichero (tarea 67)
+# (al lado del programa: lo que se escribe ahí sigue aunque haya que reiniciar el Amiga, como no lo haría en RAM:)
+const DEPURACION_FICHERO = "PROGDIR:Tachyon-debug.txt"
 const MAX_PESTANAS = 8
 # y los del programa
 const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeout/setInterval de las páginas
@@ -94,6 +102,7 @@ struct Ventana
     v: Navegador
     numero: Int
     abierta: Bool = true
+    titulo_puesto: String = ""   # el título de la ventana (poner_titulo): el JavaScript puede cambiar el de la página
     actual: Documento = nil
     desde: Int = 0
     desde_volver: Int = -1    # una pestaña descartada vuelve a su sitio cuando su página llega hasta ahí (-1: no)
@@ -151,6 +160,10 @@ end
 
 # Con un mayor bloque libre por debajo de esto (bytes), al cargar otra página la de antes se suelta entera
 const POCO_SEGUIDO = 16777216
+# Con menos memoria libre que esto (KB), al cargar otra página la de antes se suelta entera
+const MEMORIA_PARA_DOS = 65536
+# Por debajo de esta memoria libre (KB), el JavaScript de la página se suelta (js_sin_memoria; JSMINIMA=KB lo cambia)
+var dw_js_minima: Int = 24576
 # Por debajo de esta memoria libre (KB), las pestañas de detrás se descartan (POCAMEMORIA=KB lo cambia, para probarlo)
 var dw_poca_memoria: Int = 4096
 
@@ -212,6 +225,10 @@ var dw_cat_propio: Carga = nil
 var dw_cat_propio_url: String = ""
 var dw_act_lista: Bool = false      # ya instalada: el botón reinicia
 var dw_reiniciar: Bool = false
+# Su propia pantalla (preferencia "pantalla=si", como Forja): un clon público del Workbench con este nombre, abierto
+# al empezar; sus ventanas se abren en ella. "" si va en la del Workbench
+const PANTALLA = "TACHYON"
+var dw_pantalla: String = ""
 
 func versiones_mirar(manual: Bool)
     if dw_act_carga != nil or dw_act_bajada != nil or dw_act_lista
@@ -248,7 +265,11 @@ func versiones_avanzar()
         dw_act_carga = nada
         if r.error != "" or r.estado != 200
             if dw_act_manual
-                versiones_estado(tr(129, "Could not check for new versions"))
+                porque = r.error
+                if porque == ""
+                    porque = "HTTP " + r.estado
+                end
+                versiones_estado(tr(129, "Could not check for new versions") + " (" + porque + ")")
             end
             return
         end
@@ -269,7 +290,12 @@ func versiones_avanzar()
         r = dw_act_bajada.respuesta
         dw_act_bajada = nada
         if r.error != "" or r.estado != 200
-            versiones_estado(tr(132, "Could not download the new version"))
+            # (con el porqué: el error de la red o el código HTTP; el usuario lo vio sin más en la 0.9.2)
+            porque = r.error
+            if porque == ""
+                porque = "HTTP " + r.estado
+            end
+            versiones_estado(tr(132, "Could not download the new version") + " (" + porque + ")")
             return
         end
         error = actualizar_instalar(actualizar_programa())
@@ -527,6 +553,7 @@ func pinta_completa(x: Int, y: Int, ancho: Int, alto: Int)
     end
     if dw_completa != nil
         videos_pintar_r(dw_completa, x, y, ancho, alto)
+        videos_barra(dw_completa, x, y, ancho, alto)
     end
 end
 
@@ -657,7 +684,7 @@ func pinta_en(k: Int, x: Int, y: Int, ancho: Int, alto: Int)
     imagenes_hasta(w.actual.im, w.desde, alto)
     # lo que se ve, para el JavaScript (innerWidth/innerHeight, scrollY, getBoundingClientRect)
     if w.actual.js != 0 and w.actual.pagina != nil
-        jsdom_vista(w.actual.js, ancho, alto, w.desde, w.actual.pagina.alto)
+        documento_vista(w.actual, ancho, alto, w.desde)
     end
     pintor_foco = w.foco
     pintor_videos = w.actual.videos
@@ -678,7 +705,7 @@ func pinta_en(k: Int, x: Int, y: Int, ancho: Int, alto: Int)
     end
     if mui_canvas_updating()
         # una imagen nueva de un vídeo (mui_canvas_update: MUI no borra el lienzo): solo los vídeos
-        pintar_videos(w.actual.pagina, w.desde, x, y, ancho, alto)
+        pintar_videos(w.actual.pagina, w.actual.im, w.desde, x, y, ancho, alto)
         return
     end
     pintar(w.actual.pagina, w.actual.im, w.desde, x, y, ancho, alto)
@@ -788,11 +815,65 @@ func abrir(w: Ventana, direccion: String)
             preferencia_poner(FICHERO_PREFERENCIAS, "buscador", direccion[p + 6:])
         end
         d = documento_html("tachyon:buscadores", buscadores_html(buscador_elegido()))
+    elif str_starts(direccion, "tachyon:archivo")
+        # tachyon:archivo?extraer=ruta: el enlace de la página de un comprimido (lib/archivos.dash, tarea 63d). Dónde
+        # (el diálogo de guardar con su nombre: se extrae en un cajón nuevo con ese nombre) y luego ese cajón
+        p = str_find(direccion, "?extraer=")
+        h = "<title>" + tr(480, "Extract...") + "</title><p>" + tr(483, "Nothing was extracted.") + "</p>"
+        if p >= 0
+            ruta = url_deshacer(direccion[p + 9:])
+            nombre = ruta[dialog_cajon(ruta).length:]
+            if str_starts(nombre, "/")
+                nombre = nombre[1:]
+            end
+            q = str_find(nombre, ".")
+            if q > 0
+                nombre = nombre[:q]
+            end
+            destino = dialog_file_at(tr(484, "Extract into a new drawer"), "", true, dialog_cajon(ruta), nombre)
+            if destino != ""
+                dw_estado(w, hueco(tr(485, "Extracting %1..."), ruta))
+                e = archivo_extraer(ruta, destino)
+                if e == ""
+                    direccion = url_de_ruta(destino + "/")
+                    mui_set_text(w.v.url, direccion)
+                    if w.visto >= 0 and w.visto < w.pasos.length
+                        w.pasos[w.visto] = direccion
+                    end
+                    h = documento_cajon(destino + "/")
+                else
+                    h = "<title>" + tr(480, "Extract...") + "</title><p>" + hueco2(tr(486, "Couldn't extract %1: %2"), ruta, e) + "</p>"
+                end
+            end
+        end
+        d = documento_html(direccion, h)
+    elif direccion == "tachyon:lectura"
+        # el modo lectura de la página de antes (leer_pagina); vuelto a abrir sin ella (adelante, otra ventana), un aviso
+        h = dw_lectura_html
+        if h == ""
+            h = "<html><head><title>" + tr(170, "Reader view") + "</title></head><body><p>" + tr(171, "Open a page and choose Reader view in the Navigate menu.") + "</p></body></html>"
+        end
+        d = documento_html("tachyon:lectura", h)
     elif str_starts(direccion, "tachyon:historial")
+        # ?borrar (todo), ?quitar=dirección (todas sus visitas; va la última, con lo que lleve) y ?buscar=texto
         if str_starts(direccion, "tachyon:historial?borrar")
             historial_borrar(FICHERO_HISTORIAL)
         end
-        d = documento_html("tachyon:historial", historial_html(FICHERO_HISTORIAL, historial_ahora()))
+        p = str_find(direccion, "quitar=")
+        if p >= 0
+            historial_quitar(FICHERO_HISTORIAL, direccion[p + 7:])
+        end
+        buscar = ""
+        p = str_find(direccion, "buscar=")
+        if p >= 0
+            buscar = direccion[p + 7:]
+            f = str_find(buscar, "&")
+            if f >= 0
+                buscar = buscar[:f]
+            end
+            buscar = str_trim(url_deshacer(str_replace(buscar, "+", " ")))
+        end
+        d = documento_html(tachyon_sin_accion(direccion), historial_html(FICHERO_HISTORIAL, historial_ahora(), buscar))
     elif str_starts(direccion, "tachyon:cookies")
         # dashweb:cookies?borrar (todas) o ?borrar=dominio
         if str_starts(direccion, "tachyon:cookies?borrar")
@@ -812,6 +893,8 @@ func abrir(w: Ventana, direccion: String)
             almacen_guardar(FICHERO_ALMACEN)
         end
         d = documento_html("tachyon:cookies", cookies_html())
+    elif str_starts(direccion, "tachyon:inspeccionar")
+        d = documento_html("tachyon:inspeccionar", inspeccionar_pedido(direccion))
     elif str_starts(direccion, "tachyon:informe")
         # tachyon:informe?enviar=1: el botón de la página; manda lo que la página enseñaba
         if str_starts(direccion, "tachyon:informe?enviar")
@@ -890,6 +973,7 @@ func avanzar_carga(w: Ventana)
         end
         mui_set_value(w.v.progreso, 90)
         dw_estado(w, tr(110, "Fetching style sheets and scripts..."))
+        traza("llegó la página (" + c.respuesta.cuerpo.length + " bytes): se suelta la de antes")
         vista(w)
         # la de antes se queda pintada, pero sin su JavaScript: así no suma su memoria a la de la nueva
         if w.actual != nil
@@ -898,7 +982,9 @@ func avanzar_carga(w: Ventana)
             # sin un hueco grande seguido, fuera también lo demás (árbol, estilo, maqueta, imágenes), de vuelta al sistema:
             # la portada de YouTube tras "Accept all" pide 10,5 MB seguidos para su script, y con 128 MB lo que quedaba
             # de la de antes la partía en trozos de 10 MB (tarea 38c8)
-            if memoria_mayor_bloque() < POCO_SEGUIDO
+            # (y con poca memoria libre en total: la de los resultados de YouTube y la del vídeo no caben las dos en
+            # 256 MB, y Tachyon se caía al abrir un vídeo; tarea 64)
+            if memoria_mayor_bloque() < POCO_SEGUIDO or mem_total() / 1024 < MEMORIA_PARA_DOS
                 documento_liberar(w.actual)
                 var ninguna: Documento = nil
                 w.actual = ninguna
@@ -907,7 +993,10 @@ func avanzar_carga(w: Ventana)
                 mui_canvas_redraw(w.v.pagina)
             end
         end
+        traza("leyendo el HTML")
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
+        w.preparando.t_red = time_ms() - w.empezada - w.preparando.t_html
+        traza("HTML leído en " + w.preparando.t_html + " ms: " + recursos_pendientes(w.preparando.recursos) + " hojas y scripts por traer")
     end
     if w.preparando == nil
         return
@@ -1095,8 +1184,8 @@ func atajo_de_menu(w: Ventana) -> Int
     if c == ""
         return 0
     end
-    letras = "nktwlosqrhybdj?"
-    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA]
+    letras = "nktwlosqrhybdj?e"
+    eventos = [ID_NUEVA, ID_CERRAR, ID_NUEVA_PESTANA, ID_CERRAR_PESTANA, ID_IR_DIRECCION, ID_ABRIR_FICHERO, ID_GUARDAR_PAGINA, ID_SALIR, ID_RECARGAR, ID_INICIO, ID_VER_HISTORIAL, ID_MARCADORES, ID_ANADIR, ID_DESCARGAS, ID_ACERCA, ID_LECTURA]
     i = str_find(letras, str_lower(c[:1]))
     if i < 0
         return 0
@@ -1192,6 +1281,20 @@ func parar_carga(w: Ventana)
     end
 end
 
+# El título de la página en la ventana ("... - Tachyon"), si cambió
+func poner_titulo(w: Ventana)
+    t = ""
+    if w.actual != nil
+        t = w.actual.titulo
+    end
+    w.titulo_puesto = t
+    if t != "" and t != "Tachyon"
+        mui_set_text(w.v.window, t + " - Tachyon")
+    else
+        mui_set_text(w.v.window, "Tachyon")
+    end
+end
+
 # Pone el documento nuevo en la ventana
 func mostrar(w: Ventana, d: Documento, direccion: String)
     if w.actual != nil
@@ -1219,11 +1322,7 @@ func mostrar(w: Ventana, d: Documento, direccion: String)
     end
     var nadie: Nodo = nil
     w.foco = nadie
-    if w.actual.titulo != "" and w.actual.titulo != "Tachyon"
-        mui_set_text(w.v.window, w.actual.titulo + " - Tachyon")
-    else
-        mui_set_text(w.v.window, "Tachyon")
-    end
+    poner_titulo(w)
     ajustar_barra(w)
     if w.actual.error != ""
         dw_estado(w, hueco(tr(115, "Error: %1"), w.actual.error))
@@ -1388,9 +1487,28 @@ func maxi(a: Int, b: Int) -> Int
     return b
 end
 
+const JS_CON_VIDEO_MS = 250
+
+# ¿Suena algún vídeo en la página de la ventana?
+func video_sonando(w: Ventana) -> Bool
+    if w.actual == nil or w.actual.videos == nil
+        return false
+    end
+    for r in w.actual.videos.lista
+        if r.estado == V_SONANDO
+            return true
+        end
+    end
+    return false
+end
+
 func temporizadores(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
+    if w.carga == nil and js_sin_memoria(w)
+        programar()
+        return
+    end
     if w.actual != nil and w.actual.js != 0 and w.carga == nil
         t0 = time_ms()
         # (load espera a las imágenes, como en un navegador: el JavaScript sabe cuántas faltan)
@@ -1399,7 +1517,9 @@ func temporizadores(w: Ventana)
             w.actual.imgs_js = faltan
             js_evaluar(w.actual.js, "__dashweb_imgs = " + faltan, "dashweb")
         end
+        documento_resize(w.actual)
         espera = jsdom_temporizadores(w.actual.js)
+        w.actual.ms_temporizadores = w.actual.ms_temporizadores + time_ms() - t0
         w.actual.desde = w.desde
         w.actual.alto_vista = mui_height(w.v.pagina)
         if traza_activa
@@ -1411,6 +1531,11 @@ func temporizadores(w: Ventana)
         end
         lienzos_al_dia(w)
         w.js_cuando = -1
+        # (con un vídeo sonando, los temporizadores de la página esperan al menos JS_CON_VIDEO_MS: el reproductor
+        # decodifica en este bucle y YouTube despierta los suyos cada 50 ms; tarea 64c)
+        if espera >= 0 and espera < JS_CON_VIDEO_MS and video_sonando(w)
+            espera = JS_CON_VIDEO_MS
+        end
         if espera >= 0
             w.js_cuando = time_ms() + espera
         end
@@ -1423,6 +1548,31 @@ func temporizadores(w: Ventana)
         intersecciones(w, false)
     end
     programar()
+end
+
+# Con poca memoria libre, el JavaScript de la página se suelta entero (sus peticiones y los scripts que le
+# faltaban, también) y la página se queda como está, en vez de seguir pidiendo hasta que el Amiga no tenga nada: los
+# resultados de YouTube y la página de un vídeo, con 256 MB, se comían hasta el último KB y Tachyon se caía sin decir
+# nada (tarea 64g). Pararlo sin soltarlo no bastaba: seguían llegando scripts y respuestas. Antes se sueltan las
+# pestañas de detrás
+func js_sin_memoria(w: Ventana) -> Bool
+    d = w.actual
+    if d == nil or d.js == 0 or mem_total() / 1024 >= dw_js_minima
+        return false
+    end
+    descartar_pestanas_bajo(dw_js_minima)
+    mem_trim()
+    if mem_total() / 1024 >= dw_js_minima
+        return false
+    end
+    antes = mem_total() / 1024
+    documento_soltar_js(d)
+    d.js_sin_memoria = true
+    w.js_cuando = -1
+    mem_trim()
+    traza("poca memoria (" + antes + " KB libres): fuera el JavaScript de la página; ahora " + mem_total() / 1024 + " KB libres")
+    dw_estado(w, tr(528, "Low memory: the page's JavaScript was stopped"))
+    return true
 end
 
 # Las animaciones de CSS de la página: un fotograma (como mucho cada ANIMACION_MS) y se repinta
@@ -1463,7 +1613,7 @@ func intersecciones(w: Ventana, todo: Bool)
     if w.actual == nil or w.actual.js == 0 or w.actual.pagina == nil or w.carga != nil
         return
     end
-    jsdom_vista(w.actual.js, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde, w.actual.pagina.alto)
+    documento_vista(w.actual, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde)
     w.io_pagina = w.actual.pagina
     jsdom_intersecciones(w.actual.js, todo)
 end
@@ -1474,7 +1624,7 @@ func avisar_desplazamiento(w: Ventana)
     if w.actual == nil or w.actual.js == 0 or w.actual.pagina == nil or w.carga != nil
         return
     end
-    jsdom_vista(w.actual.js, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde, w.actual.pagina.alto)
+    documento_vista(w.actual, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde)
     t0 = time_ms()
     jsdom_desplazado(w.actual.js)
     intersecciones(w, true)
@@ -1498,6 +1648,11 @@ func raton(w: Ventana)
         x = mui_canvas_pointer_x(w.v.pagina)
         y = mui_canvas_pointer_y(w.v.pagina)
         documento_raton(w.actual, x, y + w.desde, y)
+        # (sobre un vídeo: su barra de controles se ve un rato; tarea 64f)
+        vid = documento_video_en_punto(w.actual, x, y + w.desde)
+        if vid != nil and videos_tocar(documento_videos(w.actual), vid)
+            mui_canvas_redraw(w.v.pagina)
+        end
     else
         documento_raton(w.actual, -1, -1, -1)
     end
@@ -1542,7 +1697,12 @@ end
 func tic(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
+    # (también mientras llegan sus scripts y respuestas, sin temporizadores)
+    if w.carga == nil and w.preparando == nil
+        js_sin_memoria(w)
+    end
     avanzar_carga(w)
+    pendientes_a_la_traza(w)
     ir_pedido(w)
     # (la pestaña descartada que volvía a su sitio: con la página ya cargada, lo más cerca que se pueda)
     if w.desde_volver >= 0 and w.actual != nil and w.carga == nil and w.preparando == nil and imagenes_pendientes(w.actual.im) == 0
@@ -1592,6 +1752,7 @@ func tic(w: Ventana)
         if dw_cajas != "" and w.actual.doc != nil
             cajas_volcar(w.actual.doc, 0)
         end
+        w.actual.t_entera = time_ms() - w.empezada
         Print "tachyon: " + w.actual.direccion + " entera en " + (time_ms() - w.empezada) + " ms; memoria libre " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB, " + imagenes_kb(w.actual.im) + ")"
         registro_anotar("complete " + informe_sin_parametros(w.actual.direccion) + " in " + (time_ms() - w.empezada) + " ms; free memory " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB)")
     end
@@ -1669,16 +1830,28 @@ func clic(w: Ventana)
         temporizadores(w)
         envio_del_js(w)
     end
-    if not seguir
+    # (el vídeo de la página de YouTube va con el reproductor de Tachyon aunque el JavaScript del suyo cancele el clic)
+    de_pagina = documento_video_en(w.actual, mui_canvas_mouse_x(w.v.pagina), mui_canvas_mouse_y(w.v.pagina) + w.desde)
+    if not seguir and de_pagina == nil
         return
     end
     # un <video>: reproducir o parar; en su esquina, a pantalla completa
     vid = documento_video_de(n)
+    if de_pagina != nil
+        vid = de_pagina
+    end
     if vid != nil
         dib = documento_video_dibujo(w.actual, vid)
         if dib != nil
             dx = mui_canvas_mouse_x(w.v.pagina) - dib.x
             dy = mui_canvas_mouse_y(w.v.pagina) + w.desde - dib.y
+            # la barra de controles: reproducir o parar, y saltar en la línea de tiempo (tarea 64f)
+            k = videos_en_barra(documento_videos(w.actual), vid, dx, dy, dib.ancho, dib.alto)
+            if k >= 2
+                mui_canvas_redraw(w.v.pagina)
+                programar()
+                return
+            end
             if videos_en_completa(documento_videos(w.actual), vid, dx, dy, dib.ancho, dib.alto)
                 pantalla_completa(w, videos_de(documento_videos(w.actual), vid))
                 return
@@ -1751,6 +1924,36 @@ func envio_del_js(w: Ventana)
     end
 end
 
+# Una página propia sin lo que hace algo (borrar, quitar, usar, enviar...): lo que queda en atrás y adelante, para
+# que volver no lo haga otra vez; las búsquedas (tachyon:buscar?q=, tachyon:historial?buscar=) se quedan
+func tachyon_sin_accion(d: String) -> String
+    p = str_find(d, "?")
+    if not str_starts(d, "tachyon:") or p < 0 or str_starts(d, "tachyon:buscar?")
+        return d
+    end
+    if str_starts(d, "tachyon:historial?buscar=")
+        f = str_find(d, "&")
+        if f >= 0
+            return d[:f]
+        end
+        return d
+    end
+    return d[:p]
+end
+
+# Lo que pide hacer algo en una página propia solo vale desde otra página propia: una web no puede
+# borrar el historial, las cookies o los marcadores con un enlace (ni con location ni un refresh)
+func destino_permitido(w: Ventana, destino: String) -> String
+    if tachyon_sin_accion(destino) == destino or (w.actual != nil and str_starts(w.actual.direccion, "tachyon:"))
+        return destino
+    end
+    # (extraer un comprimido: desde su página, que es file:; pide dónde con el diálogo, así que no hace nada solo)
+    if str_starts(destino, "tachyon:archivo?extraer=") and w.actual != nil and str_starts(w.actual.direccion, "file:")
+        return destino
+    end
+    return tachyon_sin_accion(destino)
+end
+
 # Ir a una dirección nueva: lo que había delante en el historial se descarta. Un enlace a otra parte
 # de la misma página solo desplaza.
 func navegar(w: Ventana, destino: String)
@@ -1763,14 +1966,228 @@ func navegar(w: Ventana, destino: String)
         end
         return
     end
-    mui_set_text(w.v.url, destino)
+    destino = destino_permitido(w, destino)
+    mui_set_text(w.v.url, tachyon_sin_accion(destino))
     abrir(w, destino)
-    apuntar(w, destino)
+    apuntar(w, tachyon_sin_accion(destino))
+end
+
+# history.pushState, replaceState y go de la página (tarea 64d; lib/jsdom.dash jsdom_historia): la dirección nueva
+# en la barra y en el historial de la ventana, sin cargar nada
+func historia_del_js(w: Ventana)
+    d = w.actual
+    if d == nil or d.doc == nil or d.js == 0
+        return
+    end
+    t = jsdom_historia_tomar(d.doc)
+    if t == ""
+        return
+    end
+    for linea in str_split(t, "\n")
+        sp = str_find(linea, " ")
+        if sp <= 0
+            continue
+        end
+        op = linea[:sp]
+        arg = linea[sp + 1:]
+        if op == "push"
+            if youtube_a_video(d.direccion, arg)
+                navegar(w, arg)
+                return
+            end
+            if d.paso0 < 0
+                d.paso0 = w.visto
+            end
+            d.direccion = arg
+            mui_set_text(w.v.url, arg)
+            apuntar(w, arg)
+            d.pason = w.visto
+        elif op == "replace"
+            d.direccion = arg
+            mui_set_text(w.v.url, arg)
+            if w.visto >= 0 and w.visto < w.pasos.length
+                w.pasos[w.visto] = arg
+            end
+        elif op == "go"
+            v = w.visto + Int(arg)
+            if v >= 0 and v < w.pasos.length
+                w.visto = v
+                d.direccion = w.pasos[v]
+                mui_set_text(w.v.url, d.direccion)
+                botones(w)
+            end
+        elif op == "fuera"
+            paso_historial(w, Int(arg), false)
+        end
+    end
+end
+
+# YouTube navega sin recargar de los resultados (o la portada) a un vídeo, pero su reproductor no llega a crearse así en
+# Tachyon (la página del vídeo se quedaba con un recuadro negro, sin título, más de 15 minutos en la máquina RTG):
+# ese paso se hace cargando la página del vídeo entera, que sí sale y suena (tarea 64d)
+func youtube_a_video(antes: String, despues: String) -> Bool
+    return dom_es_youtube(despues) and str_find(str_lower(despues), "youtube.com/watch") >= 0 and dom_youtube_id(despues) != "" and dom_youtube_id(despues) != dom_youtube_id(antes)
+end
+
+# Inspeccionar (tarea 65): la página de la ventana w en otra ventana, tachyon:inspeccionar (lib/inspeccionar.dash).
+# Se mira la página que tenga esa ventana cada vez que se refresca; lo evaluado en su consola se va juntando
+var dw_insp: Ventana = nil
+var dw_insp_consola: String = ""
+
+func inspeccionar(w: Ventana)
+    if w.actual == nil or str_starts(w.actual.direccion, "tachyon:inspeccionar")
+        return
+    end
+    if dw_insp != w
+        dw_insp_consola = ""
+    end
+    dw_insp = w
+    for v in dw_ventanas
+        if v.abierta and v.actual != nil and str_starts(v.actual.direccion, "tachyon:inspeccionar")
+            # (ya hay una: se refresca con esta)
+            abrir(v, "tachyon:inspeccionar")
+            return
+        end
+    end
+    if nueva_ventana("tachyon:inspeccionar") == nil
+        dw_estado(w, tr(515, "No room for another window"))
+    end
+end
+
+# La página de Inspeccionar para tachyon:inspeccionar[?nodo=ruta][&js=expresión]
+func inspeccionar_pedido(direccion: String) -> String
+    if dw_insp == nil or not dw_insp.abierta or dw_insp.actual == nil
+        return "<html><head><title>" + tr(506, "Inspect") + "</title></head><body><p>" + tr(516, "The window that was inspected is closed.") + "</p></body></html>"
+    end
+    d = dw_insp.actual
+    nodo = ""
+    q = str_find(direccion, "?")
+    if q >= 0
+        for par in str_split(direccion[q + 1:], "&")
+            p = str_find(par, "=")
+            if p > 0
+                k = par[:p]
+                v = url_deshacer(str_replace(par[p + 1:], "+", " "))
+                if k == "nodo"
+                    nodo = v
+                elif k == "js" and v != "" and d.js != 0
+                    r = js_evaluar(d.js, v, "consola")
+                    e = js_error(d.js)
+                    clase = ""
+                    if e != ""
+                        r = e
+                        clase = " class=error"
+                    end
+                    dw_insp_consola = dw_insp_consola + "<div>&gt; " + inspeccionar_escapar(v) + "</div><div" + clase + ">&lt; " + inspeccionar_escapar(r) + "</div>"
+                    documento_al_dia(d)
+                end
+            end
+        end
+    end
+    return inspeccionar_html(d, nodo, dw_insp_consola)
+end
+
+# Un clic a pantalla completa en la barra de controles del vídeo: lo que hizo (videos_en_barra; 0 si no cayó en ella)
+func barra_completa() -> Int
+    if dw_completa == nil or dw_completa_de == nil or dw_completa_de.actual == nil
+        return 0
+    end
+    vs = documento_videos(dw_completa_de.actual)
+    k = videos_en_barra(vs, dw_completa.nodo, mui_canvas_mouse_x(dw_completa_lienzo), mui_canvas_mouse_y(dw_completa_lienzo), mui_width(dw_completa_lienzo), mui_height(dw_completa_lienzo))
+    if k == 1
+        videos_alternar(vs, dw_completa.nodo, dw_completa_de.actual.direccion)
+    end
+    return k
+end
+
+# El registro de depuración de red, encendido o apagado (tarea 67): la traza a DEPURACION_FICHERO, empezado de nuevo
+# con lo que es el Amiga (lo del informe de depuración: versiones, CPU, memoria, red y AmiSSL)
+func depuracion(si: Bool)
+    if si
+        traza_activa = true
+        traza_t0 = time_ms()
+        traza_a_fichero(DEPURACION_FICHERO, "Tachyon network debug log\n" + informe_texto(DASHWEB_VERSION, http_idiomas, dw_ultima_pagina) + "\n--- trace ---\n")
+    else
+        traza_a_fichero("", "")
+        traza_activa = false
+    end
+end
+
+# Depuración de red (tarea 67; lo pidió Oskis R.P): mientras una página se carga, cada 10 s, a la traza lo que queda
+# pendiente y en qué está (la página, sus hojas y scripts, las peticiones de su JavaScript, las imágenes)
+var dw_pendientes_t: Int = 0
+
+func pendientes_a_la_traza(w: Ventana)
+    if not traza_activa or time_ms() - dw_pendientes_t < 10000
+        return
+    end
+    if w.carga == nil and w.preparando == nil
+        return
+    end
+    dw_pendientes_t = time_ms()
+    traza("pendiente (" + (time_ms() - w.empezada) / 1000 + " s desde que se pidió " + w.carga_dir + "):")
+    if w.carga != nil
+        traza("  la página: " + http_estado(w.carga))
+    end
+    if w.preparando != nil and w.preparando.recursos != nil
+        for p in w.preparando.recursos.cola
+            if p.carga == nil
+                traza("  " + p.direccion + ": en cola")
+            else
+                traza("  " + p.direccion + ": " + http_estado(p.carga))
+            end
+        end
+    end
+    d = w.actual
+    if w.preparando != nil
+        d = w.preparando
+    end
+    if d != nil and d.js != 0
+        traza("  peticiones del JavaScript: " + jsdom_peticiones_pendientes(d.js))
+    end
+end
+
+# ¿n sigue colgando del documento doc?
+func nodo_en_documento(doc: Nodo, n: Nodo) -> Bool
+    m = n
+    while m != nil
+        if m == doc
+            return true
+        end
+        m = m.padre
+    end
+    return false
+end
+
+# ¿La entrada i del historial de la ventana es de la página que se ve (de su history.pushState)?
+func del_mismo_documento(w: Ventana, i: Int) -> Bool
+    d = w.actual
+    return d != nil and d.js != 0 and d.paso0 >= 0 and i >= d.paso0 and i <= d.pason
+end
+
+# Atrás (-1) o adelante (+1) en el historial de la ventana; entre entradas de la misma página (con_js), por su
+# history.go: popstate, y la página cambia sola
+func paso_historial(w: Ventana, n: Int, con_js: Bool)
+    v = w.visto + n
+    if v < 0 or v >= w.pasos.length
+        return
+    end
+    if con_js and del_mismo_documento(w, v) and del_mismo_documento(w, w.visto)
+        js_evaluar(w.actual.js, "history.go(" + n + ")", "dashweb")
+        temporizadores(w)
+        return
+    end
+    w.visto = v
+    direccion = w.pasos[w.visto]
+    mui_set_text(w.v.url, direccion)
+    abrir(w, direccion)
+    botones(w)
 end
 
 # La página pide ir a otra (tarea 51): su JavaScript (location.replace...; la de salto de DuckDuckGo) o su
 # <meta http-equiv="refresh">, cuando toca
 func ir_pedido(w: Ventana)
+    historia_del_js(w)
     var d: Documento = w.actual
     if w.preparando != nil
         d = w.preparando
@@ -1813,9 +2230,10 @@ func ir_a(w: Ventana, destino: String, sustituir: Bool)
         navegar(w, destino)
         return
     end
-    mui_set_text(w.v.url, destino)
+    destino = destino_permitido(w, destino)
+    mui_set_text(w.v.url, tachyon_sin_accion(destino))
     abrir(w, destino)
-    w.pasos[w.visto] = destino
+    w.pasos[w.visto] = tachyon_sin_accion(destino)
     botones(w)
 end
 
@@ -1854,8 +2272,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.9.3-alfa"
-@version "Tachyon 0.9.3-alfa"
+const DASHWEB_VERSION = "0.9.4-alfa"
+@version "Tachyon 0.9.4-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)
@@ -1940,11 +2358,7 @@ func pestana_traer(w: Ventana, i: Int)
         imagenes_despertar(w.actual.im)
     end
     mui_set_text(w.v.url, p.url)
-    if w.actual != nil and w.actual.titulo != "" and w.actual.titulo != "Tachyon"
-        mui_set_text(w.v.window, w.actual.titulo + " - Tachyon")
-    else
-        mui_set_text(w.v.window, "Tachyon")
-    end
+    poner_titulo(w)
     dw_estado(w, p.estado)
     modo_carga(w, w.carga != nil or w.preparando != nil)
     botones(w)
@@ -2089,10 +2503,14 @@ end
 # Con poca memoria libre, las pestañas de detrás de todas las ventanas sueltan su página (se quedan su dirección, su
 # historial y su título) hasta que vuelve a haber; se cargan al traerlas
 func descartar_pestanas()
+    descartar_pestanas_bajo(dw_poca_memoria)
+end
+
+func descartar_pestanas_bajo(kb: Int)
     for w in dw_ventanas
         if w.abierta and w.pestanas != nil
             for i in (0..w.pestanas.length - 1)
-                if mem_total() / 1024 >= dw_poca_memoria
+                if mem_total() / 1024 >= kb
                     return
                 end
                 p = w.pestanas[i]
@@ -2133,6 +2551,11 @@ func nueva_ventana(direccion: String) -> Ventana
         return nada
     end
     v = Navegador_create()
+    if dw_pantalla != ""
+        mui_window_screen(v.window, dw_pantalla)
+    end
+    mui_set_value(v.propia_pantalla, preferencia(FICHERO_PREFERENCIAS, "pantalla") == "si")
+    mui_set_value(v.depuracion_red, traza_fichero != "")
     w = Ventana(v, k)
     var sin_pasos: [String] = []
     w.pasos = sin_pasos
@@ -2205,6 +2628,127 @@ func abiertas() -> Int
 end
 
 # La ventana que está usando el usuario (la activa); si no hay, la primera abierta
+# El puerto ARexx (tarea 63b, como en Amelinium): ADDRESS TACHYON. Órdenes, sin mirar mayúsculas: OPEN dirección
+# (también OPENURL y GOTOURL), NEWTAB [dirección], GETURL, GETTITLE, BACK, FORWARD, RELOAD, STOP, HOME, READER (el
+# modo lectura), VERSION y QUIT.
+# GETURL, GETTITLE y VERSION dan RESULT (OPTIONS RESULTS en el script); lo que no conoce, RC 10. Van a la ventana
+# activa; su señal (rexx_signal, D84) despierta el bucle aunque Tachyon esté quieto. (MUI abre también el suyo,
+# TACHYON.1, con sus órdenes de serie: QUIT, HIDE, SHOW, INFO...)
+const PUERTO_AREXX = "TACHYON"
+var dw_rexx_evento: Int = 0     # el botón que pidió una orden (atrás, recargar...): el bucle lo hace como si se pulsara
+
+# El modo lectura (tarea 63c, como en Amelinium): lib/lectura.dash saca el artículo de la página que se ve y se abre
+# como tachyon:lectura (atrás vuelve a la página); en ella, otra vez el menú vuelve atrás. Sin artículo, un aviso.
+var dw_lectura_html: String = ""
+
+func leer_pagina(w: Ventana)
+    if w.actual == nil or w.actual.doc == nil
+        return
+    end
+    if w.actual.direccion == "tachyon:lectura"
+        if w.visto > 0
+            w.visto = w.visto - 1
+            mui_set_text(w.v.url, w.pasos[w.visto])
+            abrir(w, w.pasos[w.visto])
+            botones(w)
+        end
+        return
+    end
+    h = lectura_html(w.actual.doc, w.actual.direccion, w.actual.titulo)
+    if h == ""
+        dw_estado(w, tr(172, "There is no article to read on this page."))
+        return
+    end
+    dw_lectura_html = h
+    navegar(w, "tachyon:lectura")
+end
+
+# Una dirección escrita sin esquema ("amiga.org", o con su puerto "localhost:8080", "127.0.0.1:8080/x"), con http://;
+# las que llevan esquema o son una ruta del Amiga ("Work:pagina.html"), tal cual
+func con_esquema(d: String) -> String
+    p = str_find(d, ":")
+    if p < 0
+        return "http://" + d
+    end
+    k = p + 1
+    while k < d.length and str_code(d, k) >= 48 and str_code(d, k) <= 57
+        k = k + 1
+    end
+    if k > p + 1 and (k == d.length or str_code(d, k) == 47)
+        return "http://" + d
+    end
+    return d
+end
+
+func arexx_atender()
+    o = str_trim(rexx_get())
+    if o == ""
+        return
+    end
+    verbo = str_upper(o)
+    resto = ""
+    p = str_find(o, " ")
+    if p > 0
+        verbo = str_upper(o[:p])
+        resto = str_trim(o[p + 1:])
+    end
+    if resto.length >= 2 and str_starts(resto, "\"") and str_ends(resto, "\"")
+        resto = resto[1:resto.length - 1]
+    end
+    w = activa()
+    if w == nil
+        rexx_reply(20, "")
+        return
+    end
+    if resto != ""
+        resto = con_esquema(resto)
+    end
+    if verbo == "OPEN" or verbo == "OPENURL" or verbo == "GOTOURL"
+        if resto == ""
+            rexx_reply(10, "")
+            return
+        end
+        navegar(w, resto)
+    elif verbo == "NEWTAB"
+        nueva_pestana(w, resto)
+    elif verbo == "GETURL"
+        u = ""
+        if w.actual != nil
+            u = w.actual.direccion
+        end
+        rexx_reply(0, u)
+        return
+    elif verbo == "GETTITLE"
+        t = ""
+        if w.actual != nil
+            t = w.actual.titulo
+        end
+        rexx_reply(0, t)
+        return
+    elif verbo == "VERSION"
+        rexx_reply(0, "Tachyon " + DASHWEB_VERSION)
+        return
+    elif verbo == "READER"
+        leer_pagina(w)
+    elif verbo == "BACK"
+        dw_rexx_evento = ID_ATRAS
+    elif verbo == "FORWARD"
+        dw_rexx_evento = ID_ADELANTE
+    elif verbo == "RELOAD"
+        dw_rexx_evento = ID_RECARGAR
+    elif verbo == "STOP"
+        dw_rexx_evento = ID_PARAR
+    elif verbo == "HOME"
+        dw_rexx_evento = ID_INICIO
+    elif verbo == "QUIT"
+        dw_rexx_evento = ID_SALIR
+    else
+        rexx_reply(10, "")
+        return
+    end
+    rexx_reply(0, "")
+end
+
 func activa() -> Ventana
     var primera: Ventana = nil
     for w in dw_ventanas
@@ -2264,21 +2808,43 @@ Main
     http_idiomas = actualizar_idioma_cabecera(jsdom_idioma)
     # sin requesters de AmigaOS ("Inserte el volumen..."): una dirección que no existe falla sin más (D68)
     dos_requesters(false)
+    rexx_port(PUERTO_AREXX)
     if mui_app_begin("Tachyon", "TACHYON") == 0
         Print "Tachyon necesita MUI (3.8 o 5) y un 68020"
     else
+        # en su propia pantalla (preferencia): antes de abrir ninguna ventana. No pasa a ser la pública por defecto:
+        # un navegador no lanza programas que deban salir en ella (Forja sí)
+        if preferencia(FICHERO_PREFERENCIAS, "pantalla") == "si" and screen_clone_wb(PANTALLA)
+            dw_pantalla = PANTALLA
+        end
         a = Acerca_create()
+        if dw_pantalla != ""
+            mui_window_screen(a.window, dw_pantalla)
+        end
         mui_set_text(a.version, texto_version(DASHWEB_VERSION) + hueco2(tr(159, "built on %1 at %2"), compilado_fecha(), compilado_hora()))
         # cada argumento en su ventana (hasta 4); sin argumentos, la página de inicio
         # TRAZA: la línea de tiempo de las cargas por la salida (lib/traza.dash)
         paginas = 0
+        # (el registro de depuración de red, si se dejó encendido en el menú Herramientas; tarea 67)
+        if preferencia(FICHERO_PREFERENCIAS, "depuracion") == "si"
+            depuracion(true)
+        end
         for i in (0..arg_count() - 1)
             if arg(i) == "TRAZA"
                 traza_activa = true
                 traza_t0 = time_ms()
                 traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+            elif str_starts(arg(i), "TRAZA=")
+                # TRAZA=fichero: lo mismo, a ese fichero (lo que se escribe ahí sigue aunque se cuelgue el Amiga)
+                traza_activa = true
+                traza_t0 = time_ms()
+                traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
+            elif str_starts(arg(i), "JSMINIMA=")
+                # JSMINIMA=KB: por debajo de esa memoria libre se suelta el JavaScript de la página (para probarlo)
+                dw_js_minima = Int(arg(i)[9:])
             elif str_starts(arg(i), "POCAMEMORIA=")
                 # POCAMEMORIA=KB: por debajo de esa memoria libre se descartan las pestañas de detrás (para probarlo)
                 dw_poca_memoria = Int(arg(i)[12:])
@@ -2312,7 +2878,7 @@ Main
             nueva_ventana(preferencia(FICHERO_PREFERENCIAS, "inicio"))
         end
         for i in (0..arg_count() - 1)
-            if arg(i) != "TRAZA" and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=") and not str_starts(arg(i), "JS=") and not str_starts(arg(i), "JSEN=")
+            if arg(i) != "TRAZA" and not str_starts(arg(i), "TRAZA=") and arg(i) != "GCSIEMPRE" and not str_starts(arg(i), "DIBUJOS=") and not str_starts(arg(i), "VERSIONES=") and not str_starts(arg(i), "POCAMEMORIA=") and not str_starts(arg(i), "JSMINIMA=") and not str_starts(arg(i), "DESCARGAS=") and not str_starts(arg(i), "CAJAS=") and not str_starts(arg(i), "CAJASEN=") and not str_starts(arg(i), "JS=") and not str_starts(arg(i), "JSEN=")
                 nueva_ventana(arg(i))
             end
         end
@@ -2332,7 +2898,14 @@ Main
         while abiertas() > 0
             # también despierta con la señal de las tareas: la de la red (lib/red.dash) avisa al recibir algo, y las
             # que decodifican imágenes al acabar (0: una de ellas)
-            ev = mui_wait_event_signals(task_signal())
+            ev = mui_wait_event_signals(task_signal() | rexx_signal())
+            # (las órdenes de ARexx, que despiertan el bucle por su señal (D84): la que pide un botón va en lugar del
+            # tic o de nada, o en la vuelta siguiente)
+            arexx_atender()
+            if dw_rexx_evento != 0 and (ev == 0 or ev == ID_TIC)
+                ev = dw_rexx_evento
+                dw_rexx_evento = 0
+            end
             if ev == -1 or ev == ID_SALIR
                 break
             end
@@ -2347,6 +2920,10 @@ Main
                             ajustar_barra(t)
                         else
                             tic(t)
+                            # (el título que puso después el JavaScript: document.title, como en YouTube)
+                            if t.actual != nil and t.actual.titulo != t.titulo_puesto
+                                poner_titulo(t)
+                            end
                         end
                     end
                 end
@@ -2365,6 +2942,18 @@ Main
                 if tecla == 0x40 and dw_completa != nil and dw_completa_de != nil and dw_completa_de.actual != nil
                     # espacio: parar o seguir
                     videos_alternar(documento_videos(dw_completa_de.actual), dw_completa.nodo, dw_completa_de.actual.direccion)
+                    mui_canvas_redraw(dw_completa_lienzo)
+                    programar()
+                elif (tecla == 0x4E or tecla == 0x4F) and dw_completa != nil and dw_completa_de != nil and dw_completa_de.actual != nil
+                    salto = 10000
+                    if tecla == 0x4F
+                        salto = -10000
+                    end
+                    videos_saltar(documento_videos(dw_completa_de.actual), dw_completa.nodo, salto)
+                    mui_canvas_redraw(dw_completa_lienzo)
+                    programar()
+                elif tecla < 0 and mui_canvas_button(dw_completa_lienzo) == 1 and barra_completa() > 0
+                    # (un clic en la barra de controles: reproducir o parar, o saltar; tarea 64f)
                     mui_canvas_redraw(dw_completa_lienzo)
                     programar()
                 elif tecla == 0x45 or (tecla < 0 and mui_canvas_button(dw_completa_lienzo) == 1)
@@ -2416,8 +3005,8 @@ Main
                 if es_busqueda(direccion)
                     # unas palabras: se buscan con el buscador elegido, como en Chrome
                     direccion = buscar_url(buscador_elegido(), direccion)
-                elif direccion != "" and not str_starts(direccion, "http") and str_find(direccion, ":") < 0
-                    direccion = "http://" + direccion
+                elif direccion != ""
+                    direccion = con_esquema(direccion)
                 end
                 if direccion == ""
                     abrir(w, "")
@@ -2432,21 +3021,19 @@ Main
                     abrir(w, "")
                 end
             end
-            if (ev == ID_ATRAS and w.visto > 0) or (ev == ID_ADELANTE and w.visto < w.pasos.length - 1)
-                if ev == ID_ATRAS
-                    w.visto = w.visto - 1
-                else
-                    w.visto = w.visto + 1
-                end
-                if w.visto >= 0
-                    direccion = w.pasos[w.visto]
-                    mui_set_text(w.v.url, direccion)
-                    abrir(w, direccion)
-                end
-                botones(w)
+            if ev == ID_ATRAS
+                paso_historial(w, -1, true)
+            elif ev == ID_ADELANTE
+                paso_historial(w, 1, true)
+            end
+            if ev == ID_INSPECCIONAR
+                inspeccionar(w)
             end
             if ev == ID_VER_HISTORIAL
                 navegar(w, "tachyon:historial")
+            end
+            if ev == ID_LECTURA
+                leer_pagina(w)
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")
@@ -2504,6 +3091,11 @@ Main
             if ev == ID_PAGINA
                 rueda = mui_canvas_wheel(w.v.pagina)
                 tecla = mui_canvas_key(w.v.pagina)
+                if w.foco != nil and w.actual != nil and not nodo_en_documento(w.actual.doc, w.foco)
+                    # (el foco en algo que el JavaScript ya quitó, como el botón "Reject all" del aviso de cookies de
+                    # YouTube: las teclas se perdían y la página no bajaba con el espacio)
+                    w.foco = nil
+                end
                 if rueda != 0
                     desplazar(w, 0 - rueda * 30)
                 elif tecla >= 0 and w.foco != nil
@@ -2533,6 +3125,16 @@ Main
                         mui_canvas_redraw(w.v.pagina)
                     elif r == FORM_ENVIAR
                         enviar(w, w.foco)
+                    end
+                elif (tecla == 0x4E or tecla == 0x4F) and w.actual != nil and videos_en_marcha(documento_videos(w.actual)) != nil
+                    # las flechas de los lados con un vídeo en marcha: 10 s adelante o atrás, como en YouTube (tarea 64d)
+                    salto = 10000
+                    if tecla == 0x4F
+                        salto = -10000
+                    end
+                    if videos_saltar(documento_videos(w.actual), videos_en_marcha(documento_videos(w.actual)), salto)
+                        mui_canvas_redraw(w.v.pagina)
+                        programar()
                     end
                 elif tecla == 0x4D
                     desplazar(w, 20)
@@ -2579,6 +3181,37 @@ Main
                 dw_estado(w, tr(125, "Checking for a new version..."))
                 versiones_mirar(true)
             end
+            if ev == ID_DEPURACION
+                si = mui_get_value(w.v.depuracion_red) != 0
+                depuracion(si)
+                if si
+                    preferencia_poner(FICHERO_PREFERENCIAS, "depuracion", "si")
+                    dw_estado(w, hueco(tr(526, "Network debug log on: %1"), DEPURACION_FICHERO))
+                else
+                    preferencia_poner(FICHERO_PREFERENCIAS, "depuracion", "no")
+                    dw_estado(w, tr(527, "Network debug log off"))
+                end
+                for o in dw_ventanas
+                    if o.abierta
+                        mui_set_value(o.v.depuracion_red, si)
+                    end
+                end
+            end
+            if ev == ID_PANTALLA
+                si = mui_get_value(w.v.propia_pantalla) != 0
+                if si
+                    preferencia_poner(FICHERO_PREFERENCIAS, "pantalla", "si")
+                    dw_estado(w, tr(168, "Tachyon will open on its own screen next time"))
+                else
+                    preferencia_poner(FICHERO_PREFERENCIAS, "pantalla", "no")
+                    dw_estado(w, tr(169, "Tachyon will open on the Workbench screen next time"))
+                end
+                for o in dw_ventanas
+                    if o.abierta
+                        mui_set_value(o.v.propia_pantalla, si)
+                    end
+                end
+            end
             if ev == ID_NO_AVISAR
                 preferencia_poner(FICHERO_PREFERENCIAS, "avisar_versiones", "no")
                 dw_estado(w, tr(126, "Won't tell you about new versions"))
@@ -2604,6 +3237,10 @@ Main
         cookies_guardar(FICHERO_COOKIES)
         almacen_guardar(FICHERO_ALMACEN)
         mui_app_end()
+        # (la pantalla, cerrada antes de abrir la versión nueva, que querrá la suya con el mismo nombre)
+        if dw_pantalla != ""
+            screen_close()
+        end
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"
         end

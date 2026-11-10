@@ -1,0 +1,22 @@
+# Test: un <script> que se mete en la página vacío y recibe src después corre entonces, como en HTML (tarea 64d: el
+# reproductor de YouTube lo hace así y base.js no corría: se quedaba marcado como hecho al entrar sin src). También
+# con setAttribute; uno con src al entrar, una vez; y uno vacío que nunca recibe nada, ninguna.
+# memcheck
+# expect-out: antes 0 | tarde 1 | atributo 1 | normal 1 | load 3
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    d = documento_html("http://x.com/a", "<html><body><script>var z = 1;</script></body></html>")
+    js_evaluar(d.js, "window.n = {t: 0, a: 0, o: 0}; var cargas = 0; function s(k) { var e = document.createElement('script'); e.onload = function () { cargas++; }; return e; }", "t.js")
+    js_evaluar(d.js, "var a = s(); document.body.appendChild(a); var antes = n.t; a.src = 'data:text/javascript,n.t%2B%2B';", "t.js")
+    js_evaluar(d.js, "var b = s(); document.body.appendChild(b); b.setAttribute('src', 'data:text/javascript,n.a%2B%2B');", "t.js")
+    js_evaluar(d.js, "var c = s(); c.src = 'data:text/javascript,n.o%2B%2B'; document.body.appendChild(c); c.setAttribute('src', 'data:text/javascript,n.o%2B%2B'); document.body.appendChild(document.createElement('script'));", "t.js")
+    for i in (1..5)
+        jsdom_temporizadores(d.js)
+        jsdom_peticiones_avanzar(d.js)
+    end
+    Print js_evaluar(d.js, "'antes ' + antes + ' | tarde ' + n.t + ' | atributo ' + n.a + ' | normal ' + n.o + ' | load ' + cargas", "t.js")
+    documento_liberar(d)
+end

@@ -1,0 +1,24 @@
+# Test: document.all (HTML, HTMLAllCollection; tarea 64, YouTube): todos los elementos por número y por id o name, y
+# llamado como función; [[IsHTMLDDA]] (de QuickJS): typeof "undefined", falso, == null, pero no === undefined. La
+# comprobación de polymer-resin de YouTube ("!y && y !== document.all") deja pasar undefined.
+# memcheck
+# expect-out: tipo: undefined false true false | resin: true
+# expect-out: todos: true html p true true null | HTMLAllCollection
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><p id=uno>a</p><form name=f></form></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var a = document.all, r = 'tipo: ' + typeof a + ' ' + !!a + ' ' + (a == null) + ' ' + (a === undefined);"
+    c = c + "r += ' | resin: ' + (function (y) { return !y && y !== document.all; })(undefined);"
+    c = c + "r += '\\ntodos: ' + (a.length >= 5) + ' ' + a[0].localName + ' ' + a('uno').localName + ' ' + (a.uno === document.getElementById('uno')) + ' ' + (a.namedItem('f').localName == 'form') + ' ' + a.item('nada');"
+    c = c + "r += ' | ' + Object.prototype.toString.call(a).slice(8, -1); r"
+    for linea in str_split(js_evaluar(js, c, "t.js"), "\n")
+        Print linea
+    end
+    js_liberar(js)
+end

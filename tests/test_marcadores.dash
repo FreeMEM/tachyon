@@ -1,12 +1,14 @@
 # Test: lib/marcadores.dash. Marcadores (sin repetir una dirección; tabuladores del título quitados),
 # la página con sus enlaces (y el de quitar de cada uno), quitar uno, y preferencias clave=valor (poner, leer,
-# cambiar); el historial (la misma página seguida, una vez; por días, lo último arriba; la fecha de un día).
+# cambiar); el historial (la misma página seguida, una vez; por días, lo último arriba; la fecha de un día; buscar,
+# una vez por dirección con la última visita y cuántas, sin mirar mayúsculas; quitar una dirección entera).
 # memcheck
 # expect-out: 2 marcadores: http://a.org/ [A org] http://b.org/x?y=1&z=2 [B dos]
 # expect-out: página: 4 enlaces, escapado: true
 # expect-out: quitada: false true 1
 # expect-out: inicio [] -> [http://a.org/] -> [http://b.org/], otra [sí]
 # expect-out: historial: 3 líneas; Hoy primero true, Ayer true, 23/10/2026 true, borrado true
+# expect-out: buscar: true false true, quitar en la lista true | quitar: true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/marcadores.dash"
@@ -54,8 +56,14 @@ Main
     historial_agregar(hf, "http://b.org/", "B de nuevo", hoy)
     historial_agregar(hf, "http://c.org/", "C", hoy)
     lineas = str_split(str_trim(file_read_text(hf)), "\n")
-    hh = historial_html(hf, hoy)
+    hh = historial_html(hf, hoy, "")
     a = str_find(hh, "<h2>Today</h2>")
     b = str_find(hh, "<h2>Yesterday</h2>")
-    Print "historial: " + lineas.length + " líneas; Hoy primero " + (a >= 0 and a < b and str_find(hh, "C</a>") < str_find(hh, "B de nuevo")) + ", Ayer " + (b >= 0) + ", 23/10/2026 " + str_contains(historial_html(hf, hoy + 3 * 1440), "<h2>23/10/2026</h2>") + ", borrado " + (historial_borrar(hf) and str_contains(historial_html(hf, hoy), "You haven't seen"))
+    Print "historial: " + lineas.length + " líneas; Hoy primero " + (a >= 0 and a < b and str_find(hh, "C</a>") < str_find(hh, "B de nuevo")) + ", Ayer " + (b >= 0) + ", 23/10/2026 " + str_contains(historial_html(hf, hoy + 3 * 1440, ""), "<h2>23/10/2026</h2>") + ", borrado " + (historial_borrar(hf) and str_contains(historial_html(hf, hoy, ""), "You haven't seen"))
+    historial_agregar(hf, "http://a.org/", "Alfa", hoy - 1440)
+    historial_agregar(hf, "http://b.org/", "Beta", hoy - 30)
+    historial_agregar(hf, "http://a.org/", "Alfa", hoy - 20)
+    hb = historial_html(hf, hoy, "ALFA")
+    Print "buscar: " + str_contains(hb, "Last visit: Today 20:20. Visits: 2.") + " " + str_contains(hb, "Beta") + " " + str_contains(historial_html(hf, hoy, "zzz"), "Nothing in the history matches") + ", quitar en la lista " + str_contains(historial_html(hf, hoy, ""), "tachyon:historial?quitar=http://b.org/") + " | quitar: " + (historial_quitar(hf, "http://a.org/") and str_contains(historial_html(hf, hoy, ""), "Beta") and not str_contains(historial_html(hf, hoy, ""), "Alfa"))
+    historial_borrar(hf)
 end

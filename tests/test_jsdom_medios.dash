@@ -1,0 +1,18 @@
+# Test: <video> y <audio> como en un navegador sin nada que reproducir (HTMLMediaElement; tarea 64c): videoWidth y
+# videoHeight 0 (YouTube saca de ahí la proporción de su reproductor: con undefined medía 0 de alto), en pausa, sin
+# duración, currentTime y volume que se guardan, canPlayType vacío y play() que rechaza con NotSupportedError.
+# expect-out: 0 0 true NaN 0 0 | 12.5 0.5 true | ''
+# expect-out: rechaza NotSupportedError | audio true 0
+# expect-out: proporcion 1.7777777777777777
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body><video id=v muted></video><audio id=a></audio></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "var v = document.getElementById('v'), r = ''; v.currentTime = 12.5; v.volume = '0.5'; v.play().catch(function (e) { r = e.name; }); [v.videoWidth, v.videoHeight, v.paused, v.duration, v.readyState, v.buffered.length].join(' ') + ' | ' + [v.currentTime, v.volume, v.muted].join(' ') + \" | '\" + v.canPlayType('video/webm') + \"'\"", "t.js")
+    Print js_evaluar(js, "var a = document.getElementById('a'); 'rechaza ' + r + ' | audio ' + a.paused + ' ' + a.currentTime", "t.js")
+    Print js_evaluar(js, "var w = 16 / 9, s = function (a, b) { return Math.abs(w * b - a) < 1 || Math.abs(w / a - b) < 1 ? w : a / b; }; 'proporcion ' + s(v.videoWidth, v.videoHeight)", "t.js")
+end

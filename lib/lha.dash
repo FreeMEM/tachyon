@@ -1,0 +1,641 @@
+# Descompresor de archivos LHA, en Dash: sin C:lha (tarea 63d, con el visto bueno del usuario), con lha_listar.
+#
+#   e = lha_extraer("T:prog.lha", "Work:Prog/")    # "" si fue bien; si no, el error
+#   for f in lha_escritos                         # lo que escribió (rutas completas), para el recibo
+#       Print f
+#   end
+#   e = lha_listar("T:prog.lha")                  # lo que tiene, sin escribir nada: lha_lista ("ruta<TAB>tamaño",
+#                                                 # los cajones acaban en "/")
+#
+# Métodos: -lh0- (sin comprimir), -lh5-, -lh6-, -lh7- (LZSS + Huffman estático, ventanas de 8, 32 y 64 KB) y -lhd-
+# (cajón). Cabeceras de nivel 0, 1 y 2. Comprueba el CRC-16 de cada fichero. Por seguridad no escribe nada fuera del
+# destino: un nombre con ":" o con ".." como parte de la ruta es un error.
+#
+# Hecho a partir del formato de LHa for UNIX (huf.c, maketbl.c, header.c); el código es propio.
+
+var lha_escritos: [String] = []
+var lha_lista: [String] = []
+
+const _LHA_NC = 510          # 256 literales + 254 longitudes (de 3 a 256)
+const _LHA_NT = 19
+const _LHA_NPT = 128
+const _LHA_CBIT = 9
+
+# Estado del lector de bits y de las tablas (un solo fichero a la vez)
+var _l_ent: Pointer = nil    # el archivo entero
+var _l_pos: Int = 0
+var _l_fin: Int = 0
+var _l_bitbuf: Int = 0
+var _l_sub: Int = 0
+var _l_cuenta: Int = 0
+var _l_bloque: Int = 0
+var _l_np: Int = 0
+var _l_pbit: Int = 0
+var _l_mal: Bool = false
+
+var _l_c_len: [Int] = []
+var _l_pt_len: [Int] = []
+var _l_c_table: [Int] = []
+var _l_pt_table: [Int] = []
+var _l_izq: [Int] = []
+var _l_der: [Int] = []
+var _l_crc_tabla: [Int] = []
+
+func _lha_ceros(n: Int) -> [Int]
+    var a: [Int] = []
+    for i in (1..n)
+        a.push(0)
+    end
+    return a
+end
+
+func _lha_preparar()
+    if _l_c_len.length > 0
+        return
+    end
+    _l_c_len = _lha_ceros(_LHA_NC)
+    _l_pt_len = _lha_ceros(_LHA_NPT)
+    _l_c_table = _lha_ceros(4096)
+    _l_pt_table = _lha_ceros(256)
+    _l_izq = _lha_ceros(2 * _LHA_NC)
+    _l_der = _lha_ceros(2 * _LHA_NC)
+    _l_crc_tabla = _lha_ceros(256)
+    for i in (0..255)
+        c = i
+        for k in (1..8)
+            if c & 1 == 1
+                c = (c >> 1) ^ 0xA001
+            else
+                c = c >> 1
+            end
+        end
+        _l_crc_tabla[i] = c
+    end
+end
+
+func _lha_byte() -> Int
+    if _l_pos >= _l_fin
+        _l_pos = _l_pos + 1
+        return 0
+    end
+    b = buffer_get_byte(_l_ent, _l_pos)
+    _l_pos = _l_pos + 1
+    return b
+end
+
+func _lha_llenar(n: Int)
+    _l_bitbuf = (_l_bitbuf << n) & 0xFFFF
+    while n > _l_cuenta
+        n = n - _l_cuenta
+        _l_bitbuf = (_l_bitbuf | (_l_sub << n)) & 0xFFFF
+        _l_sub = _lha_byte()
+        _l_cuenta = 8
+    end
+    _l_cuenta = _l_cuenta - n
+    _l_bitbuf = _l_bitbuf | (_l_sub >> _l_cuenta)
+end
+
+func _lha_bits(n: Int) -> Int
+    if n == 0
+        return 0
+    end
+    x = _l_bitbuf >> (16 - n)
+    _lha_llenar(n)
+    return x
+end
+
+# La tabla de descodificación de un código de Huffman: los primeros "bits" bits van directos a la tabla; los códigos
+# más largos siguen por un árbol (izq/der) a partir de ahí
+func _lha_tabla(n: Int, largos: [Int], bits: Int, tabla: [Int])
+    cuenta = _lha_ceros(18)
+    inicio = _lha_ceros(18)
+    peso = _lha_ceros(18)
+    for i in (0..n - 1)
+        if largos[i] > 16
+            _l_mal = true
+            return
+        end
+        cuenta[largos[i]] = cuenta[largos[i]] + 1
+    end
+    for i in (1..16)
+        inicio[i + 1] = inicio[i] + (cuenta[i] << (16 - i))
+    end
+    if inicio[17] & 0xFFFF != 0
+        _l_mal = true
+        return
+    end
+    salto = 16 - bits
+    for i in (1..bits)
+        inicio[i] = inicio[i] >> salto
+        peso[i] = 1 << (bits - i)
+    end
+    if bits < 16
+        for i in (bits + 1..16)
+            peso[i] = 1 << (16 - i)
+        end
+    end
+    i = (inicio[bits + 1] >> salto) & 0xFFFF
+    if i != 0
+        k = 1 << bits
+        while i < k
+            tabla[i] = 0
+            i = i + 1
+        end
+    end
+    libre = n
+    mascara = 1 << (15 - bits)
+    for ch in (0..n - 1)
+        largo = largos[ch]
+        if largo != 0
+            k = inicio[largo]
+            siguiente = k + peso[largo]
+            if largo <= bits
+                if siguiente > tabla.length
+                    _l_mal = true
+                    return
+                end
+                for j in (k..siguiente - 1)
+                    tabla[j] = ch
+                end
+            else
+                # p: dónde va el siguiente nodo: 0 = tabla, 1 = izq, 2 = der, y su índice
+                donde = 0
+                idx = k >> salto
+                quedan = largo - bits
+                while quedan != 0
+                    actual = 0
+                    if donde == 0
+                        actual = tabla[idx]
+                    elif donde == 1
+                        actual = _l_izq[idx]
+                    else
+                        actual = _l_der[idx]
+                    end
+                    if actual == 0
+                        if libre >= 2 * _LHA_NC
+                            _l_mal = true
+                            return
+                        end
+                        _l_izq[libre] = 0
+                        _l_der[libre] = 0
+                        actual = libre
+                        if donde == 0
+                            tabla[idx] = libre
+                        elif donde == 1
+                            _l_izq[idx] = libre
+                        else
+                            _l_der[idx] = libre
+                        end
+                        libre = libre + 1
+                    end
+                    if k & mascara != 0
+                        donde = 2
+                    else
+                        donde = 1
+                    end
+                    idx = actual
+                    k = (k << 1) & 0xFFFF
+                    quedan = quedan - 1
+                end
+                if donde == 0
+                    tabla[idx] = ch
+                elif donde == 1
+                    _l_izq[idx] = ch
+                else
+                    _l_der[idx] = ch
+                end
+            end
+            inicio[largo] = siguiente
+        end
+    end
+end
+
+func _lha_leer_pt(nn: Int, nbit: Int, especial: Int)
+    n = _lha_bits(nbit)
+    if n == 0
+        c = _lha_bits(nbit)
+        for i in (0..nn - 1)
+            _l_pt_len[i] = 0
+        end
+        for i in (0..255)
+            _l_pt_table[i] = c
+        end
+        return
+    end
+    i = 0
+    while i < n and i < _LHA_NPT
+        c = _l_bitbuf >> 13
+        if c == 7
+            mascara = 1 << 12
+            while mascara & _l_bitbuf != 0
+                mascara = mascara >> 1
+                c = c + 1
+            end
+        end
+        if c < 7
+            _lha_llenar(3)
+        else
+            _lha_llenar(c - 3)
+        end
+        _l_pt_len[i] = c
+        i = i + 1
+        if i == especial
+            c = _lha_bits(2)
+            while c > 0 and i < _LHA_NPT
+                _l_pt_len[i] = 0
+                i = i + 1
+                c = c - 1
+            end
+        end
+    end
+    while i < nn
+        _l_pt_len[i] = 0
+        i = i + 1
+    end
+    _lha_tabla(nn, _l_pt_len, 8, _l_pt_table)
+end
+
+func _lha_leer_c()
+    n = _lha_bits(_LHA_CBIT)
+    if n == 0
+        c = _lha_bits(_LHA_CBIT)
+        for i in (0.._LHA_NC - 1)
+            _l_c_len[i] = 0
+        end
+        for i in (0..4095)
+            _l_c_table[i] = c
+        end
+        return
+    end
+    i = 0
+    while i < n and i < _LHA_NC
+        c = _l_pt_table[_l_bitbuf >> 8]
+        if c >= _LHA_NT
+            mascara = 1 << 7
+            while c >= _LHA_NT
+                if _l_bitbuf & mascara != 0
+                    c = _l_der[c]
+                else
+                    c = _l_izq[c]
+                end
+                mascara = mascara >> 1
+                if mascara == 0 and c >= _LHA_NT
+                    _l_mal = true
+                    return
+                end
+            end
+        end
+        _lha_llenar(_l_pt_len[c])
+        if c <= 2
+            if c == 0
+                c = 1
+            elif c == 1
+                c = _lha_bits(4) + 3
+            else
+                c = _lha_bits(_LHA_CBIT) + 20
+            end
+            while c > 0 and i < _LHA_NC
+                _l_c_len[i] = 0
+                i = i + 1
+                c = c - 1
+            end
+        else
+            _l_c_len[i] = c - 2
+            i = i + 1
+        end
+    end
+    while i < _LHA_NC
+        _l_c_len[i] = 0
+        i = i + 1
+    end
+    _lha_tabla(_LHA_NC, _l_c_len, 12, _l_c_table)
+end
+
+func _lha_dec_c() -> Int
+    if _l_bloque == 0
+        _l_bloque = _lha_bits(16)
+        _lha_leer_pt(_LHA_NT, 5, 3)
+        _lha_leer_c()
+        _lha_leer_pt(_l_np, _l_pbit, -1)
+        if _l_mal
+            return 0
+        end
+    end
+    _l_bloque = _l_bloque - 1
+    j = _l_c_table[_l_bitbuf >> 4]
+    if j < _LHA_NC
+        _lha_llenar(_l_c_len[j])
+    else
+        _lha_llenar(12)
+        mascara = 1 << 15
+        while j >= _LHA_NC
+            if _l_bitbuf & mascara != 0
+                j = _l_der[j]
+            else
+                j = _l_izq[j]
+            end
+            mascara = mascara >> 1
+            if mascara == 0 and j >= _LHA_NC
+                _l_mal = true
+                return 0
+            end
+        end
+        _lha_llenar(_l_c_len[j] - 12)
+    end
+    return j
+end
+
+func _lha_dec_p() -> Int
+    j = _l_pt_table[_l_bitbuf >> 8]
+    if j < _l_np
+        _lha_llenar(_l_pt_len[j])
+    else
+        _lha_llenar(8)
+        mascara = 1 << 15
+        while j >= _l_np
+            if _l_bitbuf & mascara != 0
+                j = _l_der[j]
+            else
+                j = _l_izq[j]
+            end
+            mascara = mascara >> 1
+            if mascara == 0 and j >= _l_np
+                _l_mal = true
+                return 0
+            end
+        end
+        _lha_llenar(_l_pt_len[j] - 8)
+    end
+    if j != 0
+        j = (1 << (j - 1)) + _lha_bits(j - 1)
+    end
+    return j
+end
+
+# Descomprime n bytes (-lh5/6/7-) desde la posición "desde" del archivo al búfer "sal"
+func _lha_descomprimir(desde: Int, comprimido: Int, sal: Pointer, n: Int, dicbit: Int) -> Bool
+    _l_pos = desde
+    _l_fin = desde + comprimido
+    _l_bitbuf = 0
+    _l_sub = 0
+    _l_cuenta = 0
+    _l_bloque = 0
+    _l_mal = false
+    _l_np = dicbit + 1
+    _l_pbit = 5
+    if dicbit == 13
+        _l_pbit = 4
+    end
+    _lha_llenar(16)
+    cuenta = 0
+    while cuenta < n
+        c = _lha_dec_c()
+        if _l_mal
+            return false
+        end
+        if c <= 255
+            buffer_set_byte(sal, cuenta, c)
+            cuenta = cuenta + 1
+        else
+            largo = c - 253
+            origen = cuenta - _lha_dec_p() - 1
+            if _l_mal or origen < 0
+                return false
+            end
+            if cuenta + largo > n
+                largo = n - cuenta
+            end
+            for k in (1..largo)
+                buffer_set_byte(sal, cuenta, buffer_get_byte(sal, origen))
+                cuenta = cuenta + 1
+                origen = origen + 1
+            end
+        end
+        if _l_pos > _l_fin + 4
+            return false     # se pasó del final: archivo roto
+        end
+    end
+    return true
+end
+
+func _lha_crc(b: Pointer, n: Int) -> Int
+    crc = 0
+    if n > 0
+        for i in (0..n - 1)
+            crc = _l_crc_tabla[(crc ^ buffer_get_byte(b, i)) & 0xFF] ^ (crc >> 8)
+        end
+    end
+    return crc
+end
+
+func _lha_w16(p: Int) -> Int
+    return buffer_get_byte(_l_ent, p) | (buffer_get_byte(_l_ent, p + 1) << 8)
+end
+
+func _lha_w32(p: Int) -> Int
+    return _lha_w16(p) | (_lha_w16(p + 2) << 16)
+end
+
+func _lha_texto(p: Int, n: Int) -> String
+    r = ""
+    if n > 0
+        for i in (0..n - 1)
+            c = buffer_get_byte(_l_ent, p + i)
+            if c == 0
+                return r     # Amiga LhA: "nombre\0comentario"
+            end
+            r = r + str_char(c)
+        end
+    end
+    return r
+end
+
+# Una ruta del archivo, limpia: "\" y el 0xFF de nivel 2 pasan a "/"; sin "/" al principio. "" si es peligrosa
+func _lha_ruta(r: String) -> String
+    r = str_replace(r, "\\", "/")
+    r = str_replace(r, str_char(255), "/")
+    # (el cajón de nivel 2 ya acaba en su separador y se le ponía otro: "Prueba//Prueba", que no se podía escribir)
+    while str_find(r, "//") >= 0
+        r = str_replace(r, "//", "/")
+    end
+    while r.length > 0 and r[0] == "/"
+        r = r[1:]
+    end
+    if str_find(r, ":") >= 0 or r == ".." or str_find(r, "../") == 0 or str_find(r, "/../") >= 0 or (r.length >= 3 and r[r.length - 3:] == "/..")
+        return ""
+    end
+    return r
+end
+
+# Crea los cajones de una ruta ("Work:A/B/fichero" crea Work:A y Work:A/B)
+func _lha_cajones(destino: String, ruta: String)
+    partes = str_split(ruta, "/")
+    camino = destino
+    if partes.length > 1
+        for i in (0..partes.length - 2)
+            if partes[i] != ""
+                camino = camino + partes[i]
+                dir_create(camino)
+                camino = camino + "/"
+            end
+        end
+    end
+end
+
+# Extrae el archivo entero en el cajón "destino" ("Work:Prog/" o "RAM:"; se añade "/" si hace falta)
+func lha_extraer(archivo: String, destino: String) -> String
+    return _lha_recorrer(archivo, destino, false)
+end
+
+# Lo que tiene el archivo, sin descomprimir ni escribir nada (lha_lista); "" si se pudo leer entero
+func lha_listar(archivo: String) -> String
+    return _lha_recorrer(archivo, "", true)
+end
+
+func _lha_recorrer(archivo: String, destino: String, listar: Bool) -> String
+    _lha_preparar()
+    var nuevos: [String] = []
+    lha_escritos = nuevos
+    var lista: [String] = []
+    lha_lista = lista
+    if listar
+        destino = ""
+    elif destino.length > 0 and destino[destino.length - 1] != ":" and destino[destino.length - 1] != "/"
+        destino = destino + "/"
+    end
+    if destino.length > 0 and destino[destino.length - 1] == "/"
+        dir_create(destino[:destino.length - 1])
+    end
+    total = file_size(archivo)
+    if total <= 0
+        return "no se puede leer " + archivo
+    end
+    _l_ent = buffer_alloc(total)
+    if _l_ent == nil
+        return "no hay memoria para " + archivo
+    end
+    if file_load(archivo, _l_ent, total) != total
+        buffer_free(_l_ent)
+        return "no se puede leer " + archivo
+    end
+    error = ""
+    p = 0
+    while p + 22 <= total and error == ""
+        h0 = buffer_get_byte(_l_ent, p)
+        if h0 == 0
+            break    # fin del archivo
+        end
+        metodo = _lha_texto(p + 2, 5)
+        comprimido = _lha_w32(p + 7)
+        original = _lha_w32(p + 11)
+        nivel = buffer_get_byte(_l_ent, p + 20)
+        nombre = ""
+        cajon = ""
+        crc = -1
+        datos = 0
+        ext = 0
+        tam_ext = 0
+        if nivel == 0 or nivel == 1
+            largo_nombre = buffer_get_byte(_l_ent, p + 21)
+            nombre = _lha_texto(p + 22, largo_nombre)
+            crc = _lha_w16(p + 22 + largo_nombre)
+            datos = p + h0 + 2
+            if nivel == 1
+                tam_ext = _lha_w16(p + h0)
+                ext = datos
+            end
+        elif nivel == 2
+            datos = p + _lha_w16(p)
+            crc = _lha_w16(p + 21)
+            tam_ext = _lha_w16(p + 24)
+            ext = p + 26
+        else
+            error = "cabecera de nivel " + str_from_int(nivel, 10) + " no soportada"
+            break
+        end
+        # cabeceras extendidas: tipo (1), datos, tamaño de la siguiente (2)
+        while tam_ext >= 3 and ext + tam_ext <= total
+            tipo = buffer_get_byte(_l_ent, ext)
+            if tipo == 1
+                nombre = _lha_texto(ext + 1, tam_ext - 3)
+            elif tipo == 2
+                cajon = _lha_texto(ext + 1, tam_ext - 3)
+                if cajon.length > 0 and cajon[cajon.length - 1] != str_char(255) and cajon[cajon.length - 1] != "/"
+                    cajon = cajon + "/"
+                end
+            end
+            siguiente = _lha_w16(ext + tam_ext - 2)
+            ext = ext + tam_ext
+            if nivel == 1
+                comprimido = comprimido - tam_ext
+                datos = ext
+            end
+            tam_ext = siguiente
+        end
+        ruta = _lha_ruta(cajon + nombre)
+        if ruta == ""
+            error = "nombre peligroso en el archivo: " + cajon + nombre
+            break
+        end
+        if datos + comprimido > total or comprimido < 0
+            error = "archivo cortado: " + ruta
+            break
+        end
+        if listar
+            if metodo == "-lhd-"
+                if not str_ends(ruta, "/")
+                    ruta = ruta + "/"
+                end
+                lha_lista.push(ruta + "\t0")
+            else
+                lha_lista.push(ruta + "\t" + original)
+            end
+        elif metodo == "-lhd-"
+            _lha_cajones(destino, ruta + "/x")
+        else
+            dicbit = 0
+            if metodo == "-lh5-"
+                dicbit = 13
+            elif metodo == "-lh6-"
+                dicbit = 15
+            elif metodo == "-lh7-"
+                dicbit = 16
+            elif metodo != "-lh0-"
+                error = "método " + metodo + " no soportado (" + ruta + ")"
+                break
+            end
+            sal = buffer_alloc(original + 1)
+            if sal == nil
+                error = "no hay memoria para " + ruta
+                break
+            end
+            bien = true
+            if dicbit == 0
+                if comprimido != original
+                    bien = false
+                else
+                    buffer_copy(sal, 0, _l_ent, datos, original)
+                end
+            else
+                bien = _lha_descomprimir(datos, comprimido, sal, original, dicbit)
+            end
+            if not bien
+                error = "datos rotos en " + ruta
+            elif crc >= 0 and _lha_crc(sal, original) != crc
+                error = "CRC malo en " + ruta
+            else
+                _lha_cajones(destino, ruta)
+                if file_save(destino + ruta, sal, original) != original
+                    error = "no se puede escribir " + destino + ruta
+                else
+                    lha_escritos.push(destino + ruta)
+                end
+            end
+            buffer_free(sal)
+        end
+        p = datos + comprimido
+    end
+    buffer_free(_l_ent)
+    _l_ent = nil
+    return error
+end

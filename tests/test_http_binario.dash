@@ -1,0 +1,35 @@
+# Test: un cuerpo binario de una petición del JavaScript (tarea 64d; YouTube manda sus peticiones a youtubei comprimidas
+# con gzip en un Uint8Array y salían como texto UTF-8 roto: 400). El preludio lo pasa escapado (el 0 como 1 2, el 1
+# como 1 1, porque los textos de C y Dash no llevan el 0) con la marca x-tachyon-binario, y lib/http.dash lo
+# desescapa a un búfer al mandarlo: los bytes de verdad, también los de 128 a 255.
+# expect-out: largo 7 | 31 139 8 0 1 255 65
+# expect-out: js: 5 binario true [] | 31 139 0 1 200
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+# memcheck
+
+import "../lib/documento.dash"
+
+Main
+    t = str_char(31) + str_char(139) + str_char(8) + str_char(1) + str_char(2) + str_char(1) + str_char(1) + str_char(255) + "A"
+    n = http_binario_largo(t)
+    b = http_binario_bufer(t)
+    r = "largo " + n + " |"
+    for i in (0..n - 1)
+        r = r + " " + buffer_get_byte(b, i)
+    end
+    buffer_free(b)
+    Print r
+    # lo que el preludio deja para C: el texto escapado de un Uint8Array con 0 y 1
+    d = documento_html("http://x.com/a", "<html><body><script>var z = 1;</script></body></html>")
+    js_evaluar(d.js, "var x = new XMLHttpRequest(); x.open('POST', '/p'); x.send(new Uint8Array([31, 139, 0, 1, 200]));", "t.js")
+    p = jsdom_peticiones[jsdom_peticiones.length - 1]
+    b = http_binario_bufer(p.cuerpo)
+    r = "js: " + http_binario_largo(p.cuerpo) + " binario " + p.binario + " [" + p.extra + "] |"
+    for i in (0..4)
+        r = r + " " + buffer_get_byte(b, i)
+    end
+    buffer_free(b)
+    Print r
+    jsdom_peticiones_cancelar(d.js)
+    documento_liberar(d)
+end

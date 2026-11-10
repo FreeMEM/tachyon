@@ -1,0 +1,37 @@
+# Soltar la CPU un momento mientras otro proceso de Tachyon la necesita (tarea 64b): las imágenes se decodifican en
+# otro proceso a prioridad -1 (lib/imagen_dec.dash), que solo avanza cuando el programa espera; Exec no lo reparte
+# aunque los dos estén a la misma prioridad, y en YouTube el programa no espera nunca (el JavaScript, el estilo y la
+# maqueta van segundos seguidos): cada miniatura salía 300 s tarde. Con un tic suelto (Delay de 1/50 s) cada 100 ms,
+# una de 720x404 sale en 2,3 s (sola, 0,8 s). Lo que tarda mucho llama a ceder() en su recorrido (barato: mira la
+# hora una vez de cada 64); el JavaScript lo hace en C (js_ceder, en su manejador de interrupciones).
+#
+#   ceder_poner(true)    # hay algo decodificándose
+#   ceder()              # en un bucle largo
+
+var _ceder_activo: Bool = false
+var _ceder_cuenta: Int = 0
+var _ceder_ultimo: Int = 0
+
+func ceder_poner(si: Bool)
+    _ceder_activo = si
+end
+
+func ceder_activo() -> Bool
+    return _ceder_activo
+end
+
+func ceder()
+    if not _ceder_activo
+        return
+    end
+    _ceder_cuenta = _ceder_cuenta + 1
+    if _ceder_cuenta < 64
+        return
+    end
+    _ceder_cuenta = 0
+    t = time_ms()
+    if t - _ceder_ultimo >= 100
+        time_delay(1)
+        _ceder_ultimo = time_ms()
+    end
+end

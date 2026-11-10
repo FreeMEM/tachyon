@@ -97,6 +97,10 @@ class Handler(socketserver.StreamRequestHandler):
         return seguir and path != "/cerrar"     # (its body ends when the connection closes)
 
     def responder(self, line, path, body):
+        if path in ("/r307", "/r308", "/r303"):   # una redirección que guarda el método (307, 308) o pasa a GET (303)
+            codigo = path[2:]
+            self.wfile.write(reply(codigo + " Redirect", [("Location", "/eco"), ("Content-Length", "0")]))
+            return
         if path == "/cerrar":       # no length: the body ends when the connection closes
             self.wfile.write(b"HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n" + b"z" * 5000)
             return
@@ -106,6 +110,19 @@ class Handler(socketserver.StreamRequestHandler):
             self.wfile.flush()
             time.sleep(1.5)
             self.wfile.write(b"b" * 1000)
+            return
+        if path.startswith("/mudo"):       # accepts the request and never answers (a stuck one; tarea 68)
+            import time
+            time.sleep(20)
+            return
+        if path.startswith("/gotas"):      # a body that comes a byte at a time, every 0.5 s (tarea 68)
+            import time
+            self.wfile.write(b"HTTP/1.1 200 OK\r\nContent-Type: text/css\r\nContent-Length: 100000\r\n\r\n")
+            self.wfile.flush()
+            for _ in range(40):
+                time.sleep(0.5)
+                self.wfile.write(b"a")
+                self.wfile.flush()
             return
         if path.startswith("/goteo/"):     # a file of tests/pages: 64 KB, a pause, the rest (a video that starts
             import os                      # playing while it downloads; GOTEO_S seconds, 3 by default)

@@ -1,0 +1,36 @@
+# Test: animaciones_quietas (tarea 68; lo contó David Martínez): con steps(1) en 1 s y un fotograma al 50 % (el
+# cursor que parpadea en el logo de dash.freemem.space) el punto solo cambia a los 500 ms, así que entre medias no hay que repintar; una linear
+# cambia en cada fotograma. animaciones_vivas: infinita, viva; de una vuelta, acabada a los 2 s.
+# expect-out: steps 100 -> 300: quieta true | 100 -> 600: quieta false
+# expect-out: linear 100 -> 300: quieta false
+# expect-out: vivas: infinita true | una vuelta a 500 true | a 2000 false
+
+import "../lib/animacion.dash"
+
+func una(curva: String, vueltas: Int) -> Animacion
+    var sin: [Fotograma] = []
+    var nadie: Nodo = nil
+    a = Animacion(nadie, "cursor", sin)
+    var nada: [Declaracion] = []
+    a.cuadros.push(Fotograma(500, nada))
+    a.duracion = 1000
+    a.vueltas = vueltas
+    a.curva = curva
+    return a
+end
+
+Main
+    a = una("steps(1)", -1)
+    var l: [Animacion] = [a]
+    a.prog_ultimo = animacion_punto(a, animacion_progreso(a, 100))
+    q1 = animaciones_quietas(l, 300)
+    q2 = animaciones_quietas(l, 600)
+    Print "steps 100 -> 300: quieta " + q1 + " | 100 -> 600: quieta " + q2
+    b = una("linear", -1)
+    var lb: [Animacion] = [b]
+    b.prog_ultimo = animacion_punto(b, animacion_progreso(b, 100))
+    Print "linear 100 -> 300: quieta " + animaciones_quietas(lb, 300)
+    c = una("linear", 1000)
+    var lc: [Animacion] = [c]
+    Print "vivas: infinita " + animaciones_vivas(l, 5000) + " | una vuelta a 500 " + animaciones_vivas(lc, 500) + " | a 2000 " + animaciones_vivas(lc, 2000)
+end

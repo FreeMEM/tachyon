@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language deutsch
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Seite
 MSG_51
 Datei öffnen...
 ; Open file...
+MSG_52
+Auf eigenem Bildschirm öffnen
+; Open on its own screen
+MSG_53
+Leseansicht
+; Reader view
+MSG_54
+Untersuchen
+; Inspect
+MSG_55
+Netzwerk-Debugprotokoll
+; Network debug log
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Nicht gespeichert: %1
 MSG_167
 Gespeichert in %1
 ; Saved in %1
+MSG_168
+Tachyon öffnet beim nächsten Mal einen eigenen Bildschirm
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon öffnet beim nächsten Mal auf dem Workbench-Bildschirm
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Leseansicht
+; Reader view
+MSG_171
+Öffne eine Seite und wähle Leseansicht im Menü Navigation.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Auf dieser Seite gibt es keinen Artikel zum Lesen.
+; There is no article to read on this page.
 MSG_300
 Die Version ohne JavaScript: leicht, läuft am besten auf einem Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ Heute
 MSG_346
 Gestern
 ; Yesterday
+MSG_347
+Suchen
+; Search
+MSG_348
+Nichts im Verlauf enthält: %1
+; Nothing in the history matches: %1
+MSG_349
+Letzter Besuch: %1. Besuche: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Keine gespeichert.
 ; None stored.
@@ -653,3 +689,144 @@ Inhalt von %1
 MSG_478
 Übergeordnete Schublade
 ; Parent drawer
+MSG_480
+Entpacken...
+; Extract...
+MSG_481
+Auf diesem Amiga öffnet nichts diese Art von Datei. Es braucht %1 (oder XAD, xadmaster.library, das fast alle öffnet).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+%1 auf Aminet suchen
+; Look for %1 on Aminet
+MSG_483
+Es wurde nichts entpackt.
+; Nothing was extracted.
+MSG_484
+In eine neue Schublade entpacken
+; Extract into a new drawer
+MSG_485
+Entpacke %1...
+; Extracting %1...
+MSG_486
+%1 konnte nicht entpackt werden: %2
+; Couldn't extract %1: %2
+MSG_487
+Noch nichts.
+; Nothing yet.
+MSG_488
+Ausführen
+; Run
+MSG_489
+Methode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Typ
+; Type
+MSG_492
+Adresse
+; Address
+MSG_493
+%1 Anfragen, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Freier Fast-Speicher
+; Free fast memory
+MSG_495
+Freier Chip-Speicher
+; Free chip memory
+MSG_496
+Größter freier Block
+; Largest free block
+MSG_497
+JavaScript dieser Seite
+; JavaScript of this page
+MSG_498
+Bilder dieser Seite
+; Pictures of this page
+MSG_499
+Elemente
+; Elements
+MSG_500
+Zu zeichnende Dinge
+; Things to draw
+MSG_501
+Keine.
+; None.
+MSG_502
+Box
+; Box
+MSG_505
+Seitengröße
+; Page size
+MSG_506
+Untersuchen
+; Inspect
+MSG_507
+Konsole
+; Console
+MSG_508
+Elemente
+; Elements
+MSG_509
+Netzwerk
+; Network
+MSG_510
+Speicher
+; Memory
+MSG_511
+Anwendung
+; Application
+MSG_512
+Zeiten
+; Timings
+MSG_513
+Aktualisieren
+; Refresh
+MSG_514
+Und %1 weitere: wähle eines, um seinen Zweig zu öffnen.
+; And %1 more: choose one to open its branch.
+MSG_515
+Kein Platz für ein weiteres Fenster
+; No room for another window
+MSG_516
+Das untersuchte Fenster ist geschlossen.
+; The window that was inspected is closed.
+MSG_517
+Seite herunterladen
+; Download the page
+MSG_518
+HTML lesen
+; Read the HTML
+MSG_519
+Auf CSS und Skripte warten
+; Wait for CSS and scripts
+MSG_520
+Skripte ausführen
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Erstes Layout
+; First layout
+MSG_523
+Bis vollständig (mit Bildern)
+; Until complete (with pictures)
+MSG_524
+Layouts (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-Timer
+; JavaScript timers
+MSG_526
+Netzwerk-Debugprotokoll an: %1
+; Network debug log on: %1
+MSG_527
+Netzwerk-Debugprotokoll aus
+; Network debug log off
+MSG_528
+Wenig Speicher: das JavaScript der Seite wurde beendet
+; Low memory: the page's JavaScript was stopped

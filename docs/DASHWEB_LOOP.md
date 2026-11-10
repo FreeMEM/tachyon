@@ -205,6 +205,12 @@ tarea, con el estilo de Dash.
       (lo encontró la tarea 11 con `--memcheck`).
 - [x] D16. **`for` sobre una lista prestada.** La liberaba al acabar (lo encontró la tarea 9).
 - [x] D15. **Carácter contra literal con escape.** `c == "\r"` comparaba punteros (lo pidió la tarea 5).
+- [x] D84. **La señal del puerto ARexx propio** (hecha por freememlang-af, PR #141, f9b09a9: rexx_signal(); 2026-11-09, tarea 63b, puerto ARexx como en Amelinium; plan aprobado
+      por el usuario). rexx_port crea su MsgPort con su bit de señal, pero el bucle de MUI espera con
+      mui_wait_event_signals(task_signal()) y no lo ve: con Tachyon quieto, una orden ARexx espera al siguiente
+      evento. Hace falta algo como `rexx_signal()` (la máscara, 0 sin puerto) para
+      mui_wait_event_signals(task_signal() | rexx_signal()), en dashc y en dash1, con su test. (MUI ya abre su
+      propio TACHYON.1 con las órdenes de serie de MUI; el de Dash va aparte, "TACHYON".)
 - [x] D83. **Soltar iconos del Workbench en una ventana MUI (AppWindow)** (2026-11-07, tarea 60; Ferrán García pidió
       abrir una página soltando su icono en la ventana de Tachyon). app_window y app_drop de Dash valen solo para las
       ventanas de window_create; las de MUI no. MUI lo trae de serie: MUIA_Window_AppWindow TRUE en la ventana y
@@ -608,6 +614,83 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 67. **Tachyon parado en "Trayendo hojas de estilo y scripts..." en una PiStorm, y lento (lo contó Oskis R.P,
+      2026-11-10, por la sesión telegram; prioridad).** Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi: desde los
+      resultados de DuckDuckGo, el enlace de Aminet se quedó más de un minuto en "Trayendo hojas..." (sin la cuenta
+      de lo que falta: la vuelta siguiente no llegó) y tuvo que reiniciar; escrito a mano, aminet.net tarda 5-10 s,
+      y va mucho más lento que IBrowse y Amelinium en su máquina. (a) un registro de depuración de red que la gente
+      pueda mandar (hecho: 67a); (b) con lo que llegue, encontrar el atasco y la lentitud.
+- [ ] 66. **Vídeo nuevo de Tachyon cuando la 64 y la 65 estén finas (usuario, 2026-11-09: "cuando esté fino molaría
+      hacer un vídeo con el estilo de los hechos en otras ocasiones publicados en la web de tachyon o forja").** Con el
+      estilo y las herramientas de los anteriores (~/.cache/video-tachyon: tomar.sh en Coffin con Amiberry, montar.py;
+      en inglés y castellano). Que se vea: (a) YouTube cargando, buscar y un vídeo reproduciéndose con sonido;
+      (b) alguna web con JavaScript funcionando, como la propia de Tachyon; (c) las novedades desde el último vídeo
+      (ARexx, modo lectura, abrir comprimidos, historial con buscar y borrar...); (d) Inspeccionar (tarea 65) con su
+      consola, memoria, red, etc., como las herramientas de desarrollo de Chrome. Publicarlo (YouTube, web de Tachyon,
+      Forja) solo con el visto bueno del usuario.
+- [ ] 65. **"Inspeccionar", como las herramientas de Chrome (usuario, 2026-11-09: "estaría bien añadirle a Tachyon un
+      inspeccionar como el de chrome donde se vean consola, memoria, aplicación, y cosas así básicas pero que nos de
+      algo de información de lo que pasa en una web").** Después de la 64. Una página propia (tachyon:inspeccionar,
+      de la pestaña o ventana que se mira; menú Herramientas y el del botón derecho) con pestañas sencillas:
+      (a) Consola: console.log, los avisos y los errores de JavaScript (ya los guarda el registro de lib/js.dash para
+      el informe de la tarea 54), y una línea para escribir JavaScript y ver el resultado; (b) Elementos: el árbol del
+      DOM plegable, con los atributos y el estilo calculado del elegido; (c) Red: lo que pidió la página (dirección,
+      estado, tamaño, tiempo, tipo), como lo que ya escribe TRAZA; (d) Memoria: la libre y el mayor bloque, la del
+      JavaScript, las imágenes y las hojas (lo de "entera ... memoria libre ... JavaScript KB, imágenes KB"); (e)
+      Aplicación: cookies, localStorage y sessionStorage del origen, con borrar; (f) Tiempos: carga, HTML, JS, estilo,
+      maqueta, pintar. Sin coste cuando no está abierto.
+- [~] 68. **dash.freemem.space no acaba de cargar (lo contó David Martínez; lo confirmaron JaviTecH en MiSTer y Oskis
+      R.P en PiStorm CM4; por la sesión telegram, 2026-11-10).** Con la 0.9.3: CPU al 96 % y no avanza. Medido con la
+      0.9.4 (máquina RTG, 68040 JIT): carga en ~50 s y no para. (a) React da el error #418 (hidratación: un texto
+      distinto del del servidor) y rehace la página entera en el cliente: 14 s de temporizadores y 9 s de estilo y
+      maqueta de más; mirar si el texto distinto es cosa de Tachyon (espacios, nodos de texto, entidades). (b) El cursor
+      que parpadea en el logo (animation steps(1) 1 s) se repinta cada ~170 ms para siempre: con steps(), repintar
+      solo al cambiar de paso. (c) Medir antes y después también en el A1200 de pruebas. Con sus nombres en el
+      commit, las notas y Gracias. (d) David (#1076): con la 0.9.3 se queda en "Fetching style sheets and scripts: 1 left",
+      como Oskis con Aminet (67): una hoja o script que no acaba en la red de su máquina (en el emulador llegan las 9
+      en 3 s). El tope de 15 s es sin recibir nada; pedirles el registro de depuración de la 0.9.4 para ver cuál y
+      en qué fase.
+- [~] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
+      prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
+      reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un
+      navegador de verdad, en la máquina RTG y medido en el A1200: (a) la portada con sus miniaturas y títulos, y el
+      consentimiento de cookies; (b) buscar y la página de resultados; (c) la página de un vídeo: título, canal,
+      descripción, vídeos relacionados y comentarios; (d) reproducirlo con su sonido desde esa página (no solo
+      incrustado), con pausa, avance y pantalla completa; (e) ir de un vídeo a otro sin recargar todo (la navegación
+      de YouTube por history.pushState) y volver atrás; (f) tiempos y memoria aceptables (medidos antes y después).
+      Primero ver cómo sale hoy cada parte (capturas, errores de JS, memoria, tiempos) y partirla en subtareas.
+      (2026-11-10, estado; ver la bitácora 64a-64d) Hecho y visto en la máquina RTG ancha (68040+JIT, 256 MB):
+      (a) la portada y el aviso de cookies (sin sesión ni historial YouTube no pone vídeos en la portada, como en
+      Chrome); (b) la búsqueda con sus miniaturas, avatares y capítulos; (c) la página de un vídeo con título, canal,
+      visitas, relacionados y los comentarios al bajar; (d) el vídeo suena en su recuadro con el reproductor de
+      Tachyon (clic: suena o se para; esquina: pantalla completa; flechas: 10 s adelante o atrás), 4,8 imágenes/s
+      con la página cargada; (e) de los resultados a un vídeo (carga entera la página del vídeo: por pushState su
+      reproductor no se crea) y atrás. Tiempos: búsqueda entera ~220 s, la página de un vídeo 70-180 s; memoria del
+      JavaScript ~100 MB (por eso no cabe en el A1200 de pruebas de 8 MB: el objetivo es una PiStorm con memoria).
+      De un vídeo a otro por los relacionados, también (64e). (64f, usuario 2026-11-10, sobre los controles de
+      YouTube encima del vídeo) Una barra de controles de Tachyon sobre el vídeo al pasar el ratón: reproducir/parar,
+      la línea de tiempo con lo bajado y clic para saltar, el tiempo, el volumen y pantalla completa (los de YouTube no
+      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Pendiente: desplegar la descripción ("more", sin
+      comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
+      de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
+      (64g, ensayo del vídeo 2 en Coffin con 256 MB) Tachyon se cerraba sin decir nada: los resultados de YouTube se
+      comían la memoria hasta el último KB, y al abrir un vídeo la página de antes seguía entera mientras llegaba la
+      nueva. Hecho: con menos de 24 MB libres el JavaScript de la página se suelta entero (la página se queda como
+      está), la página de antes se suelta entera con menos de 64 MB, y un vídeo deja de traerse antes de no caber (el
+      búfer que se dobla al llenarse reiniciaba el Amiga). Pendiente: con la memoria troceada solo caben ~8 MB de un
+      vídeo (2 minutos): traerlo a trozos o a disco; y la duración de la barra sale mal con el vídeo a medias.
+- [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
+      "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
+      (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
+      historial por días ya estaban); (b) puerto ARexx (rexx_port de Dash): OPEN, GETURL, GETTITLE, BACK, FORWARD,
+      RELOAD, NEWTAB, QUIT...; (c) modo lectura; (d) abrir .lha, .lzx, .zip... con lo del sistema
+      (xadmaster.library, o C:LhA, C:lzx, C:unzip; para .lha vale un descompresor en Dash de otro proyecto del usuario,
+      sin anunciar: "adelante") y, si no hay nada, decir qué falta y dónde buscarlo;
+      una OS 3.2 recién instalada no trae ninguno; (e) menos memoria al arrancar (3,4 MB; con la 61); (f) imprimir
+      (necesita printer.device en Dash); (g) gestor de contraseñas cifrado con contraseña maestra (AES y derivar la
+      clave con AmiSSL: necesita Dash); (h) PDF: primero abrirlo con un visor del sistema; pdf.js no es viable en
+      QuickJS sobre 68k; (i) radio por internet (minimp3 y sonido continuo por AHI/Paula en Dash; solo 68060/PiStorm).
+      Nada hacia fuera sin el visto bueno del usuario; la tabla comparativa de la web es de la sesión telegram.
 - [ ] 62. **Las demás baterías de pruebas, cuando acabe WPT (usuario, 2026-11-07: "Cuando terminemos con wpt, vamos a
       pasar todos los test de compatibilidad, velocidad, red y seguridad").** Con copias guardadas y servidas desde el
       PC (nada automático contra webs de otros), cada una con su resumen en docs/ para ver cómo sube:
@@ -6195,3 +6278,792 @@ Formato:
   un clic al final que responde; copiar y pegar, Amiga-S ("Saved in RAM:pegar.html") y Amiga-O abre el selector.
 - Notas de la versión en castellano e inglés, con las cifras de WPT comprobadas contra la 0.9.2 publicada. Sin
   publicar: el usuario da el visto bueno antes.
+
+### 2026-11-08 — Publicada la v0.9.3-alfa
+- Usuario: "Publica". PR #23 de dev a main (54aaae2), etiqueta v0.9.3-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.3-alfa con tachyon.lha, Tachyon.gz (SHA-256 ac46609f...8968,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera.
+- Gracias en la web: Ferrán García (abrir ficheros del disco, idea suya) en webs-freemem
+  paquetes/retro/src/reconocimientos.ts, commit local 7d58fdb, sin subir (subir publica la web; allí había un cambio
+  de otra sesión en sitios/tachyon/src/version.json, sin tocar).
+- Usuario: "Acid3" a lo de los nombres de elementos: se quedan los de antes (el Name de XML), que pide Acid3 (pruebas
+  23 a 25), y no los de DOM de 2025 que pide WPT (unas 300 subpruebas de createElementNS, createDocument,
+  createDocumentType y case). Acid3 sigue en 100/100; no volver a cambiarlos sin preguntar.
+- Y "sube los agradecimientos": webs-freemem 7d58fdb subido a origin/main (el servidor lo trae cada 5 minutos y
+  rehace la web).
+
+### 2026-11-08 — La actualización a la 0.9.3 falla en la máquina del usuario ("No se pudo bajar la versión nueva")
+- Usuario (captura): su Tachyon 0.9.2 ve la 0.9.3 pero dice "No se pudo bajar la versión nueva". La prueba de antes
+  de publicar usaba un GitHub de mentira que daba el fichero sin más; el de verdad contesta 302 a
+  release-assets.githubusercontent.com con una dirección de 901 caracteres (certificado *.githubusercontent.com de
+  Let's Encrypt YR1 -> Root YR -> ISRG Root X1, TLS 1.3).
+- Descartado: la redirección larga a otro servidor (el GitHub de mentira con REDIRIGIR=1: baja todo) y GitHub con
+  AmiSSL (un programa de diagnóstico en el emulador sys32rtg38, el mismo http_empezar_a_fichero de la actualización:
+  200, una redirección, 1993291 bytes en 14,7 s). El tope de 30 s es sin recibir nada, no de toda la descarga.
+- Queda por saber qué pasa en su máquina: T:Tachyon.gz (T: sin sitio o sin asignar), su AmiSSL o su red. Pedido al
+  usuario lo que dice TRAZA ("llega ...: código error").
+- src/dashweb.dash: "No se pudo bajar la versión nueva" y "No se pudo mirar si hay versiones nuevas" dicen ya el porqué
+  (el error de la red o el código HTTP) entre paréntesis.
+
+### 2026-11-08 — Tarea 41d: XMLSerializer de DOM Parsing, xmlns en DOMParser y namespaceURI de verdad (domparsing 608, dom/nodes 11634)
+- XMLSerializer daba el outerHTML. Ahora la serialización XML de DOM Parsing: mapa de prefijos, los xmlns que hacen
+  falta, prefijos ns1, ns2... generados, <a/> sin hijos (en XHTML, solo los vacíos de HTML), &#x9; y compañía en los
+  valores. XMLSerializer-serializeToString 3 → 30/33.
+- El analizador de XML de DOMParser resuelve los xmlns (una pila de ámbitos al lado de la de elementos): elementos y
+  atributos con prefijo o espacio de nombres por createElementNS y setAttributeNS (con mayúsculas); lo de siempre (sin
+  espacio de nombres ni prefijo, en minúsculas) por el camino corto de antes. Un prefijo sin declarar, como antes, sin
+  espacio de nombres (los RSS de verdad).
+- namespaceURI era un valor fijo (XHTML) en el prototipo de todos los nodos: un elemento de un <svg> decía XHTML (D3 y
+  otras crean los hijos con createElementNS(padre.namespaceURI, ...)). Ahora un getter: undefined si no es un
+  elemento, null en un XML sin espacio de nombres, SVG dentro de un <svg>, si no XHTML; createElementNS(SVG) y
+  createElement("svg"/"math") llevan el suyo.
+- Probado y quitado: copiar el mapa de prefijos en cada elemento (lo hace solo el que lo cambia); un namespaceURI y un
+  ámbito propios en cada elemento leído (ahora el getter y la pila).
+- Medido (tests/pages/bench_xml.html, máquina RTG, dos pasadas; antes → después): leer un RSS de 100 noticias dos veces
+  2060-2180 → 2340-2420 ms (un 12 % más: los 200 nodos con prefijo o mayúsculas, dc:creator e isPermaLink, ahora se
+  crean con su espacio de nombres); serializarlo 20 → 520 ms (antes era el outerHTML de C, rápido y mal).
+- WPT: domparsing 573 → 608/1090, dom/nodes 11632 → 11634 (querySelector con espacios de nombres; createElement("svg")
+  bajaba una y se arregló). jquery, svg_dom, domparser, interfaces, wpt_dom, lienzo y test_jsdom_xml_ns (nuevo) pasan.
+
+### 2026-11-08 — Tarea 41d: las reglas de validez de UTS 46 en los dominios (WPT url 7283 → 8408/8699, 84 → 97 %)
+- Lo que quedaba de url era casi todo IDNA (IdnaTestV2: 1536/2676): nombres que había que rechazar y se aceptaban.
+  Sin las tablas de UTS 46 (no caben en un Amiga), con las propiedades Unicode de las expresiones regulares de QuickJS
+  (comprobadas en el PC): V6, una etiqueta no empieza por una marca combinante (\p{M}); C1 y C2 (CheckJoiners), ZWJ
+  solo tras un virama (una lista de 35) y ZWNJ tras un virama o entre letras de las escrituras que se unen (árabe,
+  siríaca, n'ko, mongol...: aproximado); V7, sin lo no asignado, de uso privado, de control ni de formato (aproximado).
+  No hay casos de bidi: URL no lo pide.
+- Probado y quitado: aplicarlas también a lo que llega en Punycode (xn--): el test lo acepta como viene, y se
+  rechazaban 700 nombres buenos.
+- Sin coste en las direcciones de siempre: solo se mira en etiquetas con algo de fuera de ASCII.
+- IdnaTestV2 1536 → 2590/2676, IdnaTestV2-removed 1 → 21/21, toascii 616 → 665/784, percent-encoding 1 → 3/17;
+  ninguno peor. test_js_idna (nuevo), test_js_url y test_url pasan.
+
+### 2026-11-08 — Tarea 41d: ISO-8859-8-I y encodeInto con su TypeError (WPT encoding 11101 → 11547/12004, 92 → 96 %)
+- ISO-8859-8-I (csiso88598i, iso-8859-8-i, logical) no era una etiqueta de TextDecoder: es ISO-8859-8 con otro nombre
+  (el mismo índice). textdecoder-fatal-single-byte entero, single-byte-decoder 165 → 168, textdecoder-labels 181 → 184.
+- encodeInto con un destino que no es Uint8Array: TypeError (encodeInto 43 → 56/111; lo que queda es SharedArrayBuffer,
+  que no hay: QuickJS va sin hilos).
+- Queda: los decodificadores de chino, japonés y coreano (GBK, Big5, EUC-JP, Shift_JIS, EUC-KR, ISO-2022-JP), con
+  tablas de cientos de KB que no caben en un Amiga; y los iframes de single-byte-decoder-iframe.
+
+### 2026-11-08 — Tarea 41d: WPT xhr, carpeta nueva (307 → 525/1112): XHR síncrono, setRequestHeader y responseType
+- git sparse-checkout add xhr; tools/wpt_js.py hace de wptserve para más manejadores .py: POST, PUT, DELETE, OPTIONS y
+  HEAD, request.method/headers/body/POST/raw_headers, response.writer y el texto del estado. Primera pasada: 307/1112.
+- XMLHttpRequest síncrono (open(..., false)): no lo había, y status quedaba en 0. Ahora send() espera:
+  __dashweb_esperar(id) -> jsdom_esperar_peticion (lib/jsdom.dash) empieza la petición sin esperar turno, la avanza
+  hasta el final y la entrega al JavaScript antes de volver; sin loadstart ni los readystatechange de en medio. Algunas
+  webs y librerías viejas aún lo usan.
+- setRequestHeader: solo con OPENED (InvalidStateError), el nombre un token de HTTP y el valor sin NUL ni saltos de
+  línea (SyntaxError), y las cabeceras prohibidas de Fetch (Referer, Date, Via, Transfer-Encoding, sec-...; y
+  x-http-method-override con CONNECT, TRACE o TRACK) no se mandan: antes iban.
+- responseType: solo '' y los cinco suyos (otro se ignora); con LOADING o DONE, InvalidStateError; en uno síncrono,
+  InvalidAccessError.
+- Sin coste en lo de siempre: comprobaciones en setRequestHeader y una propiedad con getter.
+- WPT xhr 307 → 525/1112 (setrequestheader-bogus-name 0 → 69/71, responsetype 19 → 46/50, status-basic 0 → 11/27...);
+  status.h2 baja una (es HTTP/2, que el servidor de las pruebas no habla). test_jsdom_xhr_sinc (nuevo),
+  test_jsdom_load_peticion, test_js_fetch y test_jsdom_scripts pasan.
+
+### 2026-11-08 — Corrección: domparsing es 600, no 608
+- En la entrada de XMLSerializer (03b39e6) puse domparsing 573 → 608: era una pasada intermedia. La guardada, con el
+  namespaceURI por getter, es 600/1090 (XMLSerializer 3 → 30; DOMParser-parseFromString-xml y xml-character-entities,
+  que habían subido 4 cada uno en la intermedia, vuelven a 4/20 y 0/8). Queda mirar por qué.
+
+### 2026-11-08 — Tarea 41d: el tagName de un documento de XML tal cual (domparsing 600 → 620/1090)
+- Los 8 que se perdieron con el camino corto del analizador de XML (elementos de HTML por createElement): su tagName y
+  nodeName salían en mayúsculas ("FOO"). Ahora el documento de DOMParser lleva el atributo "xml" y el getter de C
+  (_jsdom_en_xml en src_c/tachyon.c: sube hasta la raíz y lo mira) da el nombre tal cual. Además: el <parsererror> del
+  documento de error, en el espacio de nombres de Mozilla, como los navegadores; y uno de DOMParser no es XMLDocument
+  (__dp), que eso solo lo da createDocument.
+- Probado y quitado (medido, tests/pages/bench_tagname.html y bench_xml.html, máquina RTG): un getter de JavaScript
+  para tagName y nodeName en todos los elementos (20000 lecturas 300 → 540 ms: un 80 % más en todas las webs); y las dos
+  propiedades en cada elemento del XML (leer el RSS 2340 → 2740 ms). Con el de C: tagName 300 → 300-340, nodeName
+  300 → 300, leer el RSS 2340-2420 → 2340-2360: igual.
+- WPT domparsing 600 → 620 (DOMParser-parseFromString-xml 4 → 20/20, xml-character-entities 0 → 4/8), dom/nodes
+  11634 → 11635 (Element-tagName). domparser, xml_ns, jquery y wpt_dom pasan.
+
+### 2026-11-08 — Tarea 41d: XMLHttpRequest con data:, el método de open y getAllResponseHeaders (xhr 525 → 576/1112)
+- open(): el método, un token de HTTP (si no, SyntaxError); CONNECT, TRACE y TRACK, SecurityError; solo DELETE, GET,
+  HEAD, OPTIONS, POST y PUT van en mayúsculas (antes todos: "xUNIcorn" salía "XUNICORN").
+- Una dirección data: se resuelve en el preludio sin red (datosDeDataUrl: base64 o con %; con otro método que GET, error
+  de red), síncrona o en el siguiente tic; antes respondía vacío.
+- getAllResponseHeaders, por orden de nombre (en minúsculas).
+- tools/wpt_js.py pasa cualquier método (los inventados de los tests: daban 501) a los manejadores .py.
+- WPT xhr 525 → 576 (open-method-* enteros, status-basic y status-async 11 → 19/27, data-uri 0 → 5/10...); ninguno
+  peor. test_jsdom_xhr_sinc con data: y los métodos, test_jsdom_load_peticion pasan.
+
+### 2026-11-08 — Tarea 41d: pendiente en xhr (send-redirect)
+- tests/servers/http.py: /r307, /r308 y /r303 (redirigen a /eco) y /eco (devuelve el método y el cuerpo). lib/http.dash
+  sigue bien un POST por 307 (POST y su cuerpo), 303 (GET) y 302: probado.
+- Lo que falla de xhr/send-redirect no es la redirección: (1) un GET con Content-Type puesto por setRequestHeader no lo
+  manda (_http_peticion solo pone Content-Type con POST o con cuerpo: llevarlo como extra en jsdom_pedir si es GET o
+  HEAD); (2) con HEAD llega sin cabeceras (status 0): lib/http.dash espera el cuerpo de un HEAD (líneas 319 y 953 solo
+  saltan el cuerpo con 204, 304 y 1xx). Siguiente vuelta.
+
+### 2026-11-08 — Tarea 41d: HEAD sin cuerpo y Content-Type en GET (xhr 576 → 601/1112)
+- lib/http.dash: la respuesta a un HEAD acaba con las cabeceras (_http_leer_respuesta y _carga_total con el indicador
+  cabeza); antes esperaba el cuerpo que no llega y se quedaba sin respuesta (status 0, "timed out"). Vale para todo
+  HEAD del navegador, no solo los de JavaScript.
+- lib/jsdom.dash (jsdom_pedir): un Content-Type que la página pone en un GET o un HEAD va como cabecera de más (antes
+  se perdía: _http_peticion solo lo pone con POST o con cuerpo).
+- Velocidad y memoria: lo mismo (una comparación por respuesta).
+- WPT xhr 576 → 601: send-redirect 17 → 28/34, status-basic y status-async 19 → 25/27, send-usp 134/135,
+  send-entity-body-none 4/6; ninguno peor. test_http* (7) y test_jsdom_xhr_sinc pasan.
+
+### 2026-11-08 — En su propia pantalla (petición del usuario, por la sesión de Dash del lienzo)
+- Menú Herramientas, "Open on its own screen" (con marca; textos 52, 168 y 169 en los nueve catálogos): guarda
+  pantalla=si/no en PROGDIR:Tachyon.prefs (como las demás preferencias de Tachyon; Forja usa ENV:Forja/pantalla) y vale
+  la próxima vez que se abra. Con ella, al empezar, screen_clone_wb("TACHYON") y mui_window_screen en cada ventana
+  (las del navegador y Acerca de) antes de abrirla; screen_close al salir, antes de abrir la versión nueva tras
+  actualizar (querrá una pantalla con el mismo nombre). Sin screen_make_default: un navegador no lanza programas que
+  deban salir en ella. La del vídeo sigue a pantalla completa, en la suya.
+- Probado en el emulador (rtg, scratchpad medir_prefs.py pone el Tachyon.prefs: emu_run solo copia carpetas): la
+  pantalla se llama TACHYON y la ventana va en ella. Fallo de Dash: en esa pantalla el título de la ventana sale con
+  la letra de la página (font_use), no en la del Workbench; pasado a la sesión del lienzo. Soltar iconos solo va en
+  la del Workbench (ya dicho en las notas).
+- El fallo del título lo arregla Dash en la rama clon-letra (PR #134: font_use y font_style ya no cambian la letra
+  del RastPort de la pantalla pública del programa): probado con Tachyon, el título sale bien. Fusionado en Dash main
+  (caebe70, con el visto bueno del usuario) y probado otra vez con main: bien.
+
+### 2026-11-08 — Tarea 41d: el texto de la respuesta de XMLHttpRequest como dice la norma (xhr 601 → 643/1112)
+- tools/wpt_js.py: la consulta de la dirección se lee en Latin-1 (bytes, como wptserve); con %e6 y compañía el
+  manejador .py fallaba y la prueba entera se quedaba esperando (responsetext-decoding salía TIMEOUT). Era del banco.
+- Preludio, xhrTexto ("text response"): la BOM manda (UTF-8, UTF-16BE o LE); si no, el charset del tipo (el de
+  overrideMimeType o el de Content-Type); con responseType "" y un tipo XML, el encoding de <?xml ...?>; si no, UTF-8.
+  Con responseType json, solo UTF-8 (sin su BOM). Lo de siempre (UTF-8 sin BOM) es el texto que ya da C, sin
+  decodificarlo otra vez: la velocidad no cambia; solo otro charset o una BOM pasan por TextDecoder.
+- overrideMimeType, que no hacía nada: guarda el tipo (uno que no lo es, application/octet-stream; en LOADING o DONE,
+  InvalidStateError) y vale para el texto y el tipo del Blob.
+- WPT xhr 601 → 643: responsetext-decoding 0 → 37/37, overridemimetype-edge-cases 3/4, overridemimetype-done-state y
+  response-json-bom enteros; ninguno peor. test_jsdom_xhr_sinc y el de fetch pasan.
+
+### 2026-11-08 — Tarea 41d: direcciones blob: en XMLHttpRequest y fetch, y NetworkError síncrono (xhr 643 → 681/1112)
+- URL.createObjectURL guarda el Blob (Map de la dirección; revokeObjectURL lo quita); antes daba una dirección que no
+  llevaba a nada. XMLHttpRequest (y fetch, que va por él) la lee sin red, como data: (datosDeBlobUrl): 200 con
+  Content-Type y Content-Length del Blob; con una cabecera Range de un trozo (bytes=a-b, a- o -n, con espacios), 206 y
+  Content-Range; otro método que GET, un Range que no vale o uno que empieza pasado el final, error de red.
+- Un XMLHttpRequest síncrono que acaba en error de red lanza NetworkError, sin eventos (antes acababa sin más, con
+  status 0), como en los demás navegadores.
+- Velocidad y memoria: lo de siempre igual; los Blob de createObjectURL viven hasta revokeObjectURL o hasta dejar la
+  página (como en la norma).
+- WPT xhr 643 → 681: blob-range 0 → 27/27, json 2 → 6/6, send-non-same-origin 0 → 5/7,
+  send-redirect-infinite-sync y xmlhttprequest-network-error-sync enteros; ninguno peor. test_jsdom_xhr_sinc, fetch
+  y peticion pasan.
+
+### 2026-11-08 — Tarea 41d: el Content-Type de las peticiones como dice la norma, FormData en partes (xhr 681 → 714/1112)
+- send(): el Content-Type que pone la página manda, también vacío ("Content-Type: " se manda); con un cuerpo de texto,
+  un documento o URLSearchParams, su charset pasa a UTF-8 (el cuerpo va en UTF-8). Sin el de la página, el del
+  cuerpo: un Blob sin tipo o un ArrayBuffer, ninguno (antes text/plain).
+- FormData va en partes (multipart/form-data; boundary=...), como lo esperan los servidores; antes iba como
+  urlencoded, y un archivo (Blob) se perdía. Los Blob van como texto UTF-8: el cuerpo llega a C como texto (los
+  bytes que no son UTF-8 aún no se pueden subir).
+- Un documento como cuerpo: el XML con XMLSerializer (application/xml;charset=UTF-8), el HTML con su doctype y
+  outerHTML (text/html;charset=UTF-8).
+- lib/jsdom.dash (jsdom_pedir): un Content-Type vacío va como cabecera de más, y ya no pone text/plain por su cuenta
+  (lo decide el JavaScript).
+- tools/wpt_js.py lee también los cuerpos multipart/form-data (como wptserve; send-data-formdata, repetido suelto
+  tras arreglarlo: 1/1, cambiado a mano en el informe). tests/servers/http.py: quitado el /eco de la vuelta de
+  send-redirect, que tapaba el de siempre (test_formularios_post fallaba desde entonces; ahora pasa, y test_http).
+- Velocidad: lo de siempre igual (una búsqueda en las cabeceras al enviar).
+- WPT xhr 681 → 714: setrequestheader-content-type 16 → 34/34, send-entity-body-document 0 → 4/7,
+  send-entity-body-document-bogus 0 → 3/4, send-blob-with-no-mime-type 0 → 4/8, send-content-type-string 3/3,
+  send-usp 135/135; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion, formularios (4) y test_http (7) pasan.
+
+### 2026-11-09 — Tarea 41d: cabeceras repetidas y el User-Agent de la página (xhr 714 → 726/1112)
+- setRequestHeader con una cabecera que ya estaba junta los valores en una línea ("a, b"), como dice la norma; antes
+  iban dos líneas.
+- El User-Agent que pone la página se manda (ya no es cabecera prohibida): lib/jsdom.dash lo lleva en
+  PeticionJS.agente y lo pone con http_con_agente; sin él, el de Tachyon.
+- Velocidad: lo de siempre igual (una vuelta por las cabeceras de la página al ponerlas).
+- WPT xhr 714 → 726: setrequestheader-header-allowed 0 → 10/10, setrequestheader-case-insensitive 0 → 1/2,
+  preserve-ua-header-on-redirect 0 → 1/2; ninguno peor. test_jsdom_xhr_sinc, fetch, peticion y test_http (7) pasan.
+
+### 2026-11-09 — Tarea 41d: responseXML y la respuesta "document" de XMLHttpRequest (xhr 726 → 755/1112)
+- responseXML no existía (siempre null). Ahora es un getter: según el tipo (el de overrideMimeType o el de
+  Content-Type; si no se entiende, text/xml), el XML (text/xml, application/xml, */*+xml) se lee con el analizador de
+  DOMParser y el HTML solo con responseType "document"; otro tipo o XML mal formado, null. Se hace la primera vez que
+  se pide (una página que no lo pide no paga nada) y se guarda: dos lecturas dan el mismo documento. Con un
+  responseType que no es "" ni "document", InvalidStateError; responseText igual con los que no son "" ni "text".
+- responseType "document": response es ese documento. El encoding de <?xml ...?> también vale para él.
+- DOMParser: docNuevo/docHtml/docXml, lo común con responseXML. El analizador de XML ya no deja pasar un & que no es
+  una referencia ni un <! que no es comentario, CDATA o el DOCTYPE de antes del elemento raíz (mal formados en los
+  navegadores); sin &, el texto ya no pasa por la expresión regular de las entidades. Los XML de Acid3 no tienen
+  ninguna de las dos cosas.
+- Velocidad: lo de siempre igual (responseXML solo cuando se pide).
+- WPT xhr 726 → 755: responsexml-media-type 7 → 15/15, responsexml-non-document-types 0 → 5/5, responsexml-get-twice
+  1 → 4/4, responsexml-basic e invalid-type enteros, overridemimetype-open-state-force-xml 1/1, status-async y
+  status-basic 27/27, send-redirect-no-location 4/4, template-element 2/3; ninguno peor. domparsing 620/1090, igual
+  fichero a fichero. test_jsdom_xhr_sinc, fetch, peticion, domparser, xml_ns e iframe (2) pasan.
+
+### 2026-11-09 — Tarea 41d: interfaces de eventos como las de WebIDL, FormData en el shim y el meta charset (xhr 755 → 761/1112)
+- Event y sus clases (ProgressEvent, MouseEvent...): length 1, prototype que no se puede cambiar y en window sin salir
+  en for...in, como los navegadores. Los campos siguen siendo propios de cada evento (como accesores en el prototipo
+  costarían en cada evento).
+- responseType "document" con HTML sin charset en el tipo: el de su <meta charset> en los primeros 1024 bytes.
+  responsedocument-decoding sigue en 0/6: el DOM guarda el texto en Latin-1 (src_c/tachyon.c, _js_latin1), así que
+  U+0178 sale "Y" y lo de fuera de Latin-1 "?". Cambiarlo sería pasar el DOM a UTF-8 (más memoria): sin hacer.
+- tools/wpt_js.py: request.POST.items() da la lista de valores (MultiDict de wptserve) y las partes con filename son
+  objetos con filename, headers y file (como cgi.FieldStorage); xhr/resources/upload.py fallaba con "%b requires a
+  bytes-like object".
+- Velocidad (máquina RTG, tiempo de JS de la página, dos pasadas; antes de responseXML → ahora): bench_xml
+  4548-4573 → 4330-4599 ms, bench_eventos 3534-3559 → 3561-3755: lo mismo dentro del ruido.
+- WPT xhr 755 → 761: formdata 2 → 5/9, progressevent-interface 1 → 4/7; ninguno peor. dom/events 509/674 igual (solo
+  cambian de TIMEOUT a OK y al revés tres ficheros de marcos, sin perder ninguna). Pasan eventos (2), xhr_sinc,
+  fetch, peticion y formularios (4).
+
+### 2026-11-09 — Tarea 41d: las cabeceras de la respuesta en XMLHttpRequest (xhr 761 → 778/1112)
+- lib/http.dash (_leer_cabeceras): si el servidor cierra después de alguna cabecera sin la línea vacía, se acaban
+  ahí, como en los navegadores (antes "cut headers"); sin ninguna cabecera sigue siendo un corte.
+- getResponseHeader y getAllResponseHeaders: sin Set-Cookie ni Set-Cookie2 (la página no los ve); el valor sin
+  recortar por el final (lib/http.dash ya recorta cada uno, y dos vacíos juntos son ", ").
+- tools/wpt_js.py: los .asis (la respuesta HTTP entera tal cual, de wptserve) y response.headers.append(nombre,
+  valor); headers.py fallaba.
+- Velocidad: lo de siempre igual (un replace en vez de trim por cabecera; lo de lib/http solo al cerrar sin línea
+  vacía).
+- WPT xhr 761 → 778: getresponseheader.any 0 → 6/6, getallresponseheaders 0 → 6/7, getresponseheader-cookies-and-more,
+  case-insensitive, special-characters, getallresponseheaders-cookies y after-reuse enteros; ninguno peor. Pasan
+  test_http (7), xhr_sinc, fetch, peticion y cookies.
+
+### 2026-11-09 — Tarea 41d: abort() de XMLHttpRequest que corta de verdad, data: con cualquier método (xhr 778 → 809/1112)
+- abort() como dice la norma: si estaba en marcha (también desde un oyente de readystatechange, loadstart o progress
+  de la misma respuesta), DONE con un error de red (status 0, sin cabeceras ni responseURL) y readystatechange, abort
+  y loadend; desde DONE, UNSENT sin eventos. Lo que quedaba de la respuesta ya no sigue (un contador "vez" que suben
+  open y abort).
+- abort() corta la petición en Dash: __dashweb_cancelar (src_c/tachyon.c) → jsdom_cancelar_peticion (lib/jsdom.dash),
+  http_cancelar y su sitio a la siguiente de la cola. Antes seguía bajando hasta acabar y ocupaba una de las seis
+  por motor (las páginas que abortan muchas, como los buscadores con sugerencias, se quedaban sin sitio).
+- send(): la marca de enviada antes de loadstart (setRequestHeader, send y withCredentials dan InvalidStateError
+  dentro de loadstart); sin abrir o ya enviada, InvalidStateError. withCredentials es un getter/setter.
+- data: con cualquier método (blob: solo con GET, Fetch); con HEAD, sin cuerpo.
+- tools/wpt_testharness.dash: al acabar cada página cancela sus peticiones (jsdom_peticiones_cancelar, como el
+  navegador al dejar una página); si no, la respuesta de una abortada llegaba a la página siguiente con el mismo
+  número (open-after-setrequestheader salía mal según el orden). tools/wpt_js.py: request.request_path,
+  response.write_status_headers y sin Content-Length si el manejador pone Transfer-Encoding.
+- Velocidad: lo de siempre igual (abort hace una búsqueda en la lista de peticiones).
+- WPT xhr 778 → 809: abort-during-done 0 → 3/3, responseurl-after-abort 1 → 5/5, data-uri 5 → 10/10,
+  open-url-fragment 1 → 4/4, split-byte-order-mark 0 → 3/4, withCredentials 3 → 5/5, loadstart-and-state 2/2,
+  open-during-abort, open-send-during-abort, send-send y otros siete enteros; ninguno peor. Pasan xhr_sinc, fetch y
+  peticion.
+
+### 2026-11-09 — Tarea 41d: el charset del Content-Type con el analizador de tipos MIME (xhr 809 → 815/1112)
+- mimeAnalizar y mimeEscribir (lib/jsdom_preludio.js), como MIME Sniffing ("parse/serialize a MIME type"): tipo y
+  subtipo en minúsculas, parámetros con su nombre en minúsculas y el primero de cada nombre, comillas con sus \, y
+  null si no es un tipo MIME. send() lo usa para poner charset=UTF-8 cuando la página dice otro con un cuerpo de
+  texto; si no se entiende como tipo MIME, se manda tal cual. Antes era una expresión regular (cambiaba cada charset
+  repetido, no veía "text; ..." como no válido ni quitaba los parámetros sin valor).
+- Velocidad: lo de siempre igual (solo al enviar con un Content-Type de la página y un cuerpo de texto).
+- WPT xhr 809 → 815: send-content-type-charset 13 → 19/19; ninguno peor. Pasan xhr_sinc, fetch, peticion y
+  formularios_post.
+
+### 2026-11-09 — Tarea 41d: el tipo final de la respuesta de XMLHttpRequest con el analizador de MIME (xhr 815 → 828/1112)
+- xhrMime (lib/jsdom_preludio.js), "final MIME type": el de overrideMimeType (analizado y escrito otra vez; si no es
+  un tipo MIME, application/octet-stream) o el de Content-Type, y text/xml si no hay o no se entiende. El charset, el
+  de overrideMimeType si lo trae y si no el de Content-Type (antes uno sin charset tapaba el de la respuesta). Lo usan
+  el texto, responseXML y el tipo del Blob de responseType "blob". Se calcula una vez por respuesta.
+- responseType con un valor que no es de la lista se ignora antes de mirar el estado (enum de WebIDL).
+  XMLHttpRequest.prototype[Symbol.toStringTag]. lib/http.dash: un POST o un PUT sin cuerpo mandan Content-Length: 0.
+- Sin hacer: Shift_JIS y las demás codificaciones de varios bytes de Asia (TextDecoder no las tiene;
+  overridemimetype-*-shiftjis y chunked-response), y mimesniff/mime-types.json (carpeta sin bajar).
+- Velocidad: lo de siempre igual (un análisis del Content-Type por respuesta).
+- WPT xhr 815 → 828: responsetype 46 → 50/50, overridemimetype-invalid-mime-type 1 → 3/3, overridemimetype-blob
+  0 → 2/3, overridemimetype-edge-cases 4/4, send-entity-body-none 4 → 6/6, send-entity-body-empty 3/3,
+  send-data-es-object 9 → 10/11; ninguno peor. Pasan test_http (7), xhr_sinc, fetch, peticion, formularios_post y
+  domparser.
+
+### 2026-11-09 — Tarea 41d: un byte 0 en las cabeceras es un error de red (xhr 828 → 834/1112)
+- lib/red.dash: red_leer_linea marca c.nul si ve un byte 0 (str_from_buffer lo da como espacio y no se notaba);
+  lib/http.dash (_leer_cabeceras) da entonces "an answer that isn't HTTP" (402, ya en los catálogos), como los
+  navegadores (Fetch). Antes "hola\0" llegaba como "hola".
+- tools/wpt_js.py: con response.add_required_headers = False, lo escrito con writer va tal cual (la respuesta HTTP
+  entera; echo-method.py).
+- Velocidad: lo de siempre igual (una comparación más por byte de las líneas de cabeceras y de tamaños de trozo, no
+  del cuerpo).
+- WPT xhr 828 → 834: headers-normalize-response 11 → 15/15, response-method 1 → 3/3; ninguno peor. Pasan test_http
+  (7), test_red, xhr_sinc, fetch y peticion.
+
+### 2026-11-09 — Tarea 41d: timeout de XMLHttpRequest, XMLHttpRequestUpload y el método al redirigir (xhr 834 → 845/1112)
+- timeout no existía (era un número sin efecto). Ahora: en uno síncrono, InvalidAccessError al ponerlo, y open(...,
+  false) con uno puesto también; en uno asíncrono, al pasar el plazo la petición se corta (__dashweb_cancelar) y
+  acaba con un error de red y readystatechange, timeout y loadend. El plazo cuenta desde que acaba el script que
+  llamó a send(): hasta entonces la petición no avanza (la red de Dash se mueve en el bucle), y una tarea larga no
+  debe gastarlo (xhr-timeout-longtask). Cambiarlo en marcha lo vuelve a calcular.
+- xhr.upload es un XMLHttpRequestUpload (EventTarget; aún sin eventos de subida): event-timeout-order,
+  abort-event-order y los *-event-order daban ERROR por no existir la clase.
+- lib/http.dash: al redirigir, solo pasa a GET (y sin cuerpo) un POST con 301 o 302, y con 303 lo que no es GET ni
+  HEAD (Fetch); antes todo lo que no era 307/308, también HEAD.
+- AGENTS.md: DASH_EMU_SYS_SSL=~/.cache/dash-emu/sys31ssl (sys31 + AmiSSL, con la carpeta iconos copiada): test_https
+  pasa en el emulador (antes solo compilaba).
+- Velocidad: lo de siempre igual (un temporizador solo en las que ponen timeout).
+- WPT xhr 834 → 845: send-redirect 28 → 34/34, timeout-sync 0 → 2/2, event-timeout 1/1, timeout-multiple-fetches 0 →
+  1/2, abort-after-send 1/1 y seis que pasan de ERROR a OK; ninguno peor (xhr-timeout-longtask bajaba a 0 con el
+  plazo desde send(): arreglado y repetidas sueltas las de timeout, 1/1, cambiado a mano en el informe). Pasan
+  test_http (7) y test_https, xhr_sinc, fetch, peticion y formularios (4).
+
+### 2026-11-09 — Tarea 63a: buscar en el historial y quitar entradas (como en Amelinium)
+- tachyon:historial lleva arriba una caja de buscar (?buscar=texto): lo que tiene el texto en la dirección o el título,
+  sin mirar mayúsculas, una vez por dirección (lo último arriba) con su última visita ("Hoy 20:20") y cuántas veces
+  se vio (lib/marcadores.dash, _historial_buscado). Cada entrada, en la lista por días y en lo buscado, tiene "quitar"
+  (?quitar=dirección: todas sus visitas, historial_quitar); "borrar el historial" sigue. Textos 347-349 nuevos, en
+  los nueve catálogos (traducciones sin revisar, como las demás).
+- Arreglado de paso (ya pasaba): una web podía borrar el historial, las cookies o los marcadores, mandar el informe o
+  cambiar el buscador con un enlace a tachyon:...?borrar (o con location o un refresh). Ahora lo que hace algo en una
+  página propia solo vale desde otra página propia (destino_permitido en src/dashweb.dash); desde una web se abre la
+  página sin hacer nada. Y en atrás y adelante (y en la barra) queda la página sin la acción (tachyon_sin_accion):
+  volver a tachyon:historial?borrar ya no lo borra otra vez. Las búsquedas (tachyon:buscar?q=, ?buscar=) se quedan.
+- Velocidad: lo de siempre igual (la búsqueda recorre las 300 líneas como mucho).
+- tests/test_marcadores.dash: buscar (la última visita y las dos visitas de una dirección, sin mayúsculas, lo que no
+  está), "quitar" en la lista y quitar una dirección. Pasa; compilan el navegador y los nueve catálogos.
+
+### 2026-11-09 — Tarea 41d: window.postMessage de verdad y las variantes de las páginas .html (xhr 845/1112 → 864/1131)
+- window.postMessage no hacía nada (function () {}). Ahora, como HTML: el mensaje clonado con structuredClone (lo
+  que no se clona, DataCloneError al momento) y, en otra vuelta, un MessageEvent "message" en la ventana con data,
+  origin y source; con un targetOrigin que no es el de la página no se entrega ("*" vale todo; "/" o sin él, el
+  propio); uno que no es una dirección, SyntaxError. Lo usan los polyfills de setImmediate y las páginas que se
+  hablan con sus marcos. tests/test_js_structuredclone.dash lo prueba (llega después, clonado, con origen y source;
+  a otro origen no; una función, DataCloneError).
+- tools/wpt_js.py: las páginas .html con <meta name=variant content="?..."> se pasan una vez por variante, como
+  wptserve (antes una sin variante, y las que eligen sus pruebas por location.search acababan sin ninguna); en el
+  informe el nombre lleva su consulta. Cambia también la lista de otras carpetas la próxima vez que se pasen (url:
+  16 páginas con variante, encoding 14, dom 2, dom/events 3, dom/ranges 2): al comparar, sumar las variantes por
+  fichero.
+- Velocidad: lo de siempre igual.
+- WPT xhr 845/1112 → 864/1131 (19 subpruebas nuevas, todas bien): xmlhttprequest-timeout-simple, aborted,
+  overrides, overridesexpires y twice 3/3, abortedonmain y synconmain 2/2; ninguno peor (las de -worker- siguen sin
+  nada: no hay Workers). Pasan structuredclone, xhr_sinc, fetch, iframe (2) y eventos (2).
+- D84 (rexx_signal, para la tarea 63b) pedida a freememlang-af: la lleva ella, en una rama, tras Dash 2.7.0.
+
+### 2026-11-09 — Tarea 63b: puerto ARexx (como en Amelinium)
+- Puerto TACHYON (rexx_port de Dash; ADDRESS TACHYON): OPEN dirección (y OPENURL, GOTOURL), NEWTAB [dirección],
+  GETURL, GETTITLE y VERSION (dan RESULT), BACK, FORWARD, RELOAD, STOP, HOME y QUIT; lo que no conoce, RC 10. Van a
+  la ventana activa; las de botón se hacen como si se pulsara (dw_rexx_evento en el bucle). MUI abre también el
+  suyo, TACHYON.1, con sus órdenes de serie.
+- Falta D84 (rexx_signal, en marcha en freememlang-af): sin ella, con Tachyon quieto (sin cargar ni temporizadores)
+  una orden espera al siguiente evento. Cuando llegue, mui_wait_event_signals(task_signal() | rexx_signal()).
+- con_esquema (src/dashweb.dash): una dirección sin esquema lleva http://, también con puerto ("localhost:8080",
+  "127.0.0.1:8080/x"; antes en la barra el ":" del puerto la dejaba sin él y no abría); las rutas del Amiga
+  ("Work:pagina.html") y los esquemas siguen tal cual. Lo usan la barra y ARexx.
+- tools/amiga/arexx.dash (manda órdenes a un puerto y apunta las respuestas en DH0:arexx.txt según llegan) y
+  tools/medir_visor.py --arexx 'ORDEN|ORDEN|...' para probarlo con el navegador entero.
+- Probado (máquina RTG, sys32rtg38, con reloj.html y boing.html, que tienen temporizadores): VERSION "Tachyon
+  0.9.3-alfa", GETURL y GETTITLE, OPEN y NEWTAB (también sin http:// y con puerto), BACK y FORWARD, RELOAD, STOP,
+  NOSE con RC 10 y QUIT, que cierra Tachyon.
+- Velocidad: lo de siempre igual (un rexx_get, que no espera, por vuelta del bucle).
+
+### 2026-11-09 — Tarea 63c: modo lectura (como en Amelinium); ARexx con Tachyon quieto (D84)
+- lib/lectura.dash: el bloque del artículo (un <article> o <main> con más de 500 letras; si no, como Readability:
+  los <p>, <pre> y <td> de 25 letras o más dan puntos a su padre y la mitad a su abuelo, rebajados por lo que es
+  enlace) y la página para leerlo: solo párrafos, títulos, listas, citas, código, tablas, imágenes (también la de
+  data-src) y enlaces, con las direcciones completas; fuera scripts, estilos, formularios, menús, aside, footer y lo
+  que por su clase o id es de comentarios, compartir, relacionados, anuncios, cookies... Letra con serifa de 19 px,
+  líneas de 36em, fondo crema; arriba el sitio con enlace a la página y su título si el artículo no trae <h1>.
+- src/dashweb.dash: menú Navegar, "Modo lectura" (Amiga-E; también desde la página), y la orden ARexx READER. Se
+  abre como tachyon:lectura (atrás vuelve a la página; en ella, el menú vuelve atrás); sin artículo, un aviso en la
+  barra de estado. Textos 53 y 170-172 en los nueve catálogos.
+- D84 hecha (freememlang-af, f9b09a9): el bucle espera con task_signal() | rexx_signal(), y las órdenes ARexx se
+  atienden aunque Tachyon esté quieto (probado: GETURL y GETTITLE con tachyon:lectura, sin temporizadores).
+- tests/test_lectura.dash: en una página sin <article>, el bloque de los párrafos gana al menú, a la barra y a los
+  comentarios; sale limpio (sin script, input, compartir, comentarios ni menú), con direcciones completas y la
+  imagen de data-src; un <article> gana; sin texto, "". Pasa, y test_marcadores.
+- Probado en la máquina RTG con gh_repo.html (GitHub guardado): READER da el README de FreeMEM/tachyon limpio, con su
+  título (captura vista).
+- Velocidad: nada en la carga de las páginas (solo al pedirlo).
+
+### 2026-11-09 — Tarea 63d: abrir ficheros comprimidos con lo del sistema (como en Amelinium)
+- lib/archivos.dash: abrir un .lha, .lzh, .lzx, .zip, .tar, .tgz/.tar.gz, .tar.bz2, .gz, .7z o .rar del disco
+  (Abrir fichero, soltar su icono, un enlace file:) da una página con lo que tiene y "Extraer...". Primero las órdenes
+  del sistema que estén en el Path (Which): lha, lzx, unzip, tar, gzip, 7z, unrar, y si no xadUnFile de XAD
+  (xadmaster.library, que abre casi todos); un .lha sin ninguna, con lib/lha.dash; si no hay nada, qué hace falta y
+  un enlace para buscarlo en Aminet. Una OS 3.2 recién instalada no trae ninguna de esas órdenes.
+- lib/lha.dash: copia de un descompresor en Dash de otro proyecto del usuario (con su visto bueno) con
+  lha_listar (lo que tiene, sin escribir). Arreglado en la copia: un cajón de nivel 2 que ya acaba en su separador
+  daba "Prueba//Prueba" y no se podía escribir (los .lha hechos con el lha de Unix); el original tiene el mismo
+  fallo (por decir a quien lo lleve).
+- tachyon:archivo?extraer=ruta: el diálogo de guardar con el nombre del archivo (se extrae en un cajón nuevo con
+  ese nombre) y luego enseña ese cajón. Se puede pedir desde la página del comprimido (file:), además de desde las
+  propias; pide el diálogo, así que no hace nada solo.
+- Textos 480-486 en los nueve catálogos (477, "Contents of %1", reutilizado).
+- tests/test_archivos.dash (un prueba.lha en hexadecimal: un cajón, un fichero lh5 y un .readme): los
+  tipos, la lista con el enlace de extraer, extraer a RAM: (12 bytes, el .readme) y un .lzx sin lzx ni XAD (qué hace
+  falta y dónde buscarlo). Pasan con test_documento_cajon, buscadores, informe (la primera vez TIMEOUT, el emulador colgado;
+  sola, bien) y los 33 de maqueta.
+- Sin probar con órdenes de verdad del sistema (el emulador no tiene lha, lzx, unzip ni XAD): sus argumentos son
+  los de su documentación.
+- Velocidad: nada en las páginas (solo al abrir un comprimido del disco).
+
+### 2026-11-09 — Tarea 64 (prioridad del usuario): YouTube al completo, cómo sale hoy (64a)
+- Medido como en la 38 (a mano, no es una batería): máquina RTG ancha (1680x1050), 256 MB, Tachyon por --gcc
+  (el de dashc no carga: ver abajo), https://www.youtube.com/ con TRAZA.
+- Portada: scripts hechos a los 73 s, "entera" a los 196-208 s, 58 MB de JavaScript y 144 MB libres al final; el
+  reproductor (base.js, 3 MB) llega a los 285 s. El diálogo de cookies sale bien (textos, iconos, botones; captura
+  a los 10 min). Con "Reject all" (clicar a los ~260 s): "Your YouTube History is off", como en Chrome sin cuenta y
+  con el historial apagado (YouTube ya no da vídeos así). Detalles: el texto "...cookies and data." se sale de su
+  recuadro; abajo, un icono suelto (el de carga, a medio pintar); antes de cerrar el diálogo, la caja de buscar
+  de arriba sale cortada. Sin errores de JavaScript en la traza.
+- tools/medir_visor --captura-en solo vale un momento (con varios, las tres capturas eran la misma).
+- Aviso: desde hoy el Tachyon de dashc no carga ("file is not executable", RC 10, en 3.1 y 3.2): tiene 66235
+  reubicaciones del código hacia sí mismo y dashc las escribía en un solo grupo (LoadSeg no acepta más de 65535).
+  Lo encontró y lo arregla freememlang-af (grupos de 32767, dashc/src/hunk.c, rama reloc-grupos). Mientras, las
+  medidas van por --gcc; no sacar ninguna versión de dashc hasta que esté en main y probado.
+
+### 2026-11-09 — Tarea 64b (parte): los resultados de búsqueda de YouTube; el título que pone el JavaScript
+- results?search_query=amiga+500 (RTG ancha, 256 MB, ya con el dashc arreglado de freememlang-af, rama reloc-grupos):
+  "entera" a los 234-272 s, 69-75 MB de JavaScript. Tras "Reject all" salen la caja con "amiga 500" y los filtros
+  (All, Shorts, Unwatched...), pero ni un resultado ni los iconos (logo, lupa, menú). Con --js a los 420 s: 15
+  ytd-video-renderer con sus títulos ("COMMODORE AMIGA 500: El ordenador que cambió la historia..."), 77 yt-icon y 29
+  svg, ytInitialData presente: están en el DOM y no se pintan. Siguiente: qué los esconde.
+- Arreglado: el título de la ventana se ponía solo al enseñar la página; el que pone después el JavaScript
+  (document.title: YouTube lo pone así) no llegaba y se quedaba la dirección. Ahora poner_titulo en cada tic si
+  cambió (Ventana.titulo_puesto). Visto: "amiga 500 - YouTube - Tachyon".
+
+### 2026-11-09 — Tarea 64b: los resultados de búsqueda de YouTube salen (document.all de verdad)
+- Por qué no salían: ytd-two-column-search-results-renderer se quedaba con hidden, y con él todos los resultados
+  (15 ytd-video-renderer en el DOM, en display: none; quitándolo a mano, se pintaban). Con una traza temporal del
+  preludio (no está en el repositorio): Polymer pone node.hidden = [[data.hideContents]] (undefined: la búsqueda no
+  lo trae) pero le llegaba "zClosurez". Es polymer-resin, el desinfectante de los enlaces de Polymer de YouTube:
+  deja pasar los valores falsos con "!y && y !== document.all", y en Tachyon document.all era undefined, así que
+  undefined no pasaba, se rechazaba y se cambiaba por su texto de relleno ("zClosurez", verdadero).
+- document.all de verdad (HTMLAllCollection): todos los elementos por número y por id o name, llamado como función,
+  item y namedItem; marcado [[IsHTMLDDA]] con JS_SetIsHTMLDDA de QuickJS (__dashweb_dda, src_c/tachyon.c): typeof
+  "undefined", falso y == null, pero no === undefined, como en los navegadores (los scripts viejos que miran
+  if (document.all) siguen sin tomarlo por Internet Explorer). Se hace la primera vez que se pide (un Proxy).
+  tests/test_jsdom_todos.dash (nuevo).
+- Probado (RTG ancha, 256 MB, "Reject all" a los ~260 s): results?search_query=amiga+500 con sus resultados
+  (título, canal, visitas, fecha, descripción, duración) y los iconos de arriba (logo, lupa, X, menú, filtros).
+  Faltan: las miniaturas y los avatares (el hueco y la duración sí), un icono suelto junto a las visitas y el de
+  carga a medio pintar; y "entera" no llega en 560 s (los resultados entran uno a uno, una maqueta entera cada uno,
+  7-13 s cada vez). Acid3 sigue en 100/100.
+
+### 2026-11-09 — Tarea 64b (parte): las imágenes avisan al JavaScript (load, error, complete, naturalWidth)
+- Las <img> no daban nunca load ni error, ni tenían complete ni naturalWidth/naturalHeight (undefined): YouTube,
+  como muchas, deja la imagen sin enseñar hasta su load. Ahora lib/imagenes.dash apunta cada imagen que llega o falla
+  (Imagenes.avisos, src -> "ancho:alto"; también una <img> nueva con una imagen que ya estaba) y lib/documento.dash
+  (documento_imagenes) recorre la página una vez por tanda y avisa a cada <img> con ese src (jsdom_evento con
+  "imagen:ancho:alto"); el preludio pone complete y naturalWidth/naturalHeight y lanza load (o error), sin subir y
+  una vez por imagen. Sin src ni srcset, complete es true. tests/test_documento_img_load.dash (nuevo).
+- IntersectionObserverEntry de verdad (con sus campos en el prototipo, y las entradas son suyas): el polyfill de
+  IntersectionObserver de YouTube mira "intersectionRatio" in IntersectionObserverEntry.prototype y, si no, se ponía
+  encima del de Tachyon.
+- Visto (búsqueda "amiga 500", RTG ancha): ya salen los avatares de los canales, la miniatura de los capítulos y los
+  resúmenes; las miniaturas grandes de los vídeos todavía no (siguen con src vacío). Pasan imagenes (4), documento,
+  iframe, interseccion, todos y los demás de la tanda (15).
+- Velocidad: un recorrido de la página por tanda de imágenes que llegan, solo si hay JavaScript.
+- (2026-11-09) Dash: el arreglo del "file is not executable" (las reubicaciones en grupos de 32767) ya está en main
+  (freememlang-af, PR #143, b4295b9) y ~/Projects/FreeMEMLang ha vuelto a main: Tachyon vuelve a cargar por dashc.
+
+### 2026-11-09 — Tarea 64b: las miniaturas grandes de YouTube salen (el ::before de la proporción; soltar la CPU)
+- Las miniaturas de los resultados medían 0 de alto, así que el IntersectionObserver de YouTube (filtra
+  intersectionRect.height > 0) no las cargaba nunca. YouTube les da el alto con
+  ytd-thumbnail::before { display: block; content: ""; padding-top: 56.11% } y el enlace en position: absolute;
+  inset: 0. lib/estilo.dash (_estilo_pseudo) solo generaba un ::before de content vacío si tenía width, height, fondo
+  o borde; ahora también con relleno vertical (o min-height). tests/test_estilo_pseudo_relleno.dash (nuevo): la
+  estructura de YouTube da 500x280 (Chrome, 500x280,5).
+- La espera del primer aviso del IntersectionObserver para una caja sin área (probada antes) no hace falta con esto
+  y rompía jsdom_geometria (Chrome avisa de lo oculto con false): fuera. Medido sin ella: las miniaturas se piden igual.
+- Luego tardaban 200-300 s cada una en decodificarse: el otro proceso (prioridad -1) solo avanza cuando Tachyon
+  espera, y con YouTube no espera nunca (JavaScript 10 s seguidos, estilo 4 s, maqueta 5 s). Bajar Tachyon a -1 no
+  sirvió: medido aparte, una miniatura de 720x404 se decodifica sola en 0,8 s; en otro proceso con el programa
+  ocupado, a 0 o a -1, no acaba en 60 s (Exec no les reparte la CPU); soltando 1 tic cada 100 ms, 2,3 s (cada 50,
+  1,1 s; cada 20, 0,8 s). lib/ceder.dash (nuevo): ceder() suelta un tic (time_delay(1)) cada 100 ms mientras hay
+  imágenes decodificándose; lo llaman _estilo_nodo, _bloque_de y imagenes_ceder (hasta 500 ms después de la última);
+  el JavaScript lo hace en su manejador de interrupciones (js_ceder, src_c/tachyon.c).
+- Medido (búsqueda "amiga 500", RTG ancha, 256 MB): las miniaturas se decodifican en 10-15 s en vez de 200-300, y
+  la página sale entera con sus imágenes a los 220 s (antes 518 s); salen las miniaturas, con su duración, y la
+  barra lateral. Pasan estilo (16), maqueta (33), documento (10) y jsdom_geometria.
+- medir_visor ya no arranca el servidor de tests/servers con una web de fuera: va sin el cerrojo de la red (el
+  usuario quiere más emuladores a la vez).
+- Pendiente en YouTube: las esquinas redondeadas de las miniaturas, el icono de carga y la página del vídeo.
+
+### 2026-11-09 — La actualización 0.9.2 -> 0.9.3, probada en Amiberry con la copia de CoffinOS del usuario
+- tools/amiga/diagnostico_actualizar.dash (nuevo): pregunta a GitHub, baja Tachyon.gz a T: y lo descomprime y
+  comprueba en memoria, sin instalar. En FS-UAE y en Amiberry con DashCoffin (la copia del sistema del usuario):
+  200 y 1993291 bytes en 1,8-5,5 s; descomprimido y comprobado bien. (run_capture de "Assign T:" colgaba el programa
+  en el emulador: ahora file_real_path("T:").)
+- El de verdad: el paquete 0.9.2 publicado (tachyon.lha) en DASHRUN: de DashCoffin en Amiberry (68040 con JIT, la
+  configuración de coffin.uae del usuario), arrancado sin argumentos (con argumentos no mira las versiones): sale el
+  icono verde, se pulsa (tools/amiga/clicar.dash) y dice "Instalada la 0.9.3-alfa: pulsa el icono verde"; queda la
+  0.9.3 en su sitio y la 0.9.2 como .old. No se reproduce su "No se pudo bajar la versión nueva" (2026-11-08): o fue
+  algo de ese momento (GitHub), o es de lo cambiado en su disco desde el 6 (DashCoffin es de entonces).
+
+### 2026-11-10 — Tarea 64c (parte): la página de un vídeo de YouTube, con el vídeo sonando en su recuadro
+- El recuadro del reproductor medía 0 de alto. Dos causas, las dos del JavaScript del reproductor:
+  1. getComputedStyle daba width y height tal cual ("calc(56.25vw - 266.625px)", "" sin height) y YouTube los lee
+     con parseFloat: NaN. Ahora, de una caja maquetada, los px de la caja (content-box o border-box, como el "used
+     value" de los navegadores); auto en un elemento en línea y en uno sin caja. tests/test_jsdom_estilo_usado.dash
+     (nuevo).
+  2. yt.flexy.setPlayerlikeElementSize pone el tamaño con la proporción de getVideoAspectRatio(), que sale de
+     video.videoWidth/videoHeight: 0 y 0 le dan 16:9, pero no había HTMLMediaElement y eran undefined (NaN y
+     height: NaNpx). Ahora <video> y <audio> como un navegador sin nada que reproducir: videoWidth/videoHeight 0, en
+     pausa, duration NaN, currentTime/volume/muted/playbackRate que se guardan, buffered/played/seekable vacíos,
+     canPlayType "", play() rechaza con NotSupportedError. tests/test_jsdom_medios.dash (nuevo).
+  Con eso el reproductor mide 608x342 en la máquina RTG ancha.
+- El reproductor de YouTube no puede sonar en Tachyon (MediaSource). div#movie_player.html5-video-player se maqueta
+  ahora como un vídeo (dom_es_reproductor_youtube; dom_video_de_pagina da la dirección de la página): su cartel es la
+  miniatura (hqdefault) y el clic lo reproduce con el reproductor de la tarea 30 (lib/youtube.dash: el cliente
+  ANDROID da el MP4 de 360p). Sus capas ("Your browser can't play this video", controles) no se pintan. El clic
+  cuenta dentro de su recuadro aunque caiga en una capa de encima y aunque el JavaScript lo cancele
+  (documento_video_en).
+- Medido (watch?v=Du47RT74_9c, RTG ancha, 256 MB): el vídeo suena en su recuadro dentro de la página, pero a 1
+  imagen/s: el reproductor decodifica en el bucle del navegador y, mientras YouTube sigue cargando, cada vuelta lleva
+  segundos (temporizadores 2-7 s, estilo 6 s, maqueta 8 s). Memoria libre con el vídeo: 35 MB de 256.
+- Pulsando con la página ya cargada (a los ~500 s; sus temporizadores, ~20 ms cada 50 ms): 4,4 imágenes/s.
+- Cada imagen nueva del vídeo se pintaba directamente encima, aunque algo pintado después lo tapara: ahora, si algún
+  dibujo de después se mete en su recuadro, se repinta su zona entera en su orden (lib/pintor.dash, _tapado).
+  Con el aviso de cookies pendiente, el reproductor sigue en el esqueleto de la página (#player.skeleton, z-index 1) y
+  el diálogo tiene z-index auto: también en Chrome queda debajo; se va al rechazar las cookies.
+- img.width/height siguen con lo del CSS sin medir la caja (__dashweb_estilo_dado): con el getComputedStyle nuevo,
+  test_jsdom_svg_dom daba 100 por 40 en una <img> sin maquetar.
+- Con un vídeo sonando, los temporizadores de la página esperan al menos 250 ms (JS_CON_VIDEO_MS, src/dashweb.dash):
+  el reproductor decodifica en el mismo bucle (solo, este vídeo da ~9 imágenes/s en la máquina RTG).
+- Uso normal (Reject all a los ~440 s y luego el vídeo): página limpia y el vídeo a 4,8 imágenes/s.
+- Pasan jsdom (35; los TIMEOUT de la tanda con varios emuladores pasan solos), video (3), maqueta (33), documento
+  (10), pintor (2). Acid3 100/100. Pendiente: la fluidez del vídeo (4,4 imágenes/s con la página cargada; 3 con el
+  aviso de cookies encima, que se repinta con cada imagen); las peticiones del MP4 que hace el JavaScript del
+  reproductor de YouTube se quedan en cola (6).
+
+### 2026-11-10 — Tarea 64d (parte): navegar en YouTube sin recargar (history de verdad, POST binarios)
+- history eran funciones vacías: pushState no cambiaba location y back/forward no hacían nada. Ahora history de
+  verdad en el preludio: pushState/replaceState cambian location y document.URL sin cargar (mismo origen, si no
+  SecurityError; state copiado con structuredClone), length; back/forward/go se mueven entre sus entradas, y después
+  popstate (y hashchange si solo cambia el fragmento). Cada cambio se le cuenta a Tachyon (__dashweb_historia ->
+  jsdom_historia, el atributo "historia" del documento): la barra de direcciones y el historial de la ventana lo
+  siguen (src/dashweb.dash historia_del_js; Documento.paso0/pason: sus entradas), y los botones de atrás y adelante
+  entre entradas de la misma página van por history.go (paso_historial), sin cargarla. tests/test_jsdom_historia.dash
+  (nuevo).
+- YouTube manda sus peticiones a youtubei/v1/next y /player comprimidas con gzip en un Uint8Array: cuerpoDe lo
+  decodificaba como texto UTF-8 y llegaba roto (400 "invalid argument"). Ahora un cuerpo binario (ArrayBuffer, vista,
+  Blob) va escapado (el 0 como 1 2 y el 1 como 1 1: los textos de C y Dash no llevan el 0) con la marca
+  x-tachyon-binario, y lib/http.dash lo desescapa a un búfer al mandarlo (_carga_enviar, red_enviar_bufer con
+  net_bg_send_buffer) con su Content-Length de verdad. tests/test_http_binario.dash (nuevo). Probado: un POST a
+  /youtubei/v1/next desde la página daba 200 y el de YouTube 400; con esto, el suyo da 200 (489 KB).
+- -webkit-transform y -webkit-transition cuentan como cambios que no mueven nada (como transform): la barra de
+  progreso de YouTube (scaleX) rehacía la maqueta entera en cada paso.
+- Un <script> que entra vacío y recibe src después no corría: ejecutarScript lo marcaba como hecho al entrar. Ahora
+  uno sin src ni texto no cuenta todavía, y al ponerle src (setAttribute o la propiedad) a uno ya en la página, corre
+  (como en HTML). El reproductor de YouTube carga base.js así: en la navegación sin recarga no se creaba y la página
+  del vídeo se quedaba esperándolo (la barra de progreso al 80 %, sin título). tests/test_jsdom_script_src_tarde.dash.
+- Visto: de los resultados de "amiga 500", el clic en el primero lleva a watch?v=... con la barra de direcciones y
+  atrás encendido; /youtubei/v1/next da 200.
+- Pasan jsdom (36; los 5 últimos de la tanda acaban en TIMEOUT, como antes, y pasan solos), naveg (2), documento
+  (10), http_binario, jsdom_historia, jsdom_script_src_tarde. Acid3 100/100.
+- Aun así, por la navegación sin recarga el reproductor de YouTube no llega a crearse en Tachyon (base.js corre y
+  yt.player.Application existe, pero no mete #movie_player en ytd-player: recuadro negro y sin pintar nada debajo
+  más de 15 minutos). Tachyon hace ese paso cargando entera la página del vídeo (src/dashweb.dash youtube_a_video,
+  en historia_del_js con un push a youtube.com/watch de otro vídeo): sale entera en 70-180 s.
+- Probado de punta a punta (RTG ancha, 256 MB): results?search_query=amiga+500, Reject all, clic en el primer
+  resultado (a los ~610 s carga watch?v=v59c_ODrnfc), clic en el vídeo: suena en su página mientras se baja
+  ("Vídeo: 39 s, 2,4 imágenes/s (trayéndolo, 6 %)"), con título, canal, visitas y los relacionados.
+
+### 2026-11-10 — Tarea 64d (parte): avanzar y retroceder en el vídeo (flechas, ±10 s)
+- El reproductor (tarea 30) no sabía saltar. third_party/mintvid/dashweb_video.c dwv_ir: al fotograma clave de antes
+  más cercano con mr_demux_seek (MP4 con su índice), mr_decoder_reset, mr_audio_decoder_reset y audio_flush; el reloj
+  del sonido sigue desde el punto de llegada (reloj_base/reloj_desde: audio_elapsed_ms no vuelve a 0) y el retraso
+  de reordenar se mide otra vez con la primera imagen (base, recien). Si ese punto aún no se ha bajado,
+  dwv_siguiente espera (2). lib/video.dash video_ir; lib/videos.dash videos_saltar y videos_en_marcha.
+- src/dashweb.dash: con un vídeo en marcha, las flechas derecha e izquierda (0x4E, 0x4F) saltan 10 s adelante o
+  atrás, en la página y a pantalla completa (como en YouTube).
+- tests/test_video_saltos.dash (nuevo; tests/pages/video_saltos.mp4, 3 s a 10 imágenes/s con un fotograma clave
+  cada 5, ffmpeg): a 1200 llega a 1000 y la primera imagen es la de 1000 (20 hasta el final); a 0, 0 (30); a 2700,
+  2500 (5). Pasan video (4).
+
+### 2026-11-10 — Tarea 64c (parte): las páginas de YouTube se pueden bajar (el alto cuenta lo absoluto)
+- En YouTube no se podía bajar por ninguna página (ni a los comentarios ni a más resultados): todo va dentro de
+  ytd-app, que es position: absolute, y el alto de la página salía solo del flujo normal (la barra de desplazamiento,
+  entera). lib/maqueta.dash _alto_con_absolutos: tras _cajas_finales, lo más bajo de las cajas que están dentro de
+  algo absoluto alarga la página, como el "scrollable overflow" de los navegadores; lo fijo no, lo de dentro de un
+  overflow que recorta hasta su borde, y display: none nada. tests/test_maqueta_alto_absoluto.dash (nuevo).
+- El foco en un elemento que el JavaScript ya quitó (el botón "Reject all" del aviso de cookies) se suelta al pulsar
+  una tecla: las teclas se perdían en él y el espacio no bajaba la página (src/dashweb.dash nodo_en_documento).
+- Los comentarios de un vídeo sí se cargan (4 ytd-comment-thread-renderer y su cabecera "4 Comments" en
+  watch?v=Du47RT74_9c, por youtubei/v1/next con el cuerpo binario).
+- Pasan acid (3), maqueta (34), estilo (17), documento (10). Acid3 100/100.
+- Visto (watch?v=Du47RT74_9c, Reject all, un espacio y la flecha abajo): la página baja (scrollY 875, 6488 de alto)
+  con la cabecera fija, y se ven los 4 comentarios con su avatar, nombre, fecha, "me gusta", Reply y un emoji.
+
+### 2026-11-10 — Tarea 64a (parte): el aviso de cookies de YouTube, en su sitio (el ancho de lo fijo sin width)
+- El diálogo de cookies (tp-yt-paper-dialog, iron-fit) salía a veces cortado por la izquierda o en la esquina, y el
+  clic en "Reject all" no le daba. Una caja position: fixed/absolute sin width se medía con el ancho entero del
+  contenedor aunque tuviera left: iron-fit la mide con el left de la vez anterior puesto, le salía más ancha que la
+  ventana y la centraba en un left negativo. lib/maqueta.dash _absoluto: sin width, el ancho ajustado al contenido
+  sin pasar de lo que queda hasta el borde (el contenedor menos left y right, CSS 2.1 10.3.7).
+  tests/test_maqueta_fijo_ancho.dash (nuevo).
+- Pasan acid (3), maqueta (35), estilo (17). Acid3 100/100.
+- Visto (watch?v=Du47RT74_9c): a los 330 s el diálogo está centrado (436,26, 700x822) y "Reject all" a los ~430 s le
+  da: se va.
+
+### 2026-11-10 — Tarea 64e: de un vídeo de YouTube a otro por los relacionados (clic completo, resize)
+- El clic en un vídeo relacionado (yt-lockup-view-model) no hacía nada: Tachyon lanzaba solo click, sin posición ni
+  button. Ahora un clic es lo de un navegador (preludio clicCompleto): pointerdown, mousedown, pointerup, mouseup y
+  click, con la posición del ratón (la última de jsdom_raton), button 0, buttons 1 al bajar y 0 al soltar, detail 1 e
+  isTrusted; solo el preventDefault del click cancela el enlace. tests/test_jsdom_clic_completo.dash (nuevo).
+- Tachyon no lanzaba nunca resize. Ahora (lib/documento.dash documento_vista y documento_resize, entre temporizadores):
+  cuando la vista cambia de tamaño, y tras la maqueta que sigue a una medida vieja: si el JavaScript mide algo recién
+  metido mientras la maqueta se aplaza (documento_maquetar_por_js, "pronto"), recibe 0x0; el diálogo de cookies de
+  YouTube (iron-fit) se centraba así en la esquina y no se movía más; con el resize vuelve a medirse y se centra.
+  tests/test_documento_resize.dash (nuevo).
+- Visto (watch?v=Du47RT74_9c): Reject all le da al diálogo, y el clic en el primer relacionado lleva a
+  watch?v=Y94tsObWIq0 (carga entera: youtube_a_video), con su miniatura, título, canal y relacionados; atrás
+  encendido. Pasan documento (11), jsdom (38; los 5 últimos de la tanda, TIMEOUT, pasan solos). Acid3 100/100.
+
+### 2026-11-10 — Tarea 65a: Inspeccionar, como las herramientas de Chrome (primera versión)
+- Menú Herramientas > Inspect (Amiga-I): la página de la ventana que se mira, en otra ventana (tachyon:inspeccionar;
+  si ya hay una, se refresca con esta). lib/inspeccionar.dash inspeccionar_html, con sus secciones: Consola (lo
+  último del registro de lib/js.dash, los errores en rojo, y una línea para evaluar JavaScript en la página:
+  tachyon:inspeccionar?js=..., con lo evaluado juntándose debajo); Elementos (el árbol del DOM con etiqueta, id y
+  class: tres niveles abiertos y el camino hasta el elegido, hasta 1200 elementos; el elegido, tachyon:inspeccionar?
+  nodo=0.1.3, con su caja y su estilo calculado en orden); Red (las peticiones que acabaron, lib/http.dash
+  http_apuntar: las últimas 300 con método, estado, tipo, KB, ms y dirección; lo único que se apunta siempre);
+  Memoria (fast, chip, mayor bloque, el JavaScript y las imágenes de la página, elementos, dibujos); Aplicación
+  (las cookies del sitio, localStorage y sessionStorage leídos del JavaScript); Tiempos (abrir y maquetar, la última
+  maqueta, el tamaño). Una web no puede abrirla con acciones (tachyon_sin_accion quita lo de tras "?").
+- Textos nuevos 54 y 487-516, traducidos en los nueve catálogos. tests/test_inspeccionar.dash (nuevo). Pasan http (8).
+- Visto (tachyon.freemem.space, Amiga-I): la ventana Inspect con la consola, que enseña un error de React #418 de la
+  propia web (el texto que pinta el servidor y el que sale en Tachyon no coinciden; puede ser de Tachyon, una fecha o
+  un número formateado distinto: por mirar), y el árbol.
+- Pendiente (65b): los tiempos por fases (red, HTML, JavaScript, estilo, maqueta, pintar), el menú del botón
+  derecho, y pestañas en lugar de secciones.
+
+### 2026-11-10 — Tarea 65b: Inspeccionar, los tiempos por fases y en el menú del botón derecho
+- La sección Tiempos, como la cascada de Chrome en números: bajar la página (t_red, lo pone el navegador), leer el
+  HTML (t_html), esperar el CSS y los scripts (t_recursos), ejecutar los scripts (t_js), el estilo (t_estilo), la
+  primera maqueta (t_maqueta) y hasta tenerla entera con las imágenes (t_entera); y lo que se junta después: las
+  maquetas (cuántas y cuánto, también las que pide el JavaScript) y los temporizadores del JavaScript. Campos nuevos
+  de Documento, apuntados en documento_empezar/avanzar/maquetar y en src/dashweb.dash.
+- Inspect también en el menú del botón derecho de la página. Textos 517-525 en los nueve catálogos (503 y 504 fuera).
+- Arreglado: "%2 KB" sin rellenar en Red (hueco2) y el texto en castellano de imagenes_kb en Memoria.
+- Visto (tachyon.freemem.space): Red con sus 19 peticiones (tipo, KB, ms) y Memoria.
+
+### 2026-11-10 — Tarea 64f (parte): ¿los controles del reproductor de YouTube? Necesitan MediaSource; fetch con flujos
+- Usuario: los controles de YouTube encima del vídeo (línea de tiempo, volumen...) ¿funcionan? No: su reproductor da
+  el vídeo a trozos por MediaSource, que Tachyon no tiene, y su recuadro lo lleva el reproductor de Tachyon.
+- Probado (cambios provisionales, quitados): con canPlayType diciendo "probably" a MP4 H.264/AAC, YouTube sondea con
+  parámetros absurdos (width=99999, eotf=catavision...) y sigue en "Your browser can't play this video": exige
+  MediaSource. Las peticiones de itag=18 que hace su JavaScript son de prueba (expire de 2017, IP inventada).
+  Para sus controles haría falta MediaSource (vídeo y sonido por separado y a trozos): no compensa en un 68k; queda
+  la barra de controles propia de Tachyon (64f).
+- Salió un fallo de verdad: fetch con un cuerpo que es un ReadableStream (así manda YouTube su petición a
+  youtubei/v1/player) enviaba "[object Object]" (400). Ahora fetch lee el flujo entero (texto y bytes) y lo manda
+  como bytes. tests/test_jsdom_fetch_flujo.dash (nuevo).
+
+### 2026-11-10 — Tarea 64f: la barra de controles de Tachyon sobre el vídeo
+- Usuario (sobre los controles de YouTube encima del vídeo): como los de YouTube no funcionan (MediaSource), Tachyon
+  pone los suyos (lib/videos.dash videos_barra, videos_en_barra, videos_tocar): una barra abajo del vídeo mientras
+  está en pausa o 3 s después de pasar el ratón por encima (raton -> documento_video_en_punto), con reproducir o
+  parar, el tiempo ("0:06 / 1:29"), la línea de tiempo (lo bajado en gris claro, lo visto en rojo con su punto; un
+  clic salta ahí, videos_saltar) y pantalla completa a la derecha; también a pantalla completa (barra_completa).
+- La duración: MintVID no la daba; third_party/mintvid/core/mr_demux.c mr_demux_video_frames (las imágenes del índice
+  del MP4) y dashweb_video.c dwv_duracion; lib/video.dash video_duracion.
+- Visto (watch?v=Du47RT74_9c): pausado a los 6 s, la barra con su tiempo y la línea. Pasan video (4).
+
+### 2026-11-10 — Tarea 67a: registro de depuración de red (lo pidió Oskis R.P)
+- Oskis R.P (Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi): desde los resultados de DuckDuckGo, el enlace de Aminet
+  se quedó más de un minuto en "Trayendo hojas de estilo y scripts..." sin la cuenta de lo que falta, y va mucho más
+  lento que IBrowse y Amelinium. En el emulador no pasa: el salto de DuckDuckGo (duckduckgo.com/l/?uddg=..., un
+  <script> con window.parent.location.replace) y aminet.net/tree en 3,3 s. Que el estado no pasara a "%1 left" dice
+  que la vuelta siguiente no llegó (algo síncrono se colgó, no la red). Sin PiStorm, hace falta su registro:
+- Herramientas > Network debug log (con marca; se recuerda en Tachyon.prefs, "depuracion"): la traza a
+  PROGDIR:Tachyon-debug.txt, empezada de nuevo con lo del informe (versiones, CPU, memoria, red, AmiSSL); también
+  TRAZA=fichero desde la Shell. lib/traza.dash traza_a_fichero: cada línea se añade abriendo y cerrando el fichero,
+  para que siga ahí aunque haya que reiniciar.
+- Cada carga, en su línea "llega": DNS, TCP y TLS (lib/red.dash: t_dns, t_tcp, t_tls de net_bg_state/net_bg_stage;
+  "sitio" si esperó en la tabla de conexiones; "reusada" si la conexión venía de otra), la espera del primer byte y
+  la bajada (lib/http.dash t_enviada, t_primer, http_fases). Mientras una página carga, cada 10 s, lo pendiente y en
+  qué está (http_estado: buscando el nombre, conectando, negociando TLS, esperando respuesta, recibiendo...):
+  src/dashweb.dash pendientes_a_la_traza. Y antes y después de lo síncrono de la carga (soltar la página de antes,
+  leer el HTML, los scripts), para ver dónde se cuelga si se cuelga.
+- Visto: "llega https://duckduckgo.com/l/...: 200, 264 bytes en 628 ms (DNS 118 ms, TCP 169 ms, TLS 236 ms,
+  espera 101 ms, ...)". tests/test_traza_fichero.dash (nuevo). Textos 55, 526 y 527 en los nueve catálogos.
+- (ensayo del vídeo 2 en Coffin, Amiberry: 7,8 imágenes/s) Dos fallos de la barra: tras un salto en pausa el recuadro
+  salía en blanco (ahora se decodifica la imagen de donde se llegó) y, con la barra a la vista, el clic en el botón
+  de pantalla completa se lo comía la barra (ahora la esquina es suya). Esc fuera de pantalla completa es el de MUI:
+  cierra la ventana (y con la última, Tachyon).
+
+### 2026-11-10 — Tarea 64g: con poca memoria, el JavaScript se para en vez de caerse Tachyon
+
+- Ensayando el vídeo 2 en Coffin (Amiberry, 68040 JIT, 256 MB): Tachyon desaparecía con YouTube, sin guru ni aviso, y
+  la memoria que tenía no volvía al sistema (cada intento dejaba menos). Con TRAZA=Traspaso:traza.txt: la búsqueda
+  "demoscene" bajaba de 15 MB libres a 1 MB en 8 s (temporizadores, un estilo entero de 1001 cambios) y ahí se cortaba;
+  y al abrir un vídeo de los resultados, la página de antes seguía entera (solo se soltaba su JavaScript) mientras
+  llegaba la del vídeo.
+- src/dashweb.dash: js_sin_memoria(w), al empezar temporizadores(): con menos de dw_js_minima (12 MB; JSMINIMA=KB lo
+  cambia) se sueltan antes las pestañas de detrás (descartar_pestanas_bajo) y mem_trim; si no basta, el JavaScript de
+  la página se para (Documento.js_sin_memoria), lo dice la barra de estado (texto 528, en los nueve catálogos) y se
+  mira otra vez cada 2 s: sigue con el doble libre. Al llegar otra página, la de antes se suelta entera también con
+  menos de MEMORIA_PARA_DOS (64 MB) libres, no solo sin un hueco seguido de 16 MB.
+- tools/medir_visor.py --js-minima KB. Visto en FS-UAE (objetivo, tests/pages/reloj.html): con JSMINIMA=2000000 el
+  JavaScript queda parado (ni un temporizador en 40 s); sin él, 307 rondas. En Coffin: al abrir el vídeo, de 40 MB
+  libres a 155 MB. tests documento 11/11. Sin comprobar aún: que siga cuando vuelve la memoria (no hay cómo liberarla
+  desde fuera en la prueba).
+- Queda (64g): la página del vídeo abierta desde los resultados se cierra igual ~40 s después con 57 MB libres, justo
+  tras llegar la respuesta de ~1 MB de accounts.google.com/v3/signin/identifier (la misma llegó en la búsqueda sin
+  problema). Siguiente: reproducirlo en FS-UAE con --memcheck o la máquina rtgmmu (MuForce).
+
+### 2026-11-10 — Sin el nombre del gestor de paquetes sin anunciar
+- La sesión telegram transmite al usuario: el gestor de paquetes que usa la tarea 63d no se nombra en público hasta
+  que él lo lance. Fuera de los textos y catálogos (el texto 482 dice ahora "Look for %1 on Aminet" y enlaza a
+  aminet.net/search), de los comentarios de lib/archivos.dash, lib/lha.dash y tests/test_archivos.dash y de esta
+  bitácora; también de los mensajes de los commits desde la 0.9.3 antes de subirlos.
+- Datos para la 67 (Ferrán García, por telegram): en PiStorm, AmiFire y Amelinium cargan Aminet casi al instante con
+  la misma pila y el mismo wifi que Tachyon.
+
+### 2026-11-10 — Tarea 64g: el vídeo de YouTube ya no reinicia el Amiga en Coffin
+- Ensayos en Coffin (Amiberry 68040 JIT, 256 MB) con el paquete 0.9.4: de la búsqueda "demoscene" al vídeo de 25
+  minutos "The Incredible Demoscene". Con la memcheck no se cerraba; con la normal, a veces. Al pulsar el vídeo, el
+  Amiga entero se reiniciaba (el agente de pruebas desaparecía y la captura salía negra: el arranque).
+- La causa: lib/red.dash _red_sitio dobla el búfer de una conexión al llenarse; el vídeo se trae entero a memoria
+  (~100 MB) y, sin un bloque del doble, buffer_alloc daba 0 y se copiaba a la dirección 0. Ahora, sin memoria, la
+  conexión acaba con "out of memory". red_cabe_crecer / http_cabe_crecer (dividiendo: el doble de un búfer grande no
+  cabe en 32 bits) y lib/videos.dash _video_sin_sitio: el vídeo deja de traerse si al crecer no quedarían
+  VIDEO_RESERVA (16 MB), sin cerrar la carga (el vídeo lee de su memoria), y suena lo que llegó ("sin memoria para
+  traer más"); si no llegó nada que se pueda abrir, "sin memoria para el vídeo" en vez de "trayéndolo" para siempre.
+- El freno de la página: pararle los temporizadores no bastaba (seguían llegando scripts y respuestas y Tachyon se
+  caía con 9 MB). Ahora js_sin_memoria suelta el JavaScript entero (documento_soltar_js: sus peticiones y lo que le
+  faltaba) con menos de dw_js_minima (24 MB), también desde tic mientras llegan cosas; texto 528 "Low memory: the
+  page's JavaScript was stopped" en los nueve catálogos. La página de un vídeo de YouTube se comía ~200 MB: al
+  soltarlo, de 20 MB libres a 141 MB.
+- Visto en Coffin: la página del vídeo entera, el vídeo suena a 29,9 imágenes/s y llega hasta lo traído (8 MB, ~2
+  minutos: la memoria quedó troceada y el bloque más grande no daba para el doble); el Amiga sigue en pie.
+  tests/test_red_cabe_crecer.dash (nuevo), video 4/4, red 4/4.
+
+### 2026-11-10 — Tarea 68: dash.freemem.space (lo contó David Martínez; JaviTecH y Oskis R.P lo confirmaron)
+- Usuario (por telegram): "ponte a trabajar urgentemente para corregir el problema". Con la 0.9.3, en la máquina de
+  David se quedaba en "Fetching style sheets and scripts: 1 left"; en la MiSTer de JaviTecH y la PiStorm CM4 de Oskis,
+  CPU al 96 % sin avanzar; JaviTecH en Amiberry: 97 % con la bola Boing de la web, 19 % sin ella.
+- Medido con la 0.9.4 (máquina RTG): carga en ~50 s; React da el #418 y rehace la página (14 s de temporizadores, 9 s
+  de estilo y maqueta de más) y el logo se repinta cada ~170 ms para siempre.
+- (a) #418, de Tachyon: el DOM guarda el texto en Latin-1 y latin1_de cambia lo que no cabe ("→", "’"...); React veía
+  otro texto que el del servidor. Ahora el texto de la página con algo fuera de Latin-1 se guarda también como llegó
+  (Nodo.unicode, lib/html5.dash) y nodeValue/data/textContent lo dan en UTF-8 (lib/jsdom.dash jsdom_texto_unicode,
+  src_c/tachyon.c _jsdom_texto_js) mientras el texto siga siendo el mismo; lo pintado sigue en Latin-1.
+  tests/test_jsdom_texto_unicode.dash. (La web ya quitó la "→" por su lado: freememlang-af.)
+- (b) "1 left": abriéndose una conexión (DNS, TCP, TLS) no había tope en Tachyon (lo esperaba de la tarea de red):
+  ahora http_avanzar la da por perdida a los espera ms ("timed out connecting"). lib/recursos.dash: una hoja o script
+  con error se pide otra vez, una vez, con una conexión nueva (http_empezar_nueva, sin reusar una libre) y una que
+  llega a gotas (menos de 2 KB/s tras 45 s) se corta; si no, la página sigue sin ella. tests/test_recursos_atascados
+  (tests/servers/http.py /mudo y /gotas).
+- (c) Animaciones: animaciones_quietas/vivas (lib/animacion.dash): si ninguna está en otro punto que en el último
+  fotograma no se repinta, y un <svg> animado no se vuelve a escribir (lo que costaba: el cursor del logo estaba dentro
+  de un <svg>). Visto: Tachyon aplica la curva a la animación entera y no a cada tramo entre fotogramas, así que
+  steps(1) no parpadea (pendiente). tests/test_animacion_quieta.dash.
+- (d) requestAnimationFrame a 66 ms (15/s, como ANIMACION_MS) y no a 16: a 60 por segundo, cada imagen con su estilo,
+  maqueta y pintado se comía la CPU. tests/pages/anim_cursor_bola.html (máquina objetivo): la bola, 8 imágenes/s; el
+  cursor del <svg>, 1,3 repintados/s.
+- Medido otra vez en dash.freemem.space (ya con la web cambiada): sin #418; temporizadores 14 → 6,5 s; la maqueta de
+  después 9,3 → 3,8 s.
+- (68c, después) La curva de una animación de CSS va en cada tramo entre dos fotogramas, como dice CSS, y no en la
+  animación entera: animacion_progreso da el punto sin curva y animacion_valor la aplica en el tramo; steps(1) con un
+  fotograma al 50 % (el cursor del logo) ya parpadea. animacion_punto (el tramo y su punto con la curva) es lo que
+  compara animaciones_quietas. Tests de animación y SVG 8/8.
+
+### 2026-11-10 — La 0.9.4-alfa: pruebas antes de publicar (visto bueno del usuario: "sí, publica la versión nueva")
+- Actualización de verdad desde el Tachyon.gz de la v0.9.3-alfa publicada (SHA-256 ac46609f...8968), máquina RTG con
+  MUI 3.8 y un GitHub de mentira que redirige como el de verdad (REDIRIGIR=1): con el paquete final baja Tachyon.gz y
+  los nueve catálogos, el instalado es idéntico al compilado y la 0.9.3 queda como .old; la barra dice "0.9.4-alfa
+  installed: click the green icon".
+- Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
+  Wikipedia Amiga) 300 s sin colgarse.
+- Sin nombrar en público el gestor de paquetes que aún no se ha anunciado (por la sesión telegram, del usuario): fuera
+  de textos, catálogos, comentarios, bitácora, notas y de los mensajes de los commits aún sin subir (git filter-repo
+  sobre origin/dev..dev; la historia de antes, en la rama local respaldo-dev-antes-de-limpiar-094, que no se sube).
+- Batería entera con el código final: 175/179 (8524 s). Los cuatro que faltan (test_inspeccionar,
+  test_jsdom_fetch_flujo, test_jsdom_medios, test_maqueta_fijo_ancho, nuevos de estos días) dan "out of memory" al
+  final del grupo grande del A1200 de memcheck (108 tests en una sesión) y pasan sueltos. (Una batería anterior se
+  quedó 2 h en test_estilo_animacion, compilado con un estado intermedio de la 68: con el código final pasa.)

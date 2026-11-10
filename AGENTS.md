@@ -28,6 +28,7 @@ cambios de Dash los hacen sus sesiones (regla 3 del plan). Sintaxis de Dash en u
 ```bash
 export DASH_KICKSTART="/home/freemem/Descargas/Telegram Desktop/ks31a1200.rom"
 export DASH_EMU_SYS=~/.cache/dash-emu/sys31
+export DASH_EMU_SYS_SSL=~/.cache/dash-emu/sys31ssl   # sys31 + AmiSSL (FreeMEMLang/tools/emu_sys_amissl.sh): test_https
 python3 tests/run.py            # compila tests/test_*.dash y los ejecuta en FS-UAE (A1200 + 68882)
 python3 tests/run.py url -v     # solo los que contienen "url", con la salida de los que fallan
 tools/build_qjs.sh 020fpu -m68020 -m68881   # QuickJS suelto
@@ -48,5 +49,6 @@ Regla del usuario (2026-11-08). Cada arreglo o novedad que venga de una persona 
 
 - En el mensaje del commit. Por ejemplo: "(idea de Ferrán García)" o "(lo contó David Martínez)".
 - En las notas de la versión, el CHANGELOG y la documentación donde se describa el cambio.
+- En la web del proyecto: sección "Gracias", datos en `~/Projects/webs-freemem/paquetes/retro/src/reconocimientos.ts`. Se añade al publicar la versión.
 - Se usa el nombre con el que se presenta en el grupo. Nunca datos de contacto: ni teléfono, ni correo.
 - Si no se sabe quién lo pidió, preguntar a la sesión "telegram" o al usuario.

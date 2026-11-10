@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Cursor y bola</title>
+<style>.c{animation:parpadeo 1s steps(2) infinite}@keyframes parpadeo{50%{opacity:0}}
+#bola{position:absolute;left:0;top:140px;width:20px;height:20px;background:red}</style></head>
+<body>
+<!-- tarea 68: un cursor que parpadea dentro de un <svg> (como el logo de dash.freemem.space) y una bola que mueve
+     requestAnimationFrame (como la bola Boing de la web): ni repintar el <svg> entre paso y paso ni 60 imágenes/s -->
+<svg width="100" height="100"><rect width="100" height="100" fill="#05a"/><rect class="c" x="40" y="40" width="20" height="20" fill="#fff"/></svg>
+<div id="bola"></div>
+<script>
+var n = 0, t0 = Date.now();
+function paso() { n++; document.getElementById('bola').style.left = (n % 200) + 'px'; requestAnimationFrame(paso); }
+requestAnimationFrame(paso);
+</script>
+</body></html>

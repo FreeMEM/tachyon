@@ -102,6 +102,14 @@ MSG_50 (50//)
 Page
 MSG_51 (51//)
 Open file...
+MSG_52 (52//)
+Open on its own screen
+MSG_53 (53//)
+Reader view
+MSG_54 (54//)
+Inspect
+MSG_55 (55//)
+Network debug log
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -234,6 +242,16 @@ MSG_166 (166//)
 Not saved: %1
 MSG_167 (167//)
 Saved in %1
+MSG_168 (168//)
+Tachyon will open on its own screen next time
+MSG_169 (169//)
+Tachyon will open on the Workbench screen next time
+MSG_170 (170//)
+Reader view
+MSG_171 (171//)
+Open a page and choose Reader view in the Navigate menu.
+MSG_172 (172//)
+There is no article to read on this page.
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)
@@ -304,6 +322,12 @@ MSG_345 (345//)
 Today
 MSG_346 (346//)
 Yesterday
+MSG_347 (347//)
+Search
+MSG_348 (348//)
+Nothing in the history matches: %1
+MSG_349 (349//)
+Last visit: %1. Visits: %2.
 MSG_350 (350//)
 None stored.
 MSG_351 (351//)
@@ -434,3 +458,97 @@ MSG_477 (477//)
 Contents of %1
 MSG_478 (478//)
 Parent drawer
+MSG_480 (480//)
+Extract...
+MSG_481 (481//)
+Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482 (482//)
+Look for %1 on Aminet
+MSG_483 (483//)
+Nothing was extracted.
+MSG_484 (484//)
+Extract into a new drawer
+MSG_485 (485//)
+Extracting %1...
+MSG_486 (486//)
+Couldn't extract %1: %2
+MSG_487 (487//)
+Nothing yet.
+MSG_488 (488//)
+Run
+MSG_489 (489//)
+Method
+MSG_490 (490//)
+Status
+MSG_491 (491//)
+Type
+MSG_492 (492//)
+Address
+MSG_493 (493//)
+%1 requests, %2 KB.
+MSG_494 (494//)
+Free fast memory
+MSG_495 (495//)
+Free chip memory
+MSG_496 (496//)
+Largest free block
+MSG_497 (497//)
+JavaScript of this page
+MSG_498 (498//)
+Pictures of this page
+MSG_499 (499//)
+Elements
+MSG_500 (500//)
+Things to draw
+MSG_501 (501//)
+None.
+MSG_502 (502//)
+Box
+MSG_505 (505//)
+Page size
+MSG_506 (506//)
+Inspect
+MSG_507 (507//)
+Console
+MSG_508 (508//)
+Elements
+MSG_509 (509//)
+Network
+MSG_510 (510//)
+Memory
+MSG_511 (511//)
+Application
+MSG_512 (512//)
+Timings
+MSG_513 (513//)
+Refresh
+MSG_514 (514//)
+And %1 more: choose one to open its branch.
+MSG_515 (515//)
+No room for another window
+MSG_516 (516//)
+The window that was inspected is closed.
+MSG_517 (517//)
+Download the page
+MSG_518 (518//)
+Read the HTML
+MSG_519 (519//)
+Wait for CSS and scripts
+MSG_520 (520//)
+Run the scripts
+MSG_521 (521//)
+Style
+MSG_522 (522//)
+First layout
+MSG_523 (523//)
+Until complete (with pictures)
+MSG_524 (524//)
+Layouts (%1)
+MSG_525 (525//)
+JavaScript timers
+MSG_526 (526//)
+Network debug log on: %1
+MSG_527 (527//)
+Network debug log off
+MSG_528 (528//)
+Low memory: the page's JavaScript was stopped

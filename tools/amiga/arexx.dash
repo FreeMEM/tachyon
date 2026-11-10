@@ -1,0 +1,45 @@
+# Manda órdenes ARexx a un puerto y escribe lo que contesta (tarea 63b: el puerto TACHYON). Espera a que el puerto
+# exista (hasta 60 s); tras cada orden, unos segundos para que la página llegue.
+#
+#   arexx TACHYON "VERSION|OPEN http://...|GETTITLE|QUIT"
+#
+# Cada orden: "arexx: ORDEN -> rc N [RESULT]", escrito también en DH0:arexx.txt según llega (la salida va en un búfer
+# que se pierde si el emulador acaba antes, como tras QUIT). Lo lanza tools/medir_visor.py --arexx (con --guardar).
+
+Main
+    if arg_count() < 2
+        Print "uso: arexx PUERTO \"ORDEN|ORDEN|...\""
+        return
+    end
+    puerto = arg(0)
+    esperado = false
+    for i in (1..120)
+        n = ports_read()
+        for k in (0..n - 1)
+            if port_name(k) == puerto
+                esperado = true
+            end
+        end
+        if esperado
+            break
+        end
+        time_delay(25)
+    end
+    if not esperado
+        Print "arexx: no aparece el puerto " + puerto
+        return
+    end
+    time_delay(100)
+    todo = ""
+    for orden in str_split(arg(1), "|")
+        o = str_trim(orden)
+        if o != ""
+            r = rexx_send(puerto, o)
+            linea = "arexx: " + o + " -> rc " + rexx_rc() + " [" + r + "]"
+            Print linea
+            todo = todo + linea + "\n"
+            file_write_text("DH0:arexx.txt", todo)
+            time_delay(200)
+        end
+    end
+end

@@ -51,11 +51,16 @@ struct Reproductor
     esperando: Bool = false  # suena mientras se baja y la imagen siguiente aún no ha llegado
     t_espera: Int = 0        # time_ms() de cuando empezó a esperar
     bajada_rota: Bool = false  # la descarga falló a medias: lo que falte ya no llegará
+    sin_memoria: Bool = false  # deja de traerse por falta de memoria: suena lo que llegó (_video_sin_sitio)
+    barra_hasta: Int = 0     # hasta cuándo se ve la barra de controles mientras suena (el ratón pasó por encima)
+    duracion: Int = -2       # lo que dura en ms (video_duracion; -1 no se sabe, -2 aún sin mirar)
 end
 
 # Mientras se baja, se prueba a abrir el vídeo cada tanto (un MP4 "fast start" tiene su índice al principio:
 # empieza a sonar enseguida; si lo tiene al final, cuando llegue entero)
 const VIDEO_PROBAR = 262144
+# Lo que se deja libre al traer un vídeo (bytes): lo que llega está en memoria hasta el final (tarea 64g)
+const VIDEO_RESERVA = 16777216
 
 struct Videos
     lista: [Reproductor]
@@ -83,6 +88,9 @@ func videos_alternar(vs: Videos, n: Nodo, base: String)
     r = videos_de(vs, n)
     if r == nil
         src = video_src(n)
+        if dom_video_de_pagina(n, base) != ""
+            src = base
+        end
         if src == ""
             return
         end
@@ -170,7 +178,15 @@ func videos_avanzar(vs: Videos) -> Bool
                 cambio = true
             end
         elif r.estado == V_TRAYENDO
-            if http_avanzar(r.carga)
+            if _video_sin_sitio(r)
+                # (no llegará más: con lo que hay, o no se puede)
+                r.probar_en = 0
+                if not _video_probar(r)
+                    r.estado = V_ERROR
+                    r.error = "sin memoria para el vídeo"
+                end
+                cambio = true
+            elif http_avanzar(r.carga)
                 resp = r.carga.respuesta
                 r.carga = nil
                 if resp.error == "" and resp.estado >= 200 and resp.estado < 300
@@ -209,6 +225,48 @@ func videos_avanzar(vs: Videos) -> Bool
     return cambio
 end
 
+# Avanzar o retroceder (ms, negativo hacia atrás) en el vídeo de ese nodo que suena o está en pausa (tarea 64d; las
+# flechas de los lados, como en YouTube): el reloj sigue desde donde llegó. false si no se puede
+func videos_saltar(vs: Videos, n: Nodo, ms: Int) -> Bool
+    r = videos_de(vs, n)
+    if r == nil or r.v == 0 or (r.estado != V_SONANDO and r.estado != V_PAUSA)
+        return false
+    end
+    ahora = r.pos
+    if r.estado == V_SONANDO
+        ahora = _ahora(r)
+    end
+    destino = ahora + ms
+    if destino < 0
+        destino = 0
+    end
+    llegado = video_ir(r.v, destino)
+    if llegado < 0
+        return false
+    end
+    r.pos = llegado
+    r.inicio = time_ms() - llegado
+    r.lista = false
+    r.esperando = false
+    # (en pausa, la imagen de donde se llegó: si no, el recuadro se quedaba en blanco hasta seguir)
+    if r.estado == V_PAUSA and video_siguiente(r.v) == 1
+        r.hay_imagen = true
+        r.pos = video_ms(r.v)
+    end
+    return true
+end
+
+# El vídeo que suena o está en pausa (para las flechas); nil si no hay
+func videos_en_marcha(vs: Videos) -> Nodo
+    for r in vs.lista
+        if r.v != 0 and (r.estado == V_SONANDO or r.estado == V_PAUSA)
+            return r.nodo
+        end
+    end
+    var nadie: Nodo = nil
+    return nadie
+end
+
 # Mientras se baja: ¿se puede abrir ya con lo que ha llegado? (empieza a sonar)
 func _video_probar(r: Reproductor) -> Bool
     listos = http_parcial_listos(r.carga)
@@ -228,6 +286,9 @@ end
 # Suena mientras se baja: lo que llega, al vídeo; al acabar, que lea del fichero (la memoria de la carga se
 # libera)
 func _video_bajar(r: Reproductor)
+    if _video_sin_sitio(r)
+        return
+    end
     if http_avanzar(r.carga)
         resp = r.carga.respuesta
         r.carga = nil
@@ -239,6 +300,20 @@ func _video_bajar(r: Reproductor)
     else
         video_bajado(r.v, http_parcial(r.carga), http_parcial_listos(r.carga))
     end
+end
+
+# Sin memoria para que siga llegando: se deja de traer (sin cerrar la carga: el vídeo lee de su memoria) y suena lo
+# que ya llegó. Un vídeo de YouTube de 25 minutos son ~100 MB, y en Coffin con 256 MB el Amiga se reiniciaba (64g)
+func _video_sin_sitio(r: Reproductor) -> Bool
+    if r.sin_memoria
+        return true
+    end
+    if http_cabe_crecer(r.carga, VIDEO_RESERVA)
+        return false
+    end
+    r.sin_memoria = true
+    traza("vídeo: sin memoria para traer más (" + mem_total() / 1024 + " KB libres): suena lo que llegó, " + http_parcial_listos(r.carga) / 1024 + " KB")
+    return true
 end
 
 # Después de pintar: la imagen siguiente de cada vídeo que suena, decodificada mientras se espera su hora;
@@ -265,7 +340,7 @@ func _video_decodificar(r: Reproductor)
     t0 = time_ms()
     s = video_siguiente(r.v)
     r.t_decodificar = r.t_decodificar + time_ms() - t0
-    if s == 2 and not r.bajada_rota and r.carga != nil
+    if s == 2 and not r.bajada_rota and not r.sin_memoria and r.carga != nil
         # aún no ha llegado: el vídeo se para (también su sonido) hasta que llegue
         if not r.esperando
             r.esperando = true
@@ -278,6 +353,10 @@ func _video_decodificar(r: Reproductor)
         r.esperando = false
         r.inicio = r.inicio + time_ms() - r.t_espera
         video_pausa(r.v, false)
+    end
+    if s == 2 and r.sin_memoria
+        r.estado = V_FIN
+        return
     end
     if s == 2
         r.estado = V_ERROR
@@ -326,6 +405,9 @@ func videos_estado(vs: Videos) -> String
             bajando = ""
             if r.carga != nil and http_parcial_total(r.carga) > 0
                 bajando = " (trayéndolo, " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+                if r.sin_memoria
+                    bajando = " (sin memoria para traer más: hasta el " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+                end
             end
             if r.esperando
                 return "Vídeo: esperando a que llegue" + bajando
@@ -392,8 +474,162 @@ func videos_pintar(vs: Videos, n: Nodo, x: Int, y: Int, ancho: Int, alto: Int)
     end
     videos_pintar_r(r, x, y, ancho, alto)
     if r != nil and r.hay_imagen
+        videos_barra(r, x, y, ancho, alto)
         _icono_completa(x + ancho - VIDEO_ESQUINA, y + alto - VIDEO_ESQUINA)
     end
+end
+
+# === La barra de controles (tarea 64f; los del reproductor de YouTube no funcionan en Tachyon) ===
+# Abajo del vídeo, mientras está en pausa o unos segundos después de pasar el ratón por encima: reproducir o parar a
+# la izquierda, el tiempo, la línea de tiempo (lo bajado en gris claro, lo visto en rojo; un clic salta ahí) y, a la
+# derecha, pantalla completa
+const VIDEO_BARRA = 26
+const VIDEO_BARRA_MS = 3000
+const VIDEO_TIEMPO_ANCHO = 104
+
+func _barra_visible(r: Reproductor) -> Bool
+    return r.estado == V_PAUSA or r.estado == V_FIN or time_ms() < r.barra_hasta
+end
+
+# El ratón pasó por encima del vídeo de ese nodo: la barra se ve un rato; true si antes no se veía (hay que pintar)
+func videos_tocar(vs: Videos, n: Nodo) -> Bool
+    r = videos_de(vs, n)
+    if r == nil or not r.hay_imagen
+        return false
+    end
+    antes = _barra_visible(r)
+    r.barra_hasta = time_ms() + VIDEO_BARRA_MS
+    return not antes
+end
+
+# "m:ss" (o "h:mm:ss")
+func _video_tiempo(ms: Int) -> String
+    if ms < 0
+        return "-:--"
+    end
+    s = ms / 1000
+    h = s / 3600
+    m = (s / 60) % 60
+    ss = s % 60
+    t = ""
+    if ss < 10
+        t = "0"
+    end
+    t = t + ss
+    if h > 0
+        mm = "" + m
+        if m < 10
+            mm = "0" + mm
+        end
+        return "" + h + ":" + mm + ":" + t
+    end
+    return "" + m + ":" + t
+end
+
+func _video_duracion(r: Reproductor) -> Int
+    if r.duracion == -2 and r.v != 0
+        r.duracion = video_duracion(r.v)
+    end
+    return r.duracion
+end
+
+func _video_posicion(r: Reproductor) -> Int
+    if r.estado == V_SONANDO
+        return _ahora(r)
+    end
+    return r.pos
+end
+
+# Dónde va la línea de tiempo dentro del recuadro (x0, x1 relativos a su izquierda)
+func _barra_x0() -> Int
+    return VIDEO_BARRA + VIDEO_TIEMPO_ANCHO
+end
+
+func _barra_x1(ancho: Int) -> Int
+    return ancho - VIDEO_ESQUINA - 8
+end
+
+func videos_barra(r: Reproductor, x: Int, y: Int, ancho: Int, alto: Int)
+    if not _barra_visible(r) or alto < VIDEO_BARRA * 2 or ancho < _barra_x0() + VIDEO_ESQUINA + 40
+        return
+    end
+    y0 = y + alto - VIDEO_BARRA
+    gfx_pen(color_pen(24, 24, 24))
+    gfx_rect(x, y0, x + ancho - 1, y + alto - 1)
+    # reproducir (en pausa) o parar (mientras suena)
+    gfx_pen(color_pen(255, 255, 255))
+    cy = y0 + VIDEO_BARRA / 2
+    if r.estado == V_SONANDO
+        gfx_rect(x + 8, cy - 6, x + 10, cy + 6)
+        gfx_rect(x + 14, cy - 6, x + 16, cy + 6)
+    else
+        i = 0
+        while i < 12
+            gfx_rect(x + 8 + i / 2, cy - 6 + i / 2, x + 8 + i / 2, cy + 6 - i / 2)
+            i = i + 1
+        end
+    end
+    total = _video_duracion(r)
+    pos = _video_posicion(r)
+    gfx_text_at(x + VIDEO_BARRA, cy + 4, _video_tiempo(pos) + " / " + _video_tiempo(total))
+    # la línea de tiempo
+    a = x + _barra_x0()
+    b = x + _barra_x1(ancho)
+    if b <= a
+        return
+    end
+    gfx_pen(color_pen(90, 90, 90))
+    gfx_rect(a, cy - 2, b, cy + 1)
+    if r.carga != nil and http_parcial_total(r.carga) > 0
+        bajado = a + (b - a) * (http_parcial_listos(r.carga) / 1024) / (http_parcial_total(r.carga) / 1024 + 1)
+        gfx_pen(color_pen(170, 170, 170))
+        gfx_rect(a, cy - 2, bajado, cy + 1)
+    else
+        gfx_pen(color_pen(170, 170, 170))
+        gfx_rect(a, cy - 2, b, cy + 1)
+    end
+    if total > 0
+        visto = a + (b - a) * (pos / 100) / (total / 100 + 1)
+        if visto > b
+            visto = b
+        end
+        gfx_pen(color_pen(230, 20, 20))
+        gfx_rect(a, cy - 2, visto, cy + 1)
+        gfx_rect(visto - 3, cy - 5, visto + 3, cy + 4)
+    end
+end
+
+# Un clic en (dx, dy) del recuadro del vídeo: ¿en su barra? 0 no (o no se ve); 1 reproducir o parar; 2 saltó en la
+# línea de tiempo; 3 otro sitio de la barra (no hace nada)
+func videos_en_barra(vs: Videos, n: Nodo, dx: Int, dy: Int, ancho: Int, alto: Int) -> Int
+    r = videos_de(vs, n)
+    if r == nil or not r.hay_imagen or not _barra_visible(r) or dy < alto - VIDEO_BARRA or alto < VIDEO_BARRA * 2
+        return 0
+    end
+    if dx >= ancho - VIDEO_ESQUINA
+        # (la esquina es el botón de pantalla completa, que lo atiende quien llama)
+        return 0
+    end
+    r.barra_hasta = time_ms() + VIDEO_BARRA_MS
+    if dx < VIDEO_BARRA
+        return 1
+    end
+    a = _barra_x0()
+    b = _barra_x1(ancho)
+    total = _video_duracion(r)
+    if dx >= a - 4 and dx <= b + 4 and b > a and total > 0
+        f = dx - a
+        if f < 0
+            f = 0
+        end
+        if f > b - a
+            f = b - a
+        end
+        destino = (total / 100) * f / (b - a) * 100
+        videos_saltar(vs, n, destino - _video_posicion(r))
+        return 2
+    end
+    return 3
 end
 
 # Lo mismo para un reproductor (la pantalla completa); r nil: el recuadro negro con el botón de reproducir

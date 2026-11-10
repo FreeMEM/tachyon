@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (07.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -155,6 +155,18 @@ Sida
 MSG_51
 Öppna fil...
 ; Open file...
+MSG_52
+Öppna på egen skärm
+; Open on its own screen
+MSG_53
+Läsläge
+; Reader view
+MSG_54
+Inspektera
+; Inspect
+MSG_55
+Felsökningslogg för nätverket
+; Network debug log
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -353,6 +365,21 @@ Inte sparad: %1
 MSG_167
 Sparad i %1
 ; Saved in %1
+MSG_168
+Tachyon öppnas på en egen skärm nästa gång
+; Tachyon will open on its own screen next time
+MSG_169
+Tachyon öppnas på Workbench-skärmen nästa gång
+; Tachyon will open on the Workbench screen next time
+MSG_170
+Läsläge
+; Reader view
+MSG_171
+Öppna en sida och välj Läsläge i menyn Navigera.
+; Open a page and choose Reader view in the Navigate menu.
+MSG_172
+Det finns ingen artikel att läsa på den här sidan.
+; There is no article to read on this page.
 MSG_300
 Dess version utan JavaScript: lätt, den som fungerar bäst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -458,6 +485,15 @@ Idag
 MSG_346
 Igår
 ; Yesterday
+MSG_347
+Sök
+; Search
+MSG_348
+Inget i historiken innehåller: %1
+; Nothing in the history matches: %1
+MSG_349
+Senaste besök: %1. Besök: %2.
+; Last visit: %1. Visits: %2.
 MSG_350
 Inga sparade.
 ; None stored.
@@ -653,3 +689,144 @@ Innehåll i %1
 MSG_478
 Överordnad låda
 ; Parent drawer
+MSG_480
+Packa upp...
+; Extract...
+MSG_481
+Inget på den här Amigan öppnar den här sortens fil. Det behövs %1 (eller XAD, xadmaster.library, som öppnar nästan alla).
+; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
+MSG_482
+Sök efter %1 på Aminet
+; Look for %1 on Aminet
+MSG_483
+Inget packades upp.
+; Nothing was extracted.
+MSG_484
+Packa upp i en ny låda
+; Extract into a new drawer
+MSG_485
+Packar upp %1...
+; Extracting %1...
+MSG_486
+Kunde inte packa upp %1: %2
+; Couldn't extract %1: %2
+MSG_487
+Inget ännu.
+; Nothing yet.
+MSG_488
+Kör
+; Run
+MSG_489
+Metod
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Typ
+; Type
+MSG_492
+Adress
+; Address
+MSG_493
+%1 förfrågningar, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Ledigt fast-minne
+; Free fast memory
+MSG_495
+Ledigt chip-minne
+; Free chip memory
+MSG_496
+Största lediga block
+; Largest free block
+MSG_497
+JavaScript för den här sidan
+; JavaScript of this page
+MSG_498
+Bilder på den här sidan
+; Pictures of this page
+MSG_499
+Element
+; Elements
+MSG_500
+Saker att rita
+; Things to draw
+MSG_501
+Inga.
+; None.
+MSG_502
+Ruta
+; Box
+MSG_505
+Sidstorlek
+; Page size
+MSG_506
+Inspektera
+; Inspect
+MSG_507
+Konsol
+; Console
+MSG_508
+Element
+; Elements
+MSG_509
+Nätverk
+; Network
+MSG_510
+Minne
+; Memory
+MSG_511
+Program
+; Application
+MSG_512
+Tider
+; Timings
+MSG_513
+Uppdatera
+; Refresh
+MSG_514
+Och %1 till: välj ett för att öppna dess gren.
+; And %1 more: choose one to open its branch.
+MSG_515
+Ingen plats för ett till fönster
+; No room for another window
+MSG_516
+Fönstret som inspekterades är stängt.
+; The window that was inspected is closed.
+MSG_517
+Hämta sidan
+; Download the page
+MSG_518
+Läsa HTML
+; Read the HTML
+MSG_519
+Vänta på CSS och skript
+; Wait for CSS and scripts
+MSG_520
+Köra skripten
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Första layout
+; First layout
+MSG_523
+Tills komplett (med bilder)
+; Until complete (with pictures)
+MSG_524
+Layouter (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-timers
+; JavaScript timers
+MSG_526
+Felsökningslogg för nätverket på: %1
+; Network debug log on: %1
+MSG_527
+Felsökningslogg för nätverket av
+; Network debug log off
+MSG_528
+Lite minne: sidans JavaScript har stoppats
+; Low memory: the page's JavaScript was stopped

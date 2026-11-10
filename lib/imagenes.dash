@@ -61,6 +61,30 @@ struct Imagenes
     # fichero (uno compartido que hay que rehacer pasa antes a tener el suyo: imagenes_svg_rehacer)
     svg_textos: {String: String} = nil
     svg_usos: {String: Int} = nil
+    # src -> "ancho:alto" ("0:0" si no se pudo) de las que acaban de llegar o fallar, también las que ya estaban: lib/
+    # documento.dash avisa al JavaScript (load o error en sus <img>, complete y naturalWidth; tarea 64, YouTube)
+    avisos: {String: String} = nil
+end
+
+# Apunta el aviso de una imagen (img 0: no se pudo) para el JavaScript
+func _imagen_avisar(im: Imagenes, src: String, img: Int)
+    if im.avisos == nil
+        var a: {String: String} = {}
+        im.avisos = a
+    end
+    if img == 0
+        im.avisos[src] = "0:0"
+    else
+        im.avisos[src] = "" + image_width(img) + ":" + image_height(img)
+    end
+end
+
+# Los avisos de imágenes pendientes (y los olvida); nil si no hay
+func imagenes_avisos(im: Imagenes) -> {String: String}
+    a = im.avisos
+    var nada: {String: String} = nil
+    im.avisos = nada
+    return a
 end
 
 struct Pedida
@@ -77,6 +101,7 @@ struct Pedida
     perezosa: Bool = false      # <img loading=lazy>: espera a estar cerca de lo que se ve
     de_fondo: Bool = false      # un background-image: espera a que algo lo pinte
     tinte: Int = -1             # una máscara (mask-image, mascara_clave): teñida de este color al decodificarla
+    dec_t0: Int = 0             # cuándo empezó a decodificarse (traza)
 end
 
 # Una imagen grande no se decodifica entera si el HTML ya dice a qué tamaño se ve (width y height)
@@ -202,7 +227,11 @@ func imagenes_cartel(n: Nodo, base: Url) -> String
     end
     p = dom_video_poster(n)
     if p == ""
-        return ""
+        id = dom_youtube_id(dom_video_de_pagina(n, url_text(base)))
+        if id == ""
+            return ""
+        end
+        p = "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg"
     end
     completa = p
     if not url_es_data(p)
@@ -246,6 +275,8 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
         if src != "" and im.por_src.has(src)
             if im.por_src[src] != 0
                 _imagen_tamano(n, im.por_src[src])
+                # (una <img> nueva con una imagen que ya estaba: su load también; el JavaScript no lo repite)
+                _imagen_avisar(im, src, im.por_src[src])
             end
         elif src != ""
             u = url_resolve(base, src)
@@ -277,6 +308,7 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
             else
                 im.por_src[src] = _imagen_traer(im, base, src)
                 _imagen_tamano(n, im.por_src[src])
+                _imagen_avisar(im, src, im.por_src[src])
             end
         end
         return
@@ -304,7 +336,7 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
                     img = image_load(p.fichero)      # otro formato: los datatypes (una máscara no: no se tiñe)
                 end
                 if traza_activa
-                    traza("decodificada " + p.src)
+                    traza("decodificada en " + (time_ms() - p.dec_t0) + " ms (" + p.maxw + "x" + p.maxh + "): " + p.src)
                 end
                 if _imagen_llegada(im, doc, p, img)
                     llegadas = llegadas + 1
@@ -325,6 +357,7 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
             if decodificando < IMAGENES_DECODIFICANDO
                 _imagen_tamano_final(im, p)
                 p.dec = imagen_empezar(p.fichero, p.maxw, p.maxh)
+                p.dec_t0 = time_ms()
                 if p.dec != nil
                     p.dec.tinte = p.tinte
                 end
@@ -363,6 +396,9 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
                         continue                     # (a decodificarse, en esta misma vuelta si le toca)
                     end
                     im.por_src[p.src] = 0
+                    if p.fuente == ""
+                        _imagen_avisar(im, p.src, 0)
+                    end
                     im.cola.remove(i)
                     continue
                 end
@@ -375,7 +411,30 @@ func imagenes_avanzar(im: Imagenes, doc: Nodo) -> Int
         end
         i = i + 1
     end
+    imagenes_ceder(decodificando)
     return llegadas
+end
+
+# Con imágenes decodificándose, lo que tarda suelta la CPU de vez en cuando (lib/ceder.dash) hasta medio segundo
+# después de la última (con varias pestañas, la que no decodifica no lo quita mientras otra sí)
+var _imagenes_dec_hasta: Int = 0
+
+func imagenes_ceder(decodificando: Int)
+    if decodificando > 0
+        _imagenes_dec_hasta = time_ms() + 500
+        if not ceder_activo()
+            ceder_poner(true)
+            if traza_activa
+                traza("soltando la CPU mientras se decodifican " + decodificando)
+            end
+        end
+    elif ceder_activo() and time_ms() > _imagenes_dec_hasta
+        ceder_poner(false)
+        if traza_activa
+            traza("ya no se suelta la CPU")
+        end
+    end
+    ceder()
 end
 
 # Una decodificada de su fichero: se guarda su pedido (para imagenes_despertar)
@@ -484,6 +543,9 @@ end
 func _imagen_llegada(im: Imagenes, doc: Nodo, p: Pedida, img: Int) -> Bool
     img = _imagen_a_su_vista(im, p.src, img)
     im.por_src[p.src] = img
+    if p.tinte < 0 and not p.de_fondo
+        _imagen_avisar(im, p.src, img)
+    end
     if img == 0
         return false
     end

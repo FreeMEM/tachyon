@@ -11,6 +11,7 @@
 import "dom.dash"
 import "css.dash"
 import "http.dash"
+import "ceder.dash"
 
 const ESTILO_MEDIUM = 16
 const ESTILO_ORDEN_HOJA = 100000     # orden de la primera regla de cada hoja (una hoja puede tener miles)
@@ -2587,6 +2588,7 @@ func _estilo_nodo(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: {S
     if n.tipo != DOM_ELEMENTO
         return
     end
+    ceder()
     _estilo_propio(n, hojas, padre, padre_vars)
     _antepasados_cambiar(n, 1)
     for h in n.hijos
@@ -3113,11 +3115,25 @@ func _estilo_pseudo(n: Nodo, hojas: Hojas, e: {String: String}, vars: {String: S
     if c == "none" or c == "normal" or pe["display"] == "none"
         return nada
     end
-    # un content vacío solo cuenta si es una caja que se ve (los iconos dibujados con CSS)
-    if (c == "\"\"" or c == "''") and not (pe.has("width") or pe.has("height") or pe.has("background-color") or pe.has("border-top-style"))
+    # un content vacío solo cuenta si es una caja que se ve (los iconos dibujados con CSS) o que ocupa: un relleno
+    # vertical da la proporción de su caja (las miniaturas de YouTube: display: block; padding-top: 56.11%)
+    if (c == "\"\"" or c == "''") and not (pe.has("width") or pe.has("height") or pe.has("min-height") or pe.has("background-color") or pe.has("border-top-style") or _relleno_vertical(pe))
         return nada
     end
     return pe
+end
+
+# ¿Un relleno arriba o abajo que no es cero?
+func _relleno_vertical(pe: {String: String}) -> Bool
+    for k in ["padding-top", "padding-bottom"]
+        if pe.has(k)
+            v = str_trim(pe[k])
+            if v != "" and v != "0" and not str_starts(v, "0px") and not str_starts(v, "0%")
+                return true
+            end
+        end
+    end
+    return false
 end
 
 # ¿Cumple n alguna de las entradas de esa clave que son de una regla que declara content?

@@ -6826,3 +6826,15 @@ Formato:
 - tests/test_video_saltos.dash (nuevo; tests/pages/video_saltos.mp4, 3 s a 10 imágenes/s con un fotograma clave
   cada 5, ffmpeg): a 1200 llega a 1000 y la primera imagen es la de 1000 (20 hasta el final); a 0, 0 (30); a 2700,
   2500 (5). Pasan video (4).
+
+### 2026-11-10 — Tarea 64c (parte): las páginas de YouTube se pueden bajar (el alto cuenta lo absoluto)
+- En YouTube no se podía bajar por ninguna página (ni a los comentarios ni a más resultados): todo va dentro de
+  ytd-app, que es position: absolute, y el alto de la página salía solo del flujo normal (la barra de desplazamiento,
+  entera). lib/maqueta.dash _alto_con_absolutos: tras _cajas_finales, lo más bajo de las cajas que están dentro de
+  algo absoluto alarga la página, como el "scrollable overflow" de los navegadores; lo fijo no, lo de dentro de un
+  overflow que recorta hasta su borde, y display: none nada. tests/test_maqueta_alto_absoluto.dash (nuevo).
+- El foco en un elemento que el JavaScript ya quitó (el botón "Reject all" del aviso de cookies) se suelta al pulsar
+  una tecla: las teclas se perdían en él y el espacio no bajaba la página (src/dashweb.dash nodo_en_documento).
+- Los comentarios de un vídeo sí se cargan (4 ytd-comment-thread-renderer y su cabecera "4 Comments" en
+  watch?v=Du47RT74_9c, por youtubei/v1/next con el cuerpo binario).
+- Pasan acid (3), maqueta (34), estilo (17), documento (10). Acid3 100/100.

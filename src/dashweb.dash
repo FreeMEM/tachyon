@@ -1962,6 +1962,18 @@ func youtube_a_video(antes: String, despues: String) -> Bool
     return dom_es_youtube(despues) and str_find(str_lower(despues), "youtube.com/watch") >= 0 and dom_youtube_id(despues) != "" and dom_youtube_id(despues) != dom_youtube_id(antes)
 end
 
+# ¿n sigue colgando del documento doc?
+func nodo_en_documento(doc: Nodo, n: Nodo) -> Bool
+    m = n
+    while m != nil
+        if m == doc
+            return true
+        end
+        m = m.padre
+    end
+    return false
+end
+
 # ¿La entrada i del historial de la ventana es de la página que se ve (de su history.pushState)?
 func del_mismo_documento(w: Ventana, i: Int) -> Bool
     d = w.actual
@@ -2869,6 +2881,11 @@ Main
             if ev == ID_PAGINA
                 rueda = mui_canvas_wheel(w.v.pagina)
                 tecla = mui_canvas_key(w.v.pagina)
+                if w.foco != nil and w.actual != nil and not nodo_en_documento(w.actual.doc, w.foco)
+                    # (el foco en algo que el JavaScript ya quitó, como el botón "Reject all" del aviso de cookies de
+                    # YouTube: las teclas se perdían y la página no bajaba con el espacio)
+                    w.foco = nil
+                end
                 if rueda != 0
                     desplazar(w, 0 - rueda * 30)
                 elif tecla >= 0 and w.foco != nil

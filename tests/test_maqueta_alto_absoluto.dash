@@ -1,0 +1,25 @@
+# Test: lo de position: absolute alarga la página, como en los navegadores (tarea 64c: YouTube lo mete todo en
+# ytd-app, absolute, y la página medía lo de la ventana: no se podía bajar a los comentarios ni a más resultados).
+# Lo fijo no; dentro de un overflow: hidden, hasta su borde; lo absoluto dentro de algo fijo, tampoco; display: none,
+# nada.
+# expect-out: absoluto 3000 | normal 3000 | fijo 0 | recortado 200 | en fijo 0 | oculto 0
+
+import "../lib/maqueta.dash"
+import "../lib/html5.dash"
+
+func alto(cuerpo: String) -> Int
+    doc = dom_desde_html5("<html><body style='margin:0'>" + cuerpo + "</body></html>")
+    css_vista(800, 600)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    p = maquetar(doc, 800)
+    return p.alto
+end
+
+Main
+    r = "absoluto " + alto("<div style='position:absolute;top:0;left:0;width:100%'><div style='height:3000px'>x</div></div>")
+    r = r + " | normal " + alto("<div style='height:3000px'>x</div>")
+    r = r + " | fijo " + alto("<div style='position:fixed;top:0;height:3000px'>x</div>")
+    r = r + " | recortado " + alto("<div style='position:absolute;top:0;height:200px;overflow:hidden'><div style='height:3000px'>x</div></div>")
+    r = r + " | en fijo " + alto("<div style='position:fixed;top:0'><div style='position:absolute;top:0;height:3000px'>x</div></div>")
+    Print r + " | oculto " + alto("<div style='position:absolute;display:none;height:3000px'>x</div>")
+end

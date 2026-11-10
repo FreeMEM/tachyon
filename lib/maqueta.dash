@@ -526,8 +526,57 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     p.alto = _bloque(m, html, 0, 0, ancho)
     _cajas_finales(m, doc)
     _pegajosos(m)
+    _alto_con_absolutos(p, doc)
     _por_capas(p)
     return p
+end
+
+# Lo que está fuera del flujo (position: absolute) también alarga la página, como en los navegadores (su "scrollable
+# overflow"); lo fijo no, y lo recortado por un overflow, hasta donde se ve. YouTube lo mete todo en ytd-app, que es
+# absolute: la página medía lo de la ventana y no se podía bajar (ni a los comentarios ni a más resultados; tarea 64c)
+func _alto_con_absolutos(p: Pagina, doc: Nodo)
+    abajo = _alto_abs(doc, false, 2147483647)
+    if abajo > p.alto
+        p.alto = abajo
+    end
+end
+
+# Lo más bajo de las cajas de n y lo de dentro que está dentro de algo absoluto (tope: el borde de un overflow de fuera)
+func _alto_abs(n: Nodo, dentro: Bool, tope: Int) -> Int
+    if n.tipo != DOM_ELEMENTO and n.tipo != DOM_DOCUMENTO
+        return 0
+    end
+    abajo = 0
+    t = tope
+    if n.tipo == DOM_ELEMENTO and n.estilo != nil
+        if _val(n.estilo, "display", "") == "none"
+            return 0
+        end
+        pos = _val(n.estilo, "position", "static")
+        if pos == "fixed"
+            return 0
+        end
+        if pos == "absolute"
+            dentro = true
+        end
+        if dentro and n.caja_h > 0
+            abajo = n.caja_y + n.caja_h
+            if abajo > t
+                abajo = t
+            end
+        end
+        o = _val(n.estilo, "overflow", "visible")
+        if (o == "hidden" or o == "auto" or o == "scroll" or o == "clip") and n.caja_h > 0 and n.caja_y + n.caja_h < t
+            t = n.caja_y + n.caja_h
+        end
+    end
+    for h in n.hijos
+        b = _alto_abs(h, dentro, t)
+        if b > abajo
+            abajo = b
+        end
+    end
+    return abajo
 end
 
 # El orden de cada elemento en el árbol (con ::before y ::after), para pintar lo posicionado en ese orden

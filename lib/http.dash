@@ -690,6 +690,33 @@ func http_empezar_metodo(direccion: String, metodo: String, cuerpo: String, tipo
     return c
 end
 
+# Las peticiones que acabaron, para la sección Red de Inspeccionar (tarea 65): las últimas HTTP_REGISTRO_MAX, de la
+# más antigua a la última, una por línea: "ms_desde_que_empezó tab método tab estado tab bytes tab ms tab tipo tab
+# dirección" (tipo: el Content-Type sin parámetros; estado 0 si falló, con el error en su lugar)
+const HTTP_REGISTRO_MAX = 300
+var http_registro: [String] = []
+
+func http_apuntar(c: Carga, bytes: Int)
+    r = c.respuesta
+    metodo = c.metodo
+    if metodo == ""
+        metodo = "GET"
+    end
+    estado = "" + r.estado
+    if r.error != ""
+        estado = "0 " + r.error
+    end
+    tipo = r.tipo
+    pc = str_find(tipo, ";")
+    if pc >= 0
+        tipo = tipo[:pc]
+    end
+    http_registro.push("" + c.t0 + "\t" + metodo + "\t" + estado + "\t" + bytes + "\t" + (time_ms() - c.t0) + "\t" + str_trim(tipo) + "\t" + url_text(c.actual))
+    while http_registro.length > HTTP_REGISTRO_MAX
+        http_registro.remove(0)
+    end
+end
+
 # La misma carga con su cuerpo binario (escapado; http_binario_largo), antes de su primer http_avanzar
 func http_con_binario(c: Carga, si: Bool) -> Carga
     c.binario = si
@@ -857,6 +884,7 @@ func http_avanzar(c: Carga) -> Bool
         end
     end
     c.hecha = true
+    http_apuntar(c, r.cuerpo.length + r.bytes)
     if traza_activa
         traza("llega " + url_text(c.actual) + ": " + r.estado + " " + r.error + ", " + (r.cuerpo.length + r.bytes) + " bytes en " + (time_ms() - c.t0) + " ms")
     end
@@ -903,6 +931,7 @@ func _carga_volcar(c: Carga, cerrada: Bool) -> Bool
         red_cerrar(c.conexion)
     end
     c.hecha = true
+    http_apuntar(c, r.bytes)
     if traza_activa
         traza("llega " + url_text(c.actual) + ": " + r.estado + " " + r.error + ", " + r.bytes + " bytes (volcados) en " + (time_ms() - c.t0) + " ms")
     end

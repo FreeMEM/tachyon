@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (09.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language dansk
 ## codeset 0
 ;
@@ -161,6 +161,9 @@ MSG_52
 MSG_53
 Læsevisning
 ; Reader view
+MSG_54
+Inspicér
+; Inspect
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -704,3 +707,93 @@ Pakker %1 ud...
 MSG_486
 Kunne ikke pakke %1 ud: %2
 ; Couldn't extract %1: %2
+MSG_487
+Intet endnu.
+; Nothing yet.
+MSG_488
+Kør
+; Run
+MSG_489
+Metode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adresse
+; Address
+MSG_493
+%1 forespørgsler, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Ledig fast-hukommelse
+; Free fast memory
+MSG_495
+Ledig chip-hukommelse
+; Free chip memory
+MSG_496
+Største ledige blok
+; Largest free block
+MSG_497
+JavaScript på denne side
+; JavaScript of this page
+MSG_498
+Billeder på denne side
+; Pictures of this page
+MSG_499
+Elementer
+; Elements
+MSG_500
+Ting at tegne
+; Things to draw
+MSG_501
+Ingen.
+; None.
+MSG_502
+Boks
+; Box
+MSG_503
+Åbn og layout
+; Open and lay out
+MSG_504
+Seneste layout
+; Last layout
+MSG_505
+Sidestørrelse
+; Page size
+MSG_506
+Inspicér
+; Inspect
+MSG_507
+Konsol
+; Console
+MSG_508
+Elementer
+; Elements
+MSG_509
+Netværk
+; Network
+MSG_510
+Hukommelse
+; Memory
+MSG_511
+Program
+; Application
+MSG_512
+Tider
+; Timings
+MSG_513
+Opdatér
+; Refresh
+MSG_514
+Og %1 mere: vælg et for at åbne dets gren.
+; And %1 more: choose one to open its branch.
+MSG_515
+Ingen plads til et vindue til
+; No room for another window
+MSG_516
+Vinduet, der blev inspiceret, er lukket.
+; The window that was inspected is closed.

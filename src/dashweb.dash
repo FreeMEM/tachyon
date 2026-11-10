@@ -21,6 +21,7 @@ import "../lib/descargas.dash"
 import "../lib/idioma.dash"
 import "../lib/informe.dash"
 import "../lib/lectura.dash"
+import "../lib/inspeccionar.dash"
 
 # desde el icono del Workbench, lo que escribe (console.log de las páginas, «entera en») no abre una consola
 @workbench_output "NIL:"
@@ -71,6 +72,7 @@ const ID_PESTANA_MAS = 48      # el "+" de la barra
 const ID_NUEVA_PESTANA = 49    # menú Proyecto (Amiga-T)
 const ID_CERRAR_PESTANA = 50   # (Amiga-W)
 const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
+const ID_INSPECCIONAR = 35     # menú Herramientas: Inspeccionar la página (Amiga-I; tarea 65)
 const MAX_PESTANAS = 8
 # y los del programa
 const ID_TIC = 11         # el temporizador: las cargas en curso y los setTimeout/setInterval de las páginas
@@ -883,6 +885,8 @@ func abrir(w: Ventana, direccion: String)
             almacen_guardar(FICHERO_ALMACEN)
         end
         d = documento_html("tachyon:cookies", cookies_html())
+    elif str_starts(direccion, "tachyon:inspeccionar")
+        d = documento_html("tachyon:inspeccionar", inspeccionar_pedido(direccion))
     elif str_starts(direccion, "tachyon:informe")
         # tachyon:informe?enviar=1: el botón de la página; manda lo que la página enseñaba
         if str_starts(direccion, "tachyon:informe?enviar")
@@ -1963,6 +1967,64 @@ func youtube_a_video(antes: String, despues: String) -> Bool
     return dom_es_youtube(despues) and str_find(str_lower(despues), "youtube.com/watch") >= 0 and dom_youtube_id(despues) != "" and dom_youtube_id(despues) != dom_youtube_id(antes)
 end
 
+# Inspeccionar (tarea 65): la página de la ventana w en otra ventana, tachyon:inspeccionar (lib/inspeccionar.dash).
+# Se mira la página que tenga esa ventana cada vez que se refresca; lo evaluado en su consola se va juntando
+var dw_insp: Ventana = nil
+var dw_insp_consola: String = ""
+
+func inspeccionar(w: Ventana)
+    if w.actual == nil or str_starts(w.actual.direccion, "tachyon:inspeccionar")
+        return
+    end
+    if dw_insp != w
+        dw_insp_consola = ""
+    end
+    dw_insp = w
+    for v in dw_ventanas
+        if v.abierta and v.actual != nil and str_starts(v.actual.direccion, "tachyon:inspeccionar")
+            # (ya hay una: se refresca con esta)
+            abrir(v, "tachyon:inspeccionar")
+            return
+        end
+    end
+    if nueva_ventana("tachyon:inspeccionar") == nil
+        dw_estado(w, tr(515, "No room for another window"))
+    end
+end
+
+# La página de Inspeccionar para tachyon:inspeccionar[?nodo=ruta][&js=expresión]
+func inspeccionar_pedido(direccion: String) -> String
+    if dw_insp == nil or not dw_insp.abierta or dw_insp.actual == nil
+        return "<html><head><title>" + tr(506, "Inspect") + "</title></head><body><p>" + tr(516, "The window that was inspected is closed.") + "</p></body></html>"
+    end
+    d = dw_insp.actual
+    nodo = ""
+    q = str_find(direccion, "?")
+    if q >= 0
+        for par in str_split(direccion[q + 1:], "&")
+            p = str_find(par, "=")
+            if p > 0
+                k = par[:p]
+                v = url_deshacer(str_replace(par[p + 1:], "+", " "))
+                if k == "nodo"
+                    nodo = v
+                elif k == "js" and v != "" and d.js != 0
+                    r = js_evaluar(d.js, v, "consola")
+                    e = js_error(d.js)
+                    clase = ""
+                    if e != ""
+                        r = e
+                        clase = " class=error"
+                    end
+                    dw_insp_consola = dw_insp_consola + "<div>&gt; " + inspeccionar_escapar(v) + "</div><div" + clase + ">&lt; " + inspeccionar_escapar(r) + "</div>"
+                    documento_al_dia(d)
+                end
+            end
+        end
+    end
+    return inspeccionar_html(d, nodo, dw_insp_consola)
+end
+
 # ¿n sigue colgando del documento doc?
 func nodo_en_documento(doc: Nodo, n: Nodo) -> Bool
     m = n
@@ -2819,6 +2881,9 @@ Main
                 paso_historial(w, -1, true)
             elif ev == ID_ADELANTE
                 paso_historial(w, 1, true)
+            end
+            if ev == ID_INSPECCIONAR
+                inspeccionar(w)
             end
             if ev == ID_VER_HISTORIAL
                 navegar(w, "tachyon:historial")

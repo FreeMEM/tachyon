@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (09.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -161,6 +161,9 @@ MSG_52
 MSG_53
 Lesevisning
 ; Reader view
+MSG_54
+Inspiser
+; Inspect
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -704,3 +707,93 @@ Pakker ut %1...
 MSG_486
 Kunne ikke pakke ut %1: %2
 ; Couldn't extract %1: %2
+MSG_487
+Ingenting ennå.
+; Nothing yet.
+MSG_488
+Kjør
+; Run
+MSG_489
+Metode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adresse
+; Address
+MSG_493
+%1 forespørsler, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Ledig fast-minne
+; Free fast memory
+MSG_495
+Ledig chip-minne
+; Free chip memory
+MSG_496
+Største ledige blokk
+; Largest free block
+MSG_497
+JavaScript på denne siden
+; JavaScript of this page
+MSG_498
+Bilder på denne siden
+; Pictures of this page
+MSG_499
+Elementer
+; Elements
+MSG_500
+Ting å tegne
+; Things to draw
+MSG_501
+Ingen.
+; None.
+MSG_502
+Boks
+; Box
+MSG_503
+Åpne og layoute
+; Open and lay out
+MSG_504
+Siste layout
+; Last layout
+MSG_505
+Sidestørrelse
+; Page size
+MSG_506
+Inspiser
+; Inspect
+MSG_507
+Konsoll
+; Console
+MSG_508
+Elementer
+; Elements
+MSG_509
+Nettverk
+; Network
+MSG_510
+Minne
+; Memory
+MSG_511
+Program
+; Application
+MSG_512
+Tider
+; Timings
+MSG_513
+Oppdater
+; Refresh
+MSG_514
+Og %1 til: velg ett for å åpne grenen.
+; And %1 more: choose one to open its branch.
+MSG_515
+Ikke plass til et vindu til
+; No room for another window
+MSG_516
+Vinduet som ble inspisert er lukket.
+; The window that was inspected is closed.

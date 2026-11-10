@@ -174,6 +174,12 @@
               "tr": 21
             },
             {
+              "label": "Inspect",
+              "key": "I",
+              "event": 35,
+              "tr": 54
+            },
+            {
               "separator": true
             },
             {

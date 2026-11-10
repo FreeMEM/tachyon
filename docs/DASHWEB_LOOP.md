@@ -6876,3 +6876,20 @@ Formato:
 - Visto (watch?v=Du47RT74_9c): Reject all le da al diálogo, y el clic en el primer relacionado lleva a
   watch?v=Y94tsObWIq0 (carga entera: youtube_a_video), con su miniatura, título, canal y relacionados; atrás
   encendido. Pasan documento (11), jsdom (38; los 5 últimos de la tanda, TIMEOUT, pasan solos). Acid3 100/100.
+
+### 2026-11-10 — Tarea 65a: Inspeccionar, como las herramientas de Chrome (primera versión)
+- Menú Herramientas > Inspect (Amiga-I): la página de la ventana que se mira, en otra ventana (tachyon:inspeccionar;
+  si ya hay una, se refresca con esta). lib/inspeccionar.dash inspeccionar_html, con sus secciones: Consola (lo
+  último del registro de lib/js.dash, los errores en rojo, y una línea para evaluar JavaScript en la página:
+  tachyon:inspeccionar?js=..., con lo evaluado juntándose debajo); Elementos (el árbol del DOM con etiqueta, id y
+  class: tres niveles abiertos y el camino hasta el elegido, hasta 1200 elementos; el elegido, tachyon:inspeccionar?
+  nodo=0.1.3, con su caja y su estilo calculado en orden); Red (las peticiones que acabaron, lib/http.dash
+  http_apuntar: las últimas 300 con método, estado, tipo, KB, ms y dirección; lo único que se apunta siempre);
+  Memoria (fast, chip, mayor bloque, el JavaScript y las imágenes de la página, elementos, dibujos); Aplicación
+  (las cookies del sitio, localStorage y sessionStorage leídos del JavaScript); Tiempos (abrir y maquetar, la última
+  maqueta, el tamaño). Una web no puede abrirla con acciones (tachyon_sin_accion quita lo de tras "?").
+- Textos nuevos 54 y 487-516, traducidos en los nueve catálogos. tests/test_inspeccionar.dash (nuevo). Pasan http (8).
+- Visto (tachyon.freemem.space, Amiga-I): la ventana Inspect con la consola, que enseña un error de React #418 de la
+  propia web (el texto que pinta el servidor y el del navegador no coinciden: para la sesión de la web), y el árbol.
+- Pendiente (65b): los tiempos por fases (red, HTML, JavaScript, estilo, maqueta, pintar), el menú del botón
+  derecho, y pestañas en lugar de secciones.

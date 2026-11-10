@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (09.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -161,6 +161,9 @@ MSG_52
 MSG_53
 Läsläge
 ; Reader view
+MSG_54
+Inspektera
+; Inspect
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -704,3 +707,93 @@ Packar upp %1...
 MSG_486
 Kunde inte packa upp %1: %2
 ; Couldn't extract %1: %2
+MSG_487
+Inget ännu.
+; Nothing yet.
+MSG_488
+Kör
+; Run
+MSG_489
+Metod
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Typ
+; Type
+MSG_492
+Adress
+; Address
+MSG_493
+%1 förfrågningar, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Ledigt fast-minne
+; Free fast memory
+MSG_495
+Ledigt chip-minne
+; Free chip memory
+MSG_496
+Största lediga block
+; Largest free block
+MSG_497
+JavaScript för den här sidan
+; JavaScript of this page
+MSG_498
+Bilder på den här sidan
+; Pictures of this page
+MSG_499
+Element
+; Elements
+MSG_500
+Saker att rita
+; Things to draw
+MSG_501
+Inga.
+; None.
+MSG_502
+Ruta
+; Box
+MSG_503
+Öppna och layouta
+; Open and lay out
+MSG_504
+Senaste layout
+; Last layout
+MSG_505
+Sidstorlek
+; Page size
+MSG_506
+Inspektera
+; Inspect
+MSG_507
+Konsol
+; Console
+MSG_508
+Element
+; Elements
+MSG_509
+Nätverk
+; Network
+MSG_510
+Minne
+; Memory
+MSG_511
+Program
+; Application
+MSG_512
+Tider
+; Timings
+MSG_513
+Uppdatera
+; Refresh
+MSG_514
+Och %1 till: välj ett för att öppna dess gren.
+; And %1 more: choose one to open its branch.
+MSG_515
+Ingen plats för ett till fönster
+; No room for another window
+MSG_516
+Fönstret som inspekterades är stängt.
+; The window that was inspected is closed.

@@ -106,6 +106,8 @@ MSG_52 (52//)
 Open on its own screen
 MSG_53 (53//)
 Reader view
+MSG_54 (54//)
+Inspect
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -468,3 +470,63 @@ MSG_485 (485//)
 Extracting %1...
 MSG_486 (486//)
 Couldn't extract %1: %2
+MSG_487 (487//)
+Nothing yet.
+MSG_488 (488//)
+Run
+MSG_489 (489//)
+Method
+MSG_490 (490//)
+Status
+MSG_491 (491//)
+Type
+MSG_492 (492//)
+Address
+MSG_493 (493//)
+%1 requests, %2 KB.
+MSG_494 (494//)
+Free fast memory
+MSG_495 (495//)
+Free chip memory
+MSG_496 (496//)
+Largest free block
+MSG_497 (497//)
+JavaScript of this page
+MSG_498 (498//)
+Pictures of this page
+MSG_499 (499//)
+Elements
+MSG_500 (500//)
+Things to draw
+MSG_501 (501//)
+None.
+MSG_502 (502//)
+Box
+MSG_503 (503//)
+Open and lay out
+MSG_504 (504//)
+Last layout
+MSG_505 (505//)
+Page size
+MSG_506 (506//)
+Inspect
+MSG_507 (507//)
+Console
+MSG_508 (508//)
+Elements
+MSG_509 (509//)
+Network
+MSG_510 (510//)
+Memory
+MSG_511 (511//)
+Application
+MSG_512 (512//)
+Timings
+MSG_513 (513//)
+Refresh
+MSG_514 (514//)
+And %1 more: choose one to open its branch.
+MSG_515 (515//)
+No room for another window
+MSG_516 (516//)
+The window that was inspected is closed.

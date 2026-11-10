@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (09.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -161,6 +161,9 @@ Op eigen scherm openen
 MSG_53
 Leesweergave
 ; Reader view
+MSG_54
+Inspecteren
+; Inspect
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -704,3 +707,93 @@ MSG_485
 MSG_486
 Kon %1 niet uitpakken: %2
 ; Couldn't extract %1: %2
+MSG_487
+Nog niets.
+; Nothing yet.
+MSG_488
+Uitvoeren
+; Run
+MSG_489
+Methode
+; Method
+MSG_490
+Status
+; Status
+MSG_491
+Type
+; Type
+MSG_492
+Adres
+; Address
+MSG_493
+%1 verzoeken, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Vrij fast-geheugen
+; Free fast memory
+MSG_495
+Vrij chip-geheugen
+; Free chip memory
+MSG_496
+Grootste vrije blok
+; Largest free block
+MSG_497
+JavaScript van deze pagina
+; JavaScript of this page
+MSG_498
+Afbeeldingen van deze pagina
+; Pictures of this page
+MSG_499
+Elementen
+; Elements
+MSG_500
+Dingen om te tekenen
+; Things to draw
+MSG_501
+Geen.
+; None.
+MSG_502
+Vak
+; Box
+MSG_503
+Openen en opmaken
+; Open and lay out
+MSG_504
+Laatste opmaak
+; Last layout
+MSG_505
+Paginagrootte
+; Page size
+MSG_506
+Inspecteren
+; Inspect
+MSG_507
+Console
+; Console
+MSG_508
+Elementen
+; Elements
+MSG_509
+Netwerk
+; Network
+MSG_510
+Geheugen
+; Memory
+MSG_511
+Toepassing
+; Application
+MSG_512
+Tijden
+; Timings
+MSG_513
+Vernieuwen
+; Refresh
+MSG_514
+En nog %1: kies er een om zijn tak te openen.
+; And %1 more: choose one to open its branch.
+MSG_515
+Geen ruimte voor nog een venster
+; No room for another window
+MSG_516
+Het geïnspecteerde venster is gesloten.
+; The window that was inspected is closed.

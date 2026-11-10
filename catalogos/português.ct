@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (09.11.2026)
+## version $VER: Tachyon.catalog 1.0 (10.11.2026)
 ## language português
 ## codeset 0
 ;
@@ -161,6 +161,9 @@ Abrir no seu próprio ecrã
 MSG_53
 Modo de leitura
 ; Reader view
+MSG_54
+Inspecionar
+; Inspect
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -704,3 +707,93 @@ A extrair %1...
 MSG_486
 Não foi possível extrair %1: %2
 ; Couldn't extract %1: %2
+MSG_487
+Nada ainda.
+; Nothing yet.
+MSG_488
+Executar
+; Run
+MSG_489
+Método
+; Method
+MSG_490
+Estado
+; Status
+MSG_491
+Tipo
+; Type
+MSG_492
+Endereço
+; Address
+MSG_493
+%1 pedidos, %2 KB.
+; %1 requests, %2 KB.
+MSG_494
+Memória fast livre
+; Free fast memory
+MSG_495
+Memória chip livre
+; Free chip memory
+MSG_496
+Maior bloco livre
+; Largest free block
+MSG_497
+JavaScript desta página
+; JavaScript of this page
+MSG_498
+Imagens desta página
+; Pictures of this page
+MSG_499
+Elementos
+; Elements
+MSG_500
+Coisas a desenhar
+; Things to draw
+MSG_501
+Nenhum.
+; None.
+MSG_502
+Caixa
+; Box
+MSG_503
+Abrir e paginar
+; Open and lay out
+MSG_504
+Última paginação
+; Last layout
+MSG_505
+Tamanho da página
+; Page size
+MSG_506
+Inspecionar
+; Inspect
+MSG_507
+Consola
+; Console
+MSG_508
+Elementos
+; Elements
+MSG_509
+Rede
+; Network
+MSG_510
+Memória
+; Memory
+MSG_511
+Aplicação
+; Application
+MSG_512
+Tempos
+; Timings
+MSG_513
+Atualizar
+; Refresh
+MSG_514
+E mais %1: escolha um para abrir o seu ramo.
+; And %1 more: choose one to open its branch.
+MSG_515
+Não há espaço para outra janela
+; No room for another window
+MSG_516
+A janela inspecionada está fechada.
+; The window that was inspected is closed.

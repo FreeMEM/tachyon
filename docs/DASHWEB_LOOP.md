@@ -650,8 +650,9 @@ tarea, con el estilo de Dash.
       con la página cargada; (e) de los resultados a un vídeo (carga entera la página del vídeo: por pushState su
       reproductor no se crea) y atrás. Tiempos: búsqueda entera ~220 s, la página de un vídeo 70-180 s; memoria del
       JavaScript ~100 MB (por eso no cabe en el A1200 de pruebas de 8 MB: el objetivo es una PiStorm con memoria).
-      Pendiente: desplegar la descripción ("more"), oír el sonido en una máquina de verdad, el aviso de cookies que
-      sale descolocado mientras carga, ir de un vídeo a otro por los relacionados (probarlo), y medir en PiStorm.
+      Pendiente: desplegar la descripción ("more", sin comprobar: queda al borde de la ventana), oír el sonido en
+      una máquina de verdad, ir de un vídeo a otro por los relacionados (probarlo), y medir en PiStorm. (El aviso
+      de cookies descolocado, arreglado: el ancho de lo fijo sin width.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -6859,3 +6860,5 @@ Formato:
   sin pasar de lo que queda hasta el borde (el contenedor menos left y right, CSS 2.1 10.3.7).
   tests/test_maqueta_fijo_ancho.dash (nuevo).
 - Pasan acid (3), maqueta (35), estilo (17). Acid3 100/100.
+- Visto (watch?v=Du47RT74_9c): a los 330 s el diálogo está centrado (436,26, 700x822) y "Reject all" a los ~430 s le
+  da: se va.

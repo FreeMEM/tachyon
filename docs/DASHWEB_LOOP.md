@@ -639,6 +639,14 @@ tarea, con el estilo de Dash.
       JavaScript, las imágenes y las hojas (lo de "entera ... memoria libre ... JavaScript KB, imágenes KB"); (e)
       Aplicación: cookies, localStorage y sessionStorage del origen, con borrar; (f) Tiempos: carga, HTML, JS, estilo,
       maqueta, pintar. Sin coste cuando no está abierto.
+- [ ] 68. **dash.freemem.space no acaba de cargar (lo contó David Martínez; lo confirmaron JaviTecH en MiSTer y Oskis
+      R.P en PiStorm CM4; por la sesión telegram, 2026-11-10).** Con la 0.9.3: CPU al 96 % y no avanza. Medido con la
+      0.9.4 (máquina RTG, 68040 JIT): carga en ~50 s y no para. (a) React da el error #418 (hidratación: un texto
+      distinto del del servidor) y rehace la página entera en el cliente: 14 s de temporizadores y 9 s de estilo y
+      maqueta de más; mirar si el texto distinto es cosa de Tachyon (espacios, nodos de texto, entidades). (b) El cursor
+      que parpadea en el logo (animation steps(1) 1 s) se repinta cada ~170 ms para siempre: con steps(), repintar
+      solo al cambiar de paso. (c) Medir antes y después también en el A1200 de pruebas. Con sus nombres en el
+      commit, las notas y Gracias.
 - [~] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
       prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
       reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un

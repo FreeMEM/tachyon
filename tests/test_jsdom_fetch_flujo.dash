@@ -1,0 +1,19 @@
+# Test: fetch con un cuerpo que es un ReadableStream (tarea 64f: YouTube manda así su petición a youtubei/v1/player y
+# salía "[object Object]": 400): se lee entero (trozos de texto y de bytes) y sale como bytes.
+# expect-out: cuerpo: hola, mundo! binario true
+
+import "../lib/documento.dash"
+
+Main
+    d = documento_html("http://x.com/a", "<html><body><script>var z = 1;</script></body></html>")
+    js_evaluar(d.js, "var s = new ReadableStream({start: function (c) { c.enqueue('hola, '); c.enqueue(new Uint8Array([109, 117, 110, 100, 111, 33])); c.close(); }}); fetch('/p', {method: 'POST', body: s});", "t.js")
+    for i in (1..3)
+        jsdom_temporizadores(d.js)
+    end
+    p = jsdom_peticiones[jsdom_peticiones.length - 1]
+    b = http_binario_bufer(p.cuerpo)
+    Print "cuerpo: " + str_from_buffer(b, 0, http_binario_largo(p.cuerpo)) + " binario " + p.binario
+    buffer_free(b)
+    jsdom_peticiones_cancelar(d.js)
+    documento_liberar(d)
+end

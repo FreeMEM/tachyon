@@ -6907,3 +6907,15 @@ Formato:
 - Inspect también en el menú del botón derecho de la página. Textos 517-525 en los nueve catálogos (503 y 504 fuera).
 - Arreglado: "%2 KB" sin rellenar en Red (hueco2) y el texto en castellano de imagenes_kb en Memoria.
 - Visto (tachyon.freemem.space): Red con sus 19 peticiones (tipo, KB, ms) y Memoria.
+
+### 2026-11-10 — Tarea 64f (parte): ¿los controles del reproductor de YouTube? Necesitan MediaSource; fetch con flujos
+- Usuario: los controles de YouTube encima del vídeo (línea de tiempo, volumen...) ¿funcionan? No: su reproductor da
+  el vídeo a trozos por MediaSource, que Tachyon no tiene, y su recuadro lo lleva el reproductor de Tachyon.
+- Probado (cambios provisionales, quitados): con canPlayType diciendo "probably" a MP4 H.264/AAC, YouTube sondea con
+  parámetros absurdos (width=99999, eotf=catavision...) y sigue en "Your browser can't play this video": exige
+  MediaSource. Las peticiones de itag=18 que hace su JavaScript son de prueba (expire de 2017, IP inventada).
+  Para sus controles haría falta MediaSource (vídeo y sonido por separado y a trozos): no compensa en un 68k; queda
+  la barra de controles propia de Tachyon (64f).
+- Salió un fallo de verdad: fetch con un cuerpo que es un ReadableStream (así manda YouTube su petición a
+  youtubei/v1/player) enviaba "[object Object]" (400). Ahora fetch lee el flujo entero (texto y bytes) y lo manda
+  como bytes. tests/test_jsdom_fetch_flujo.dash (nuevo).

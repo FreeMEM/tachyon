@@ -7052,3 +7052,14 @@ Formato:
   animación entera: animacion_progreso da el punto sin curva y animacion_valor la aplica en el tramo; steps(1) con un
   fotograma al 50 % (el cursor del logo) ya parpadea. animacion_punto (el tramo y su punto con la curva) es lo que
   compara animaciones_quietas. Tests de animación y SVG 8/8.
+
+### 2026-11-10 — La 0.9.4-alfa: pruebas antes de publicar (visto bueno del usuario: "sí, publica la versión nueva")
+- Actualización de verdad desde el Tachyon.gz de la v0.9.3-alfa publicada (SHA-256 ac46609f...8968), máquina RTG con
+  MUI 3.8 y un GitHub de mentira que redirige como el de verdad (REDIRIGIR=1): con el paquete final baja Tachyon.gz y
+  los nueve catálogos, el instalado es idéntico al compilado y la 0.9.3 queda como .old; la barra dice "0.9.4-alfa
+  installed: click the green icon".
+- Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
+  Wikipedia Amiga) 300 s sin colgarse.
+- Sin nombrar en público el gestor de paquetes que aún no se ha anunciado (por la sesión telegram, del usuario): fuera
+  de textos, catálogos, comentarios, bitácora, notas y de los mensajes de los commits aún sin subir (git filter-repo
+  sobre origin/dev..dev; la historia de antes, en la rama local respaldo-dev-antes-de-limpiar-094, que no se sube).

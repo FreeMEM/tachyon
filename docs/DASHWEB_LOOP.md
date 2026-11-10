@@ -6890,6 +6890,7 @@ Formato:
   maqueta, el tamaño). Una web no puede abrirla con acciones (tachyon_sin_accion quita lo de tras "?").
 - Textos nuevos 54 y 487-516, traducidos en los nueve catálogos. tests/test_inspeccionar.dash (nuevo). Pasan http (8).
 - Visto (tachyon.freemem.space, Amiga-I): la ventana Inspect con la consola, que enseña un error de React #418 de la
-  propia web (el texto que pinta el servidor y el del navegador no coinciden: para la sesión de la web), y el árbol.
+  propia web (el texto que pinta el servidor y el que sale en Tachyon no coinciden; puede ser de Tachyon, una fecha o
+  un número formateado distinto: por mirar), y el árbol.
 - Pendiente (65b): los tiempos por fases (red, HTML, JavaScript, estilo, maqueta, pintar), el menú del botón
   derecho, y pestañas en lugar de secciones.

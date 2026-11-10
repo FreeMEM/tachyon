@@ -6862,3 +6862,17 @@ Formato:
 - Pasan acid (3), maqueta (35), estilo (17). Acid3 100/100.
 - Visto (watch?v=Du47RT74_9c): a los 330 s el diálogo está centrado (436,26, 700x822) y "Reject all" a los ~430 s le
   da: se va.
+
+### 2026-11-10 — Tarea 64e: de un vídeo de YouTube a otro por los relacionados (clic completo, resize)
+- El clic en un vídeo relacionado (yt-lockup-view-model) no hacía nada: Tachyon lanzaba solo click, sin posición ni
+  button. Ahora un clic es lo de un navegador (preludio clicCompleto): pointerdown, mousedown, pointerup, mouseup y
+  click, con la posición del ratón (la última de jsdom_raton), button 0, buttons 1 al bajar y 0 al soltar, detail 1 e
+  isTrusted; solo el preventDefault del click cancela el enlace. tests/test_jsdom_clic_completo.dash (nuevo).
+- Tachyon no lanzaba nunca resize. Ahora (lib/documento.dash documento_vista y documento_resize, entre temporizadores):
+  cuando la vista cambia de tamaño, y tras la maqueta que sigue a una medida vieja: si el JavaScript mide algo recién
+  metido mientras la maqueta se aplaza (documento_maquetar_por_js, "pronto"), recibe 0x0; el diálogo de cookies de
+  YouTube (iron-fit) se centraba así en la esquina y no se movía más; con el resize vuelve a medirse y se centra.
+  tests/test_documento_resize.dash (nuevo).
+- Visto (watch?v=Du47RT74_9c): Reject all le da al diálogo, y el clic en el primer relacionado lleva a
+  watch?v=Y94tsObWIq0 (carga entera: youtube_a_video), con su miniatura, título, canal y relacionados; atrás
+  encendido. Pasan documento (11), jsdom (38; los 5 últimos de la tanda, TIMEOUT, pasan solos). Acid3 100/100.

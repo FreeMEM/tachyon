@@ -1,0 +1,23 @@
+# Test: un clic lanza lo que un navegador: pointerdown, mousedown, pointerup, mouseup y click, en ese orden, con la
+# posición del ratón (la última de jsdom_raton), button 0, buttons 1 al bajar y 0 al soltar, detail 1 e isTrusted.
+# Un preventDefault en mousedown no cancela el enlace; en click, sí. (Tarea 64e: los vídeos relacionados de YouTube
+# no reaccionaban a un click suelto y sin posición.)
+# expect-out: pointerdown mousedown pointerup mouseup click | 30 40 0 1 1 0 true | seguir true
+# expect-out: con click cancelado: seguir false
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body><a id=a href='/x'>enlace</a></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "var l = [], d = ''; ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(function (t) { document.getElementById('a').addEventListener(t, function (e) { l.push(t); if (t == 'mousedown') { e.preventDefault(); d += e.buttons + ' '; } if (t == 'mouseup') d += e.buttons + ' '; if (t == 'click') d = e.clientX + ' ' + e.clientY + ' ' + e.button + ' ' + e.detail + ' ' + d + e.isTrusted; }); });", "t.js")
+    a = dom_por_id(doc, "a")
+    var nadie: Nodo = nil
+    jsdom_raton(js, a, nadie, 30, 40)
+    s = jsdom_clic(js, a)
+    Print js_evaluar(js, "l.join(' ') + ' | ' + d", "t.js") + " | seguir " + s
+    js_evaluar(js, "document.getElementById('a').addEventListener('click', function (e) { e.preventDefault(); });", "t.js")
+    Print "con click cancelado: seguir " + jsdom_clic(js, a)
+end

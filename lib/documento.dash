@@ -72,6 +72,13 @@ struct Documento
     # la última; -1 sin ninguna): atrás y adelante entre ellas van por history.go, sin cargarla otra vez (tarea 64d)
     paso0: Int = -1
     pason: Int = -1
+    # el evento resize (tarea 64a): la vista con que se avisó al JavaScript por última vez; medida_vieja, el
+    # JavaScript midió algo sin caja aún y se le dio la de antes (la maqueta se aplazaba); resize_pendiente, toca
+    # lanzarlo (lo hace el navegador, entre temporizadores)
+    vista_w: Int = 0
+    vista_h: Int = 0
+    medida_vieja: Bool = false
+    resize_pendiente: Bool = false
 end
 
 const DOCUMENTO_CARO = 150
@@ -125,6 +132,28 @@ func _documento_hojas_al_js(d: Documento)
     end
 end
 
+# Lo que se ve, al JavaScript (innerWidth/innerHeight, scrollY, getBoundingClientRect); si cambió de tamaño desde la
+# última vez, resize pendiente, como en los navegadores (Tachyon no lo lanzaba nunca)
+func documento_vista(d: Documento, ancho: Int, alto: Int, desde: Int)
+    if d.js == 0 or d.pagina == nil
+        return
+    end
+    jsdom_vista(d.js, ancho, alto, desde, d.pagina.alto)
+    if d.vista_w > 0 and (d.vista_w != ancho or d.vista_h != alto)
+        d.resize_pendiente = true
+    end
+    d.vista_w = ancho
+    d.vista_h = alto
+end
+
+# El resize pendiente, si lo hay (en window, sin subir)
+func documento_resize(d: Documento)
+    if d.resize_pendiente and d.js != 0
+        d.resize_pendiente = false
+        js_evaluar(d.js, "dispatchEvent(new Event('resize'))", "dashweb")
+    end
+end
+
 @export func documento_maquetar_por_js(doc: Nodo, n: Nodo) -> Bool
     for d in _documentos_js
         if d.doc == doc
@@ -145,6 +174,9 @@ end
                 end
                 _documento_por_js_seguidas = _documento_por_js_seguidas + 1
             elif pronto
+                # (algo recién metido, medido con la caja de antes, 0x0: el diálogo de cookies de YouTube se centraba
+                # así en la esquina y no se movía más; tras la próxima maqueta, resize, y quien midió mide otra vez)
+                d.medida_vieja = true
                 return false
             end
             antes = documento_aplazar
@@ -839,6 +871,10 @@ func _documento_al_dia(d: Documento) -> Bool
     end
     d.aplazada = -1
     d.raton_toques = false
+    if d.medida_vieja
+        d.medida_vieja = false
+        d.resize_pendiente = true
+    end
     if d.js != 0
         d.cambios = jsdom_cambios(d.js)
     end

@@ -674,7 +674,7 @@ func pinta_en(k: Int, x: Int, y: Int, ancho: Int, alto: Int)
     imagenes_hasta(w.actual.im, w.desde, alto)
     # lo que se ve, para el JavaScript (innerWidth/innerHeight, scrollY, getBoundingClientRect)
     if w.actual.js != 0 and w.actual.pagina != nil
-        jsdom_vista(w.actual.js, ancho, alto, w.desde, w.actual.pagina.alto)
+        documento_vista(w.actual, ancho, alto, w.desde)
     end
     pintor_foco = w.foco
     pintor_videos = w.actual.videos
@@ -1495,6 +1495,7 @@ func temporizadores(w: Ventana)
             w.actual.imgs_js = faltan
             js_evaluar(w.actual.js, "__dashweb_imgs = " + faltan, "dashweb")
         end
+        documento_resize(w.actual)
         espera = jsdom_temporizadores(w.actual.js)
         w.actual.desde = w.desde
         w.actual.alto_vista = mui_height(w.v.pagina)
@@ -1564,7 +1565,7 @@ func intersecciones(w: Ventana, todo: Bool)
     if w.actual == nil or w.actual.js == 0 or w.actual.pagina == nil or w.carga != nil
         return
     end
-    jsdom_vista(w.actual.js, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde, w.actual.pagina.alto)
+    documento_vista(w.actual, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde)
     w.io_pagina = w.actual.pagina
     jsdom_intersecciones(w.actual.js, todo)
 end
@@ -1575,7 +1576,7 @@ func avisar_desplazamiento(w: Ventana)
     if w.actual == nil or w.actual.js == 0 or w.actual.pagina == nil or w.carga != nil
         return
     end
-    jsdom_vista(w.actual.js, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde, w.actual.pagina.alto)
+    documento_vista(w.actual, mui_width(w.v.pagina), mui_height(w.v.pagina), w.desde)
     t0 = time_ms()
     jsdom_desplazado(w.actual.js)
     intersecciones(w, true)

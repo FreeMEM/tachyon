@@ -1,0 +1,22 @@
+# Test: el evento resize (tarea 64a; Tachyon no lo lanzaba nunca): la primera vista no lo lanza; otra de distinto
+# tamaño, uno (en window, al llamar a documento_resize, entre temporizadores); la misma otra vez, ninguno.
+# memcheck
+# expect-out: primera 0 | otro tamaño 1 | igual 1 | innerWidth 900
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    d = documento_html("http://x.com/a", "<html><body>x<script>var n = 0; addEventListener('resize', function () { n++; });</script></body></html>")
+    documento_maquetar(d, 800)
+    documento_vista(d, 800, 600, 0)
+    documento_resize(d)
+    r = "primera " + js_evaluar(d.js, "n", "t.js")
+    documento_vista(d, 900, 600, 0)
+    documento_resize(d)
+    r = r + " | otro tamaño " + js_evaluar(d.js, "n", "t.js")
+    documento_vista(d, 900, 600, 0)
+    documento_resize(d)
+    Print r + " | igual " + js_evaluar(d.js, "n", "t.js") + " | innerWidth " + js_evaluar(d.js, "innerWidth", "t.js")
+    documento_liberar(d)
+end

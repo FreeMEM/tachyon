@@ -7096,3 +7096,8 @@ Formato:
   con una animación en marcha, va bien en FS-UAE. La pila es la de @stack (1 MB). Los nodos que tiene el JavaScript se
   retienen (_dash_retain). Siguiente: el mismo ensayo con Tachyon compilado con --memcheck (avisa al momento, con
   fichero y línea), en tools: ~/.cache/video-tachyon/ensayos/repetir_mc.sh.
+- Más: con --memcheck también se cae, sin aviso (no es de lo que mira memcheck). Sin el POST a youtubei/v1/feedback
+  (que llegaba con 400 justo antes en dos caídas) también. Lo común a las caídas: llega una respuesta grande pedida
+  por el JavaScript (lottie-light.js, 210 KB, o la de accounts.google.com) y Tachyon se cae antes de ejecutarla, a
+  los ~353-355 s de la traza. Siguiente: la máquina rtgmmu con MuForce (lecturas y escrituras fuera de sitio, con su
+  dirección), con las cookies de Coffin: tools/medir_visor.py --semillas (ficheros junto al programa).

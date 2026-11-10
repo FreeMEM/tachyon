@@ -6838,3 +6838,5 @@ Formato:
 - Los comentarios de un vídeo sí se cargan (4 ytd-comment-thread-renderer y su cabecera "4 Comments" en
   watch?v=Du47RT74_9c, por youtubei/v1/next con el cuerpo binario).
 - Pasan acid (3), maqueta (34), estilo (17), documento (10). Acid3 100/100.
+- Visto (watch?v=Du47RT74_9c, Reject all, un espacio y la flecha abajo): la página baja (scrollY 875, 6488 de alto)
+  con la cabecera fija, y se ven los 4 comentarios con su avatar, nombre, fecha, "me gusta", Reply y un emoji.

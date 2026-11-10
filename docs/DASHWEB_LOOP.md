@@ -7067,3 +7067,12 @@ Formato:
   test_jsdom_fetch_flujo, test_jsdom_medios, test_maqueta_fijo_ancho, nuevos de estos días) dan "out of memory" al
   final del grupo grande del A1200 de memcheck (108 tests en una sesión) y pasan sueltos. (Una batería anterior se
   quedó 2 h en test_estilo_animacion, compilado con un estado intermedio de la 68: con el código final pasa.)
+
+### 2026-11-10 — Publicada la v0.9.4-alfa
+- Usuario: "sí, publica la versión nueva". PR #24 de dev a main (bb6b902), etiqueta v0.9.4-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.4-alfa con tachyon.lha, Tachyon.gz (SHA-256 153d8090...,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera. Notas en
+  castellano e inglés con Oskis R.P (registro de depuración de red) y David Martínez, JaviTecH y Oskis R.P
+  (dash.freemem.space); sin nombrar el gestor de paquetes sin anunciar.
+- Gracias en la web: los mismos en webs-freemem paquetes/retro/src/reconocimientos.ts, commit local sin subir (subir
+  publica la web: con el visto bueno del usuario).

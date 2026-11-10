@@ -73,6 +73,14 @@ func _jsdom_buscar(n: Nodo, sels: [Selector], todos: Bool, r: [Nodo]) -> Bool
     return false
 end
 
+# Una línea del JavaScript (el preludio) en la traza, si está encendida: los <script> que mete la página, al empezar y
+# al acabar (tarea 64g: Tachyon se caía tras llegar lottie-light.js a la página de un vídeo de YouTube)
+@export func jsdom_traza(t: String)
+    if traza_activa
+        traza("JavaScript: " + t)
+    end
+end
+
 @export func jsdom_texto(n: Nodo) -> String
     # (el de un comentario o una instrucción, sus datos: DOM)
     if n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION

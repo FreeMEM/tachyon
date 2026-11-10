@@ -1924,6 +1924,10 @@ func historia_del_js(w: Ventana)
         op = linea[:sp]
         arg = linea[sp + 1:]
         if op == "push"
+            if youtube_a_video(d.direccion, arg)
+                navegar(w, arg)
+                return
+            end
             if d.paso0 < 0
                 d.paso0 = w.visto
             end
@@ -1949,6 +1953,13 @@ func historia_del_js(w: Ventana)
             paso_historial(w, Int(arg), false)
         end
     end
+end
+
+# YouTube navega sin recargar de los resultados (o la portada) a un vídeo, pero su reproductor no llega a crearse así en
+# Tachyon (la página del vídeo se quedaba con un recuadro negro, sin título, más de 15 minutos en la máquina RTG):
+# ese paso se hace cargando la página del vídeo entera, que sí sale y suena (tarea 64d)
+func youtube_a_video(antes: String, despues: String) -> Bool
+    return dom_es_youtube(despues) and str_find(str_lower(despues), "youtube.com/watch") >= 0 and dom_youtube_id(despues) != "" and dom_youtube_id(despues) != dom_youtube_id(antes)
 end
 
 # ¿La entrada i del historial de la ventana es de la página que se ve (de su history.pushState)?

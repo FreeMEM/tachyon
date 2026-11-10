@@ -6807,3 +6807,10 @@ Formato:
   atrás encendido; /youtubei/v1/next da 200.
 - Pasan jsdom (36; los 5 últimos de la tanda acaban en TIMEOUT, como antes, y pasan solos), naveg (2), documento
   (10), http_binario, jsdom_historia, jsdom_script_src_tarde. Acid3 100/100.
+- Aun así, por la navegación sin recarga el reproductor de YouTube no llega a crearse en Tachyon (base.js corre y
+  yt.player.Application existe, pero no mete #movie_player en ytd-player: recuadro negro y sin pintar nada debajo
+  más de 15 minutos). Tachyon hace ese paso cargando entera la página del vídeo (src/dashweb.dash youtube_a_video,
+  en historia_del_js con un push a youtube.com/watch de otro vídeo): sale entera en 70-180 s.
+- Probado de punta a punta (RTG ancha, 256 MB): results?search_query=amiga+500, Reject all, clic en el primer
+  resultado (a los ~610 s carga watch?v=v59c_ODrnfc), clic en el vídeo: suena en su página mientras se baja
+  ("Vídeo: 39 s, 2,4 imágenes/s (trayéndolo, 6 %)"), con título, canal, visitas y los relacionados.

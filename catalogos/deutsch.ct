@@ -755,12 +755,6 @@ Keine.
 MSG_502
 Box
 ; Box
-MSG_503
-Öffnen und layouten
-; Open and lay out
-MSG_504
-Letztes Layout
-; Last layout
 MSG_505
 Seitengröße
 ; Page size
@@ -797,3 +791,30 @@ Kein Platz für ein weiteres Fenster
 MSG_516
 Das untersuchte Fenster ist geschlossen.
 ; The window that was inspected is closed.
+MSG_517
+Seite herunterladen
+; Download the page
+MSG_518
+HTML lesen
+; Read the HTML
+MSG_519
+Auf CSS und Skripte warten
+; Wait for CSS and scripts
+MSG_520
+Skripte ausführen
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Erstes Layout
+; First layout
+MSG_523
+Bis vollständig (mit Bildern)
+; Until complete (with pictures)
+MSG_524
+Layouts (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-Timer
+; JavaScript timers

@@ -755,12 +755,6 @@ Nenhum.
 MSG_502
 Caixa
 ; Box
-MSG_503
-Abrir e paginar
-; Open and lay out
-MSG_504
-Última paginação
-; Last layout
 MSG_505
 Tamanho da página
 ; Page size
@@ -797,3 +791,30 @@ Não há espaço para outra janela
 MSG_516
 A janela inspecionada está fechada.
 ; The window that was inspected is closed.
+MSG_517
+Descarregar a página
+; Download the page
+MSG_518
+Ler o HTML
+; Read the HTML
+MSG_519
+Esperar pelo CSS e pelos scripts
+; Wait for CSS and scripts
+MSG_520
+Executar os scripts
+; Run the scripts
+MSG_521
+Estilo
+; Style
+MSG_522
+Primeira paginação
+; First layout
+MSG_523
+Até completa (com imagens)
+; Until complete (with pictures)
+MSG_524
+Paginações (%1)
+; Layouts (%1)
+MSG_525
+Temporizadores de JavaScript
+; JavaScript timers

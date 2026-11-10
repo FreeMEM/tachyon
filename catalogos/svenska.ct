@@ -755,12 +755,6 @@ Inga.
 MSG_502
 Ruta
 ; Box
-MSG_503
-Öppna och layouta
-; Open and lay out
-MSG_504
-Senaste layout
-; Last layout
 MSG_505
 Sidstorlek
 ; Page size
@@ -797,3 +791,30 @@ Ingen plats för ett till fönster
 MSG_516
 Fönstret som inspekterades är stängt.
 ; The window that was inspected is closed.
+MSG_517
+Hämta sidan
+; Download the page
+MSG_518
+Läsa HTML
+; Read the HTML
+MSG_519
+Vänta på CSS och skript
+; Wait for CSS and scripts
+MSG_520
+Köra skripten
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Första layout
+; First layout
+MSG_523
+Tills komplett (med bilder)
+; Until complete (with pictures)
+MSG_524
+Layouter (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-timers
+; JavaScript timers

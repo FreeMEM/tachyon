@@ -755,12 +755,6 @@ Ninguna.
 MSG_502
 Caja
 ; Box
-MSG_503
-Abrir y maquetar
-; Open and lay out
-MSG_504
-Última maqueta
-; Last layout
 MSG_505
 Tamaño de la página
 ; Page size
@@ -797,3 +791,30 @@ No hay sitio para otra ventana
 MSG_516
 La ventana que se inspeccionaba está cerrada.
 ; The window that was inspected is closed.
+MSG_517
+Bajar la página
+; Download the page
+MSG_518
+Leer el HTML
+; Read the HTML
+MSG_519
+Esperar el CSS y los scripts
+; Wait for CSS and scripts
+MSG_520
+Ejecutar los scripts
+; Run the scripts
+MSG_521
+Estilo
+; Style
+MSG_522
+Primera maqueta
+; First layout
+MSG_523
+Hasta tenerla entera (con imágenes)
+; Until complete (with pictures)
+MSG_524
+Maquetas (%1)
+; Layouts (%1)
+MSG_525
+Temporizadores del JavaScript
+; JavaScript timers

@@ -502,10 +502,6 @@ MSG_501 (501//)
 None.
 MSG_502 (502//)
 Box
-MSG_503 (503//)
-Open and lay out
-MSG_504 (504//)
-Last layout
 MSG_505 (505//)
 Page size
 MSG_506 (506//)
@@ -530,3 +526,21 @@ MSG_515 (515//)
 No room for another window
 MSG_516 (516//)
 The window that was inspected is closed.
+MSG_517 (517//)
+Download the page
+MSG_518 (518//)
+Read the HTML
+MSG_519 (519//)
+Wait for CSS and scripts
+MSG_520 (520//)
+Run the scripts
+MSG_521 (521//)
+Style
+MSG_522 (522//)
+First layout
+MSG_523 (523//)
+Until complete (with pictures)
+MSG_524 (524//)
+Layouts (%1)
+MSG_525 (525//)
+JavaScript timers

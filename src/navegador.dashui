@@ -220,6 +220,11 @@
               "label": "Save page as...",
               "event": 31,
               "tr": 48
+            },
+            {
+              "label": "Inspect",
+              "event": 35,
+              "tr": 54
             }
           ],
           "tr": 50

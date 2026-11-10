@@ -6894,3 +6894,13 @@ Formato:
   un número formateado distinto: por mirar), y el árbol.
 - Pendiente (65b): los tiempos por fases (red, HTML, JavaScript, estilo, maqueta, pintar), el menú del botón
   derecho, y pestañas en lugar de secciones.
+
+### 2026-11-10 — Tarea 65b: Inspeccionar, los tiempos por fases y en el menú del botón derecho
+- La sección Tiempos, como la cascada de Chrome en números: bajar la página (t_red, lo pone el navegador), leer el
+  HTML (t_html), esperar el CSS y los scripts (t_recursos), ejecutar los scripts (t_js), el estilo (t_estilo), la
+  primera maqueta (t_maqueta) y hasta tenerla entera con las imágenes (t_entera); y lo que se junta después: las
+  maquetas (cuántas y cuánto, también las que pide el JavaScript) y los temporizadores del JavaScript. Campos nuevos
+  de Documento, apuntados en documento_empezar/avanzar/maquetar y en src/dashweb.dash.
+- Inspect también en el menú del botón derecho de la página. Textos 517-525 en los nueve catálogos (503 y 504 fuera).
+- Arreglado: "%2 KB" sin rellenar en Red (hueco2) y el texto en castellano de imagenes_kb en Memoria.
+- Visto (tachyon.freemem.space): Red con sus 19 peticiones (tipo, KB, ms) y Memoria.

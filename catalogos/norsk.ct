@@ -755,12 +755,6 @@ Ingen.
 MSG_502
 Boks
 ; Box
-MSG_503
-Åpne og layoute
-; Open and lay out
-MSG_504
-Siste layout
-; Last layout
 MSG_505
 Sidestørrelse
 ; Page size
@@ -797,3 +791,30 @@ Ikke plass til et vindu til
 MSG_516
 Vinduet som ble inspisert er lukket.
 ; The window that was inspected is closed.
+MSG_517
+Last ned siden
+; Download the page
+MSG_518
+Les HTML
+; Read the HTML
+MSG_519
+Vent på CSS og skript
+; Wait for CSS and scripts
+MSG_520
+Kjør skriptene
+; Run the scripts
+MSG_521
+Stil
+; Style
+MSG_522
+Første layout
+; First layout
+MSG_523
+Til komplett (med bilder)
+; Until complete (with pictures)
+MSG_524
+Layouter (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-tidtakere
+; JavaScript timers

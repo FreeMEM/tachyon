@@ -755,12 +755,6 @@ Aucun.
 MSG_502
 Boîte
 ; Box
-MSG_503
-Ouvrir et mettre en page
-; Open and lay out
-MSG_504
-Dernière mise en page
-; Last layout
 MSG_505
 Taille de la page
 ; Page size
@@ -797,3 +791,30 @@ Pas de place pour une autre fenêtre
 MSG_516
 La fenêtre inspectée est fermée.
 ; The window that was inspected is closed.
+MSG_517
+Télécharger la page
+; Download the page
+MSG_518
+Lire le HTML
+; Read the HTML
+MSG_519
+Attendre le CSS et les scripts
+; Wait for CSS and scripts
+MSG_520
+Exécuter les scripts
+; Run the scripts
+MSG_521
+Style
+; Style
+MSG_522
+Première mise en page
+; First layout
+MSG_523
+Jusqu'à complète (avec images)
+; Until complete (with pictures)
+MSG_524
+Mises en page (%1)
+; Layouts (%1)
+MSG_525
+Minuteries JavaScript
+; JavaScript timers

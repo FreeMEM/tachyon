@@ -79,6 +79,20 @@ struct Documento
     vista_h: Int = 0
     medida_vieja: Bool = false
     resize_pendiente: Bool = false
+    # los tiempos de la carga, para Inspeccionar (tarea 65b; ms): bajar el HTML (lo pone el navegador), analizarlo,
+    # esperar el CSS y los scripts, ejecutarlos, el estilo, la primera maqueta y hasta tenerla entera (el
+    # navegador); y lo que se va juntando después: las maquetas que pide el JavaScript y sus temporizadores
+    t_red: Int = -1
+    t_html: Int = -1
+    t_creado: Int = 0
+    t_recursos: Int = -1
+    t_js: Int = -1
+    t_estilo: Int = -1
+    t_maqueta: Int = -1
+    t_entera: Int = -1
+    n_maquetas: Int = 0
+    ms_maquetas: Int = 0
+    ms_temporizadores: Int = 0
 end
 
 const DOCUMENTO_CARO = 150
@@ -349,9 +363,11 @@ func documento_empezar(direccion: String, r: Respuesta) -> Documento
     else
         d.doc = dom_desde_html5(texto)
     end
+    d.t_html = time_ms() - t0
     d.recursos = recursos_nuevos()
     recursos_del_documento(d.recursos, d.doc, d.direccion)
     d.ms = time_ms() - t0
+    d.t_creado = time_ms()
     return d
 end
 
@@ -486,6 +502,7 @@ func documento_avanzar(d: Documento) -> Bool
         return false
     end
     t0 = time_ms()
+    d.t_recursos = t0 - d.t_creado
     traza("recursos listos: scripts")
     traidos = d.recursos.traidos
     if dom_buscar(d.doc, "script") != nil
@@ -496,6 +513,8 @@ func documento_avanzar(d: Documento) -> Bool
         d.cambios = jsdom_cambios(d.js)
     end
     _documento_olvidar_tocados(d)
+    d.t_js = time_ms() - t0
+    t1 = time_ms()
     traza("scripts hechos en " + (time_ms() - t0) + " ms: estilo")
     d.titulo = jsdom_titulo(d.doc)
     if d.titulo == ""
@@ -506,6 +525,7 @@ func documento_avanzar(d: Documento) -> Bool
     _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)
+    d.t_estilo = time_ms() - t1
     traza("estilo hecho")
     imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
     imagenes_pedir(d.im, d.doc, d.direccion)
@@ -612,6 +632,11 @@ func documento_maquetar(d: Documento, ancho: Int)
     d.pagina = maquetar(d.doc, ancho)
     d.ancho = ancho
     _documento_vistas(d)
+    if d.t_maqueta < 0
+        d.t_maqueta = time_ms() - t0
+    end
+    d.n_maquetas = d.n_maquetas + 1
+    d.ms_maquetas = d.ms_maquetas + time_ms() - t0
     d.ms = d.ms + time_ms() - t0
     traza("maquetada en " + (time_ms() - t0) + " ms")
 end
@@ -977,6 +1002,8 @@ func _documento_al_dia(d: Documento) -> Bool
             _documento_vistas(d)
             d.maqueta_fin = time_ms()
             d.maqueta_ms = d.maqueta_fin - t0
+            d.n_maquetas = d.n_maquetas + 1
+            d.ms_maquetas = d.ms_maquetas + d.maqueta_ms
             if traza_activa
                 traza("el JavaScript hizo " + toques.length + " cambios dentro de " + limite.nombre + "." + str_replace(str_trim(dom_atributo(limite, "class")), " ", ".") + ": maquetada sola en " + (time_ms() - t0) + " ms (" + maqueta_bloques + " bloques)")
             end
@@ -990,6 +1017,8 @@ func _documento_al_dia(d: Documento) -> Bool
     end
     d.maqueta_fin = time_ms()
     d.maqueta_ms = d.maqueta_fin - t0
+    d.n_maquetas = d.n_maquetas + 1
+    d.ms_maquetas = d.ms_maquetas + d.maqueta_ms
     if traza_activa
         cuantos = 0
         if toques != nil

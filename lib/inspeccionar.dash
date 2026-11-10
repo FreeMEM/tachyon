@@ -187,7 +187,7 @@ func _insp_red() -> String
         end
         i = i + 1
     end
-    return "<p>" + hueco(hueco(tr(493, "%1 requests, %2 KB."), "" + (http_registro.length - desde)), "" + total / 1024) + "</p>" + t + "</table>"
+    return "<p>" + hueco2(tr(493, "%1 requests, %2 KB."), "" + (http_registro.length - desde), "" + total / 1024) + "</p>" + t + "</table>"
 end
 
 func _insp_fila(nombre: String, valor: String) -> String
@@ -213,7 +213,7 @@ func _insp_memoria(d: Documento) -> String
     if d.js != 0
         t = t + _insp_fila(tr(497, "JavaScript of this page"), "" + js_memoria(d.js) / 1024 + " KB")
     end
-    t = t + _insp_fila(tr(498, "Pictures of this page"), imagenes_kb(d.im))
+    t = t + _insp_fila(tr(498, "Pictures of this page"), str_replace(str_replace(imagenes_kb(d.im), "imágenes ", ""), " y copias ", " + "))
     t = t + _insp_fila(tr(499, "Elements"), "" + _insp_contar(d.doc))
     if d.pagina != nil
         t = t + _insp_fila(tr(500, "Things to draw"), "" + d.pagina.dibujos.length)
@@ -315,11 +315,25 @@ func _insp_elegido(n: Nodo) -> String
     return t + "</div>"
 end
 
-# Tiempos: lo que tardó en abrirse y maquetarse la página
+# Tiempos: las fases de la carga (como la cascada de Chrome, en números) y lo que se juntó después
+func _insp_ms(ms: Int) -> String
+    if ms < 0
+        return "-"
+    end
+    return "" + ms + " ms"
+end
+
 func _insp_tiempos(d: Documento) -> String
     t = "<table>"
-    t = t + _insp_fila(tr(503, "Open and lay out"), "" + d.ms + " ms")
-    t = t + _insp_fila(tr(504, "Last layout"), "" + d.maqueta_ms + " ms")
+    t = t + _insp_fila(tr(517, "Download the page"), _insp_ms(d.t_red))
+    t = t + _insp_fila(tr(518, "Read the HTML"), _insp_ms(d.t_html))
+    t = t + _insp_fila(tr(519, "Wait for CSS and scripts"), _insp_ms(d.t_recursos))
+    t = t + _insp_fila(tr(520, "Run the scripts"), _insp_ms(d.t_js))
+    t = t + _insp_fila(tr(521, "Style"), _insp_ms(d.t_estilo))
+    t = t + _insp_fila(tr(522, "First layout"), _insp_ms(d.t_maqueta))
+    t = t + _insp_fila(tr(523, "Until complete (with pictures)"), _insp_ms(d.t_entera))
+    t = t + _insp_fila(hueco(tr(524, "Layouts (%1)"), "" + d.n_maquetas), _insp_ms(d.ms_maquetas))
+    t = t + _insp_fila(tr(525, "JavaScript timers"), _insp_ms(d.ms_temporizadores))
     t = t + _insp_fila(tr(505, "Page size"), "" + d.bytes / 1024 + " KB")
     return t + "</table>"
 end

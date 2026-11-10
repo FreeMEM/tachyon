@@ -983,6 +983,7 @@ func avanzar_carga(w: Ventana)
             end
         end
         w.preparando = documento_empezar(w.carga_dir, c.respuesta)
+        w.preparando.t_red = time_ms() - w.empezada - w.preparando.t_html
     end
     if w.preparando == nil
         return
@@ -1501,6 +1502,7 @@ func temporizadores(w: Ventana)
         end
         documento_resize(w.actual)
         espera = jsdom_temporizadores(w.actual.js)
+        w.actual.ms_temporizadores = w.actual.ms_temporizadores + time_ms() - t0
         w.actual.desde = w.desde
         w.actual.alto_vista = mui_height(w.v.pagina)
         if traza_activa
@@ -1698,6 +1700,7 @@ func tic(w: Ventana)
         if dw_cajas != "" and w.actual.doc != nil
             cajas_volcar(w.actual.doc, 0)
         end
+        w.actual.t_entera = time_ms() - w.empezada
         Print "tachyon: " + w.actual.direccion + " entera en " + (time_ms() - w.empezada) + " ms; memoria libre " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB, " + imagenes_kb(w.actual.im) + ")"
         registro_anotar("complete " + informe_sin_parametros(w.actual.direccion) + " in " + (time_ms() - w.empezada) + " ms; free memory " + mem_total() / 1024 + " KB (JavaScript " + kb_js + " KB)")
     end

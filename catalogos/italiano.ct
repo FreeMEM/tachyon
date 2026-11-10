@@ -755,12 +755,6 @@ Nessuno.
 MSG_502
 Riquadro
 ; Box
-MSG_503
-Apri e impagina
-; Open and lay out
-MSG_504
-Ultima impaginazione
-; Last layout
 MSG_505
 Dimensione della pagina
 ; Page size
@@ -797,3 +791,30 @@ Non c'è posto per un'altra finestra
 MSG_516
 La finestra ispezionata è chiusa.
 ; The window that was inspected is closed.
+MSG_517
+Scaricare la pagina
+; Download the page
+MSG_518
+Leggere l'HTML
+; Read the HTML
+MSG_519
+Attendere CSS e script
+; Wait for CSS and scripts
+MSG_520
+Eseguire gli script
+; Run the scripts
+MSG_521
+Stile
+; Style
+MSG_522
+Prima impaginazione
+; First layout
+MSG_523
+Fino a completa (con immagini)
+; Until complete (with pictures)
+MSG_524
+Impaginazioni (%1)
+; Layouts (%1)
+MSG_525
+Timer di JavaScript
+; JavaScript timers

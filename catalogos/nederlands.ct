@@ -755,12 +755,6 @@ Geen.
 MSG_502
 Vak
 ; Box
-MSG_503
-Openen en opmaken
-; Open and lay out
-MSG_504
-Laatste opmaak
-; Last layout
 MSG_505
 Paginagrootte
 ; Page size
@@ -797,3 +791,30 @@ Geen ruimte voor nog een venster
 MSG_516
 Het geïnspecteerde venster is gesloten.
 ; The window that was inspected is closed.
+MSG_517
+De pagina downloaden
+; Download the page
+MSG_518
+De HTML lezen
+; Read the HTML
+MSG_519
+Wachten op CSS en scripts
+; Wait for CSS and scripts
+MSG_520
+De scripts uitvoeren
+; Run the scripts
+MSG_521
+Stijl
+; Style
+MSG_522
+Eerste opmaak
+; First layout
+MSG_523
+Tot compleet (met afbeeldingen)
+; Until complete (with pictures)
+MSG_524
+Opmaken (%1)
+; Layouts (%1)
+MSG_525
+JavaScript-timers
+; JavaScript timers

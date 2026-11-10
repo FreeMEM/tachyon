@@ -828,5 +828,5 @@ MSG_527
 Registro de depuración de red apagado
 ; Network debug log off
 MSG_528
-Poca memoria: el JavaScript de la página está en pausa
-; Low memory: the page's JavaScript is paused
+Poca memoria: se ha parado el JavaScript de la página
+; Low memory: the page's JavaScript was stopped

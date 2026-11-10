@@ -263,6 +263,13 @@ func _red_sitio(c: Conexion)
             cap = cap * 2
         end
         nuevo = buffer_alloc(cap)
+        if nuevo == 0
+            # sin memoria para el doble: la conexión acaba con ese error (antes se copiaba a la dirección 0 y el
+            # Amiga se reiniciaba: un vídeo de YouTube de 25 minutos en Coffin con 256 MB; tarea 64g)
+            c.error = "out of memory"
+            c.cerrada = true
+            return
+        end
         buffer_copy(nuevo, 0, c.buf, c.ini, sin_leer)
         buffer_free(c.buf)
         c.buf = nuevo
@@ -270,6 +277,17 @@ func _red_sitio(c: Conexion)
     end
     c.ini = 0
     c.fin = sin_leer
+end
+
+# ¿Puede crecer el búfer de c, si le hace falta pronto, y quedar reserva bytes libres? Al llenarse pide uno del doble
+# y suelta el de antes después de copiar: con lo que llega de un vídeo largo, el Amiga se quedaba sin memoria
+# (lib/videos.dash deja de traer antes; tarea 64g)
+func red_cabe_crecer(c: Conexion, reserva: Int) -> Bool
+    if c == nil or c.buf == 0 or c.cap - c.fin >= RED_TROZO * 16
+        return true
+    end
+    # (dividiendo: el doble de un búfer grande no cabe en 32 bits)
+    return c.cap <= mem_largest() / 2 and c.cap <= (mem_total() - reserva) / 2
 end
 
 # Trae otro trozo (espera hasta c.espera); false si la conexión se cerró o no llegó nada a tiempo
@@ -305,6 +323,9 @@ func red_recibir_ya(c: Conexion) -> Int
         return 0
     end
     _red_sitio(c)
+    if c.cerrada
+        return -1
+    end
     n = net_bg_recv(c.sock, c.buf + c.fin, c.cap - c.fin)
     if n < 0
         c.cerrada = true

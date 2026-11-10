@@ -51,6 +51,7 @@ struct Reproductor
     esperando: Bool = false  # suena mientras se baja y la imagen siguiente aún no ha llegado
     t_espera: Int = 0        # time_ms() de cuando empezó a esperar
     bajada_rota: Bool = false  # la descarga falló a medias: lo que falte ya no llegará
+    sin_memoria: Bool = false  # deja de traerse por falta de memoria: suena lo que llegó (_video_sin_sitio)
     barra_hasta: Int = 0     # hasta cuándo se ve la barra de controles mientras suena (el ratón pasó por encima)
     duracion: Int = -2       # lo que dura en ms (video_duracion; -1 no se sabe, -2 aún sin mirar)
 end
@@ -58,6 +59,8 @@ end
 # Mientras se baja, se prueba a abrir el vídeo cada tanto (un MP4 "fast start" tiene su índice al principio:
 # empieza a sonar enseguida; si lo tiene al final, cuando llegue entero)
 const VIDEO_PROBAR = 262144
+# Lo que se deja libre al traer un vídeo (bytes): lo que llega está en memoria hasta el final (tarea 64g)
+const VIDEO_RESERVA = 16777216
 
 struct Videos
     lista: [Reproductor]
@@ -175,7 +178,15 @@ func videos_avanzar(vs: Videos) -> Bool
                 cambio = true
             end
         elif r.estado == V_TRAYENDO
-            if http_avanzar(r.carga)
+            if _video_sin_sitio(r)
+                # (no llegará más: con lo que hay, o no se puede)
+                r.probar_en = 0
+                if not _video_probar(r)
+                    r.estado = V_ERROR
+                    r.error = "sin memoria para el vídeo"
+                end
+                cambio = true
+            elif http_avanzar(r.carga)
                 resp = r.carga.respuesta
                 r.carga = nil
                 if resp.error == "" and resp.estado >= 200 and resp.estado < 300
@@ -275,6 +286,9 @@ end
 # Suena mientras se baja: lo que llega, al vídeo; al acabar, que lea del fichero (la memoria de la carga se
 # libera)
 func _video_bajar(r: Reproductor)
+    if _video_sin_sitio(r)
+        return
+    end
     if http_avanzar(r.carga)
         resp = r.carga.respuesta
         r.carga = nil
@@ -286,6 +300,20 @@ func _video_bajar(r: Reproductor)
     else
         video_bajado(r.v, http_parcial(r.carga), http_parcial_listos(r.carga))
     end
+end
+
+# Sin memoria para que siga llegando: se deja de traer (sin cerrar la carga: el vídeo lee de su memoria) y suena lo
+# que ya llegó. Un vídeo de YouTube de 25 minutos son ~100 MB, y en Coffin con 256 MB el Amiga se reiniciaba (64g)
+func _video_sin_sitio(r: Reproductor) -> Bool
+    if r.sin_memoria
+        return true
+    end
+    if http_cabe_crecer(r.carga, VIDEO_RESERVA)
+        return false
+    end
+    r.sin_memoria = true
+    traza("vídeo: sin memoria para traer más (" + mem_total() / 1024 + " KB libres): suena lo que llegó, " + http_parcial_listos(r.carga) / 1024 + " KB")
+    return true
 end
 
 # Después de pintar: la imagen siguiente de cada vídeo que suena, decodificada mientras se espera su hora;
@@ -312,7 +340,7 @@ func _video_decodificar(r: Reproductor)
     t0 = time_ms()
     s = video_siguiente(r.v)
     r.t_decodificar = r.t_decodificar + time_ms() - t0
-    if s == 2 and not r.bajada_rota and r.carga != nil
+    if s == 2 and not r.bajada_rota and not r.sin_memoria and r.carga != nil
         # aún no ha llegado: el vídeo se para (también su sonido) hasta que llegue
         if not r.esperando
             r.esperando = true
@@ -325,6 +353,10 @@ func _video_decodificar(r: Reproductor)
         r.esperando = false
         r.inicio = r.inicio + time_ms() - r.t_espera
         video_pausa(r.v, false)
+    end
+    if s == 2 and r.sin_memoria
+        r.estado = V_FIN
+        return
     end
     if s == 2
         r.estado = V_ERROR
@@ -373,6 +405,9 @@ func videos_estado(vs: Videos) -> String
             bajando = ""
             if r.carga != nil and http_parcial_total(r.carga) > 0
                 bajando = " (trayéndolo, " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+                if r.sin_memoria
+                    bajando = " (sin memoria para traer más: hasta el " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+                end
             end
             if r.esperando
                 return "Vídeo: esperando a que llegue" + bajando

@@ -162,8 +162,8 @@ end
 const POCO_SEGUIDO = 16777216
 # Con menos memoria libre que esto (KB), al cargar otra página la de antes se suelta entera
 const MEMORIA_PARA_DOS = 65536
-# Por debajo de esta memoria libre (KB), el JavaScript de la página se para (js_sin_memoria; JSMINIMA=KB lo cambia)
-var dw_js_minima: Int = 12288
+# Por debajo de esta memoria libre (KB), el JavaScript de la página se suelta (js_sin_memoria; JSMINIMA=KB lo cambia)
+var dw_js_minima: Int = 24576
 # Por debajo de esta memoria libre (KB), las pestañas de detrás se descartan (POCAMEMORIA=KB lo cambia, para probarlo)
 var dw_poca_memoria: Int = 4096
 
@@ -1505,9 +1505,7 @@ end
 func temporizadores(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
-    if w.actual != nil and w.actual.js != 0 and w.carga == nil and js_sin_memoria(w)
-        # (se mira otra vez cada 2 s, por si vuelve a haber)
-        w.js_cuando = time_ms() + 2000
+    if w.carga == nil and js_sin_memoria(w)
         programar()
         return
     end
@@ -1552,21 +1550,14 @@ func temporizadores(w: Ventana)
     programar()
 end
 
-# Con muy poca memoria libre, el JavaScript de la página se para y la página se queda como está, en vez de seguir
-# pidiendo hasta que el Amiga no tenga nada: los resultados de YouTube, con 256 MB, se comían hasta el último KB y
-# Tachyon se caía sin decir nada (tarea 64). Antes se sueltan las pestañas de detrás; sigue cuando vuelve a haber
+# Con poca memoria libre, el JavaScript de la página se suelta entero (sus peticiones y los scripts que le
+# faltaban, también) y la página se queda como está, en vez de seguir pidiendo hasta que el Amiga no tenga nada: los
+# resultados de YouTube y la página de un vídeo, con 256 MB, se comían hasta el último KB y Tachyon se caía sin decir
+# nada (tarea 64g). Pararlo sin soltarlo no bastaba: seguían llegando scripts y respuestas. Antes se sueltan las
+# pestañas de detrás
 func js_sin_memoria(w: Ventana) -> Bool
     d = w.actual
-    if d.js_sin_memoria
-        if mem_total() / 1024 < dw_js_minima * 2
-            return true
-        end
-        d.js_sin_memoria = false
-        traza("vuelve a haber memoria (" + mem_total() / 1024 + " KB libres): el JavaScript de la página sigue")
-        dw_estado(w, "")
-        return false
-    end
-    if mem_total() / 1024 >= dw_js_minima
+    if d == nil or d.js == 0 or mem_total() / 1024 >= dw_js_minima
         return false
     end
     descartar_pestanas_bajo(dw_js_minima)
@@ -1574,9 +1565,13 @@ func js_sin_memoria(w: Ventana) -> Bool
     if mem_total() / 1024 >= dw_js_minima
         return false
     end
+    antes = mem_total() / 1024
+    documento_soltar_js(d)
     d.js_sin_memoria = true
-    traza("poca memoria (" + mem_total() / 1024 + " KB libres): el JavaScript de la página, parado")
-    dw_estado(w, tr(528, "Low memory: the page's JavaScript is paused"))
+    w.js_cuando = -1
+    mem_trim()
+    traza("poca memoria (" + antes + " KB libres): fuera el JavaScript de la página; ahora " + mem_total() / 1024 + " KB libres")
+    dw_estado(w, tr(528, "Low memory: the page's JavaScript was stopped"))
     return true
 end
 
@@ -1702,6 +1697,10 @@ end
 func tic(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
+    # (también mientras llegan sus scripts y respuestas, sin temporizadores)
+    if w.carga == nil and w.preparando == nil
+        js_sin_memoria(w)
+    end
     avanzar_carga(w)
     pendientes_a_la_traza(w)
     ir_pedido(w)
@@ -2844,7 +2843,7 @@ Main
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
             elif str_starts(arg(i), "JSMINIMA=")
-                # JSMINIMA=KB: por debajo de esa memoria libre se para el JavaScript de la página (para probarlo)
+                # JSMINIMA=KB: por debajo de esa memoria libre se suelta el JavaScript de la página (para probarlo)
                 dw_js_minima = Int(arg(i)[9:])
             elif str_starts(arg(i), "POCAMEMORIA=")
                 # POCAMEMORIA=KB: por debajo de esa memoria libre se descartan las pestañas de detrás (para probarlo)

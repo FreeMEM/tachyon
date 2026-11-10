@@ -1075,6 +1075,14 @@ func http_parcial(c: Carga) -> Int
 end
 
 # Bytes del cuerpo que ya han llegado (con http_parcial) y los que tendrá entero
+# ¿Cabe que siga llegando (lib/red.dash red_cabe_crecer) dejando reserva bytes libres?
+func http_cabe_crecer(c: Carga, reserva: Int) -> Bool
+    if c == nil or c.conexion == nil
+        return true
+    end
+    return red_cabe_crecer(c.conexion, reserva)
+end
+
 func http_parcial_listos(c: Carga) -> Int
     if http_parcial(c) == 0
         return 0

@@ -664,10 +664,10 @@ tarea, con el estilo de Dash.
       de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
       (64g, ensayo del vídeo 2 en Coffin con 256 MB) Tachyon se cerraba sin decir nada: los resultados de YouTube se
       comían la memoria hasta el último KB, y al abrir un vídeo la página de antes seguía entera mientras llegaba la
-      nueva. Hecho: el JavaScript de la página se para con menos de 12 MB libres (y sigue cuando vuelve a haber) y la
-      página de antes se suelta entera con menos de 64 MB. Pendiente: otro cierre en la página del vídeo abierta desde
-      los resultados (~40 s después, con 57 MB libres; justo al llegar la respuesta de ~1 MB de
-      accounts.google.com/v3/signin/identifier que pide su JavaScript).
+      nueva. Hecho: con menos de 24 MB libres el JavaScript de la página se suelta entero (la página se queda como
+      está), la página de antes se suelta entera con menos de 64 MB, y un vídeo deja de traerse antes de no caber (el
+      búfer que se dobla al llenarse reiniciaba el Amiga). Pendiente: con la memoria troceada solo caben ~8 MB de un
+      vídeo (2 minutos): traerlo a trozos o a disco; y la duración de la barra sale mal con el vídeo a medias.
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -6992,3 +6992,22 @@ Formato:
   bitácora; también de los mensajes de los commits desde la 0.9.3 antes de subirlos.
 - Datos para la 67 (Ferrán García, por telegram): en PiStorm, AmiFire y Amelinium cargan Aminet casi al instante con
   la misma pila y el mismo wifi que Tachyon.
+
+### 2026-11-10 — Tarea 64g: el vídeo de YouTube ya no reinicia el Amiga en Coffin
+- Ensayos en Coffin (Amiberry 68040 JIT, 256 MB) con el paquete 0.9.4: de la búsqueda "demoscene" al vídeo de 25
+  minutos "The Incredible Demoscene". Con la memcheck no se cerraba; con la normal, a veces. Al pulsar el vídeo, el
+  Amiga entero se reiniciaba (el agente de pruebas desaparecía y la captura salía negra: el arranque).
+- La causa: lib/red.dash _red_sitio dobla el búfer de una conexión al llenarse; el vídeo se trae entero a memoria
+  (~100 MB) y, sin un bloque del doble, buffer_alloc daba 0 y se copiaba a la dirección 0. Ahora, sin memoria, la
+  conexión acaba con "out of memory". red_cabe_crecer / http_cabe_crecer (dividiendo: el doble de un búfer grande no
+  cabe en 32 bits) y lib/videos.dash _video_sin_sitio: el vídeo deja de traerse si al crecer no quedarían
+  VIDEO_RESERVA (16 MB), sin cerrar la carga (el vídeo lee de su memoria), y suena lo que llegó ("sin memoria para
+  traer más"); si no llegó nada que se pueda abrir, "sin memoria para el vídeo" en vez de "trayéndolo" para siempre.
+- El freno de la página: pararle los temporizadores no bastaba (seguían llegando scripts y respuestas y Tachyon se
+  caía con 9 MB). Ahora js_sin_memoria suelta el JavaScript entero (documento_soltar_js: sus peticiones y lo que le
+  faltaba) con menos de dw_js_minima (24 MB), también desde tic mientras llegan cosas; texto 528 "Low memory: the
+  page's JavaScript was stopped" en los nueve catálogos. La página de un vídeo de YouTube se comía ~200 MB: al
+  soltarlo, de 20 MB libres a 141 MB.
+- Visto en Coffin: la página del vídeo entera, el vídeo suena a 29,9 imágenes/s y llega hasta lo traído (8 MB, ~2
+  minutos: la memoria quedó troceada y el bloque más grande no daba para el doble); el Amiga sigue en pie.
+  tests/test_red_cabe_crecer.dash (nuevo), video 4/4, red 4/4.

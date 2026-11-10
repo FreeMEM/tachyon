@@ -828,5 +828,5 @@ MSG_527
 Netzwerk-Debugprotokoll aus
 ; Network debug log off
 MSG_528
-Wenig Speicher: das JavaScript der Seite ist angehalten
-; Low memory: the page's JavaScript is paused
+Wenig Speicher: das JavaScript der Seite wurde beendet
+; Low memory: the page's JavaScript was stopped

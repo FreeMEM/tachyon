@@ -1,0 +1,26 @@
+# Test: red_cabe_crecer (tarea 64g): un búfer con sitio de sobra siempre cabe; uno lleno solo si hay memoria para el
+# doble y la reserva (un vídeo largo de YouTube llenaba la memoria y el Amiga se reiniciaba al doblar el búfer)
+# expect-out: con sitio: true
+# expect-out: lleno y pequeño: true
+# expect-out: lleno y enorme: false
+# expect-out: reserva enorme: false
+# expect-out: sin búfer: true
+import "../lib/red.dash"
+
+Main
+    b = buffer_alloc(65536)
+    c = Conexion(-1, 0, 0, b, 65536, 0, 0, false, "")
+    Print "con sitio: " + red_cabe_crecer(c, 0)
+    c.fin = 65536 - 100
+    Print "lleno y pequeño: " + red_cabe_crecer(c, 1024)
+    # (un búfer de 1,5 GB lleno: el doble no lo tiene ningún Amiga; no se pide, solo se mira)
+    c.cap = 1610612736
+    c.fin = c.cap - 100
+    Print "lleno y enorme: " + red_cabe_crecer(c, 0)
+    c.cap = 65536
+    c.fin = 65536 - 100
+    Print "reserva enorme: " + red_cabe_crecer(c, 1610612736)
+    c.buf = 0
+    Print "sin búfer: " + red_cabe_crecer(c, 0)
+    buffer_free(b)
+end

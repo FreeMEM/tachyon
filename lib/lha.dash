@@ -1,5 +1,4 @@
-# Descompresor de archivos LHA, en Dash: Aminet no necesita C:lha. Copia del de Aminet ((otro proyecto);
-# tarea 63d de Tachyon, con el visto bueno del usuario), con lha_listar.
+# Descompresor de archivos LHA, en Dash: sin C:lha (tarea 63d, con el visto bueno del usuario), con lha_listar.
 #
 #   e = lha_extraer("T:prog.lha", "Work:Prog/")    # "" si fue bien; si no, el error
 #   for f in lha_escritos                         # lo que escribió (rutas completas), para el recibo

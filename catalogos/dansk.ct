@@ -696,8 +696,8 @@ MSG_481
 Intet på denne Amiga åbner denne slags fil. Der skal bruges %1 (eller XAD, xadmaster.library, som åbner næsten alle).
 ; Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them).
 MSG_482
-Hent %1 med Aminet
-; Get %1 with Aminet
+Søg efter %1 på Aminet
+; Look for %1 on Aminet
 MSG_483
 Intet blev pakket ud.
 ; Nothing was extracted.

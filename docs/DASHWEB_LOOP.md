@@ -673,8 +673,8 @@ tarea, con el estilo de Dash.
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
       historial por días ya estaban); (b) puerto ARexx (rexx_port de Dash): OPEN, GETURL, GETTITLE, BACK, FORWARD,
       RELOAD, NEWTAB, QUIT...; (c) modo lectura; (d) abrir .lha, .lzx, .zip... con lo del sistema
-      (xadmaster.library, o C:LhA, C:lzx, C:unzip; para .lha vale el lib de Aminet, cliente/src/lha.dash: "adelante")
-      y, si no hay nada, ofrecer instalarlo con Aminet (y Aminet si no está; ver (otro proyecto));
+      (xadmaster.library, o C:LhA, C:lzx, C:unzip; para .lha vale un descompresor en Dash de otro proyecto del usuario,
+      sin anunciar: "adelante") y, si no hay nada, decir qué falta y dónde buscarlo;
       una OS 3.2 recién instalada no trae ninguno; (e) menos memoria al arrancar (3,4 MB; con la 61); (f) imprimir
       (necesita printer.device en Dash); (g) gestor de contraseñas cifrado con contraseña maestra (AES y derivar la
       clave con AmiSSL: necesita Dash); (h) PDF: primero abrirlo con un visor del sistema; pdf.js no es viable en
@@ -6661,18 +6661,18 @@ Formato:
   (Abrir fichero, soltar su icono, un enlace file:) da una página con lo que tiene y "Extraer...". Primero las órdenes
   del sistema que estén en el Path (Which): lha, lzx, unzip, tar, gzip, 7z, unrar, y si no xadUnFile de XAD
   (xadmaster.library, que abre casi todos); un .lha sin ninguna, con lib/lha.dash; si no hay nada, qué hace falta y
-  un enlace a Aminet (aminet.net/search?query=...). Una OS 3.2 recién instalada no trae ninguna de esas órdenes.
-- lib/lha.dash: copia del descompresor de Aminet (cliente/src/lha.dash; con el visto bueno del usuario) con
+  un enlace para buscarlo en Aminet. Una OS 3.2 recién instalada no trae ninguna de esas órdenes.
+- lib/lha.dash: copia de un descompresor en Dash de otro proyecto del usuario (con su visto bueno) con
   lha_listar (lo que tiene, sin escribir). Arreglado en la copia: un cajón de nivel 2 que ya acaba en su separador
-  daba "Prueba//Prueba" y no se podía escribir (los .lha hechos con el lha de Unix); el de Aminet tiene el mismo
-  fallo (por decir a quien lleve Aminet).
+  daba "Prueba//Prueba" y no se podía escribir (los .lha hechos con el lha de Unix); el original tiene el mismo
+  fallo (por decir a quien lo lleve).
 - tachyon:archivo?extraer=ruta: el diálogo de guardar con el nombre del archivo (se extrae en un cajón nuevo con
   ese nombre) y luego enseña ese cajón. Se puede pedir desde la página del comprimido (file:), además de desde las
   propias; pide el diálogo, así que no hace nada solo.
 - Textos 480-486 en los nueve catálogos (477, "Contents of %1", reutilizado).
-- tests/test_archivos.dash (el prueba.lha de Aminet en hexadecimal: un cajón, un fichero lh5 y un .readme): los
+- tests/test_archivos.dash (un prueba.lha en hexadecimal: un cajón, un fichero lh5 y un .readme): los
   tipos, la lista con el enlace de extraer, extraer a RAM: (12 bytes, el .readme) y un .lzx sin lzx ni XAD (qué hace
-  falta y Aminet). Pasan con test_documento_cajon, buscadores, informe (la primera vez TIMEOUT, el emulador colgado;
+  falta y dónde buscarlo). Pasan con test_documento_cajon, buscadores, informe (la primera vez TIMEOUT, el emulador colgado;
   sola, bien) y los 33 de maqueta.
 - Sin probar con órdenes de verdad del sistema (el emulador no tiene lha, lzx, unzip ni XAD): sus argumentos son
   los de su documentación.
@@ -6984,3 +6984,11 @@ Formato:
 - Queda (64g): la página del vídeo abierta desde los resultados se cierra igual ~40 s después con 57 MB libres, justo
   tras llegar la respuesta de ~1 MB de accounts.google.com/v3/signin/identifier (la misma llegó en la búsqueda sin
   problema). Siguiente: reproducirlo en FS-UAE con --memcheck o la máquina rtgmmu (MuForce).
+
+### 2026-11-10 — Sin el nombre del gestor de paquetes sin anunciar
+- La sesión telegram transmite al usuario: el gestor de paquetes que usa la tarea 63d no se nombra en público hasta
+  que él lo lance. Fuera de los textos y catálogos (el texto 482 dice ahora "Look for %1 on Aminet" y enlaza a
+  aminet.net/search), de los comentarios de lib/archivos.dash, lib/lha.dash y tests/test_archivos.dash y de esta
+  bitácora; también de los mensajes de los commits desde la 0.9.3 antes de subirlos.
+- Datos para la 67 (Ferrán García, por telegram): en PiStorm, AmiFire y Amelinium cargan Aminet casi al instante con
+  la misma pila y el mismo wifi que Tachyon.

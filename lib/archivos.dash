@@ -1,8 +1,8 @@
 # Ficheros comprimidos (tarea 63d, como en Amelinium): abrir uno del disco (.lha, .lzh, .lzx, .zip, .tar, .tgz, .gz,
 # .7z, .rar...) enseña lo que tiene, con un enlace para extraerlo. Con lo que haya en el sistema, sin descompresores
-# propios (usuario, 2026-11-09), salvo el de .lha, que es el de Aminet (lib/lha.dash): primero las órdenes del
-# sistema que lo saben hacer (en el Path: lha, lzx, unzip, tar, gzip, 7z, unrar; también los xadUnFile de XAD); si
-# no hay ninguna, se dice qué instalar y se ofrece Aminet, que lo instala.
+# propios (usuario, 2026-11-09), salvo el de .lha (lib/lha.dash): primero las órdenes del sistema que lo saben hacer
+# (en el Path: lha, lzx, unzip, tar, gzip, 7z, unrar; también los xadUnFile de XAD); si no hay ninguna, se dice qué
+# instalar y dónde buscarlo en Aminet.
 #
 #   tipo = archivo_tipo("Work:x.lzx")          # "lzx", o "" si no es un comprimido
 #   h = archivo_html("Work:x.lzx")             # la página con lo que tiene
@@ -82,7 +82,7 @@ func _archivo_html(t: String) -> String
 end
 
 # La página de un comprimido: lo que tiene y el enlace para extraerlo (tachyon:archivo?extraer=ruta); si no hay con
-# qué abrirlo, qué instalar y el enlace a Aminet
+# qué abrirlo, qué instalar y dónde buscarlo en Aminet
 func archivo_html(ruta: String) -> String
     tipo = archivo_tipo(ruta)
     titulo = _archivo_html(hueco(tr(477, "Contents of %1"), ruta))
@@ -114,7 +114,7 @@ func archivo_html(ruta: String) -> String
     end
     falta = archivo_falta(tipo)
     h = h + "<p>" + hueco(tr(481, "Nothing on this Amiga opens this kind of file. It needs %1 (or XAD, xadmaster.library, which opens almost all of them)."), "<b>" + falta + "</b>") + "</p>"
-    h = h + "<p><a href=\"https://aminet.net/search?query=" + falta + "\">" + hueco(tr(482, "Get %1 with Aminet"), falta) + "</a></p>"
+    h = h + "<p><a href=\"https://aminet.net/search?query=" + falta + "\">" + hueco(tr(482, "Look for %1 on Aminet"), falta) + "</a></p>"
     return h
 end
 

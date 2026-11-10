@@ -1,7 +1,6 @@
 # Test: ficheros comprimidos (lib/archivos.dash y lib/lha.dash, tarea 63d): el tipo por la extensión; un .lha sin
-# orden lha en el sistema (el emulador no la tiene) se lista y se extrae con el de Aminet (un cajón, un fichero lh5
-# y un .readme; el .lha es el de (otro proyecto)); un .lzx sin lzx ni XAD dice qué hace falta
-# y lleva a Aminet.
+# orden lha en el sistema (el emulador no la tiene) se lista y se extrae con lib/lha.dash (un cajón, un fichero lh5
+# y un .readme); un .lzx sin lzx ni XAD dice qué hace falta y lleva a buscarlo en Aminet.
 # memcheck
 # expect-out: tipos: lha lha lzx zip tgz tgz [] []
 # expect-out: lista: true true true true

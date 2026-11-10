@@ -633,7 +633,7 @@ tarea, con el estilo de Dash.
       JavaScript, las imágenes y las hojas (lo de "entera ... memoria libre ... JavaScript KB, imágenes KB"); (e)
       Aplicación: cookies, localStorage y sessionStorage del origen, con borrar; (f) Tiempos: carga, HTML, JS, estilo,
       maqueta, pintar. Sin coste cuando no está abierto.
-- [ ] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
+- [~] 64. **PRIORIDAD: YouTube al completo (usuario, 2026-11-09: "hacer que funcione YouTube al completo y ponlo como
       prioridad").** Va antes que todo lo demás (63, 41d WPT, 62, 61) hasta que funcione. Sigue la 38 (portada y
       reproductor ya hechos en parte) y la 30 (vídeo en la página). Que se pueda usar youtube.com como en un
       navegador de verdad, en la máquina RTG y medido en el A1200: (a) la portada con sus miniaturas y títulos, y el
@@ -650,9 +650,9 @@ tarea, con el estilo de Dash.
       con la página cargada; (e) de los resultados a un vídeo (carga entera la página del vídeo: por pushState su
       reproductor no se crea) y atrás. Tiempos: búsqueda entera ~220 s, la página de un vídeo 70-180 s; memoria del
       JavaScript ~100 MB (por eso no cabe en el A1200 de pruebas de 8 MB: el objetivo es una PiStorm con memoria).
-      Pendiente: desplegar la descripción ("more", sin comprobar: queda al borde de la ventana), oír el sonido en
-      una máquina de verdad, ir de un vídeo a otro por los relacionados (probarlo), y medir en PiStorm. (El aviso
-      de cookies descolocado, arreglado: el ancho de lo fijo sin width.)
+      De un vídeo a otro por los relacionados, también (64e). Pendiente: desplegar la descripción ("more", sin
+      comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
+      de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e

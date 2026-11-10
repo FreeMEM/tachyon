@@ -782,6 +782,7 @@ struct PeticionJS
     tipo: String = ""
     extra: String = ""
     agente: String = ""    # el User-Agent que puso la página ("" el de Tachyon)
+    binario: Bool = false  # el cuerpo son bytes (escapados: lib/http.dash http_binario_largo)
 end
 
 # Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
@@ -807,7 +808,7 @@ func _jsdom_peticiones_empezar(js: Int)
         end
         if p.js == js and p.en_cola
             p.en_cola = false
-            p.carga = http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente)
+            p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
             activas = activas + 1
         end
     end
@@ -820,6 +821,7 @@ var jsdom_peticiones: [PeticionJS] = []
     tipo = ""
     extra = ""
     agente = ""
+    binario = false
     for linea in str_split(cabeceras, "\n")
         p = str_find(linea, ":")
         if p <= 0
@@ -829,6 +831,9 @@ var jsdom_peticiones: [PeticionJS] = []
         valor = str_trim(linea[p + 1:])
         if nombre == "content-type" and metodo != "GET" and metodo != "HEAD" and valor != ""
             tipo = valor
+        elif nombre == "x-tachyon-binario"
+            # (la marca del preludio: el cuerpo son bytes escapados; no sale)
+            binario = true
         elif nombre == "user-agent"
             # (ya no es una cabecera prohibida en Fetch: la página puede poner la suya)
             agente = valor
@@ -857,6 +862,7 @@ var jsdom_peticiones: [PeticionJS] = []
     p.tipo = tipo
     p.extra = extra
     p.agente = agente
+    p.binario = binario
     jsdom_peticiones.push(p)
     _jsdom_peticiones_empezar(js)
 end
@@ -871,7 +877,7 @@ end
         if p.js == js and p.id == id
             if p.en_cola
                 p.en_cola = false
-                p.carga = http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente)
+                p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
             end
             if p.carga == nil
                 jsdom_peticiones.remove(i)
@@ -1020,6 +1026,25 @@ end
         s = "1"
     end
     _jsdom_doc_atributo(doc, "ir_sustituir", s)
+end
+
+# history.pushState, replaceState y go de la página (tarea 64d): "push U", "replace U", "go N" o "fuera N", una por
+# línea en el atributo "historia" del documento, en orden; dashweb las lee y las borra en el siguiente tic
+@export func jsdom_historia(doc: Nodo, t: String)
+    antes = dom_atributo(doc, "historia")
+    if antes != ""
+        antes = antes + "\n"
+    end
+    _jsdom_doc_atributo(doc, "historia", antes + t)
+end
+
+# Lo que quedó apuntado por jsdom_historia (y se borra)
+func jsdom_historia_tomar(doc: Nodo) -> String
+    r = dom_atributo(doc, "historia")
+    if r != ""
+        _jsdom_doc_atributo(doc, "historia", "")
+    end
+    return r
 end
 
 func _jsdom_doc_atributo(doc: Nodo, nombre: String, valor: String)

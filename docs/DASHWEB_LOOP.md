@@ -6781,3 +6781,29 @@ Formato:
   (10), pintor (2). Acid3 100/100. Pendiente: la fluidez del vídeo (4,4 imágenes/s con la página cargada; 3 con el
   aviso de cookies encima, que se repinta con cada imagen); las peticiones del MP4 que hace el JavaScript del
   reproductor de YouTube se quedan en cola (6).
+
+### 2026-11-10 — Tarea 64d (parte): navegar en YouTube sin recargar (history de verdad, POST binarios)
+- history eran funciones vacías: pushState no cambiaba location y back/forward no hacían nada. Ahora history de
+  verdad en el preludio: pushState/replaceState cambian location y document.URL sin cargar (mismo origen, si no
+  SecurityError; state copiado con structuredClone), length; back/forward/go se mueven entre sus entradas, y después
+  popstate (y hashchange si solo cambia el fragmento). Cada cambio se le cuenta a Tachyon (__dashweb_historia ->
+  jsdom_historia, el atributo "historia" del documento): la barra de direcciones y el historial de la ventana lo
+  siguen (src/dashweb.dash historia_del_js; Documento.paso0/pason: sus entradas), y los botones de atrás y adelante
+  entre entradas de la misma página van por history.go (paso_historial), sin cargarla. tests/test_jsdom_historia.dash
+  (nuevo).
+- YouTube manda sus peticiones a youtubei/v1/next y /player comprimidas con gzip en un Uint8Array: cuerpoDe lo
+  decodificaba como texto UTF-8 y llegaba roto (400 "invalid argument"). Ahora un cuerpo binario (ArrayBuffer, vista,
+  Blob) va escapado (el 0 como 1 2 y el 1 como 1 1: los textos de C y Dash no llevan el 0) con la marca
+  x-tachyon-binario, y lib/http.dash lo desescapa a un búfer al mandarlo (_carga_enviar, red_enviar_bufer con
+  net_bg_send_buffer) con su Content-Length de verdad. tests/test_http_binario.dash (nuevo). Probado: un POST a
+  /youtubei/v1/next desde la página daba 200 y el de YouTube 400; con esto, el suyo da 200 (489 KB).
+- -webkit-transform y -webkit-transition cuentan como cambios que no mueven nada (como transform): la barra de
+  progreso de YouTube (scaleX) rehacía la maqueta entera en cada paso.
+- Un <script> que entra vacío y recibe src después no corría: ejecutarScript lo marcaba como hecho al entrar. Ahora
+  uno sin src ni texto no cuenta todavía, y al ponerle src (setAttribute o la propiedad) a uno ya en la página, corre
+  (como en HTML). El reproductor de YouTube carga base.js así: en la navegación sin recarga no se creaba y la página
+  del vídeo se quedaba esperándolo (la barra de progreso al 80 %, sin título). tests/test_jsdom_script_src_tarde.dash.
+- Visto: de los resultados de "amiga 500", el clic en el primero lleva a watch?v=... con la barra de direcciones y
+  atrás encendido; /youtubei/v1/next da 200.
+- Pasan jsdom (36; los 5 últimos de la tanda acaban en TIMEOUT, como antes, y pasan solos), naveg (2), documento
+  (10), http_binario, jsdom_historia, jsdom_script_src_tarde. Acid3 100/100.

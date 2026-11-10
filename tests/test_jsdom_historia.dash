@@ -1,0 +1,34 @@
+# Test: history de verdad (tarea 64d; YouTube navega de los resultados a un vídeo con pushState y antes eran funciones
+# vacías): pushState y replaceState cambian location y document.URL sin cargar la página, con su state (copiado),
+# length; otro origen da SecurityError; back y go lanzan popstate después (con el state de esa entrada) y salir de las
+# entradas de la página se le cuenta a Tachyon. Lo que se le cuenta (jsdom_historia_tomar), por orden.
+# memcheck
+# emu-config: zorro_iii_memory = 65536
+# expect-out: push: http://x.com/watch?v=1 http://x.com/watch?v=1 2 1 true | replace: http://x.com/watch?v=2 2 2
+# expect-out: otro origen: SecurityError | sin url: http://x.com/watch?v=2 3
+# expect-out: avisos: push http://x.com/watch?v=1|replace http://x.com/watch?v=2|push http://x.com/watch?v=2
+# expect-out: back: aún http://x.com/watch?v=2 | luego http://x.com/watch?v=2 2 popstate 2 | go -1 http://x.com/a
+# expect-out: fuera: fuera -5 | ya no hay
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    d = documento_html("http://x.com/a", "<html><body>x<script>var z = 1;</script></body></html>")
+    e = js_evaluar(d.js, "var o = {n: 1}; history.pushState(o, '', '/watch?v=1'); o.n = 9; 'push: ' + location.href + ' ' + document.URL + ' ' + history.length + ' ' + history.state.n + ' ' + (history.state !== o)", "t.js")
+    e = e + " | " + js_evaluar(d.js, "history.replaceState({n: 2}, '', 'watch?v=2'); 'replace: ' + location.href + ' ' + history.length + ' ' + history.state.n", "t.js")
+    Print e
+    e = js_evaluar(d.js, "var r = ''; try { history.pushState(null, '', 'http://y.com/'); } catch (x) { r = x.name; } 'otro origen: ' + r", "t.js")
+    Print e + " | " + js_evaluar(d.js, "history.pushState({n: 3}, ''); 'sin url: ' + location.href + ' ' + history.length", "t.js")
+    Print "avisos: " + str_replace(jsdom_historia_tomar(d.doc), "\n", "|")
+    e = js_evaluar(d.js, "var ev = ''; addEventListener('popstate', function (p) { ev = 'popstate ' + (p.state && p.state.n); }); history.back(); 'back: aún ' + location.href", "t.js")
+    jsdom_temporizadores(d.js)
+    e = e + " | " + js_evaluar(d.js, "'luego ' + location.href + ' ' + history.state.n + ' ' + ev", "t.js")
+    js_evaluar(d.js, "history.go(-1)", "t.js")
+    jsdom_temporizadores(d.js)
+    Print e + " | " + js_evaluar(d.js, "'go -1 ' + location.href", "t.js") 
+    js_evaluar(d.js, "history.go(-5)", "t.js")
+    t = jsdom_historia_tomar(d.doc)
+    Print "fuera: " + str_split(t, "\n")[2] + " | " + js_evaluar(d.js, "history.state === null ? 'ya no hay' : 'mal'", "t.js")
+    documento_liberar(d)
+end

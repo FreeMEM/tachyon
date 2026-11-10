@@ -191,6 +191,21 @@ func red_enviar(c: Conexion, texto: String) -> Bool
     return ok
 end
 
+# Lo mismo con n bytes de un búfer (un cuerpo binario: lib/http.dash, _carga_enviar); el búfer se puede soltar luego
+func red_enviar_bufer(c: Conexion, b: Int, n: Int) -> Bool
+    if c.cerrada
+        return false
+    end
+    if n <= 0
+        return true
+    end
+    ok = net_bg_send_buffer(c.sock, b, n)
+    if not ok
+        c.error = "out of memory"
+    end
+    return ok
+end
+
 # Sitio para un trozo más al final del buffer: lo no leído pasa al principio (sin solaparse)
 # o a un buffer más grande
 func _red_sitio(c: Conexion)

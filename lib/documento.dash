@@ -68,6 +68,10 @@ struct Documento
     # lo que llegó tal cual (el HTML o el texto, sin interpretar ni pasar a Latin-1), para "Guardar página como..."
     # (tarea 57); "" si pasaba de DOCUMENTO_FUENTE_MAX (entonces se baja otra vez) o si es un fichero del disco
     fuente: String = ""
+    # las entradas del historial de la ventana que son de este documento (history.pushState: la primera, la suya, y
+    # la última; -1 sin ninguna): atrás y adelante entre ellas van por history.go, sin cargarla otra vez (tarea 64d)
+    paso0: Int = -1
+    pason: Int = -1
 end
 
 const DOCUMENTO_CARO = 150
@@ -1297,8 +1301,10 @@ func _documento_sin_caja(n: Nodo) -> Bool
     return false
 end
 
+# (también con el prefijo de WebKit: la barra de progreso de YouTube anima -webkit-transform: scaleX() y cada paso
+# rehacía la maqueta entera; tarea 64d)
 func _documento_ligera(k: String) -> Bool
-    return k == "view-transition-name" or k == "view-transition-class" or k == "transform" or k == "translate" or k == "opacity" or k == "visibility" or k == "will-change" or str_starts(k, "transition") or k == "pointer-events" or k == "cursor"
+    return k == "view-transition-name" or k == "view-transition-class" or k == "transform" or k == "translate" or k == "opacity" or k == "visibility" or k == "will-change" or str_starts(k, "transition") or k == "pointer-events" or k == "cursor" or k == "-webkit-transform" or str_starts(k, "-webkit-transition")
 end
 
 func _documento_con_hijos(n: Nodo) -> Bool

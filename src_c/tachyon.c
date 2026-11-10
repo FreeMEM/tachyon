@@ -2652,6 +2652,15 @@ static JSValue _jsdom_navegar(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_UNDEFINED;
 }
 
+/* __dashweb_historia(texto): history.pushState/replaceState/go de la página ("push U", "replace U", "go N",
+   "fuera N"; jsdom_historia, que Tachyon lee en el siguiente tic; tarea 64d) */
+static JSValue _jsdom_historia(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *t = _jsdom_arg(ctx, argc, argv, 0);
+    if (t) jsdom_historia(_jsdom_de(ctx)->doc, (STRPTR)t);
+    _jsdom_soltar(t);
+    return JS_UNDEFINED;
+}
+
 /* __dashweb_version(): dom_version de lib/dom.dash (sube con cada cambio de un árbol): lo que el preludio guarda
    mientras no cambie el DOM (document.baseURI; tarea 41d) */
 static JSValue _jsdom_version(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -2947,6 +2956,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen", JS_NewCFunction(m->ctx, _jsdom_almacen, "__dashweb_almacen", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_almacen_poner", JS_NewCFunction(m->ctx, _jsdom_almacen_poner, "__dashweb_almacen_poner", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_navegar", JS_NewCFunction(m->ctx, _jsdom_navegar, "__dashweb_navegar", 2));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_historia", JS_NewCFunction(m->ctx, _jsdom_historia, "__dashweb_historia", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_es_nodo", JS_NewCFunction(m->ctx, _jsdom_es_nodo, "__dashweb_es_nodo", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_calculado", JS_NewCFunction(m->ctx, _jsdom_calculado, "__dashweb_calculado", 2));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_media", JS_NewCFunction(m->ctx, _jsdom_media, "__dashweb_media", 1));

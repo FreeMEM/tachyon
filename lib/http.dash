@@ -160,6 +160,11 @@ end
 # (HTML, CSS y JS ocupan de 4 a 6 veces menos); lo que va a un fichero (imágenes, vídeo, fuentes) llega tal cual
 # (extra: cabeceras de más, "Nombre: valor" separadas por \r\n, las del XMLHttpRequest y el fetch del JavaScript)
 func _http_peticion(u: Url, metodo: String, cuerpo: String, tipo: String, agente: String, seguir: Bool, comprimir: Bool, extra: String) -> String
+    return _http_peticion_con(u, metodo, cuerpo, cuerpo.length, tipo, agente, seguir, comprimir, extra) + cuerpo
+end
+
+# La cabecera de la petición (hasta la línea en blanco), con el largo del cuerpo que irá detrás
+func _http_peticion_con(u: Url, metodo: String, cuerpo: String, largo: Int, tipo: String, agente: String, seguir: Bool, comprimir: Bool, extra: String) -> String
     ruta = u.ruta
     if ruta == ""
         ruta = "/"
@@ -201,9 +206,67 @@ func _http_peticion(u: Url, metodo: String, cuerpo: String, tipo: String, agente
         if tipo != ""
             peticion = peticion + "\r\nContent-Type: " + tipo
         end
-        peticion = peticion + "\r\nContent-Length: " + cuerpo.length
+        peticion = peticion + "\r\nContent-Length: " + largo
     end
-    return peticion + "\r\n\r\n" + cuerpo
+    return peticion + "\r\n\r\n"
+end
+
+# Un cuerpo binario va por el JavaScript y Dash como texto escapado (los textos de Dash no llevan el byte 0): el 0 es
+# 1 2 y el 1, 1 1 (tarea 64d: YouTube manda sus peticiones a youtubei comprimidas con gzip, y llegaban como
+# "31,139,8,0,..." o como UTF-8 roto). Cuántos bytes son de verdad
+func http_binario_largo(t: String) -> Int
+    n = 0
+    i = 0
+    while i < t.length
+        if str_code(t, i) == 1
+            i = i + 1
+        end
+        n = n + 1
+        i = i + 1
+    end
+    return n
+end
+
+# Los bytes de verdad en un búfer nuevo (de http_binario_largo bytes; 0 si no hay memoria)
+func http_binario_bufer(t: String) -> Int
+    n = http_binario_largo(t)
+    b = buffer_alloc(n + 1)
+    if b == 0
+        return 0
+    end
+    i = 0
+    k = 0
+    while i < t.length
+        c = str_code(t, i)
+        if c == 1 and i + 1 < t.length
+            i = i + 1
+            if str_code(t, i) == 2
+                c = 0
+            end
+        end
+        buffer_set_byte(b, k, c)
+        k = k + 1
+        i = i + 1
+    end
+    return b
+end
+
+# La petición entera de una carga: con un cuerpo binario, la cabecera como texto y el cuerpo desde un búfer
+func _carga_enviar(c: Carga) -> Bool
+    if not c.binario or c.cuerpo == ""
+        return red_enviar(c.conexion, _http_peticion(c.actual, c.metodo, c.cuerpo, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+    end
+    n = http_binario_largo(c.cuerpo)
+    if not red_enviar(c.conexion, _http_peticion_con(c.actual, c.metodo, c.cuerpo, n, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+        return false
+    end
+    b = http_binario_bufer(c.cuerpo)
+    if b == 0
+        return false
+    end
+    ok = red_enviar_bufer(c.conexion, b, n)
+    buffer_free(b)
+    return ok
 end
 
 # Lee la respuesta (estado, cabeceras y cuerpo, a r.cuerpo o al fichero) y cierra la conexión
@@ -508,6 +571,7 @@ struct Carga
     extra: String = ""     # cabeceras de más ("Nombre: valor" separadas por \r\n; XMLHttpRequest y fetch)
     tipo: String = ""      # su Content-Type
     agente: String = ""    # el User-Agent, si no es el de dashweb (http_con_agente)
+    binario: Bool = false  # cuerpo con bytes cualesquiera, escapado (http_binario_escapar): sale de un búfer
     cabecera: Int = -1     # bytes de la línea de estado y las cabeceras, cuando ya llegaron (http_parcial)
     enviada: Bool = false  # la petición ya salió por la conexión
     reusada: Bool = false  # la conexión venía de otra respuesta (si resulta cerrada, se abre otra)
@@ -626,6 +690,12 @@ func http_empezar_metodo(direccion: String, metodo: String, cuerpo: String, tipo
     return c
 end
 
+# La misma carga con su cuerpo binario (escapado; http_binario_largo), antes de su primer http_avanzar
+func http_con_binario(c: Carga, si: Bool) -> Carga
+    c.binario = si
+    return c
+end
+
 # La misma carga con otro User-Agent (antes de su primer http_avanzar: la petición aún no se ha mandado)
 func http_con_agente(c: Carga, agente: String) -> Carga
     c.agente = agente
@@ -697,7 +767,7 @@ func http_avanzar(c: Carga) -> Bool
         end
     end
     if not c.enviada
-        if not red_enviar(c.conexion, _http_peticion(c.actual, c.metodo, c.cuerpo, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
+        if not _carga_enviar(c)
             if c.reusada
                 _carga_otra_conexion(c)
                 return false

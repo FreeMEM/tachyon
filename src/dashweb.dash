@@ -1905,9 +1905,81 @@ func navegar(w: Ventana, destino: String)
     apuntar(w, tachyon_sin_accion(destino))
 end
 
+# history.pushState, replaceState y go de la página (tarea 64d; lib/jsdom.dash jsdom_historia): la dirección nueva
+# en la barra y en el historial de la ventana, sin cargar nada
+func historia_del_js(w: Ventana)
+    d = w.actual
+    if d == nil or d.doc == nil or d.js == 0
+        return
+    end
+    t = jsdom_historia_tomar(d.doc)
+    if t == ""
+        return
+    end
+    for linea in str_split(t, "\n")
+        sp = str_find(linea, " ")
+        if sp <= 0
+            continue
+        end
+        op = linea[:sp]
+        arg = linea[sp + 1:]
+        if op == "push"
+            if d.paso0 < 0
+                d.paso0 = w.visto
+            end
+            d.direccion = arg
+            mui_set_text(w.v.url, arg)
+            apuntar(w, arg)
+            d.pason = w.visto
+        elif op == "replace"
+            d.direccion = arg
+            mui_set_text(w.v.url, arg)
+            if w.visto >= 0 and w.visto < w.pasos.length
+                w.pasos[w.visto] = arg
+            end
+        elif op == "go"
+            v = w.visto + Int(arg)
+            if v >= 0 and v < w.pasos.length
+                w.visto = v
+                d.direccion = w.pasos[v]
+                mui_set_text(w.v.url, d.direccion)
+                botones(w)
+            end
+        elif op == "fuera"
+            paso_historial(w, Int(arg), false)
+        end
+    end
+end
+
+# ¿La entrada i del historial de la ventana es de la página que se ve (de su history.pushState)?
+func del_mismo_documento(w: Ventana, i: Int) -> Bool
+    d = w.actual
+    return d != nil and d.js != 0 and d.paso0 >= 0 and i >= d.paso0 and i <= d.pason
+end
+
+# Atrás (-1) o adelante (+1) en el historial de la ventana; entre entradas de la misma página (con_js), por su
+# history.go: popstate, y la página cambia sola
+func paso_historial(w: Ventana, n: Int, con_js: Bool)
+    v = w.visto + n
+    if v < 0 or v >= w.pasos.length
+        return
+    end
+    if con_js and del_mismo_documento(w, v) and del_mismo_documento(w, w.visto)
+        js_evaluar(w.actual.js, "history.go(" + n + ")", "dashweb")
+        temporizadores(w)
+        return
+    end
+    w.visto = v
+    direccion = w.pasos[w.visto]
+    mui_set_text(w.v.url, direccion)
+    abrir(w, direccion)
+    botones(w)
+end
+
 # La página pide ir a otra (tarea 51): su JavaScript (location.replace...; la de salto de DuckDuckGo) o su
 # <meta http-equiv="refresh">, cuando toca
 func ir_pedido(w: Ventana)
+    historia_del_js(w)
     var d: Documento = w.actual
     if w.preparando != nil
         d = w.preparando
@@ -2711,18 +2783,10 @@ Main
                     abrir(w, "")
                 end
             end
-            if (ev == ID_ATRAS and w.visto > 0) or (ev == ID_ADELANTE and w.visto < w.pasos.length - 1)
-                if ev == ID_ATRAS
-                    w.visto = w.visto - 1
-                else
-                    w.visto = w.visto + 1
-                end
-                if w.visto >= 0
-                    direccion = w.pasos[w.visto]
-                    mui_set_text(w.v.url, direccion)
-                    abrir(w, direccion)
-                end
-                botones(w)
+            if ev == ID_ATRAS
+                paso_historial(w, -1, true)
+            elif ev == ID_ADELANTE
+                paso_historial(w, 1, true)
             end
             if ev == ID_VER_HISTORIAL
                 navegar(w, "tachyon:historial")

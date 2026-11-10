@@ -33,6 +33,7 @@
 @extern("dashweb_video.h") func dwv_pausa(v: Int, pausa: Bool)
 @extern("dashweb_video.h") func dwv_con_sonido(v: Int) -> Bool
 @extern("dashweb_video.h") func dwv_ir(v: Int, ms: Int) -> Int
+@extern("dashweb_video.h") func dwv_duracion(v: Int) -> Int
 
 
 func video_abrir(fichero: String) -> Int
@@ -116,6 +117,11 @@ end
 
 func video_con_sonido(v: Int) -> Bool
     return dwv_con_sonido(v)
+end
+
+# Lo que dura el vídeo en ms (del índice de un MP4), o -1 si no se sabe
+func video_duracion(v: Int) -> Int
+    return dwv_duracion(v)
 end
 
 # Salta a ms del vídeo (al fotograma clave de antes más cercano): el ms al que llegó, o -1 si no se puede

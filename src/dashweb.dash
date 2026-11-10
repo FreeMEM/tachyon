@@ -546,6 +546,7 @@ func pinta_completa(x: Int, y: Int, ancho: Int, alto: Int)
     end
     if dw_completa != nil
         videos_pintar_r(dw_completa, x, y, ancho, alto)
+        videos_barra(dw_completa, x, y, ancho, alto)
     end
 end
 
@@ -1606,6 +1607,11 @@ func raton(w: Ventana)
         x = mui_canvas_pointer_x(w.v.pagina)
         y = mui_canvas_pointer_y(w.v.pagina)
         documento_raton(w.actual, x, y + w.desde, y)
+        # (sobre un vídeo: su barra de controles se ve un rato; tarea 64f)
+        vid = documento_video_en_punto(w.actual, x, y + w.desde)
+        if vid != nil and videos_tocar(documento_videos(w.actual), vid)
+            mui_canvas_redraw(w.v.pagina)
+        end
     else
         documento_raton(w.actual, -1, -1, -1)
     end
@@ -1793,6 +1799,13 @@ func clic(w: Ventana)
         if dib != nil
             dx = mui_canvas_mouse_x(w.v.pagina) - dib.x
             dy = mui_canvas_mouse_y(w.v.pagina) + w.desde - dib.y
+            # la barra de controles: reproducir o parar, y saltar en la línea de tiempo (tarea 64f)
+            k = videos_en_barra(documento_videos(w.actual), vid, dx, dy, dib.ancho, dib.alto)
+            if k >= 2
+                mui_canvas_redraw(w.v.pagina)
+                programar()
+                return
+            end
             if videos_en_completa(documento_videos(w.actual), vid, dx, dy, dib.ancho, dib.alto)
                 pantalla_completa(w, videos_de(documento_videos(w.actual), vid))
                 return
@@ -2026,6 +2039,19 @@ func inspeccionar_pedido(direccion: String) -> String
         end
     end
     return inspeccionar_html(d, nodo, dw_insp_consola)
+end
+
+# Un clic a pantalla completa en la barra de controles del vídeo: lo que hizo (videos_en_barra; 0 si no cayó en ella)
+func barra_completa() -> Int
+    if dw_completa == nil or dw_completa_de == nil or dw_completa_de.actual == nil
+        return 0
+    end
+    vs = documento_videos(dw_completa_de.actual)
+    k = videos_en_barra(vs, dw_completa.nodo, mui_canvas_mouse_x(dw_completa_lienzo), mui_canvas_mouse_y(dw_completa_lienzo), mui_width(dw_completa_lienzo), mui_height(dw_completa_lienzo))
+    if k == 1
+        videos_alternar(vs, dw_completa.nodo, dw_completa_de.actual.direccion)
+    end
+    return k
 end
 
 # ¿n sigue colgando del documento doc?
@@ -2813,6 +2839,10 @@ Main
                         salto = -10000
                     end
                     videos_saltar(documento_videos(dw_completa_de.actual), dw_completa.nodo, salto)
+                    mui_canvas_redraw(dw_completa_lienzo)
+                    programar()
+                elif tecla < 0 and mui_canvas_button(dw_completa_lienzo) == 1 and barra_completa() > 0
+                    # (un clic en la barra de controles: reproducir o parar, o saltar; tarea 64f)
                     mui_canvas_redraw(dw_completa_lienzo)
                     programar()
                 elif tecla == 0x45 or (tecla < 0 and mui_canvas_button(dw_completa_lienzo) == 1)

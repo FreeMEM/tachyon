@@ -1879,6 +1879,20 @@ func documento_video_en(d: Documento, x: Int, y: Int) -> Nodo
     return nada
 end
 
+# El vídeo (cualquiera) en cuyo recuadro cae x, y de la página, para su barra de controles; nil si no hay
+func documento_video_en_punto(d: Documento, x: Int, y: Int) -> Nodo
+    var nada: Nodo = nil
+    if d.pagina == nil or d.videos == nil
+        return nada
+    end
+    for dib in d.pagina.dibujos
+        if dib.tipo == D_VIDEO and x >= dib.x and x < dib.x + dib.ancho and y >= dib.y and y < dib.y + dib.alto
+            return dib.nodo
+        end
+    end
+    return nada
+end
+
 # El dibujo del vídeo de ese nodo en la página (para saber dónde cayó un clic); nil si no está
 func documento_video_dibujo(d: Documento, n: Nodo) -> Dibujo
     if d.pagina != nil

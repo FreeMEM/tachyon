@@ -313,6 +313,19 @@ void dwv_pausa(long h, long pausa)
 #endif
 long dwv_con_sonido(long h) { return ((dwv *)h)->au != NULL; }
 
+/* Lo que dura el vídeo en ms (de su índice: MP4/MOV), o -1 si no se sabe (tarea 64f: la línea de tiempo) */
+long dwv_duracion(long h)
+{
+    dwv *v = (dwv *)h;
+    const mr_video_info *vi;
+    uint32_t n;
+    if (!v || !v->dx) return -1;
+    vi = mr_demux_video(v->dx);
+    n = mr_demux_video_frames(v->dx);
+    if (!vi || !vi->rate || !n) return -1;
+    return (long)((unsigned long long)n * 1000u * vi->scale / vi->rate);
+}
+
 /* Saltar a ms del vídeo (tarea 64d: avanzar y retroceder en YouTube): al fotograma clave de antes más cercano
    (mr_demux_seek, MP4 con su índice), con el decodificador de vídeo y el de sonido vacíos y la cola de Paula
    tirada; el reloj sigue desde ahí. El ms al que se llegó, o -1 si no se puede (un formato sin índice). Si lo de

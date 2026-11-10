@@ -19,6 +19,7 @@ void dwv_servicio(long v);                     /* atender la salida de sonido (a
 void dwv_pausa(long v, long pausa);
 long dwv_con_sonido(long v);
 long dwv_ir(long v, long ms);
+long dwv_duracion(long v);
 void dwv_cerrar(long v);
 const char *dwv_youtube_id(const char *url);
 const char *dwv_youtube_mp4(const char *texto);

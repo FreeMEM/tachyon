@@ -6919,3 +6919,13 @@ Formato:
 - Salió un fallo de verdad: fetch con un cuerpo que es un ReadableStream (así manda YouTube su petición a
   youtubei/v1/player) enviaba "[object Object]" (400). Ahora fetch lee el flujo entero (texto y bytes) y lo manda
   como bytes. tests/test_jsdom_fetch_flujo.dash (nuevo).
+
+### 2026-11-10 — Tarea 64f: la barra de controles de Tachyon sobre el vídeo
+- Usuario (sobre los controles de YouTube encima del vídeo): como los de YouTube no funcionan (MediaSource), Tachyon
+  pone los suyos (lib/videos.dash videos_barra, videos_en_barra, videos_tocar): una barra abajo del vídeo mientras
+  está en pausa o 3 s después de pasar el ratón por encima (raton -> documento_video_en_punto), con reproducir o
+  parar, el tiempo ("0:06 / 1:29"), la línea de tiempo (lo bajado en gris claro, lo visto en rojo con su punto; un
+  clic salta ahí, videos_saltar) y pantalla completa a la derecha; también a pantalla completa (barra_completa).
+- La duración: MintVID no la daba; third_party/mintvid/core/mr_demux.c mr_demux_video_frames (las imágenes del índice
+  del MP4) y dashweb_video.c dwv_duracion; lib/video.dash video_duracion.
+- Visto (watch?v=Du47RT74_9c): pausado a los 6 s, la barra con su tiempo y la línea. Pasan video (4).

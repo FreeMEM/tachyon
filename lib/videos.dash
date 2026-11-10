@@ -212,6 +212,43 @@ func videos_avanzar(vs: Videos) -> Bool
     return cambio
 end
 
+# Avanzar o retroceder (ms, negativo hacia atrás) en el vídeo de ese nodo que suena o está en pausa (tarea 64d; las
+# flechas de los lados, como en YouTube): el reloj sigue desde donde llegó. false si no se puede
+func videos_saltar(vs: Videos, n: Nodo, ms: Int) -> Bool
+    r = videos_de(vs, n)
+    if r == nil or r.v == 0 or (r.estado != V_SONANDO and r.estado != V_PAUSA)
+        return false
+    end
+    ahora = r.pos
+    if r.estado == V_SONANDO
+        ahora = _ahora(r)
+    end
+    destino = ahora + ms
+    if destino < 0
+        destino = 0
+    end
+    llegado = video_ir(r.v, destino)
+    if llegado < 0
+        return false
+    end
+    r.pos = llegado
+    r.inicio = time_ms() - llegado
+    r.lista = false
+    r.esperando = false
+    return true
+end
+
+# El vídeo que suena o está en pausa (para las flechas); nil si no hay
+func videos_en_marcha(vs: Videos) -> Nodo
+    for r in vs.lista
+        if r.v != 0 and (r.estado == V_SONANDO or r.estado == V_PAUSA)
+            return r.nodo
+        end
+    end
+    var nadie: Nodo = nil
+    return nadie
+end
+
 # Mientras se baja: ¿se puede abrir ya con lo que ha llegado? (empieza a sonar)
 func _video_probar(r: Reproductor) -> Bool
     listos = http_parcial_listos(r.carga)

@@ -2729,6 +2729,14 @@ Main
                     videos_alternar(documento_videos(dw_completa_de.actual), dw_completa.nodo, dw_completa_de.actual.direccion)
                     mui_canvas_redraw(dw_completa_lienzo)
                     programar()
+                elif (tecla == 0x4E or tecla == 0x4F) and dw_completa != nil and dw_completa_de != nil and dw_completa_de.actual != nil
+                    salto = 10000
+                    if tecla == 0x4F
+                        salto = -10000
+                    end
+                    videos_saltar(documento_videos(dw_completa_de.actual), dw_completa.nodo, salto)
+                    mui_canvas_redraw(dw_completa_lienzo)
+                    programar()
                 elif tecla == 0x45 or (tecla < 0 and mui_canvas_button(dw_completa_lienzo) == 1)
                     salir_completa()
                 end
@@ -2890,6 +2898,16 @@ Main
                         mui_canvas_redraw(w.v.pagina)
                     elif r == FORM_ENVIAR
                         enviar(w, w.foco)
+                    end
+                elif (tecla == 0x4E or tecla == 0x4F) and w.actual != nil and videos_en_marcha(documento_videos(w.actual)) != nil
+                    # las flechas de los lados con un vídeo en marcha: 10 s adelante o atrás, como en YouTube (tarea 64d)
+                    salto = 10000
+                    if tecla == 0x4F
+                        salto = -10000
+                    end
+                    if videos_saltar(documento_videos(w.actual), videos_en_marcha(documento_videos(w.actual)), salto)
+                        mui_canvas_redraw(w.v.pagina)
+                        programar()
                     end
                 elif tecla == 0x4D
                     desplazar(w, 20)

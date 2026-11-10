@@ -6814,3 +6814,15 @@ Formato:
 - Probado de punta a punta (RTG ancha, 256 MB): results?search_query=amiga+500, Reject all, clic en el primer
   resultado (a los ~610 s carga watch?v=v59c_ODrnfc), clic en el vídeo: suena en su página mientras se baja
   ("Vídeo: 39 s, 2,4 imágenes/s (trayéndolo, 6 %)"), con título, canal, visitas y los relacionados.
+
+### 2026-11-10 — Tarea 64d (parte): avanzar y retroceder en el vídeo (flechas, ±10 s)
+- El reproductor (tarea 30) no sabía saltar. third_party/mintvid/dashweb_video.c dwv_ir: al fotograma clave de antes
+  más cercano con mr_demux_seek (MP4 con su índice), mr_decoder_reset, mr_audio_decoder_reset y audio_flush; el reloj
+  del sonido sigue desde el punto de llegada (reloj_base/reloj_desde: audio_elapsed_ms no vuelve a 0) y el retraso
+  de reordenar se mide otra vez con la primera imagen (base, recien). Si ese punto aún no se ha bajado,
+  dwv_siguiente espera (2). lib/video.dash video_ir; lib/videos.dash videos_saltar y videos_en_marcha.
+- src/dashweb.dash: con un vídeo en marcha, las flechas derecha e izquierda (0x4E, 0x4F) saltan 10 s adelante o
+  atrás, en la página y a pantalla completa (como en YouTube).
+- tests/test_video_saltos.dash (nuevo; tests/pages/video_saltos.mp4, 3 s a 10 imágenes/s con un fotograma clave
+  cada 5, ffmpeg): a 1200 llega a 1000 y la primera imagen es la de 1000 (20 hasta el final); a 0, 0 (30); a 2700,
+  2500 (5). Pasan video (4).

@@ -7076,3 +7076,15 @@ Formato:
   (dash.freemem.space); sin nombrar el gestor de paquetes sin anunciar.
 - Gracias en la web: los mismos en webs-freemem paquetes/retro/src/reconocimientos.ts, commit local sin subir (subir
   publica la web: con el visto bueno del usuario).
+
+### 2026-11-10 — Tarea 64g: el inicio de sesión pasivo de Google, fuera (tumbaba Tachyon en la página de un vídeo)
+- La toma del vídeo 2 con la 0.9.4 publicada: Tachyon se cerró (sin devolver la memoria) al pasar de los resultados
+  de "demoscene" al vídeo. Con TRAZA, igual que el ensayo de la mañana: en la página del vídeo, con ~57 MB libres,
+  llega la respuesta de ~1 MB de accounts.google.com/v3/signin/identifier (el JavaScript de YouTube pide
+  ServiceLogin?passive=true) y medio segundo después se acaba la traza. En la búsqueda llegaba lo mismo con 111 MB
+  libres sin problema: algo de lo que se hace con una respuesta grande y la memoria justa falla sin comprobar (sin
+  encontrar aún).
+- lib/url.dash url_rastreador: accounts.google.com con passive=true, como un rastreador (el JavaScript recibe un error
+  de red; abrir accounts.google.com para entrar no pasa por aquí). tests/test_url.dash.
+- En Coffin: de los resultados al vídeo, 7 minutos sin cerrarse y sin pedirlo; el vídeo suena a 29,9 imágenes/s
+  (con 34 MB libres solo caben 4 MB: un minuto). Para una 0.9.5, con el visto bueno del usuario.

@@ -53,7 +53,7 @@
 # expect-out: ficheros: Programs:Network/NetSurf/welcome.html|DH0:pagina.html|Work:a b/A.html|work:x|a.html|pages/x.html|233
 # expect-out: de ruta: file:///Work/Docs/a%20b%231.html|file:///RAM/x.html|pages/x.html|true|file:///Work/%C3%A9
 # expect-out: sin volumen: NIL:|NIL:|NIL:|NIL:|Work:a.html
-# expect-out: rastreo: true true false false
+# expect-out: rastreo: true true false false | google pasivo true, entrar false
 # expect-out: google: 779 https://fonts.googleapis.com/css2?family=Inter&text=+%21%22%23%24%25%26%27%28%29%2A%2B%2C- igual
 
 import "../lib/url.dash"
@@ -127,7 +127,7 @@ Main
     Print "ficheros: " + url_fichero("file:///Programs/Network/NetSurf/welcome.html") + "|" + url_fichero("file:///DH0:pagina.html") + "|" + url_fichero("file://localhost/Work/a%20b/%41.html") + "|" + url_fichero("FILE://work/x") + "|" + url_fichero("file:///a.html") + "|" + url_fichero("pages/x.html") + "|" + str_code(url_fichero("file:///W/%C3%A9"), 2)
     Print "de ruta: " + url_de_ruta("Work:Docs/a b#1.html") + "|" + url_de_ruta("RAM:x.html") + "|" + url_de_ruta("pages/x.html") + "|" + (url_fichero(url_de_ruta("Work:" + str_char(233) + "%.html")) == "Work:" + str_char(233) + "%.html") + "|" + url_de_ruta("Work:" + str_char(233))
     Print "sin volumen: " + url_fichero("data:image/png;base64,iVBORw0KGgo=") + "|" + url_fichero("about:blank") + "|" + url_fichero("javascript:void(0)") + "|" + url_fichero("blob:https://x/1") + "|" + url_fichero("Work:a.html")
-    Print "rastreo: " + url_rastreador("https://www.googletagmanager.com/gtag/js?id=X") + " " + url_rastreador("https://stats.wp.com/e.js") + " " + url_rastreador("https://freemem.space/a.js") + " " + url_rastreador("https://notgoogletagmanager.com/x.js")
+    Print "rastreo: " + url_rastreador("https://www.googletagmanager.com/gtag/js?id=X") + " " + url_rastreador("https://stats.wp.com/e.js") + " " + url_rastreador("https://freemem.space/a.js") + " " + url_rastreador("https://notgoogletagmanager.com/x.js") + " | google pasivo " + url_rastreador("https://accounts.google.com/ServiceLogin?service=youtube&passive=true") + ", entrar " + url_rastreador("https://accounts.google.com/ServiceLogin?service=youtube")
     g = url_fuentes_latin1("https://fonts.googleapis.com/css2?family=Inter")
     otra = "igual"
     if url_fuentes_latin1("https://ejemplo.org/a.css") != "https://ejemplo.org/a.css" or url_fuentes_latin1(g) != g

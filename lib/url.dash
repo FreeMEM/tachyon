@@ -459,6 +459,12 @@ func url_rastreador(direccion: String) -> Bool
             return true
         end
     end
+    # el inicio de sesión "pasivo" de Google que pide el JavaScript de YouTube (passive=true): ~1 MB de HTML que en
+    # Tachyon no sirve (no hay sesión de Google) y que en la página de un vídeo, con la memoria justa, tumbaba Tachyon
+    # (tarea 64g). Abrir accounts.google.com para entrar no pasa por aquí
+    if h == "accounts.google.com" and str_find(direccion, "passive=true") >= 0
+        return true
+    end
     return false
 end
 

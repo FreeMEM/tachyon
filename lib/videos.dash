@@ -237,6 +237,11 @@ func videos_saltar(vs: Videos, n: Nodo, ms: Int) -> Bool
     r.inicio = time_ms() - llegado
     r.lista = false
     r.esperando = false
+    # (en pausa, la imagen de donde se llegó: si no, el recuadro se quedaba en blanco hasta seguir)
+    if r.estado == V_PAUSA and video_siguiente(r.v) == 1
+        r.hay_imagen = true
+        r.pos = video_ms(r.v)
+    end
     return true
 end
 
@@ -564,6 +569,10 @@ end
 func videos_en_barra(vs: Videos, n: Nodo, dx: Int, dy: Int, ancho: Int, alto: Int) -> Int
     r = videos_de(vs, n)
     if r == nil or not r.hay_imagen or not _barra_visible(r) or dy < alto - VIDEO_BARRA or alto < VIDEO_BARRA * 2
+        return 0
+    end
+    if dx >= ancho - VIDEO_ESQUINA
+        # (la esquina es el botón de pantalla completa, que lo atiende quien llama)
         return 0
     end
     r.barra_hasta = time_ms() + VIDEO_BARRA_MS

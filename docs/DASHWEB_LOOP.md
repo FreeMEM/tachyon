@@ -6954,3 +6954,7 @@ Formato:
   leer el HTML, los scripts), para ver dónde se cuelga si se cuelga.
 - Visto: "llega https://duckduckgo.com/l/...: 200, 264 bytes en 628 ms (DNS 118 ms, TCP 169 ms, TLS 236 ms,
   espera 101 ms, ...)". tests/test_traza_fichero.dash (nuevo). Textos 55, 526 y 527 en los nueve catálogos.
+- (ensayo del vídeo 2 en Coffin, Amiberry: 7,8 imágenes/s) Dos fallos de la barra: tras un salto en pausa el recuadro
+  salía en blanco (ahora se decodifica la imagen de donde se llegó) y, con la barra a la vista, el clic en el botón
+  de pantalla completa se lo comía la barra (ahora la esquina es suya). Esc fuera de pantalla completa es el de MUI:
+  cierra la ventana (y con la última, Tachyon).

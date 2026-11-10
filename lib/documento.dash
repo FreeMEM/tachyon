@@ -1791,6 +1791,23 @@ func documento_video_de(n: Nodo) -> Nodo
     return nada
 end
 
+# El <video> de la página de un vídeo de YouTube (dom_video_de_pagina) en cuyo recuadro cae x, y (en la página): el
+# clic cae en las capas que su reproductor pone encima; nil si no
+func documento_video_en(d: Documento, x: Int, y: Int) -> Nodo
+    var nada: Nodo = nil
+    if d.pagina == nil
+        return nada
+    end
+    for dib in d.pagina.dibujos
+        if dib.tipo == D_VIDEO and x >= dib.x and x < dib.x + dib.ancho and y >= dib.y and y < dib.y + dib.alto
+            if dom_video_de_pagina(dib.nodo, d.direccion) != ""
+                return dib.nodo
+            end
+        end
+    end
+    return nada
+end
+
 # El dibujo del vídeo de ese nodo en la página (para saber dónde cayó un clic); nil si no está
 func documento_video_dibujo(d: Documento, n: Nodo) -> Dibujo
     if d.pagina != nil

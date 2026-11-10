@@ -83,6 +83,9 @@ func videos_alternar(vs: Videos, n: Nodo, base: String)
     r = videos_de(vs, n)
     if r == nil
         src = video_src(n)
+        if dom_video_de_pagina(n, base) != ""
+            src = base
+        end
         if src == ""
             return
         end

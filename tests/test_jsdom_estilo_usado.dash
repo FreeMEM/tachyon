@@ -1,0 +1,31 @@
+# Test: getComputedStyle da width y height en px, los de la caja maquetada (su "used value"), como los navegadores
+# (tarea 64c). YouTube lee el alto del esqueleto del reproductor, calc(56.25vw - 266.625px), con parseFloat: con el
+# texto le salía NaN, ponía height: NaNpx y el vídeo medía 0. Con relleno y borde, sin ellos (content-box) o con
+# ellos (border-box); un porcentaje del atributo style; sin height (lo que mide); display: none y un <span>: auto.
+# expect-out: a 577px | e 1026px | p 100px 50px | bb 120px | pct 400px | libre 18px
+# expect-out: oculto auto | span auto | px 30px
+# expect-out: parse 577
+
+import "../lib/maqueta.dash"
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    h = "<html><head><style>body { margin: 0; font-size: 16px; line-height: 18px } "
+    h = h + "#a { height: calc(56.25vw - 266.625px) } #e { width: calc(100vw - 474px) } "
+    h = h + "#p { width: 100px; height: 50px; padding: 10px; border: 2px solid red } "
+    h = h + "#bb { width: 120px; padding: 10px; box-sizing: border-box } #o { display: none; height: calc(10vw) } #x { height: 30px }"
+    h = h + "</style></head><body><div id=a></div><div id=e></div><div id=p></div><div id=bb></div>"
+    h = h + "<div style=\"width: 800px\"><div id=pct style=\"width: 50%\"></div></div><div id=libre>texto</div><div id=o></div><p><span id=s>hola</span></p><div id=x></div></body></html>"
+    doc = dom_desde_html5(h)
+    css_vista(1500, 600)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    p = maquetar(doc, 1500)
+    jsdom_vista(js, 1500, 600, 0, p.alto)
+    js_evaluar(js, "var cs = function (id) { return getComputedStyle(document.getElementById(id)); }", "t.js")
+    Print js_evaluar(js, "'a ' + cs('a').height + ' | e ' + cs('e').width + ' | p ' + cs('p').width + ' ' + cs('p').height + ' | bb ' + cs('bb').width + ' | pct ' + cs('pct').width + ' | libre ' + cs('libre').height", "t.js")
+    Print js_evaluar(js, "'oculto ' + cs('o').width + ' | span ' + cs('s').width + ' | px ' + cs('x').height", "t.js")
+    Print js_evaluar(js, "'parse ' + parseFloat(cs('a').height)", "t.js")
+end

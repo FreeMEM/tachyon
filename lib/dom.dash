@@ -852,9 +852,37 @@ func dom_video_poster(n: Nodo) -> String
     return ""
 end
 
-# ¿Se maqueta n como un vídeo? (<video>, o un <iframe> de YouTube)
+# La página de un vídeo de YouTube pone su propio <video> (video-stream html5-main-video) sin dirección o con una
+# blob: de MediaSource, que Tachyon no sabe reproducir: ese <video> se reproduce como el vídeo de la página (con el
+# reproductor de la tarea 30, lib/youtube.dash) y su cartel es su miniatura (tarea 64c). La dirección que toca; "" si
+# no es el caso
+func dom_video_de_pagina(n: Nodo, pagina: String) -> String
+    if not dom_es_youtube(pagina) or dom_youtube_id(pagina) == ""
+        return ""
+    end
+    if dom_es_reproductor_youtube(n)
+        return pagina
+    end
+    if n.tipo != DOM_ELEMENTO or n.nombre != "video"
+        return ""
+    end
+    src = video_src(n)
+    if src != "" and not str_starts(str_lower(src), "blob:")
+        return ""
+    end
+    return pagina
+end
+
+# ¿Es el reproductor de la página de un vídeo de YouTube (div#movie_player.html5-video-player)? Tachyon no puede con
+# el suyo (MediaSource): todo su recuadro se maqueta como un vídeo, con la miniatura, y lo reproduce el de Tachyon
+# (tarea 64c); sus capas (controles, "Your browser can't play this video") no se pintan
+func dom_es_reproductor_youtube(n: Nodo) -> Bool
+    return n.tipo == DOM_ELEMENTO and n.nombre == "div" and dom_id(n) == "movie_player" and str_find(dom_atributo(n, "class"), "html5-video-player") >= 0
+end
+
+# ¿Se maqueta n como un vídeo? (<video>, un <iframe> de YouTube o el reproductor de YouTube)
 func dom_es_video(n: Nodo) -> Bool
-    return n.tipo == DOM_ELEMENTO and (n.nombre == "video" or (n.nombre == "iframe" and dom_es_youtube(dom_atributo(n, "src"))))
+    return n.tipo == DOM_ELEMENTO and (n.nombre == "video" or (n.nombre == "iframe" and dom_es_youtube(dom_atributo(n, "src"))) or dom_es_reproductor_youtube(n))
 end
 
 # La dirección de un <video>: su src o la del primer <source> con un tipo que se sabe reproducir (MP4, MOV,

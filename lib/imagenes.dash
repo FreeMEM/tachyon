@@ -227,7 +227,11 @@ func imagenes_cartel(n: Nodo, base: Url) -> String
     end
     p = dom_video_poster(n)
     if p == ""
-        return ""
+        id = dom_youtube_id(dom_video_de_pagina(n, url_text(base)))
+        if id == ""
+            return ""
+        end
+        p = "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg"
     end
     completa = p
     if not url_es_data(p)

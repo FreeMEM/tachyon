@@ -6745,3 +6745,38 @@ Formato:
   icono verde, se pulsa (tools/amiga/clicar.dash) y dice "Instalada la 0.9.3-alfa: pulsa el icono verde"; queda la
   0.9.3 en su sitio y la 0.9.2 como .old. No se reproduce su "No se pudo bajar la versión nueva" (2026-11-08): o fue
   algo de ese momento (GitHub), o es de lo cambiado en su disco desde el 6 (DashCoffin es de entonces).
+
+### 2026-11-10 — Tarea 64c (parte): la página de un vídeo de YouTube, con el vídeo sonando en su recuadro
+- El recuadro del reproductor medía 0 de alto. Dos causas, las dos del JavaScript del reproductor:
+  1. getComputedStyle daba width y height tal cual ("calc(56.25vw - 266.625px)", "" sin height) y YouTube los lee
+     con parseFloat: NaN. Ahora, de una caja maquetada, los px de la caja (content-box o border-box, como el "used
+     value" de los navegadores); auto en un elemento en línea y en uno sin caja. tests/test_jsdom_estilo_usado.dash
+     (nuevo).
+  2. yt.flexy.setPlayerlikeElementSize pone el tamaño con la proporción de getVideoAspectRatio(), que sale de
+     video.videoWidth/videoHeight: 0 y 0 le dan 16:9, pero no había HTMLMediaElement y eran undefined (NaN y
+     height: NaNpx). Ahora <video> y <audio> como un navegador sin nada que reproducir: videoWidth/videoHeight 0, en
+     pausa, duration NaN, currentTime/volume/muted/playbackRate que se guardan, buffered/played/seekable vacíos,
+     canPlayType "", play() rechaza con NotSupportedError. tests/test_jsdom_medios.dash (nuevo).
+  Con eso el reproductor mide 608x342 en la máquina RTG ancha.
+- El reproductor de YouTube no puede sonar en Tachyon (MediaSource). div#movie_player.html5-video-player se maqueta
+  ahora como un vídeo (dom_es_reproductor_youtube; dom_video_de_pagina da la dirección de la página): su cartel es la
+  miniatura (hqdefault) y el clic lo reproduce con el reproductor de la tarea 30 (lib/youtube.dash: el cliente
+  ANDROID da el MP4 de 360p). Sus capas ("Your browser can't play this video", controles) no se pintan. El clic
+  cuenta dentro de su recuadro aunque caiga en una capa de encima y aunque el JavaScript lo cancele
+  (documento_video_en).
+- Medido (watch?v=Du47RT74_9c, RTG ancha, 256 MB): el vídeo suena en su recuadro dentro de la página, pero a 1
+  imagen/s: el reproductor decodifica en el bucle del navegador y, mientras YouTube sigue cargando, cada vuelta lleva
+  segundos (temporizadores 2-7 s, estilo 6 s, maqueta 8 s). Memoria libre con el vídeo: 35 MB de 256.
+- Pulsando con la página ya cargada (a los ~500 s; sus temporizadores, ~20 ms cada 50 ms): 4,4 imágenes/s.
+- Cada imagen nueva del vídeo se pintaba directamente encima, aunque algo pintado después lo tapara: ahora, si algún
+  dibujo de después se mete en su recuadro, se repinta su zona entera en su orden (lib/pintor.dash, _tapado).
+  Con el aviso de cookies pendiente, el reproductor sigue en el esqueleto de la página (#player.skeleton, z-index 1) y
+  el diálogo tiene z-index auto: también en Chrome queda debajo; se va al rechazar las cookies.
+- img.width/height siguen con lo del CSS sin medir la caja (__dashweb_estilo_dado): con el getComputedStyle nuevo,
+  test_jsdom_svg_dom daba 100 por 40 en una <img> sin maquetar.
+- Con un vídeo sonando, los temporizadores de la página esperan al menos 250 ms (JS_CON_VIDEO_MS, src/dashweb.dash):
+  el reproductor decodifica en el mismo bucle (solo, este vídeo da ~9 imágenes/s en la máquina RTG).
+- Pasan jsdom (35; los TIMEOUT de la tanda con varios emuladores pasan solos), video (3), maqueta (33), documento
+  (10), pintor (2). Acid3 100/100. Pendiente: la fluidez del vídeo (4,4 imágenes/s con la página cargada; 3 con el
+  aviso de cookies encima, que se repinta con cada imagen); las peticiones del MP4 que hace el JavaScript del
+  reproductor de YouTube se quedan en cola (6).

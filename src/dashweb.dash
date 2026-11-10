@@ -695,7 +695,7 @@ func pinta_en(k: Int, x: Int, y: Int, ancho: Int, alto: Int)
     end
     if mui_canvas_updating()
         # una imagen nueva de un vídeo (mui_canvas_update: MUI no borra el lienzo): solo los vídeos
-        pintar_videos(w.actual.pagina, w.desde, x, y, ancho, alto)
+        pintar_videos(w.actual.pagina, w.actual.im, w.desde, x, y, ancho, alto)
         return
     end
     pintar(w.actual.pagina, w.actual.im, w.desde, x, y, ancho, alto)
@@ -1469,6 +1469,21 @@ func maxi(a: Int, b: Int) -> Int
     return b
 end
 
+const JS_CON_VIDEO_MS = 250
+
+# ¿Suena algún vídeo en la página de la ventana?
+func video_sonando(w: Ventana) -> Bool
+    if w.actual == nil or w.actual.videos == nil
+        return false
+    end
+    for r in w.actual.videos.lista
+        if r.estado == V_SONANDO
+            return true
+        end
+    end
+    return false
+end
+
 func temporizadores(w: Ventana)
     cajas_a_su_hora(w)
     memoria_recortar()
@@ -1492,6 +1507,11 @@ func temporizadores(w: Ventana)
         end
         lienzos_al_dia(w)
         w.js_cuando = -1
+        # (con un vídeo sonando, los temporizadores de la página esperan al menos JS_CON_VIDEO_MS: el reproductor
+        # decodifica en este bucle y YouTube despierta los suyos cada 50 ms; tarea 64c)
+        if espera >= 0 and espera < JS_CON_VIDEO_MS and video_sonando(w)
+            espera = JS_CON_VIDEO_MS
+        end
         if espera >= 0
             w.js_cuando = time_ms() + espera
         end
@@ -1750,11 +1770,16 @@ func clic(w: Ventana)
         temporizadores(w)
         envio_del_js(w)
     end
-    if not seguir
+    # (el vídeo de la página de YouTube va con el reproductor de Tachyon aunque el JavaScript del suyo cancele el clic)
+    de_pagina = documento_video_en(w.actual, mui_canvas_mouse_x(w.v.pagina), mui_canvas_mouse_y(w.v.pagina) + w.desde)
+    if not seguir and de_pagina == nil
         return
     end
     # un <video>: reproducir o parar; en su esquina, a pantalla completa
     vid = documento_video_de(n)
+    if de_pagina != nil
+        vid = de_pagina
+    end
     if vid != nil
         dib = documento_video_dibujo(w.actual, vid)
         if dib != nil

@@ -6776,6 +6776,7 @@ Formato:
   test_jsdom_svg_dom daba 100 por 40 en una <img> sin maquetar.
 - Con un vídeo sonando, los temporizadores de la página esperan al menos 250 ms (JS_CON_VIDEO_MS, src/dashweb.dash):
   el reproductor decodifica en el mismo bucle (solo, este vídeo da ~9 imágenes/s en la máquina RTG).
+- Uso normal (Reject all a los ~440 s y luego el vídeo): página limpia y el vídeo a 4,8 imágenes/s.
 - Pasan jsdom (35; los TIMEOUT de la tanda con varios emuladores pasan solos), video (3), maqueta (33), documento
   (10), pintor (2). Acid3 100/100. Pendiente: la fluidez del vídeo (4,4 imágenes/s con la página cargada; 3 con el
   aviso de cookies encima, que se repinta con cada imagen); las peticiones del MP4 que hace el JavaScript del

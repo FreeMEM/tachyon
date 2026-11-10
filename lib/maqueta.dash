@@ -2253,6 +2253,15 @@ func _absoluto(m: Maquetador, n: Nodo, cx0: Int, cy0: Int, cw0: Int, ch0: Int, p
     w = 0
     if tiene_l and tiene_r and not (e.has("width") and e["width"] != "auto")
         w = cw - l - r
+    elif _val(e, "width", "auto") == "auto"
+        # sin width, lo que pide su contenido sin pasar de lo que queda hasta el borde (CSS 2.1 10.3.7: el
+        # contenedor menos left o right): el diálogo de cookies de YouTube (iron-fit) se mide con el left de la vez
+        # anterior puesto y, con el ancho entero, salía más ancho que la ventana y se ponía en un left negativo
+        disp = cw - l - r
+        if disp < 1
+            disp = 1
+        end
+        w = _ancho_flotante(m, n, disp)
     else
         w = _ancho_flotante(m, n, cw)
     end

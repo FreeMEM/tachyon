@@ -6850,3 +6850,12 @@ Formato:
 - Pasan acid (3), maqueta (34), estilo (17), documento (10). Acid3 100/100.
 - Visto (watch?v=Du47RT74_9c, Reject all, un espacio y la flecha abajo): la página baja (scrollY 875, 6488 de alto)
   con la cabecera fija, y se ven los 4 comentarios con su avatar, nombre, fecha, "me gusta", Reply y un emoji.
+
+### 2026-11-10 — Tarea 64a (parte): el aviso de cookies de YouTube, en su sitio (el ancho de lo fijo sin width)
+- El diálogo de cookies (tp-yt-paper-dialog, iron-fit) salía a veces cortado por la izquierda o en la esquina, y el
+  clic en "Reject all" no le daba. Una caja position: fixed/absolute sin width se medía con el ancho entero del
+  contenedor aunque tuviera left: iron-fit la mide con el left de la vez anterior puesto, le salía más ancha que la
+  ventana y la centraba en un left negativo. lib/maqueta.dash _absoluto: sin width, el ancho ajustado al contenido
+  sin pasar de lo que queda hasta el borde (el contenedor menos left y right, CSS 2.1 10.3.7).
+  tests/test_maqueta_fijo_ancho.dash (nuevo).
+- Pasan acid (3), maqueta (35), estilo (17). Acid3 100/100.

@@ -118,7 +118,15 @@ struct Nodo
     # atributo es el de partida (defaultValue, defaultChecked, defaultSelected), como en un navegador
     valor: String = nil
     marcado: Int = 0
+    # un texto de la página con algo que no cabe en Latin-1 ("→", "’"...): tal como llegó, en UTF-8 (texto lo lleva
+    # cambiado por lib/texto.dash latin1_de). El JavaScript lo ve así (lib/jsdom.dash jsdom_texto_unicode): React
+    # comparaba el suyo con el cambiado y daba el error #418 y rehacía la página entera (tarea 68). Vale mientras
+    # texto siga siendo lo que sale de él
+    unicode: String = nil
 end
+
+# ¿Algún texto de algún documento tiene unicode? (si no, el JavaScript no mira nada más)
+var dom_hay_unicode: Bool = false
 
 # (el value es del campo, no del atributo, en los input donde se escribe: el modo "value" de HTML; en los demás,
 # hidden, botones, checkbox y radio, value es el atributo)

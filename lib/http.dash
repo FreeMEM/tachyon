@@ -576,6 +576,7 @@ struct Carga
     enviada: Bool = false  # la petición ya salió por la conexión
     reusada: Bool = false  # la conexión venía de otra respuesta (si resulta cerrada, se abre otra)
     otra: Bool = false     # ya se abrió otra porque el servidor cerró una nueva sin responder
+    nueva: Bool = false    # con una conexión nueva, sin reusar una libre (http_empezar_nueva)
     t0: Int = 0            # time_ms de cuando se pidió (traza)
     t_enviada: Int = 0     # time_ms de cuando salió la petición y del primer byte de la respuesta (depuración de red)
     t_primer: Int = 0
@@ -656,6 +657,20 @@ func http_empezar_a_fichero(direccion: String, fichero: String, espera_ms: Int) 
     c.fichero = fichero
     if traza_activa
         traza("pide " + direccion)
+    end
+    _carga_conectar(c)
+    return c
+end
+
+# Lo mismo que http_empezar, con una conexión nueva aunque haya una libre de ese servidor: para el segundo intento de
+# lo que se quedó a medias (una libre que el wifi o el router dejó muerta sin cerrarla; tarea 68)
+func http_empezar_nueva(direccion: String, espera_ms: Int) -> Carga
+    var sin: Conexion = nil
+    c = Carga(url_parse(direccion), sin, espera_ms, 0, false, _respuesta_vacia(direccion), -1, time_ms())
+    c.t0 = c.ultimo
+    c.nueva = true
+    if traza_activa
+        traza("pide " + direccion + " (otra vez, con una conexión nueva)")
     end
     _carga_conectar(c)
     return c
@@ -747,7 +762,7 @@ func _carga_conectar(c: Carga)
         c.hecha = true
         return
     end
-    if http_seguir
+    if http_seguir and not c.nueva
         libre = _http_libre(u.host, url_port(u), u.esquema == "https")
         if libre != nil
             c.conexion = libre
@@ -786,6 +801,17 @@ func http_avanzar(c: Carga) -> Bool
         end
         abierta = red_abrir_avanzar(c.conexion)
         if abierta == 0
+            # (abriéndose: el nombre, la conexión o la TLS que no acaban en la tarea de red no tenían tope y la hoja
+            # o el script se quedaba ahí, "1 left", para siempre; tarea 68. Esperando sitio en la tabla, el suyo)
+            if c.conexion.fase != 3 and c.espera > 0 and time_ms() - c.ultimo > c.espera
+                c.respuesta.error = tr(439, "timed out connecting")
+                red_cerrar(c.conexion)
+                c.hecha = true
+                if traza_activa
+                    traza("sin acabar de abrirse en " + (time_ms() - c.ultimo) + " ms (" + red_fase(c.conexion) + "): " + url_text(c.actual))
+                end
+                return true
+            end
             return false
         end
         if abierta < 0

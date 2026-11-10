@@ -33,6 +33,7 @@ struct Animacion
     fondo: Int = -1
     sombra: String = ""
     em: Int = 16
+    prog_ultimo: Int = -2    # el punto (animacion_progreso) del último fotograma pintado (animaciones_quietas)
 end
 
 # Las animaciones de n que tienen @keyframes (vacía si ninguna)
@@ -553,6 +554,28 @@ end
 # lo escala alrededor del centro de su caja (scale: cajas e imágenes de tamaño, el texto solo de sitio y velado por
 # debajo de 0,3), lo recolorea (color, background-color), rehace su sombra (box-shadow) y lo esconde si su opacity
 # baja de 0,5 (el pintor no mezcla texto); true si alguna sigue viva (hace falta otro fotograma)
+# ¿Ninguna está en otro punto que en el último fotograma pintado? Con steps() (el cursor que parpadea en el logo de
+# dash.freemem.space: steps(1) en 1 s) cambian dos veces por segundo y se repintaban en cada fotograma, con la CPU
+# al 96 % para siempre (tarea 68; lo contó David Martínez)
+func animaciones_quietas(anims: [Animacion], ms: Int) -> Bool
+    for a in anims
+        if animacion_progreso(a, ms) != a.prog_ultimo
+            return false
+        end
+    end
+    return true
+end
+
+# ¿Alguna sigue viva a los ms dados? (lo mismo que dice animar)
+func animaciones_vivas(anims: [Animacion], ms: Int) -> Bool
+    for a in anims
+        if a.vueltas < 0 or ms < a.retardo + a.vueltas / 100 * a.duracion / 10
+            return true
+        end
+    end
+    return false
+end
+
 func animar(p: Pagina, anims: [Animacion], ms: Int) -> Bool
     viva = false
     # cómo estaba cada dibujo antes de animarse
@@ -579,6 +602,7 @@ func animar(p: Pagina, anims: [Animacion], ms: Int) -> Bool
         a.fondo = -1
         a.sombra = ""
         prog = animacion_progreso(a, ms)
+        a.prog_ultimo = prog
         if a.vueltas < 0 or ms < a.retardo + a.vueltas / 100 * a.duracion / 10
             viva = true
         end

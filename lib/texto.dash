@@ -152,6 +152,47 @@ end
 
 # UTF-8 a Latin-1. Un byte que no forma una secuencia válida se toma como Latin-1
 # (páginas que dicen UTF-8 y no lo son).
+# ¿Tiene algo que no cabe en Latin-1? (en UTF-8, un byte de 0xC4 o más empieza un carácter de U+0100 en adelante)
+func texto_fuera_de_latin1(s: String) -> Bool
+    if _solo_ascii(s)
+        return false
+    end
+    n = s.length
+    i = 0
+    while i < n
+        if str_code(s, i) >= 196
+            return true
+        end
+        i = i + 1
+    end
+    return false
+end
+
+# Latin-1 a UTF-8
+func latin1_a_utf8(s: String) -> String
+    if _solo_ascii(s)
+        return s
+    end
+    r = ""
+    n = s.length
+    i = 0
+    while i < n
+        b = str_code(s, i)
+        if b < 128
+            j = i + 1
+            while j < n and str_code(s, j) < 128
+                j = j + 1
+            end
+            r = r + s[i:j]
+            i = j
+        else
+            r = r + str_char(192 + b / 64) + str_char(128 + b % 64)
+            i = i + 1
+        end
+    end
+    return r
+end
+
 func utf8_a_latin1(s: String) -> String
     return _utf8_decodificar(s, false)
 end

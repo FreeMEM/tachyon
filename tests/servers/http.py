@@ -111,6 +111,19 @@ class Handler(socketserver.StreamRequestHandler):
             time.sleep(1.5)
             self.wfile.write(b"b" * 1000)
             return
+        if path.startswith("/mudo"):       # accepts the request and never answers (a stuck one; tarea 68)
+            import time
+            time.sleep(20)
+            return
+        if path.startswith("/gotas"):      # a body that comes a byte at a time, every 0.5 s (tarea 68)
+            import time
+            self.wfile.write(b"HTTP/1.1 200 OK\r\nContent-Type: text/css\r\nContent-Length: 100000\r\n\r\n")
+            self.wfile.flush()
+            for _ in range(40):
+                time.sleep(0.5)
+                self.wfile.write(b"a")
+                self.wfile.flush()
+            return
         if path.startswith("/goteo/"):     # a file of tests/pages: 64 KB, a pause, the rest (a video that starts
             import os                      # playing while it downloads; GOTEO_S seconds, 3 by default)
             import time

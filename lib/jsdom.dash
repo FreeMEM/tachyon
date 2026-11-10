@@ -81,6 +81,47 @@ end
     return dom_texto(n)
 end
 
+# El texto de n (textContent; nodeValue de un texto) en UTF-8 si alguno de dentro tiene algo que no cabe en Latin-1
+# (Nodo.unicode, mientras valga); "" si no, y entonces vale jsdom_texto (tarea 68: React y el error #418)
+@export func jsdom_texto_unicode(n: Nodo) -> String
+    if not dom_hay_unicode or (n.tipo != DOM_TEXTO and n.tipo != DOM_ELEMENTO and n.tipo != DOM_DOCUMENTO) or not _jsdom_con_unicode(n)
+        return ""
+    end
+    return _jsdom_unicode_de(n)
+end
+
+func _jsdom_unicode_vale(n: Nodo) -> Bool
+    return n.unicode != nil and utf8_a_latin1(n.unicode) == n.texto
+end
+
+func _jsdom_con_unicode(n: Nodo) -> Bool
+    if n.tipo == DOM_TEXTO
+        return _jsdom_unicode_vale(n)
+    end
+    for h in n.hijos
+        if (h.tipo == DOM_TEXTO or h.tipo == DOM_ELEMENTO) and _jsdom_con_unicode(h)
+            return true
+        end
+    end
+    return false
+end
+
+func _jsdom_unicode_de(n: Nodo) -> String
+    if n.tipo == DOM_TEXTO
+        if _jsdom_unicode_vale(n)
+            return n.unicode
+        end
+        return latin1_a_utf8(n.texto)
+    end
+    r = ""
+    for h in n.hijos
+        if h.tipo == DOM_TEXTO or h.tipo == DOM_ELEMENTO
+            r = r + _jsdom_unicode_de(h)
+        end
+    end
+    return r
+end
+
 # textContent = t: los hijos se cambian por un texto
 @export func jsdom_poner_texto(n: Nodo, t: String)
     if n.tipo == DOM_TEXTO or n.tipo == DOM_COMENTARIO or n.tipo == DOM_INSTRUCCION

@@ -639,7 +639,7 @@ tarea, con el estilo de Dash.
       JavaScript, las imágenes y las hojas (lo de "entera ... memoria libre ... JavaScript KB, imágenes KB"); (e)
       Aplicación: cookies, localStorage y sessionStorage del origen, con borrar; (f) Tiempos: carga, HTML, JS, estilo,
       maqueta, pintar. Sin coste cuando no está abierto.
-- [ ] 68. **dash.freemem.space no acaba de cargar (lo contó David Martínez; lo confirmaron JaviTecH en MiSTer y Oskis
+- [~] 68. **dash.freemem.space no acaba de cargar (lo contó David Martínez; lo confirmaron JaviTecH en MiSTer y Oskis
       R.P en PiStorm CM4; por la sesión telegram, 2026-11-10).** Con la 0.9.3: CPU al 96 % y no avanza. Medido con la
       0.9.4 (máquina RTG, 68040 JIT): carga en ~50 s y no para. (a) React da el error #418 (hidratación: un texto
       distinto del del servidor) y rehace la página entera en el cliente: 14 s de temporizadores y 9 s de estilo y
@@ -7022,3 +7022,29 @@ Formato:
 - Visto en Coffin: la página del vídeo entera, el vídeo suena a 29,9 imágenes/s y llega hasta lo traído (8 MB, ~2
   minutos: la memoria quedó troceada y el bloque más grande no daba para el doble); el Amiga sigue en pie.
   tests/test_red_cabe_crecer.dash (nuevo), video 4/4, red 4/4.
+
+### 2026-11-10 — Tarea 68: dash.freemem.space (lo contó David Martínez; JaviTecH y Oskis R.P lo confirmaron)
+- Usuario (por telegram): "ponte a trabajar urgentemente para corregir el problema". Con la 0.9.3, en la máquina de
+  David se quedaba en "Fetching style sheets and scripts: 1 left"; en la MiSTer de JaviTecH y la PiStorm CM4 de Oskis,
+  CPU al 96 % sin avanzar; JaviTecH en Amiberry: 97 % con la bola Boing de la web, 19 % sin ella.
+- Medido con la 0.9.4 (máquina RTG): carga en ~50 s; React da el #418 y rehace la página (14 s de temporizadores, 9 s
+  de estilo y maqueta de más) y el logo se repinta cada ~170 ms para siempre.
+- (a) #418, de Tachyon: el DOM guarda el texto en Latin-1 y latin1_de cambia lo que no cabe ("→", "’"...); React veía
+  otro texto que el del servidor. Ahora el texto de la página con algo fuera de Latin-1 se guarda también como llegó
+  (Nodo.unicode, lib/html5.dash) y nodeValue/data/textContent lo dan en UTF-8 (lib/jsdom.dash jsdom_texto_unicode,
+  src_c/tachyon.c _jsdom_texto_js) mientras el texto siga siendo el mismo; lo pintado sigue en Latin-1.
+  tests/test_jsdom_texto_unicode.dash. (La web ya quitó la "→" por su lado: freememlang-af.)
+- (b) "1 left": abriéndose una conexión (DNS, TCP, TLS) no había tope en Tachyon (lo esperaba de la tarea de red):
+  ahora http_avanzar la da por perdida a los espera ms ("timed out connecting"). lib/recursos.dash: una hoja o script
+  con error se pide otra vez, una vez, con una conexión nueva (http_empezar_nueva, sin reusar una libre) y una que
+  llega a gotas (menos de 2 KB/s tras 45 s) se corta; si no, la página sigue sin ella. tests/test_recursos_atascados
+  (tests/servers/http.py /mudo y /gotas).
+- (c) Animaciones: animaciones_quietas/vivas (lib/animacion.dash): si ninguna está en otro punto que en el último
+  fotograma no se repinta, y un <svg> animado no se vuelve a escribir (lo que costaba: el cursor del logo estaba dentro
+  de un <svg>). Visto: Tachyon aplica la curva a la animación entera y no a cada tramo entre fotogramas, así que
+  steps(1) no parpadea (pendiente). tests/test_animacion_quieta.dash.
+- (d) requestAnimationFrame a 66 ms (15/s, como ANIMACION_MS) y no a 16: a 60 por segundo, cada imagen con su estilo,
+  maqueta y pintado se comía la CPU. tests/pages/anim_cursor_bola.html (máquina objetivo): la bola, 8 imágenes/s; el
+  cursor del <svg>, 1,3 repintados/s.
+- Medido otra vez en dash.freemem.space (ya con la web cambiada): sin #418; temporizadores 14 → 6,5 s; la maqueta de
+  después 9,3 → 3,8 s.

@@ -20,7 +20,18 @@ struct Pedido
     es_css: Bool
     nivel: Int                 # profundidad de @import (como mucho 4)
     carga: Carga               # nil hasta que le toca
+    empezada: Int = 0          # time_ms de cuando se pidió (el intento de ahora)
+    intentos: Int = 0
 end
+
+# Una hoja o un script que tarda más que esto llegando a menos de RECURSO_GOTAS bytes/s se da por atascado (además
+# del tope de 15 s sin recibir nada): se pide otra vez, una vez, con una conexión nueva, y si no la página sigue sin
+# ella (tarea 68: dash.freemem.space se quedaba en "1 left" en las máquinas de David Martínez y Oskis R.P)
+var recurso_lento_ms: Int = 45000
+const RECURSO_GOTAS = 2048
+const RECURSO_INTENTOS = 2
+# ms sin recibir nada antes de dar por perdido un intento
+var recurso_espera_ms: Int = 15000
 
 struct Recursos
     traidos: {String: String}
@@ -118,10 +129,31 @@ func recursos_avanzar(r: Recursos) -> Int
     while i < r.cola.length
         p = r.cola[i]
         if p.carga == nil and activas < RECURSOS_A_LA_VEZ
-            p.carga = http_empezar(url_fuentes_latin1(p.direccion), 15000)
+            if p.intentos == 0
+                p.carga = http_empezar(url_fuentes_latin1(p.direccion), recurso_espera_ms)
+            else
+                p.carga = http_empezar_nueva(url_fuentes_latin1(p.direccion), recurso_espera_ms)
+            end
+            p.empezada = time_ms()
+            p.intentos = p.intentos + 1
         end
         if p.carga != nil
-            if http_avanzar(p.carga)
+            hecha = http_avanzar(p.carga)
+            ms = time_ms() - p.empezada
+            if not hecha and ms > recurso_lento_ms and http_recibidos(p.carga) < ms / 1000 * RECURSO_GOTAS
+                traza("atascado a los " + ms + " ms con " + http_recibidos(p.carga) + " bytes (" + http_fase(p.carga) + "): " + p.direccion)
+                http_cancelar(p.carga)
+                p.carga.respuesta.error = tr(407, "timed out")
+                hecha = true
+            end
+            if hecha and p.carga.respuesta.error != "" and p.intentos < RECURSO_INTENTOS
+                traza("otra vez (" + p.carga.respuesta.error + "): " + p.direccion)
+                var otra: Carga = nil
+                p.carga = otra
+                i = i + 1
+                continue
+            end
+            if hecha
                 resp = p.carga.respuesta
                 if resp.error == "" and resp.estado == 200
                     # (una hoja que llega con otro tipo, como text/html, no vale: Acid3 pone un empty.css que es HTML y

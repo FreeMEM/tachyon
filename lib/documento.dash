@@ -688,6 +688,13 @@ func documento_animar(d: Documento) -> Bool
     if d.pagina == nil
         return false
     end
+    # (nada en otro punto que en el último fotograma, como un steps() entre paso y paso: no se repinta; tarea 68)
+    t = time_ms() - d.anim_t0
+    if _documento_quieto(d, t)
+        _documento_zona_vacia(d)
+        d.zona = true
+        return (d.anims != nil and animaciones_vivas(d.anims, t)) or _documento_svgs_vivos(d, t)
+    end
     # (lo que cambia: los dibujos animados y los <svg> animados, antes y después; tarea 37e7)
     _documento_zona_vacia(d)
     _documento_zona_animada(d)
@@ -756,11 +763,47 @@ end
 # Un fotograma de cada <svg> animado: los valores de este instante en svg_sobre de sus elementos (stroke-dashoffset,
 # opacity, fill, stroke...; scale de un <circle>, en su r) y otra vez rasterizado. Acabadas sus animaciones, se
 # deja en su estado final y ya no se toca. true si alguno sigue vivo.
+# ¿Ninguna animación (de CSS o de dentro de un <svg>) está en otro punto que en el último fotograma? (tarea 68)
+func _documento_quieto(d: Documento, t: Int) -> Bool
+    if d.anims != nil and d.anims.length > 0 and not animaciones_quietas(d.anims, t)
+        return false
+    end
+    if d.svgs != nil
+        for g in d.svgs
+            if not g.acabado and not animaciones_quietas(g.anims, t)
+                return false
+            end
+        end
+    end
+    return true
+end
+
+func _documento_svgs_vivos(d: Documento, t: Int) -> Bool
+    if d.svgs != nil
+        for g in d.svgs
+            if not g.acabado and animaciones_vivas(g.anims, t)
+                return true
+            end
+        end
+    end
+    return false
+end
+
 func _documento_animar_svgs(d: Documento) -> Bool
     viva = false
     t = time_ms() - d.anim_t0
     for g in d.svgs
         if g.acabado
+            continue
+        end
+        # (en el mismo punto que en el último fotograma: sin volver a escribir el <svg>, que es lo que cuesta; el
+        # cursor que parpadea en el logo de dash.freemem.space se escribía 6 veces por segundo para siempre; tarea 68)
+        if animaciones_quietas(g.anims, t)
+            if animaciones_vivas(g.anims, t)
+                viva = true
+            else
+                g.acabado = true
+            end
             continue
         end
         alguna = false
@@ -769,6 +812,7 @@ func _documento_animar_svgs(d: Documento) -> Bool
                 alguna = true
             end
             prog = animacion_progreso(a, t)
+            a.prog_ultimo = prog
             var sobre: {String: String} = {}
             if prog >= 0
                 for p in ["stroke-dashoffset", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "fill", "stroke", "stroke-width"]

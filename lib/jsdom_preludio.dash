@@ -567,7 +567,7 @@ func jsdom_preludio_js() -> String
     j = j + "g.clearTimeout = g.clearInterval = function (id) {\n"
     j = j + "for (var i = 0; i < cola.length; i++) if (cola[i].id === id) { cola.splice(i, 1); return; }\n"
     j = j + "};\n"
-    j = j + "g.requestAnimationFrame = function (f) { return poner(function () { f(__dashweb_reloj()); }, 16, [], false); };\n"
+    j = j + "g.requestAnimationFrame = function (f) { return poner(function () { f(__dashweb_reloj()); }, 66, [], false); };\n"
     j = j + "g.cancelAnimationFrame = g.clearTimeout;\n"
     j = j + "g.queueMicrotask = function (f) { Promise.resolve().then(f); };\n"
     j = j + "g.__dashweb_tick = function () {\n"

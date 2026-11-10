@@ -1568,8 +1568,17 @@ static JSValue _jsdom_nodeType(JSContext *ctx, JSValueConst this_val) {
     return JS_NewInt32(ctx, n->tipo);
 }
 
+/* the text as the page had it, in UTF-8, if something in it does not fit in Latin-1 (lib/jsdom.dash
+   jsdom_texto_unicode: React compared its text with the changed one, error #418; tarea 68); else the Latin-1 one */
+static JSValue _jsdom_texto_js(JSContext *ctx, _Dash_Nodo *n, STRPTR latin1) {
+    STRPTR u = jsdom_texto_unicode(n);
+    if (u && *u) return JS_NewString(ctx, (const char *)u);
+    return _jsdom_cadena(ctx, latin1);
+}
+
 static JSValue _jsdom_textContent(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
+    if (n->tipo == DOM_TEXTO || n->tipo == DOM_ELEMENTO) return _jsdom_texto_js(ctx, n, jsdom_texto(n));
     return _jsdom_cadena(ctx, jsdom_texto(n));
 }
 
@@ -2309,6 +2318,7 @@ static JSValue _jsdom_outerHTML(JSContext *ctx, JSValueConst this_val) {
 static JSValue _jsdom_nodeValue(JSContext *ctx, JSValueConst this_val) {
     _JSDOM_ESTE;
     if (n->tipo != DOM_TEXTO && n->tipo != DOM_COMENTARIO && n->tipo != 7) return JS_NULL;
+    if (n->tipo == DOM_TEXTO) return _jsdom_texto_js(ctx, n, n->texto);
     return _jsdom_cadena(ctx, n->texto);
 }
 

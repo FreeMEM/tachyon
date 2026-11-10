@@ -7088,3 +7088,11 @@ Formato:
   de red; abrir accounts.google.com para entrar no pasa por aquí). tests/test_url.dash.
 - En Coffin: de los resultados al vídeo, 7 minutos sin cerrarse y sin pedirlo; el vídeo suena a 29,9 imágenes/s
   (con 34 MB libres solo caben 4 MB: un minuto). Para una 0.9.5, con el visto bueno del usuario.
+- (después, 2026-11-11) El bloqueo no basta: la toma siguiente se cayó igual. Ensayos repetidos con TRAZA (ahora con
+  el mayor bloque libre seguido, [ms libreK/bloqueK], y con una línea al empezar y al acabar cada <script> que mete
+  el JavaScript, __dashweb_traza): se cae ~la mitad de las veces, ~45-50 s después de abrir la página del vídeo, con
+  ~56 MB libres y 26-28 MB seguidos (no es falta de memoria), dentro de los temporizadores del JavaScript justo tras
+  una maqueta pedida por él (o tras llegar lottie-light.js, sin llegar a ejecutarlo). lottie-light.js suelto, también
+  con una animación en marcha, va bien en FS-UAE. La pila es la de @stack (1 MB). Los nodos que tiene el JavaScript se
+  retienen (_dash_retain). Siguiente: el mismo ensayo con Tachyon compilado con --memcheck (avisa al momento, con
+  fichero y línea), en tools: ~/.cache/video-tachyon/ensayos/repetir_mc.sh.

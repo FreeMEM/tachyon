@@ -7063,3 +7063,7 @@ Formato:
 - Sin nombrar en público el gestor de paquetes que aún no se ha anunciado (por la sesión telegram, del usuario): fuera
   de textos, catálogos, comentarios, bitácora, notas y de los mensajes de los commits aún sin subir (git filter-repo
   sobre origin/dev..dev; la historia de antes, en la rama local respaldo-dev-antes-de-limpiar-094, que no se sube).
+- Batería entera con el código final: 175/179 (8524 s). Los cuatro que faltan (test_inspeccionar,
+  test_jsdom_fetch_flujo, test_jsdom_medios, test_maqueta_fijo_ancho, nuevos de estos días) dan "out of memory" al
+  final del grupo grande del A1200 de memcheck (108 tests en una sesión) y pasan sueltos. (Una batería anterior se
+  quedó 2 h en test_estilo_animacion, compilado con un estado intermedio de la 68: con el código final pasa.)

@@ -812,7 +812,7 @@ func _documento_animar_svgs(d: Documento) -> Bool
                 alguna = true
             end
             prog = animacion_progreso(a, t)
-            a.prog_ultimo = prog
+            a.prog_ultimo = animacion_punto(a, prog)
             var sobre: {String: String} = {}
             if prog >= 0
                 for p in ["stroke-dashoffset", "stroke-dasharray", "opacity", "fill-opacity", "stroke-opacity", "fill", "stroke", "stroke-width"]

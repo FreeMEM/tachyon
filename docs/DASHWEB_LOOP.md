@@ -7048,3 +7048,7 @@ Formato:
   cursor del <svg>, 1,3 repintados/s.
 - Medido otra vez en dash.freemem.space (ya con la web cambiada): sin #418; temporizadores 14 → 6,5 s; la maqueta de
   después 9,3 → 3,8 s.
+- (68c, después) La curva de una animación de CSS va en cada tramo entre dos fotogramas, como dice CSS, y no en la
+  animación entera: animacion_progreso da el punto sin curva y animacion_valor la aplica en el tramo; steps(1) con un
+  fotograma al 50 % (el cursor del logo) ya parpadea. animacion_punto (el tramo y su punto con la curva) es lo que
+  compara animaciones_quietas. Tests de animación y SVG 8/8.

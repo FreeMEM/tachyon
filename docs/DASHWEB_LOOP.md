@@ -642,6 +642,16 @@ tarea, con el estilo de Dash.
       incrustado), con pausa, avance y pantalla completa; (e) ir de un vídeo a otro sin recargar todo (la navegación
       de YouTube por history.pushState) y volver atrás; (f) tiempos y memoria aceptables (medidos antes y después).
       Primero ver cómo sale hoy cada parte (capturas, errores de JS, memoria, tiempos) y partirla en subtareas.
+      (2026-11-10, estado; ver la bitácora 64a-64d) Hecho y visto en la máquina RTG ancha (68040+JIT, 256 MB):
+      (a) la portada y el aviso de cookies (sin sesión ni historial YouTube no pone vídeos en la portada, como en
+      Chrome); (b) la búsqueda con sus miniaturas, avatares y capítulos; (c) la página de un vídeo con título, canal,
+      visitas, relacionados y los comentarios al bajar; (d) el vídeo suena en su recuadro con el reproductor de
+      Tachyon (clic: suena o se para; esquina: pantalla completa; flechas: 10 s adelante o atrás), 4,8 imágenes/s
+      con la página cargada; (e) de los resultados a un vídeo (carga entera la página del vídeo: por pushState su
+      reproductor no se crea) y atrás. Tiempos: búsqueda entera ~220 s, la página de un vídeo 70-180 s; memoria del
+      JavaScript ~100 MB (por eso no cabe en el A1200 de pruebas de 8 MB: el objetivo es una PiStorm con memoria).
+      Pendiente: desplegar la descripción ("more"), oír el sonido en una máquina de verdad, el aviso de cookies que
+      sale descolocado mientras carga, ir de un vídeo a otro por los relacionados (probarlo), y medir en PiStorm.
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e

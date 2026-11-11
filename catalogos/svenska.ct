@@ -167,6 +167,9 @@ Inspektera
 MSG_55
 Felsökningslogg för nätverket
 ; Network debug log
+MSG_56
+Klistra in
+; Paste
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked

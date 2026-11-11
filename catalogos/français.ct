@@ -167,6 +167,9 @@ Inspecter
 MSG_55
 Journal de débogage réseau
 ; Network debug log
+MSG_56
+Coller
+; Paste
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked

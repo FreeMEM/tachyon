@@ -7318,7 +7318,10 @@ Formato:
 - (vídeo 2) Con la trampa en la tarea del sonido (TachyonTrampa), Amiberry con JIT: se caen la 1, la 2 y la 4 de 5, y
   la trampa no salta nunca (ninguna excepción de la CPU en esa tarea). Tampoco sale el aviso de Dash:
   Traspaso:salida.txt (copiada al cambiar, scratchpad/trazas_tr/salida_*.txt) solo tiene "[CLI 9]". En la foto,
-  Tachyon ya no está en la lista de tareas de Trasfondo y la memoria no vuelve. Así que no es una excepción en la
+  Tachyon ya no está en la lista de tareas de Trasfondo y la memoria no vuelve (la 6.ª, sin caída: 3 de 6). Así que no es una excepción en la
   tarea del sonido. Queda: el decodificador AAC de MintAMP (con ensamblador de 68k, en la tarea principal) o la
   salida por Paula. Para separarlo, -DDWV_SOLO_DECODIFICAR (third_party/mintvid/dashweb_video.c: decodifica el sonido
   y lo tira, sin audio_open ni su tarea); tomas: ~/.cache/video-tachyon/ensayos/repetir_sd2.sh.
+- (70) Los builtins ya en el main de Dash (a3d7bb2, PR #156): el pegar, fuera del stash y otra vez visto con el Dash de
+  main en sys32rtg38 (barra con el menú y campo de la página con Amiga+V, bien); test_formularios_pegar pasa. Queda
+  Amiga+V con el teclado en la barra en MUI 3.8 (freememlang-af hace mui_string_clipboard con V, C y X).

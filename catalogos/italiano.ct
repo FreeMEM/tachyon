@@ -167,6 +167,9 @@ Ispeziona
 MSG_55
 Registro di debug della rete
 ; Network debug log
+MSG_56
+Incolla
+; Paste
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked

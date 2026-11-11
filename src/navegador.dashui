@@ -43,6 +43,12 @@
               "tr": 4
             },
             {
+              "label": "Paste",
+              "key": "V",
+              "event": 37,
+              "tr": 56
+            },
+            {
               "label": "Open file...",
               "key": "O",
               "event": 33,

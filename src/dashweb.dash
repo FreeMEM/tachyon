@@ -74,6 +74,7 @@ const ID_CERRAR_PESTANA = 50   # (Amiga-W)
 const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
 const ID_INSPECCIONAR = 35     # menú Herramientas: Inspeccionar la página (Amiga-I; tarea 65)
 const ID_DEPURACION = 36       # menú Herramientas: el registro de depuración de red, a un fichero (tarea 67)
+const ID_PEGAR = 37            # menú Proyecto (Amiga-V): pegar en la barra de direcciones o en el campo de la página (tarea 70)
 # (al lado del programa: lo que se escribe ahí sigue aunque haya que reiniciar el Amiga, como no lo haría en RAM:)
 const DEPURACION_FICHERO = "PROGDIR:Tachyon-debug.txt"
 const MAX_PESTANAS = 8
@@ -1180,6 +1181,41 @@ func guardar_pagina(w: Ventana)
         dw_estado(w, hueco(tr(167, "Saved in %1"), ruta))
     else
         dw_estado(w, hueco(tr(164, "Can't save %1"), ruta))
+    end
+end
+
+# Amiga+V (menú Proyecto, tarea 70; lo contaron Alex Agauser y Ferrán García): el String de MUI 3.8 no pega (mete
+# una "v"). Con la barra de direcciones activa, la primera línea del portapapeles donde está el cursor; con la página
+# activa y un campo con el foco, en ese campo (como con el puntero sobre la página, tarea 59). Con MUI 3.8, Amiga+V
+# en la barra no llega al menú (el String se lo queda y mete la "v"): ahí solo pega eligiendo el menú con el ratón
+func pegar(w: Ventana)
+    activo = mui_active_object(w.v.window)
+    if activo == w.v.url
+        texto = utf8_to_latin1(clip_read_text())
+        i = str_find(texto, "\n")
+        if i >= 0
+            texto = texto[:i]
+        end
+        texto = str_trim(str_replace(str_replace(texto, "\r", ""), "\t", " "))
+        if texto == ""
+            return
+        end
+        antes = mui_get_text(w.v.url)
+        p = mui_string_pos(w.v.url)
+        if p < 0 or p > antes.length
+            p = antes.length
+        end
+        nuevo = antes[:p] + texto + antes[p:]
+        if nuevo.length > 1024
+            return
+        end
+        mui_set_text(w.v.url, nuevo)
+        mui_set_string_pos(w.v.url, p + texto.length)
+    elif (activo == 0 or activo == w.v.pagina) and w.foco != nil
+        # (la página no es un objeto activo de MUI: con ella, el de la ventana es 0)
+        if formulario_pegar(w.foco, utf8_to_latin1(clip_read_text())) == FORM_CAMBIO
+            mui_canvas_redraw(w.v.pagina)
+        end
     end
 end
 
@@ -3043,6 +3079,9 @@ Main
             end
             if ev == ID_LECTURA
                 leer_pagina(w)
+            end
+            if ev == ID_PEGAR
+                pegar(w)
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")

@@ -167,6 +167,9 @@ Inspecionar
 MSG_55
 Registo de depuração da rede
 ; Network debug log
+MSG_56
+Colar
+; Paste
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked

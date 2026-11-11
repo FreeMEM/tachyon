@@ -167,6 +167,9 @@ Inspeccionar
 MSG_55
 Registro de depuración de red
 ; Network debug log
+MSG_56
+Pegar
+; Paste
 MSG_100
 Esta página no se guarda en marcadores
 ; This page can't be bookmarked

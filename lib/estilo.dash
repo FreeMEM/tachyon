@@ -565,8 +565,6 @@ func _cumple_pseudo(n: Nodo, p: String) -> Bool
             return v == ""
         end
         return false
-    elif _pseudo_de_interaccion(p)
-        return false
     elif p == "scope"
         # (el elemento del :has() que se está mirando; fuera de uno, la raíz)
         if _ambito == nil
@@ -745,13 +743,17 @@ end
 # y no se cumplen, como en un navegador cuando no pasa. Antes, matches(':focus-visible') daba un error y el JavaScript
 # de YouTube se cortaba en el clic de "more" (no desplegaba la descripción; tarea 64). :defined no: los elementos
 # propios sin definir se esconden con :not(:defined)
+var _de_interaccion: {String: Bool} = nil
+
 func _pseudo_de_interaccion(p: String) -> Bool
-    for x in ["focus", "focus-visible", "focus-within", "active", "visited", "target", "target-within", "autofill", "-webkit-autofill", "fullscreen", "modal", "popover-open", "user-invalid", "user-valid", "playing", "paused", "picture-in-picture"]
-        if p == x
-            return true
+    if _de_interaccion == nil
+        var m: {String: Bool} = {}
+        for x in ["focus", "focus-visible", "focus-within", "active", "visited", "target", "target-within", "autofill", "-webkit-autofill", "fullscreen", "modal", "popover-open", "user-invalid", "user-valid", "playing", "paused", "picture-in-picture"]
+            m[x] = true
         end
+        _de_interaccion = m
     end
-    return false
+    return _de_interaccion.has(p)
 end
 
 # Las pseudo-clases que se saben sin interacción y :hover; las de interacción (_pseudo_de_interaccion) se conocen y no

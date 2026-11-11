@@ -7195,3 +7195,7 @@ Formato:
   y Acid3 100/100.
 - Además: los 6 ensayos con DASHC_SIN_DBRA (Tachyon sin los dbra de Dash) en Amiberry con JIT: 2 de 6 se caen. No son
   los dbra de Dash.
+- (61, perfil de gh_repo.html en la máquina objetivo) _pseudo_de_interaccion, recién puesta delante de las demás en
+  _cumple_pseudo, se llevaba el 5,4 % (206 057 llamadas recorriendo su lista): fuera de _cumple_pseudo (esas acaban en
+  el false del final) y, en css_pseudo_conocida, con un diccionario. El estilo de gh_repo.html, 12,6 → 5,6 s con el
+  perfil puesto. (Ese cambio no salió en la 0.9.5.)

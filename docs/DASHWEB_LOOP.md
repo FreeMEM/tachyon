@@ -670,8 +670,8 @@ tarea, con el estilo de Dash.
       De un vídeo a otro por los relacionados, también (64e). (64f, usuario 2026-11-10, sobre los controles de
       YouTube encima del vídeo) Una barra de controles de Tachyon sobre el vídeo al pasar el ratón: reproducir/parar,
       la línea de tiempo con lo bajado y clic para saltar, el tiempo, el volumen y pantalla completa (los de YouTube no
-      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Pendiente: desplegar la descripción ("more", sin
-      comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
+      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Desplegar la descripción ("more"): hecho
+      (2026-11-11), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
       de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
       (64g, ensayo del vídeo 2 en Coffin con 256 MB) Tachyon se cerraba sin decir nada: los resultados de YouTube se
       comían la memoria hasta el último KB, y al abrir un vídeo la página de antes seguía entera mientras llegaba la
@@ -7181,3 +7181,17 @@ Formato:
   doble clic, con DefIcons; si no, SYS:Utilities/MultiView con los datatypes). Texto 530 en los nueve catálogos.
   tests/test_documento_pdf.dash, test_descargas. Sin probar en un Amiga de verdad lo de abrirlo (depende de sus
   DefIcons y datatypes).
+
+### 2026-11-11 — Tarea 64: "more" despliega la descripción de un vídeo de YouTube
+- Probado en FS-UAE (RTG, con las cookies de Coffin por --semillas): el clic llega a #expand con pointerdown,
+  mousedown, pointerup, mouseup, click y el tap de Polymer, pero no desplegaba: el JavaScript de YouTube pregunta
+  matches(':focus-visible') y el motor de selectores de Tachyon daba SyntaxError con esa pseudo-clase (y con :focus,
+  :active, :visited...): se cortaba el código del clic.
+- lib/estilo.dash _pseudo_de_interaccion: focus, focus-visible, focus-within, active, visited, target,
+  target-within, autofill, fullscreen, modal, popover-open, user-(in)valid, playing, paused, picture-in-picture: se
+  conocen y no se cumplen (:not(:focus) sí); :placeholder-shown de verdad (un campo con placeholder sin nada
+  escrito). :defined no (los elementos propios sin definir se esconden con :not(:defined)). Con un clic en "more", la
+  descripción entera (la lista de demos). tests/test_jsdom_pseudo_interaccion.dash; selectores, estilo_pseudo, acid
+  y Acid3 100/100.
+- Además: los 6 ensayos con DASHC_SIN_DBRA (Tachyon sin los dbra de Dash) en Amiberry con JIT: 2 de 6 se caen. No son
+  los dbra de Dash.

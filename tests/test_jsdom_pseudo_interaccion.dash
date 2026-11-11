@@ -1,0 +1,22 @@
+# Test: las pseudo-clases de interacción (:focus, :focus-visible, :active, :visited...) se conocen y no se cumplen,
+# como en un navegador cuando no pasa (tarea 64: matches(':focus-visible') daba un error y el JavaScript de YouTube se
+# cortaba al pulsar "more", sin desplegar la descripción); :not(:focus) se cumple. :placeholder-shown, en un campo con
+# placeholder vacío. Una que no existe sigue dando SyntaxError.
+# memcheck
+# expect-out: focus-visible false | focus [] | not(:focus) 2 | active false | visited 0
+# expect-out: placeholder vacío true | escrito false | sin placeholder false
+# expect-out: inventada SyntaxError
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body><button id=b>more</button><a id=a href=x>x</a><input id=i placeholder=busca><input id=j placeholder=busca value=hola></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "var b = document.getElementById('b'); 'focus-visible ' + b.matches(':focus-visible') + ' | focus [' + Array.prototype.join.call(document.querySelectorAll(':focus'), ',') + '] | not(:focus) ' + document.querySelectorAll('body > :not(:focus):not(input)').length + ' | active ' + b.matches(':active') + ' | visited ' + document.querySelectorAll('a:visited').length", "t.js")
+    Print js_evaluar(js, "'placeholder vacío ' + document.getElementById('i').matches(':placeholder-shown') + ' | escrito ' + document.getElementById('j').matches(':placeholder-shown') + ' | sin placeholder ' + b.matches(':placeholder-shown')", "t.js")
+    Print js_evaluar(js, "var r = ''; try { b.matches(':inventada-del-todo'); r = 'sin error'; } catch (e) { r = e.name; } 'inventada ' + r", "t.js")
+    js_liberar(js)
+end

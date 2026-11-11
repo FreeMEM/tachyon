@@ -7136,3 +7136,7 @@ Formato:
   imágenes/s, H.264 y AAC, de ffmpeg): 3000. Vídeo 5/5.
 - Las tomas del vídeo 2 (3 seguidas) se cayeron las tres en la página del vídeo (el JIT de Amiberry); pendiente de
   decidir con el usuario cómo grabar YouTube.
+- lib/red.dash _red_crecido: el búfer de una conexión dobla hasta 8 MB (RED_GRANDE) y después crece de 4 en 4 MB
+  (red_cabe_crecer mira ese tamaño). En Coffin, el vídeo de 25 minutos: 12 MB traídos (antes 8; ~3 minutos), con 104
+  MB libres pero el mayor bloque seguido de 10,7 MB. Para más, el vídeo en trozos sueltos (no un búfer seguido) o a
+  disco: pendiente. test_red_cabe_crecer, red 4/4, http 8/8.

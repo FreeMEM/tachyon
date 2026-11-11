@@ -1,5 +1,5 @@
-# Test: red_cabe_crecer (tarea 64g): un búfer con sitio de sobra siempre cabe; uno lleno solo si hay memoria para el
-# doble y la reserva (un vídeo largo de YouTube llenaba la memoria y el Amiga se reiniciaba al doblar el búfer)
+# Test: red_cabe_crecer (tarea 64g): un búfer con sitio de sobra siempre cabe; uno lleno solo si hay memoria seguida
+# para el siguiente tamaño (el doble hasta 8 MB, luego 4 MB más) y la reserva (un vídeo largo de YouTube llenaba la memoria y el Amiga se reiniciaba al doblar el búfer)
 # expect-out: con sitio: true
 # expect-out: lleno y pequeño: true
 # expect-out: lleno y enorme: false

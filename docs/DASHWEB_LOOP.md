@@ -7339,7 +7339,7 @@ Formato:
   (al menos en 3.1 con FS-UAE). Con RTG y la Z3 en su sitio real FS-UAE no arranca (y con JIT no deja RTG).
   Lo distinto que queda de JaviTecH: OS 3.9 (exec 45), Roadshow y Emu68.
 - (vídeo 2, tras el reinicio, Amiberry 8.5.0) Con -DDWV_SOLO_DECODIFICAR (el AAC se decodifica en la tarea principal y
-  se tira; sin audio_open ni la tarea de Paula): se caen la 1 y la 3 de 4 por ahora. Sin decodificar (-DDWV_SIN_SONIDO)
+  se tira; sin audio_open ni la tarea de Paula): se caen 2 de 6 (la 1 y la 3). Sin decodificar (-DDWV_SIN_SONIDO)
   no se caía ninguna: es el decodificador AAC de MintAMP, no la salida por Paula. Siguiente: el AAC sin su ensamblador
   de 68k (muls.l de 64 bits, cargas big-endian...): -DDWV_AAC_EN_C (third_party/mintvid/audio/mr_aac_m68k_config.h no
   pone los AMIGA_M68K_ASM_AAC_*), tomas con sonido: ~/.cache/video-tachyon/ensayos/repetir_aacc.sh.

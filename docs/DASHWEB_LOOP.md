@@ -7325,3 +7325,7 @@ Formato:
 - (70) Los builtins ya en el main de Dash (a3d7bb2, PR #156): el pegar, fuera del stash y otra vez visto con el Dash de
   main en sys32rtg38 (barra con el menú y campo de la página con Amiga+V, bien); test_formularios_pegar pasa. Queda
   Amiga+V con el teclado en la barra en MUI 3.8 (freememlang-af hace mui_string_clipboard con V, C y X).
+- (vídeo 2) Amiberry 8.5.0 (instalado por el usuario con yay, 2026-11-11): la 1.ª toma con el Tachyon normal
+  (TachyonMain88732ce, sonido y JIT, video2.uae sin cambios) se cae igual (a los ~60 s de la página del vídeo, tras un
+  POST a youtubei/v1/feedback). La 8.5.0 no lo arregla. Tanda parada ahí por el reinicio de la máquina; siguiente:
+  las tomas con -DDWV_SOLO_DECODIFICAR (repetir_sd2.sh).

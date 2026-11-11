@@ -7329,3 +7329,12 @@ Formato:
   (TachyonMain88732ce, sonido y JIT, video2.uae sin cambios) se cae igual (a los ~60 s de la página del vídeo, tras un
   POST a youtubei/v1/feedback). La 8.5.0 no lo arregla. Tanda parada ahí por el reinicio de la máquina; siguiente:
   las tomas con -DDWV_SOLO_DECODIFICAR (repetir_sd2.sh).
+- (69) Registro de JaviTecH (#1169, por la sesión telegram): PiStorm con Emu68 1.1 beta 2, exec 45.20 (OS 3.9/
+  CaffeineOS), Roadshow 4.110, MUI 19.35, 1,7 GB de Fast libre (mayor bloque 925 MB). aminet.net llega entera (139 KB)
+  y la traza se corta en "leyendo el HTML" (con el AN_BadFreeAddr; Alvaro Brown, #1153, la carga bien en una PiStorm
+  con 3.2.3). Sospecha: memoria por encima de 0x80000000, negativa en un Int. Probado: tools/medir_visor.py
+  --memoria-alta (1 GB + 512 MB de Z3; tools/amiga/comer.dash se queda antes con toda la memoria de abajo de 2 GB, hasta
+  que un trozo pequeño sale negativo) en la máquina objetivo con sys31muiweb: prueba.html y gh_repo.html (290 KB,
+  con su JavaScript) cargan bien con la memoria de arriba (Tachyon con ~490 MB libres, todos por encima). No es eso
+  (al menos en 3.1 con FS-UAE). Con RTG y la Z3 en su sitio real FS-UAE no arranca (y con JIT no deja RTG).
+  Lo distinto que queda de JaviTecH: OS 3.9 (exec 45), Roadshow y Emu68.

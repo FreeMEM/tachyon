@@ -830,3 +830,6 @@ Registo de depuração da rede desligado
 MSG_528
 Pouca memória: o JavaScript da página foi parado
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+A abrir %1 com o visualizador do sistema...
+; Opening %1 with the system's viewer...

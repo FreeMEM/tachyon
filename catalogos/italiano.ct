@@ -830,3 +830,6 @@ Registro di debug della rete spento
 MSG_528
 Poca memoria: il JavaScript della pagina è stato fermato
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+Apertura di %1 con il visualizzatore del sistema...
+; Opening %1 with the system's viewer...

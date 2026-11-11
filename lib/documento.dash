@@ -461,6 +461,15 @@ func documento_es_descarga(r: Respuesta) -> Bool
     return true
 end
 
+# ¿Es un PDF? (por su tipo o, sin tipo, por la extensión): se abre con el visor del sistema (tarea 63h)
+func documento_es_pdf(r: Respuesta) -> Bool
+    t = str_lower(str_trim(r.tipo))
+    if str_starts(t, "application/pdf") or str_starts(t, "application/x-pdf")
+        return true
+    end
+    return (t == "" or t == "application/octet-stream") and str_ends(str_lower(documento_nombre_descarga(r)), ".pdf")
+end
+
 # El nombre con que guardarlo: el filename de Content-Disposition, o lo último de la dirección (sin ?...)
 func documento_nombre_descarga(r: Respuesta) -> String
     if r.cabeceras.has("content-disposition")

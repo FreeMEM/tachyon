@@ -830,3 +830,6 @@ Netzwerk-Debugprotokoll aus
 MSG_528
 Wenig Speicher: das JavaScript der Seite wurde beendet
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+%1 wird mit dem Betrachter des Systems geöffnet...
+; Opening %1 with the system's viewer...

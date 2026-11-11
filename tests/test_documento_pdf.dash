@@ -1,0 +1,16 @@
+# Test: ¿es un PDF? (tarea 63h: se baja a T: y se abre con el visor del sistema, como en Amelinium): por su tipo, o sin
+# tipo (u octet-stream) por la extensión; un HTML o una imagen, no.
+# memcheck
+# expect-out: tipo true | x-pdf true | sin tipo .pdf true | octet .PDF true | html false | sin tipo .lha false | imagen .pdf false
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+func resp(tipo: String, url: String) -> Respuesta
+    var c: {String: String} = {}
+    return Respuesta(200, "", c, "", url, tipo, "", "", 0)
+end
+
+Main
+    Print "tipo " + documento_es_pdf(resp("application/pdf", "https://a.b/x")) + " | x-pdf " + documento_es_pdf(resp("application/x-pdf; q=1", "https://a.b/x")) + " | sin tipo .pdf " + documento_es_pdf(resp("", "https://a.b/manual.pdf?v=2")) + " | octet .PDF " + documento_es_pdf(resp("application/octet-stream", "https://a.b/MANUAL.PDF")) + " | html " + documento_es_pdf(resp("text/html", "https://a.b/x.pdf")) + " | sin tipo .lha " + documento_es_pdf(resp("", "https://a.b/x.lha")) + " | imagen .pdf " + documento_es_pdf(resp("image/png", "https://a.b/x.pdf"))
+end

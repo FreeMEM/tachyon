@@ -830,3 +830,6 @@ Felsökningslogg för nätverket av
 MSG_528
 Lite minne: sidans JavaScript har stoppats
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+Öppnar %1 med systemets visare...
+; Opening %1 with the system's viewer...

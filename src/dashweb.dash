@@ -1027,6 +1027,15 @@ func empezar_descarga(w: Ventana, r: Respuesta)
     if w.actual != nil
         mui_set_text(w.v.url, w.actual.direccion)
     end
+    # un PDF: a T: y, al acabar, con el visor del sistema, sin preguntar dónde (como en Amelinium; tarea 63h)
+    if documento_es_pdf(r)
+        descargas_empezar_abriendo(direccion, "T:" + url_fichero_nombre(nombre), nombre)
+        dw_estado(w, hueco(tr(530, "Opening %1 with the system's viewer..."), nombre))
+        descargas_tic()
+        actualizar_giro(w)
+        programar()
+        return
+    end
     ruta = pedir_ruta(nombre)
     if ruta == ""
         dw_estado(w, hueco(tr(113, "Download cancelled: %1"), nombre))

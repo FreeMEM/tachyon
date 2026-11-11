@@ -7173,3 +7173,11 @@ Formato:
   nuevos que agradecer.
 - Usuario: el vídeo 2, esperar al arreglo del cierre con el JIT de Amiberry; y "sí" a que freememlang-af ponga en
   dashc la variable de entorno que cambie dbra por subq+bne, para ensayar con ella.
+
+### 2026-11-11 — Tarea 63h: los PDF, con el visor del sistema (como en Amelinium)
+- lib/documento.dash documento_es_pdf (por el tipo, application/pdf o x-pdf; sin tipo u octet-stream, por la
+  extensión). src/dashweb.dash empezar_descarga: un PDF se baja a T: sin preguntar dónde (descargas_empezar_abriendo)
+  y al acabar se abre con lo que tenga el sistema (lib/descargas.dash descargas_abrir_documento: wb_open, como un
+  doble clic, con DefIcons; si no, SYS:Utilities/MultiView con los datatypes). Texto 530 en los nueve catálogos.
+  tests/test_documento_pdf.dash, test_descargas. Sin probar en un Amiga de verdad lo de abrirlo (depende de sus
+  DefIcons y datatypes).

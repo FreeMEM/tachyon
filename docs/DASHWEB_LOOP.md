@@ -7106,3 +7106,8 @@ Formato:
   FS-UAE con JIT (máquina rtg, las mismas cookies), 900 s sin caerse: lottie-light.js llega, se ejecuta y YouTube pide
   sus animaciones (subscribe_action). En Amiberry con compfpu=false (sin JIT de coma flotante) se cae igual (1 de 2).
   Siguiente: Amiberry sin JIT (cachesize=0), para saber si es su JIT; si no, su bsdsocket o el entorno de Coffin.
+- Amiberry sin JIT (cachesize=0): 2 de 2 sin caerse, 25 min cada uno en la página del vídeo (con JIT, ~5 de 8 se
+  caían a los ~50 s). La máquina rtgmmu, 2 h sin caerse y sin un aviso de MuForce de Tachyon. Así que es el JIT de
+  Amiberry (también con compfpu=false), no Tachyon. La configuración de Coffin lo tiene en lo más agresivo
+  (comp_trustbyte/word/long/naddr=direct); siguiente: 4 ensayos con indirect, para recomendarlo al usuario y grabar
+  el vídeo así.

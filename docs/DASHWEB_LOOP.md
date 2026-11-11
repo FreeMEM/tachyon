@@ -7101,3 +7101,8 @@ Formato:
   por el JavaScript (lottie-light.js, 210 KB, o la de accounts.google.com) y Tachyon se cae antes de ejecutarla, a
   los ~353-355 s de la traza. Siguiente: la máquina rtgmmu con MuForce (lecturas y escrituras fuera de sitio, con su
   dirección), con las cookies de Coffin: tools/medir_visor.py --semillas (ficheros junto al programa).
+- Solo en Amiberry: la máquina rtgmmu con MuForce y las cookies de Coffin (--semillas) pasó de los resultados al vídeo
+  y siguió 25 min sin caerse (MuForce: solo 15 lecturas de la dirección 0x2B de muigfx.library al arrancar, de MUI);
+  FS-UAE con JIT (máquina rtg, las mismas cookies), 900 s sin caerse: lottie-light.js llega, se ejecuta y YouTube pide
+  sus animaciones (subscribe_action). En Amiberry con compfpu=false (sin JIT de coma flotante) se cae igual (1 de 2).
+  Siguiente: Amiberry sin JIT (cachesize=0), para saber si es su JIT; si no, su bsdsocket o el entorno de Coffin.

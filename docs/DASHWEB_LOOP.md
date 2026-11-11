@@ -7157,3 +7157,7 @@ Formato:
   minutos a 29,9 imágenes/s.
 - (Al hacer test_video_duracion se pisó tests/pages/video_sonido.mp4 de la tarea 30b: restaurado; el nuevo es
   tests/pages/video_duracion.mp4.)
+- Batería entera con lo de hoy (vídeo en trozos, duración, búfer de 4 en 4 MB, sin el inicio de sesión pasivo de
+  Google, trazas nuevas): 177/181 (8580 s); los cuatro de siempre (inspeccionar, jsdom_fetch_flujo, jsdom_medios,
+  maqueta_fijo_ancho: "out of memory" al final del grupo de memcheck) pasan sueltos. Notas de una 0.9.5 preparadas;
+  publicar, con el visto bueno del usuario.

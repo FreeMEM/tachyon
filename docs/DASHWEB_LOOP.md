@@ -7199,3 +7199,12 @@ Formato:
   _cumple_pseudo, se llevaba el 5,4 % (206 057 llamadas recorriendo su lista): fuera de _cumple_pseudo (esas acaban en
   el false del final) y, en css_pseudo_conocida, con un diccionario. El estilo de gh_repo.html, 12,6 → 5,6 s con el
   perfil puesto. (Ese cambio no salió en la 0.9.5.)
+
+### 2026-11-11 — Tarea 41d: baseURI de un documento de DOMParser (WPT domparsing 620 → 638/1090)
+- DOMParser-parseFromString-url-base y url-base-pushstate, 0/45: el documento de DOMParser heredaba el getter de
+  document.baseURI (docAparte le pone el prototipo del de la ventana), que daba siempre el <base> de la página.
+  lib/jsdom_preludio.js: ese getter, con otro documento, da el suyo (su primer <base href> contra su URL, o su URL);
+  y baseURI de un nodo cualquiera, el de su documento. 0 → 9/45 cada uno (las 36 que faltan usan frames[0], el
+  iframe). tests/test_jsdom_baseuri_documento.dash; Acid3 100/100.
+- (tools/wpt_js.py apunta cada fichero por location.pathname: los de pushstate salen como
+  fake/push-state-from-outer-frame.)

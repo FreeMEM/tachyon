@@ -7122,3 +7122,8 @@ Formato:
   de 6. Es el JIT de Amiberry con algo de Tachyon. Sospecha: código que se escribe en marcha sin CacheClearU (lo que
   también fallaría en un 68040/060 de verdad y en Emu68): preguntado a la sesión de Dash (freememlang-af).
   Mientras, las tomas del vídeo se repiten hasta que salga una entera.
+- freememlang-af: dashc no genera código en marcha (solo --memcheck y --debug, con CacheClearU). Pista: Amiberry tuvo
+  un fallo del JIT con dbls (su issue 2591). En Tachyon, las DBcc condicionales de las librerías de C son casi todas
+  tablas leídas como código; la única real en lo de YouTube, un dbne en js_bigint_divrem. dbf/dbra: 49 en libqjs (ya
+  con -fno-branch-count-reg), 70 en libimg, 224 en libvideo y 493 de dashc. freememlang-af puede poner una variable
+  de entorno en dashc para cambiar dbra por subq+bne, con el visto bueno del usuario (pendiente de preguntarle).

@@ -1,8 +1,8 @@
-WPT TOTAL domparsing: 714/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 743/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
-WPT FILE domparsing/DOMParser-parseFromString-html.html 6/10 OK
+WPT FILE domparsing/DOMParser-parseFromString-html.html 7/10 OK
 WPT FILE domparsing/DOMParser-parseFromString-stylesheets.html 6/6 OK
 WPT FILE domparsing/DOMParser-parseFromString-url-base-about.window.html 0/2 OK
 WPT FILE domparsing/DOMParser-parseFromString-url-base-pushstate.html 9/45 OK
@@ -10,18 +10,18 @@ WPT FILE domparsing/DOMParser-parseFromString-url-base.html 9/45 OK
 WPT FILE domparsing/DOMParser-parseFromString-url-moretests.html 11/31 OK
 WPT FILE domparsing/DOMParser-parseFromString-url-pushstate.html 9/45 OK
 WPT FILE domparsing/DOMParser-parseFromString-url.html 9/45 OK
-WPT FILE domparsing/DOMParser-parseFromString-xml-CDATA.html 0/8 OK
+WPT FILE domparsing/DOMParser-parseFromString-xml-CDATA.html 8/8 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-doctype.html 2/3 OK
-WPT FILE domparsing/DOMParser-parseFromString-xml-empty-nodes.html 4/8 OK
+WPT FILE domparsing/DOMParser-parseFromString-xml-empty-nodes.html 8/8 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-internal-subset.html 0/1 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 15/23 OK
-WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 0/13 OK
+WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 13/13 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml.html 20/20 OK
 WPT FILE domparsing/DOMParser-xml-character-entities.html 4/8 OK
 WPT FILE domparsing/XMLSerializer-serializeToString.html 30/33 OK
 WPT FILE domparsing/createContextualFragment-external-scripts-async.html 0/1 OK
 WPT FILE domparsing/createContextualFragment.html 34/35 OK
-WPT FILE domparsing/domparser-spurious-attributes.html 1/2 OK
+WPT FILE domparsing/domparser-spurious-attributes.html 2/2 OK
 WPT FILE domparsing/html-insertion-methods-html-element.html 12/26 OK
 WPT FILE domparsing/html-unsafe-external-scripts-async.html 0/15 OK
 WPT FILE domparsing/innerhtml-04.html 1/1 OK
@@ -47,13 +47,12 @@ WPT FILE domparsing/stream-html-reentrancy.html 0/0 TIMEOUT
 WPT FILE domparsing/style_attribute_html.html 0/4 OK
 WPT FILE domparsing/svg-template.html 0/2 OK
 WPT FILE domparsing/unsafe-and-trusted-types-external-scripts-async.html 0/0 TIMEOUT 
-WPT FILE domparsing/xml-parse-serialize-roundtrip.html 0/2 OK
+WPT FILE domparsing/xml-parse-serialize-roundtrip.html 2/2 OK
 WPT FILE domparsing/xmldomparser.html 1/1 OK
 
-WPT SUB FAIL domparsing/DOMParser-parseFromString-html.html | Parsing of id attribute | assert_equals: documentElement id attribute should be root. expected "root" but got ""
 WPT SUB FAIL domparsing/DOMParser-parseFromString-html.html | compatMode | assert_equals: expected "BackCompat" but got "CSS1Compat"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-html.html | DOMParser throws on an invalid enum value | assert_throws_js: function "function() { new DOMParser().parseFromString("", "text/foo-this-is-invalid"); }" did not throw
-WPT SUB FAIL domparsing/DOMParser-parseFromString-html.html | must be parsed with scripting disabled, so noscript works | cannot read property 'firstChild' of null
+WPT SUB FAIL domparsing/DOMParser-parseFromString-html.html | must be parsed with scripting disabled, so noscript works | assert_true: Node type mismatch: actual = EventTarget, expected = HTMLParagraphElement expected true got false
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url-base-about.window.html | DOMParser in an about:blank document | assert_equals: URL expected "about:blank" but got "http://127.0.0.1:40881/domparsing/DOMParser-parseFromString-url-base-about.window.html"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url-base-about.window.html | DOMParser in an about:srcdoc document | assert_equals: URL expected "about:srcdoc" but got "http://127.0.0.1:40881/domparsing/DOMParser-parseFromString-url-base-about.window.html"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url-base-pushstate.html | text/html valid: created using another iframe's DOMParser from this frame | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
@@ -220,19 +219,7 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml inval
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using another iframe's DOMParser from that frame | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using a parser from this frame and the method from the iframe | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml invalid XML: created using a parser from the iframe and the method from this frame | promise_test: Unhandled rejection with value: object "TypeError: cannot read property 'DOMParser' of undefined"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type text/xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type text/xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type application/xhtml+xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type application/xhtml+xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse reserved characters within a CDATA section in type image/svg+xml | assert_equals: expected "#cdata-section" but got "#text"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-CDATA.html | Should parse HTML within a CDATA section in type image/svg+xml | assert_equals: expected "#cdata-section" but got "#text"
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-doctype.html | Doctype parsing of System Id must fail on ommitted value | assert_equals: expected null but got Element node <div id="test"></div>
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type text/xml | assert_equals: expected 4 but got 3
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type application/xml | assert_equals: expected 4 but got 3
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type application/xhtml+xml | assert_equals: expected 4 but got 3
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-empty-nodes.html | Should generate an empty CDATA Section node in type image/svg+xml | assert_equals: expected 4 but got 3
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-internal-subset.html | Parsing and serialization of doctype internal subset | cannot read property 'name' of null
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span x:test="testing">1</span> | assert_equals: expecting one parsererror expected 1 but got 0
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span :test="testing">3</span> | assert_equals: expecting one parsererror expected 1 but got 0
@@ -242,19 +229,6 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMPars
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span xmlns:xmlns="">13</span> | assert_equals: expecting one parsererror expected 1 but got 0
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A lone surrogate is replaced with U+FFFD | assert_equals: expected "broken \ufffd" but got "broken "
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A valid surrogate pair is preserved | assert_equals: expected "works ?" but got "works ?"
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as HTML, appendChild | appendChild: not a node
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as HTML, append importNode result | cannot read property 'cloneNode' of null
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as HTML, svg script, appendChild | appendChild: not a node
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as HTML, svg script, append importNode result | cannot read property 'cloneNode' of null
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XML, svg script, appendChild | appendChild: not a node
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XML, svg script, append importNode result | cannot read property 'cloneNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XML, svg script, append importNode result, but with namespace prefix | cannot read property 'cloneNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XML, svg script, append adoptNode result | cannot read property 'parentNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XML, svg script, append cloneNode result | cannot read property 'cloneNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, whole root, append importNode result | assert_equals: expected 0 but got 1
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append importNode result | cannot read property 'cloneNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append adoptNode result | cannot read property 'parentNode' of undefined
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html | parseFromString as XHTML, script, append cloneNode result | cannot read property 'cloneNode' of undefined
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type text/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xhtml+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
@@ -264,7 +238,6 @@ WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if a prefix
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Attribute nodes are serialized as the empty string | Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.
 WPT SUB FAIL domparsing/createContextualFragment-external-scripts-async.html | External scripts from createContextualFragment() have async=true and execute as async once connected | assert_true: script.async is true before insertion expected true got false
 WPT SUB FAIL domparsing/createContextualFragment.html | Must throw TypeError when calling without arguments | assert_throws_js: function "function() { range.createContextualFragment(); }" did not throw
-WPT SUB FAIL domparsing/domparser-spurious-attributes.html | Using ">" and "\r" in an attribute creates no unexpected attributes. | assert_equals: expected "this-should-not-be-an-attribute=1>\nhello" but got "this-should-not-be-an-attribute=1>\rhello"
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on the html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on the html element of an inert document throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method]("<p>new</p>"); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on a detached html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
@@ -424,5 +397,3 @@ WPT SUB FAIL domparsing/style_attribute_html.html | Parsing of style attribute |
 WPT SUB FAIL domparsing/style_attribute_html.html | Update style.backgroundColor | assert_equals: Should not drop the existing style expected "color: green; background-color: blue;" but got "color: green; background-color: blue"
 WPT SUB FAIL domparsing/svg-template.html | document | assert_false: expected false got true
 WPT SUB FAIL domparsing/svg-template.html | fragment | assert_false: expected false got true
-WPT SUB FAIL domparsing/xml-parse-serialize-roundtrip.html | DOMParser and XMLSerializer should round trip with CDATA sections: large CDATA | assert_equals: expected "<root><![CDATA[\n12345678901234567890123456789012345678901234567890123456789012345678901234567890\n123456789012345678901234567890123456
-WPT SUB FAIL domparsing/xml-parse-serialize-roundtrip.html | DOMParser and XMLSerializer should round trip with CDATA sections: multiple CDATAs | assert_equals: expected "<root><htmlDefn><![CDATA[<div><![CDATA[ Just Rubbish Data $#$^#^$ ]]]]><![CDATA[></div><div></div>]]></htmlDefn></root>" but got "<root

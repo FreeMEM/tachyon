@@ -1,0 +1,18 @@
+# Test: los <script> de un documento de DOMParser no se ejecutan al pasarlos a la página (HTML: "XML scripting support
+# disabled", ya empezados), ni con importNode, adoptNode o cloneNode; d.body existe aunque el texto no traiga <body>;
+# rootElement de un SVG; los CDATA del XML, nodos 4. (WPT domparsing xml-scripting-support-disabled y xml-CDATA)
+# expect-out: body BODY | root svg | ns http://www.w3.org/1999/xhtml 1 1 | cdata #cdata-section > < " and &
+# expect-out: marcas 0 0 0 0 0 0 0 0 0 | página 1
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "var o = []; function p(f) { try { o.push(f()); } catch (e) { o.push('E ' + e); } } var P = new DOMParser(); var h = P.parseFromString('<div><script>window.mark = 1;</sc' + 'ript></div>', 'text/html'); p(() => 'body ' + (h.body && h.body.tagName)); var x = P.parseFromString(\"<svg xmlns='http://www.w3.org/2000/svg'><script>window.mark = 1;</sc\" + \"ript></svg>\", 'text/xml'); p(() => 'root ' + x.rootElement.localName); var xh = P.parseFromString(\"<html xmlns='http://www.w3.org/1999/xhtml'><body><script>window.mark = 1;</sc\" + \"ript></body></html>\", 'application/xhtml+xml'); p(() => 'ns ' + xh.documentElement.namespaceURI + ' ' + xh.getElementsByTagName('script').length + ' ' + xh.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'script').length); var c = P.parseFromString('<foo><![CDATA[> < \" and &]]></foo>', 'text/xml'); p(() => 'cdata ' + c.documentElement.firstChild.nodeName + ' ' + c.documentElement.textContent); o.join(' | ')", "t.js")
+    # (cada forma de pasar a la página un <script> de DOMParser; window.mark sigue en 0. Uno de la página, sí corre)
+    Print js_evaluar(js, "var P = new DOMParser(), H = '<div><script>window.mark = 1;</sc' + 'ript></div>', S = \"<svg xmlns='http://www.w3.org/2000/svg'><script>window.mark = 1;</sc\" + \"ript></svg>\", X = \"<html xmlns='http://www.w3.org/1999/xhtml'><body><script>window.mark = 1;</sc\" + \"ript></body></html>\"; var XN = 'http://www.w3.org/1999/xhtml'; var casos = [() => document.body.appendChild(P.parseFromString(H, 'text/html').body), () => document.body.appendChild(document.importNode(P.parseFromString(H, 'text/html').body, true)), () => document.body.appendChild(P.parseFromString(S, 'text/xml').rootElement), () => document.body.appendChild(document.importNode(P.parseFromString(S, 'text/xml').rootElement, true)), () => document.body.appendChild(document.adoptNode(P.parseFromString(S, 'text/xml').rootElement)), () => document.body.appendChild(P.parseFromString(S, 'text/xml').rootElement.cloneNode(true)), () => document.body.appendChild(document.importNode(P.parseFromString(X, 'application/xhtml+xml').documentElement, true)), () => document.body.appendChild(document.importNode(P.parseFromString(X, 'application/xhtml+xml').getElementsByTagNameNS(XN, 'script')[0], true)), () => document.body.appendChild(P.parseFromString(X, 'application/xhtml+xml').getElementsByTagNameNS(XN, 'script')[0].cloneNode(true))]; var o = casos.map(f => { window.mark = 0; try { f(); } catch (e) { return 'E ' + e; } return window.mark; }); window.mark = 0; var s = document.createElement('script'); s.textContent = 'window.mark = 1'; document.body.appendChild(s.cloneNode(true)); 'marcas ' + o.join(' ') + ' | página ' + window.mark", "t.js")
+    js_liberar(js)
+end

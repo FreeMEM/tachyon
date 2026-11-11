@@ -7212,3 +7212,15 @@ Formato:
   un <script> de HTML o SVG, o con uno de padre, no hacen nada; setHTML, nuevo (vacía y mete el HTML seguro). WPT
   positional-html-into-script-safe 14 → 90/91; domparsing 638 → 714/1090. tests/test_jsdom_html_seguro.dash; Acid3
   100/100.
+- (después) DOMParser (WPT domparsing 714 → 743/1090), en lib/jsdom_preludio.js:
+  - CDATA del XML: nodos 4, "#cdata-section", no texto (xml-CDATA 0 → 8/8).
+  - text/html, con el analizador de HTML5 del documento entero (como document.close()): con el innerHTML del <html>,
+    "<div>..." quedaba sin <body> y d.body era null. También el responseXML de HTML de XMLHttpRequest.
+  - Los <script> de DOMParser, ya empezados ("XML scripting support disabled"): pasados a la página con appendChild,
+    importNode, adoptNode o cloneNode no corren. cloneNode copia la marca solo si DOMParser marcó alguno (para no
+    buscar <script> en cada clon de una plantilla).
+  - Los elementos XHTML de un documento XML guardan su espacio de nombres (__xml daba null); rootElement del documento
+    (su <svg> raíz, o null).
+  - xml-scripting-support-disabled 0 → 13/13; de paso empty-nodes 4 → 8, spurious-attributes 1 → 2,
+    parse-serialize-roundtrip 0 → 2, parseFromString-html 6 → 7. Ninguno baja. tests/test_jsdom_domparser_scripts.dash;
+    los de DOMParser, DOM y XML siguen; Acid3 100/100.

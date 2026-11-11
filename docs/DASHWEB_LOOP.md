@@ -7165,3 +7165,11 @@ Formato:
   actualización de verdad desde el Tachyon.gz de la v0.9.4-alfa publicada (GitHub de mentira que redirige): idéntico
   al compilado, los nueve catálogos y .old; humo con MUI 3.8, cuatro ventanas 300 s. Notas en el scratchpad
   (notas095.md).
+
+### 2026-11-11 — Publicada la v0.9.5-alfa
+- Usuario: "Sí, publícala". PR #25 de dev a main (77bc585), etiqueta v0.9.5-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.5-alfa con tachyon.lha, Tachyon.gz (SHA-256 b7618ec3...,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera. Sin nombres
+  nuevos que agradecer.
+- Usuario: el vídeo 2, esperar al arreglo del cierre con el JIT de Amiberry; y "sí" a que freememlang-af ponga en
+  dashc la variable de entorno que cambie dbra por subq+bne, para ensayar con ella.

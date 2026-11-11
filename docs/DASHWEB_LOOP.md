@@ -678,7 +678,8 @@ tarea, con el estilo de Dash.
       nueva. Hecho: con menos de 24 MB libres el JavaScript de la página se suelta entero (la página se queda como
       está), la página de antes se suelta entera con menos de 64 MB, y un vídeo deja de traerse antes de no caber (el
       búfer que se dobla al llenarse reiniciaba el Amiga). Pendiente: con la memoria troceada solo caben ~8 MB de un
-      vídeo (2 minutos): traerlo a trozos o a disco. (La duración de la barra, arreglada: ver la bitácora.)
+      vídeo (2 minutos): hecho, se trae en trozos de 1 MB (el vídeo de 25 minutos, entero). (La duración de la
+      barra, arreglada: ver la bitácora.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -7140,3 +7141,19 @@ Formato:
   (red_cabe_crecer mira ese tamaño). En Coffin, el vídeo de 25 minutos: 12 MB traídos (antes 8; ~3 minutos), con 104
   MB libres pero el mayor bloque seguido de 10,7 MB. Para más, el vídeo en trozos sueltos (no un búfer seguido) o a
   disco: pendiente. test_red_cabe_crecer, red 4/4, http 8/8.
+
+### 2026-11-11 — Tarea 64g: el vídeo se trae en trozos de 1 MB
+- Con la memoria troceada (104 MB libres, el mayor bloque 10 MB) un vídeo largo no cabía en un búfer seguido.
+  lib/http.dash http_volcar_en_trozos: el cuerpo de la respuesta va a trozos de HTTP_TROZO (1 MB) sueltos según
+  llega (_carga_a_trozos desde el búfer de la conexión, que se queda pequeño); http_trozos, http_trozos_listos,
+  http_trozos_total, http_cabe_trozo, http_trozos_soltar. third_party/mintvid/dashweb_video.c: la fuente "bajando"
+  lee de una tabla de trozos (dwv_trozos_nuevos/poner/listos, dwv_abrir_trozos, dwv_trozos_soltar; la tabla es de
+  dashweb y vale para empezar otra vez). lib/videos.dash: los vídeos de las páginas y los de YouTube, así
+  (_video_trozos_al_dia, _video_listos/_video_total; _video_sin_sitio con http_cabe_trozo); se sueltan en
+  videos_liberar.
+- tests/test_video_trozos.dash (nuevo; empieza mientras se baja, espera, las mismas imágenes que el fichero, otra vez
+  desde los trozos; memcheck limpio), vídeo 6/6, youtube. FS-UAE: video_goteo.html suena entero con sonido.
+- En Coffin: el vídeo de 25 minutos, 97,5 MB traídos enteros en 38 s (quedan 31 MB libres) y sonando a los 5
+  minutos a 29,9 imágenes/s.
+- (Al hacer test_video_duracion se pisó tests/pages/video_sonido.mp4 de la tarea 30b: restaurado; el nuevo es
+  tests/pages/video_duracion.mp4.)

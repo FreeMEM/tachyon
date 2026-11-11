@@ -5,6 +5,14 @@ long dwv_abrir(const char *fichero);           /* un vídeo (MP4/MOV, AVI, MKV, 
 long dwv_abrir_bajando(const unsigned char *datos, long listos, long total);  /* aún se baja; 0: probar luego */
 void dwv_bajado(long v, const unsigned char *datos, long listos);  /* lo que ha llegado ya, y dónde está */
 void dwv_bajado_fichero(long v, const char *fichero);  /* ya está entero en el fichero */
+/* en trozos de DWV_TROZO bytes que pone dashweb según llegan (sin un búfer seguido: con la memoria troceada no cabía
+   un vídeo largo; tarea 64g): una tabla nueva, sus trozos, cuánto hay; abrir (0: probar luego); soltarla al final */
+#define DWV_TROZO 1048576
+long dwv_trozos_nuevos(long total);
+void dwv_trozos_poner(long t, long i, const unsigned char *trozo);
+void dwv_trozos_listos(long t, long listos);
+long dwv_abrir_trozos(long t);
+void dwv_trozos_soltar(long t);
 long dwv_ancho(long v);
 long dwv_alto(long v);
 long dwv_fps_mil(long v);                      /* imágenes por segundo x 1000 (0 si no se sabe) */

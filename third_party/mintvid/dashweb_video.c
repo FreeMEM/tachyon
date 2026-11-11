@@ -68,6 +68,11 @@ typedef struct {
     char nombre[256];   /* "" mientras se baja */
     BPTR f;
     int falta;
+    /* en trozos (dwv_trozos_nuevos): la tabla de trozos de DWV_TROZO bytes; la suelta dwv_trozos_soltar, no la
+       fuente (dashweb la vuelve a abrir para empezar otra vez) */
+    const unsigned char **trozos;
+    size_t ntrozos;
+    int externo;
 } dwv_bajando;
 
 static dwv_bajando *dwv_pendiente;   /* el que toma mr_http_source_open_ex, desde dwv_abrir_bajando */
@@ -76,6 +81,17 @@ static int bajando_leer(void *ctx, size_t off, void *dst, size_t len)
 {
     dwv_bajando *b = (dwv_bajando *)ctx;
     if (off > b->listos || len > b->listos - off) { b->falta = 1; return 0; }
+    if (b->trozos) {
+        unsigned char *d = (unsigned char *)dst;
+        while (len > 0) {
+            size_t i = off / DWV_TROZO, dentro = off % DWV_TROZO, toma = DWV_TROZO - dentro;
+            if (toma > len) toma = len;
+            if (i >= b->ntrozos || !b->trozos[i]) { b->falta = 1; return 0; }
+            memcpy(d, b->trozos[i] + dentro, toma);
+            d += toma; off += toma; len -= toma;
+        }
+        return 1;
+    }
     if (!b->nombre[0]) { memcpy(dst, b->datos + off, len); return 1; }
     if (!b->f && !(b->f = Open((STRPTR)b->nombre, MODE_OLDFILE))) return 0;
     if (Seek(b->f, (LONG)off, OFFSET_BEGINNING) < 0) return 0;
@@ -85,7 +101,8 @@ static int bajando_leer(void *ctx, size_t off, void *dst, size_t len)
 static void bajando_cerrar(void *ctx)
 {
     dwv_bajando *b = (dwv_bajando *)ctx;
-    if (b->f) Close(b->f);
+    if (b->f) { Close(b->f); b->f = 0; }
+    if (b->externo) return;
     free(b);
 }
 
@@ -162,6 +179,59 @@ long dwv_abrir_bajando(const unsigned char *datos, long listos, long total)
     if (dwv_pendiente) { free(dwv_pendiente); dwv_pendiente = NULL; h = 0; }   /* (no llegó a la fuente) */
     if (h) ((dwv *)h)->bajando = b;   /* si falló, la fuente ya se cerró y lo liberó */
     return h;
+}
+
+/* --- en trozos (tarea 64g) --- */
+long dwv_trozos_nuevos(long total)
+{
+    dwv_bajando *b;
+    size_t n;
+    if (total <= 0) return 0;
+    b = (dwv_bajando *)calloc(1, sizeof *b);
+    if (!b) return 0;
+    n = ((size_t)total + DWV_TROZO - 1) / DWV_TROZO;
+    b->trozos = (const unsigned char **)calloc(n ? n : 1, sizeof *b->trozos);
+    if (!b->trozos) { free(b); return 0; }
+    b->ntrozos = n;
+    b->total = (size_t)total;
+    b->externo = 1;
+    return (long)b;
+}
+
+void dwv_trozos_poner(long t, long i, const unsigned char *trozo)
+{
+    dwv_bajando *b = (dwv_bajando *)t;
+    if (b && i >= 0 && (size_t)i < b->ntrozos) b->trozos[i] = trozo;
+}
+
+void dwv_trozos_listos(long t, long listos)
+{
+    dwv_bajando *b = (dwv_bajando *)t;
+    if (b && listos >= 0) b->listos = (size_t)listos > b->total ? b->total : (size_t)listos;
+}
+
+/* Abre el vídeo de esa tabla (0 si aún no se puede: probar con más); la tabla sigue siendo de dashweb */
+long dwv_abrir_trozos(long t)
+{
+    dwv_bajando *b = (dwv_bajando *)t;
+    long h;
+    if (!b) return 0;
+    b->falta = 0;
+    dwv_pendiente = b;
+    h = dwv_abrir("http://dashweb/bajando");
+    if (dwv_pendiente) { dwv_pendiente = NULL; h = 0; }
+    if (h) ((dwv *)h)->bajando = b;
+    return h;
+}
+
+/* (con el vídeo ya cerrado) */
+void dwv_trozos_soltar(long t)
+{
+    dwv_bajando *b = (dwv_bajando *)t;
+    if (!b) return;
+    if (b->f) Close(b->f);
+    free((void *)b->trozos);
+    free(b);
 }
 
 /* Lo que ya ha llegado (datos: dónde está ahora) */

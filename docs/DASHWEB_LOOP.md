@@ -7307,3 +7307,11 @@ Formato:
   sonido lleva un tc_TrapCode que apunta el número de la excepción y su PC y la deja parada; lib/videos.dash lo
   escribe en la TRAZA ("vídeo: la tarea del sonido se paró: ..."). Tomas con ese Tachyon:
   ~/.cache/video-tachyon/ensayos/repetir_tr.sh.
+- (70) Pegar hecho y probado en sys32rtg38 (MUI 3.8) con los builtins de freememlang-af (mui_active_object,
+  mui_string_pos, mui_set_string_pos; rama local mui-cursor de FreeMEMLang, 226ff73, sin fusionar): una opción
+  "Paste" (Amiga-V, texto 56 en los nueve catálogos) en el menú Proyecto. Con la barra activa, la primera línea del
+  portapapeles donde está el cursor ("http:Hola mundo//127..."); con la página (MUI da 0 de objeto activo: el canvas
+  no lo es) y un campo con el foco, en ese campo, también con el puntero fuera de la página. Pero con MUI 3.8 y la
+  barra activa, Amiga+V no llega al menú: el String se la queda y mete una "v"; solo pega eligiendo el menú con el
+  ratón. Pedido a freememlang-af un mui_string_clipboard (MUIA_String_EditHook con Amiga+V/C/X). Guardado en
+  git stash ("tarea 70: pegar...") hasta que los builtins estén en el main de Dash: con el Dash de main no compila.

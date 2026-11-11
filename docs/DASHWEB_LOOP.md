@@ -7250,3 +7250,16 @@ Formato:
     plantillas de verdad.
   - Los tests de estilo (documento_estilo_js, medir_js, ligero, limite, estilo_partes, maqueta_epoca) y de DOM
     siguen; Acid3 100/100.
+- CORRECCIÓN al cierre con el JIT de Amiberry: el JIT de FS-UAE no compila nada. Un bucle de Dash de 400 M vueltas
+  (fpu=68040, uae_cpu_speed=max, un logs_dir por ejecución): cpu=68040 con jit_compiler=1, 37,5 s; 68040-NOMMU con
+  JIT, 38,3 s; 68040-NOMMU sin JIT, 38,5 s; cpu=68040 sin JIT, 62,5 s (con la MMU emulada). El registro dice "JIT:
+  Enabling JIT compiler" y cachesize=8192, pero "CPU=68040, FPU=68040, MMU=0, JIT=0": lo único que hace jit_compiler=1
+  es quitar la MMU. Así que "FS-UAE con JIT 0 de 6" fue sin JIT, como Amiberry sin JIT (0 de 5): no está demostrado
+  que sea solo de Amiberry (puede ser un JIT de UAE con algo de Tachyon). También: la máquina "objetivo" de
+  tools/medir_visor.py y las medidas de "68040 + JIT" han sido sin JIT. Lo pidió el usuario (vía freememlang-af), que
+  ahora lleva un caso pequeño del fallo para avisar a Amiberry.
+- (después, 41d) XML bien formado en DOMParser (WPT domparsing 824 → 829/1090): xmlAnalizar da parsererror con un
+  espacio tras "</" (el nombre de cierre ya no se recorta) y con atributos con ':' al principio o al final, dos ':' o
+  xmlns:xmlns. El prefijo sin declarar (x:test) se deja pasar a propósito (RSS de verdad que lo usan), y los
+  surrogates también (el texto va en Latin-1). xml-parsererror 15 → 20/23. tests/test_jsdom_domparser.dash con una
+  línea más; domparser_scripts y xml_ns siguen; WPT xhr igual (864/1131); Acid3 100/100.

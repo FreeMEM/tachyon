@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 824/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 829/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -14,7 +14,7 @@ WPT FILE domparsing/DOMParser-parseFromString-xml-CDATA.html 8/8 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-doctype.html 2/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-empty-nodes.html 8/8 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-internal-subset.html 0/1 OK
-WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 15/23 OK
+WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 20/23 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 13/13 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml.html 20/20 OK
 WPT FILE domparsing/DOMParser-xml-character-entities.html 4/8 OK
@@ -222,11 +222,6 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-url.html | image/svg+xml inval
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-doctype.html | Doctype parsing of System Id must fail on ommitted value | assert_equals: expected null but got Element node <div id="test"></div>
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-internal-subset.html | Parsing and serialization of doctype internal subset | cannot read property 'name' of null
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span x:test="testing">1</span> | assert_equals: expecting one parsererror expected 1 but got 0
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span :test="testing">3</span> | assert_equals: expecting one parsererror expected 1 but got 0
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span>8</ span> | assert_equals: expecting one parsererror expected 1 but got 0
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span ::="test">11</span> | assert_equals: expecting one parsererror expected 1 but got 0
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span xmlns:="urn:x-test:test">12</span> | assert_equals: expecting one parsererror expected 1 but got 0
-WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span xmlns:xmlns="">13</span> | assert_equals: expecting one parsererror expected 1 but got 0
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A lone surrogate is replaced with U+FFFD | assert_equals: expected "broken \ufffd" but got "broken "
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A valid surrogate pair is preserved | assert_equals: expected "works ?" but got "works ?"
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type text/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null

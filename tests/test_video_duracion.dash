@@ -1,0 +1,26 @@
+# Test: la duración de un MP4 con sonido (tarea 64g): el índice del lector mezcla imágenes y trozos de sonido, y su
+# número entre las imágenes por segundo daba de más (un vídeo de YouTube de 25:32 salía como 1:02:11 en la barra).
+# Ahora es el instante de la última imagen y una más. (tests/pages/video_sonido.mp4: 3 s a 10 imágenes/s, H.264 y
+# AAC, hecho con ffmpeg)
+# emu-server: http.py 40897
+# memcheck
+# emu-config: cpu = 68030
+# emu-config: zorro_iii_memory = 65536
+# expect-out: duración: 3000
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/video.dash"
+import "../lib/http.dash"
+
+Main
+    f = "T:video_sonido.mp4"
+    http_a_fichero("http://127.0.0.1:40897/pages/video_sonido.mp4", f, 10000)
+    v = video_abrir(f)
+    if v == 0
+        Print "no se abre"
+        return
+    end
+    Print "duración: " + video_duracion(v)
+    video_cerrar(v)
+    file_delete(f)
+end

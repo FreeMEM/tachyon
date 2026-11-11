@@ -120,6 +120,7 @@ typedef struct {
     int recien;          /* tras dwv_ir: el retraso de reordenar se mide otra vez con la primera imagen */
     long reloj_base;     /* tras dwv_ir: el ms del vídeo donde se saltó... */
     long reloj_desde;    /* ...y lo que había sonado entonces (audio_elapsed_ms no vuelve a 0) */
+    long duracion_ms;    /* dwv_duracion, la primera vez (0: aún no) */
 } dwv;
 
 #ifndef DWV_SIN_SONIDO
@@ -320,6 +321,10 @@ long dwv_duracion(long h)
     const mr_video_info *vi;
     uint32_t n;
     if (!v || !v->dx) return -1;
+    /* (el instante de la última imagen: el índice del MP4 mezcla imágenes y trozos de sonido, y su número entre las
+       imágenes por segundo daba de más; un vídeo de YouTube de 25:32 salía como 1:02:11; tarea 64g) */
+    if (v->duracion_ms <= 0) v->duracion_ms = (long)mr_demux_duration_ms(v->dx);
+    if (v->duracion_ms > 0) return v->duracion_ms;
     vi = mr_demux_video(v->dx);
     n = mr_demux_video_frames(v->dx);
     if (!vi || !vi->rate || !n) return -1;

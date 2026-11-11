@@ -678,7 +678,7 @@ tarea, con el estilo de Dash.
       nueva. Hecho: con menos de 24 MB libres el JavaScript de la página se suelta entero (la página se queda como
       está), la página de antes se suelta entera con menos de 64 MB, y un vídeo deja de traerse antes de no caber (el
       búfer que se dobla al llenarse reiniciaba el Amiga). Pendiente: con la memoria troceada solo caben ~8 MB de un
-      vídeo (2 minutos): traerlo a trozos o a disco; y la duración de la barra sale mal con el vídeo a medias.
+      vídeo (2 minutos): traerlo a trozos o a disco. (La duración de la barra, arreglada: ver la bitácora.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -7127,3 +7127,12 @@ Formato:
   tablas leídas como código; la única real en lo de YouTube, un dbne en js_bigint_divrem. dbf/dbra: 49 en libqjs (ya
   con -fno-branch-count-reg), 70 en libimg, 224 en libvideo y 493 de dashc. freememlang-af puede poner una variable
   de entorno en dashc para cambiar dbra por subq+bne, con el visto bueno del usuario (pendiente de preguntarle).
+
+### 2026-11-11 — Tarea 64g: la duración del vídeo en la barra
+- La barra decía 1:02:11 de un vídeo de YouTube de 25:32: dwv_duracion contaba las entradas del índice del MP4
+  (mr_mov_sample_count) entre las imágenes por segundo, y ese índice mezcla imágenes y trozos de sonido.
+  third_party/mintvid/core/mr_demux.c mr_demux_duration_ms: el instante de la última imagen (más una); dwv_duracion
+  la usa (guardada en dwv.duracion_ms). tests/test_video_duracion.dash con tests/pages/video_sonido.mp4 (3 s a 10
+  imágenes/s, H.264 y AAC, de ffmpeg): 3000. Vídeo 5/5.
+- Las tomas del vídeo 2 (3 seguidas) se cayeron las tres en la página del vídeo (el JIT de Amiberry); pendiente de
+  decidir con el usuario cómo grabar YouTube.

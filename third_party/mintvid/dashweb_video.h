@@ -17,6 +17,7 @@ long dwv_ancho(long v);
 long dwv_alto(long v);
 long dwv_fps_mil(long v);                      /* imágenes por segundo x 1000 (0 si no se sabe) */
 const char *dwv_codecs(long v);                /* "video=..., audio=..." */
+const char *dwv_fallo_sonido(void);   /* la excepción de la tarea del sonido (diagnóstico) o "" */
 long dwv_siguiente(long v);                    /* 1 una imagen nueva, 0 fin, -1 error, 2 esperar (aún se baja) */
 const unsigned char *dwv_rgb(long v);          /* la imagen: RGB24, dwv_paso() bytes por fila */
 long dwv_paso(long v);

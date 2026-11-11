@@ -295,6 +295,20 @@ long dwv_fps_mil(long h)
 }
 const char *dwv_codecs(long h) { return ((dwv *)h)->codecs; }
 
+/* La excepción de la tarea del sonido (con -DDWV_TRAMPA_SONIDO; si no, o sin excepción, "") */
+#ifdef DWV_TRAMPA_SONIDO
+extern volatile unsigned long dwv_fallo_num, dwv_fallo_pc;
+extern void audio_trampa(void);
+#endif
+const char *dwv_fallo_sonido(void)
+{
+#ifdef DWV_TRAMPA_SONIDO
+    static char t[96];
+    if (dwv_fallo_pc) { sprintf(t, "excepcion %lu en PC %08lx (audio_trampa en %08lx)", dwv_fallo_num, dwv_fallo_pc, (unsigned long)audio_trampa); return t; }
+#endif
+    return "";
+}
+
 /* Sin marca de tiempo en el contenedor, el instante sale de la cuenta de paquetes de vídeo leídos (no de
    imágenes: el modo turbo se salta algunas), menos los que el decodificador guarda para reordenar */
 static long dwv_ms_de(dwv *v, long indice)

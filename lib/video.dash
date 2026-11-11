@@ -22,6 +22,7 @@
 @extern("dashweb_video.h") func dwv_alto(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_fps_mil(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_codecs(v: Int) -> String
+@extern("dashweb_video.h") func dwv_fallo_sonido() -> String
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -155,4 +156,10 @@ end
 # Salta a ms del vídeo (al fotograma clave de antes más cercano): el ms al que llegó, o -1 si no se puede
 func video_ir(v: Int, ms: Int) -> Int
     return dwv_ir(v, ms)
+end
+
+# La excepción de la CPU en la tarea del sonido de MintVID ("excepcion N en PC X"), solo con libvideo compilada con
+# -DDWV_TRAMPA_SONIDO (diagnóstico del cierre con el JIT de Amiberry); si no, ""
+func video_fallo_sonido() -> String
+    return dwv_fallo_sonido()
 end

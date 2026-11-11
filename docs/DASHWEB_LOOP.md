@@ -7299,3 +7299,11 @@ Formato:
   un atributo (xl:type) y se quitó: rompía "p:name sale ns1:name" (DOM-Parsing#29), que es lo del estándar; quedan
   esas dos pruebas incompatibles y la de xmlns="" con un prefijo atado a "". test_jsdom_xml_ns con una línea más; WPT
   xhr 881/1155 (antes 864/1131: más subpruebas que llegan a correr, ninguna menos); Acid3 100/100.
+- (70) Visto en sys32rtg38 (MUI 3.8, medir_visor --acciones con Amiga derecha + V en la barra): no pega, mete una "v".
+  Para un pegar propio (opción de menú con V que pegue donde está el cursor, y que en una página vaya al campo de la
+  página) faltan en Dash el objeto activo de la ventana y la posición del cursor de un String: pedidos a
+  freememlang-af (mui_active_object, mui_string_pos, mui_set_string_pos), con el visto bueno del usuario en su sesión.
+- (vídeo 2) third_party/mintvid: con -DDWV_TRAMPA_SONIDO (solo para ensayar; por defecto no cambia nada), la tarea del
+  sonido lleva un tc_TrapCode que apunta el número de la excepción y su PC y la deja parada; lib/videos.dash lo
+  escribe en la TRAZA ("vídeo: la tarea del sonido se paró: ..."). Tomas con ese Tachyon:
+  ~/.cache/video-tachyon/ensayos/repetir_tr.sh.

@@ -371,8 +371,17 @@ end
 
 # Después de pintar: la imagen siguiente de cada vídeo que suena, decodificada mientras se espera su hora;
 # true si alguno se acabó (hay que repintarlo: el botón de volver a empezar)
+var _video_fallo_dicho: Bool = false
+
 func videos_adelantar(vs: Videos) -> Bool
     acabado = false
+    if not _video_fallo_dicho
+        f = video_fallo_sonido()
+        if f != ""
+            traza("vídeo: la tarea del sonido se paró: " + f)
+            _video_fallo_dicho = true
+        end
+    end
     for r in vs.lista
         if r.estado == V_SONANDO and not r.lista
             _video_decodificar(r)

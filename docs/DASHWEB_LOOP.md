@@ -7208,3 +7208,7 @@ Formato:
   iframe). tests/test_jsdom_baseuri_documento.dash; Acid3 100/100.
 - (tools/wpt_js.py apunta cada fichero por location.pathname: los de pushstate salen como
   fake/push-state-from-outer-frame.)
+- (después) setHTML, appendHTML, prependHTML, beforeHTML, afterHTML y replaceWithHTML seguros (whatwg/html#12753): sobre
+  un <script> de HTML o SVG, o con uno de padre, no hacen nada; setHTML, nuevo (vacía y mete el HTML seguro). WPT
+  positional-html-into-script-safe 14 → 90/91; domparsing 638 → 714/1090. tests/test_jsdom_html_seguro.dash; Acid3
+  100/100.

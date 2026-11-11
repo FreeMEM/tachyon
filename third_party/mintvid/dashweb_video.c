@@ -148,8 +148,20 @@ static void dwv_pcm(void *user, const int16_t *pcm, unsigned frames, unsigned ch
 }
 
 /* El sonido de un paquete; la salida empieza cuando hay 150 ms en cola */
+#ifdef DWV_SOLO_DECODIFICAR
+/* (diagnóstico del vídeo 2: el sonido se decodifica y se tira, sin la salida por Paula ni su tarea) */
+static void dwv_pcm_nada(void *user, const int16_t *pcm, unsigned frames, unsigned channels)
+{
+    (void)user; (void)pcm; (void)frames; (void)channels;
+}
+#endif
+
 static void dwv_sonido(dwv *v, const mr_packet *pkt)
 {
+#ifdef DWV_SOLO_DECODIFICAR
+    if (v->ad) mr_audio_decoder_feed(v->ad, pkt->data, pkt->len, dwv_pcm_nada, NULL);
+    return;
+#endif
     if (!v->ad || !v->au) return;
     mr_audio_decoder_feed(v->ad, pkt->data, pkt->len, dwv_pcm, v->au);
     audio_service(v->au);
@@ -275,8 +287,10 @@ long dwv_abrir(const char *fichero)
         const mr_audio_info *ai = mr_demux_audio(v->dx);
         if (ai && ai->valid) {
             v->ad = mr_audio_decoder_open(ai, 0, 0);
+#ifndef DWV_SOLO_DECODIFICAR
             if (v->ad) v->au = audio_open(mr_audio_decoder_rate(v->ad), (int)mr_audio_decoder_channels(v->ad), 16);
             if (!v->au && v->ad) { mr_audio_decoder_close(v->ad); v->ad = NULL; }
+#endif
         }
     }
 #endif

@@ -7315,3 +7315,10 @@ Formato:
   barra activa, Amiga+V no llega al menú: el String se la queda y mete una "v"; solo pega eligiendo el menú con el
   ratón. Pedido a freememlang-af un mui_string_clipboard (MUIA_String_EditHook con Amiga+V/C/X). Guardado en
   git stash ("tarea 70: pegar...") hasta que los builtins estén en el main de Dash: con el Dash de main no compila.
+- (vídeo 2) Con la trampa en la tarea del sonido (TachyonTrampa), Amiberry con JIT: se caen la 1, la 2 y la 4 de 5, y
+  la trampa no salta nunca (ninguna excepción de la CPU en esa tarea). Tampoco sale el aviso de Dash:
+  Traspaso:salida.txt (copiada al cambiar, scratchpad/trazas_tr/salida_*.txt) solo tiene "[CLI 9]". En la foto,
+  Tachyon ya no está en la lista de tareas de Trasfondo y la memoria no vuelve. Así que no es una excepción en la
+  tarea del sonido. Queda: el decodificador AAC de MintAMP (con ensamblador de 68k, en la tarea principal) o la
+  salida por Paula. Para separarlo, -DDWV_SOLO_DECODIFICAR (third_party/mintvid/dashweb_video.c: decodifica el sonido
+  y lo tira, sin audio_open ni su tarea); tomas: ~/.cache/video-tachyon/ensayos/repetir_sd2.sh.

@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 842/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 843/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -18,7 +18,7 @@ WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 20/23 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 13/13 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml.html 20/20 OK
 WPT FILE domparsing/DOMParser-xml-character-entities.html 4/8 OK
-WPT FILE domparsing/XMLSerializer-serializeToString.html 30/33 OK
+WPT FILE domparsing/XMLSerializer-serializeToString.html 31/33 OK
 WPT FILE domparsing/createContextualFragment-external-scripts-async.html 0/1 OK
 WPT FILE domparsing/createContextualFragment.html 34/35 OK
 WPT FILE domparsing/domparser-spurious-attributes.html 2/2 OK
@@ -230,7 +230,6 @@ WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an
 WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type image/svg+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if no special handling for XLink namespace unlike HTML serializer. | assert_equals: expected "<root xmlns:xl=\"http://www.w3.org/1999/xlink\" xl:type=\"v\"/>" but got "<root xmlns:ns1=\"http://www.w3.org/1999/xlink\" ns1:type=\"v
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if a prefix bound to an empty namespace URI ("no namespace") serialize | assert_equals: expected "<root xmlns=\"\" xmlns:foo=\"\"/>" but got "<root xmlns:foo=\"\"/>"
-WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Attribute nodes are serialized as the empty string | Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.
 WPT SUB FAIL domparsing/createContextualFragment-external-scripts-async.html | External scripts from createContextualFragment() have async=true and execute as async once connected | assert_true: script.async is true before insertion expected true got false
 WPT SUB FAIL domparsing/createContextualFragment.html | Must throw TypeError when calling without arguments | assert_throws_js: function "function() { range.createContextualFragment(); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | setHTML on the html element replaces head and body | assert_equals: expected Element node <meta name="x"></meta> but got null

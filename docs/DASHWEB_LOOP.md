@@ -614,6 +614,19 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 69. **Con JIT (Emu68 en PiStorm, Amiberry) Tachyon se cuelga, se cae o pisa memoria; sin JIT no (registros de
+      la 0.9.5 por la sesión telegram, 2026-11-11).** David Martínez (A600 con PiStorm, 68040, OS 3.2, #1131-#1140): ya
+      llegan todos los ficheros ("recursos listos: scripts") y se queda con la CPU a tope sin apuntar ni el primer
+      script, en dash.freemem.space y en YouTube; en FS-UAE (que no compila con JIT: ver la bitácora del 2026-11-11)
+      avanza. JaviTecH (A1200 con PiStorm, Caffeine 9318, #1141): Recoverable Alert 0100000F (AN_BadFreeAddr) al ir de
+      la portada a github.com/FreeMEM/tachyon, y en todas las páginas (#1149; Emu68 1.1 beta 2: ¿un FreeMem/FreeVec de
+      siempre, no del JS?). David lleva Emu68 1.1 Beta1 del 01/09 (#1150). Amiberry con JIT: el cierre en la página de un vídeo de YouTube (sin el
+      sonido del vídeo, de momento no). Buscar lo común: la tarea del sonido de MintVID y las de task_start/DNS (sin
+      manejador de excepciones), código que cambie en marcha, carreras entre tareas que el JIT destapa.
+- [ ] 70. **Pegar en la barra de direcciones (lo contaron Alex Agauser, #1143, y antes Ferrán García, 2026-11-05).**
+      Amiga+V no pega en el campo de la dirección. Tachyon no tiene atajo con V; el campo es un String de MUI, y en
+      MUI 3.8 (sin comprobar) no pega; Alex tiene MUI 3.8 (#1148). Probarlo en sys32rtg38 y con MUI 5, y si hace falta un pegar propio (menú con V
+      que meta el portapapeles en el campo activo, también en los de la página).
 - [ ] 67. **Tachyon parado en "Trayendo hojas de estilo y scripts..." en una PiStorm, y lento (lo contó Oskis R.P,
       2026-11-10, por la sesión telegram; prioridad).** Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi: desde los
       resultados de DuckDuckGo, el enlace de Aminet se quedó más de un minuto en "Trayendo hojas..." (sin la cuenta
@@ -7275,3 +7288,14 @@ Formato:
   JIT: las tomas 3 y 4 de 4 se caen. No era eso. Sospechosa: la tarea del sonido de MintVID
   (third_party/mintvid/amiga/audio_paula.c:305, CreateNewProcTags sin tc_TrapCode: un fallo ahí no avisa); siguiente,
   tomas con -DDWV_SIN_SONIDO (idea de freememlang-af).
+- (vídeo 2) Las 6 tomas con el Dash 88732ce: se caen la 3, la 4 y la 6 (3 de 6). En las caídas, el vídeo de la página
+  pedía videoplayback desde ~28 s antes (sonando). En marcha: 6 tomas con -DDWV_SIN_SONIDO
+  (~/.cache/video-tachyon/ensayos/repetir_ss.sh; Tachyon en el scratchpad, TachyonSinSonido).
+- (vídeo 2) Sin el sonido del vídeo (-DDWV_SIN_SONIDO), Amiberry con JIT: 6 de 6 sin caída (con sonido, 3 de 6 con el
+  mismo Dash; antes 6 de 11). Por azar sería ~1,6 %: el cierre viene de la salida de sonido de MintVID (la tarea
+  "MintVID Paula output" de third_party/mintvid/amiga/audio_paula.c y lo que comparte con la principal), que solo sale
+  con JIT. Siguiente: un manejador de excepciones en esa tarea que apunte la dirección, y buscar la carrera.
+- (después, 41d) XMLSerializer: un Attr da "" (WPT domparsing 842 → 843/1090). Se probó conservar el prefijo propio de
+  un atributo (xl:type) y se quitó: rompía "p:name sale ns1:name" (DOM-Parsing#29), que es lo del estándar; quedan
+  esas dos pruebas incompatibles y la de xmlns="" con un prefijo atado a "". test_jsdom_xml_ns con una línea más; WPT
+  xhr 881/1155 (antes 864/1131: más subpruebas que llegan a correr, ninguna menos); Acid3 100/100.

@@ -1,10 +1,10 @@
 # Test: espacios de nombres en XML (tarea 41d, WPT domparsing): DOMParser resuelve los xmlns (namespaceURI y prefix
 # de elementos y atributos), XMLSerializer pone los xmlns que hacen falta y genera ns1 para un atributo con espacio
-# de nombres sin prefijo, <a/> sin hijos; namespaceURI de un elemento dentro de <svg> es el de SVG, el de
+# de nombres sin prefijo (también con el suyo libre: xl:type sale ns1:type), <a/> sin hijos, un Attr ""; namespaceURI de un elemento dentro de <svg> es el de SVG, el de
 # createElement("svg") el de XHTML, y el de un texto undefined.
 # memcheck
 # expect-out: leido: urn:a p urn:b null | <r xmlns="urn:a" xmlns:p="urn:b"><p:h p:x="1"/><c>t</c></r>
-# expect-out: generado: <q xmlns:ns1="uri" ns1:name="v"/>
+# expect-out: generado: <q xmlns:ns1="uri" ns1:name="v"/> | <q xmlns:ns1="uri" ns1:type="v"/> | attr []
 # expect-out: svg: http://www.w3.org/2000/svg http://www.w3.org/1999/xhtml http://www.w3.org/1999/xhtml undefined
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
@@ -20,7 +20,8 @@ Main
     c = c + "'leido: ' + d.documentElement.namespaceURI + ' ' + h.prefix + ' ' + h.namespaceURI + ' ' + d.documentElement.lastChild.prefix + ' | ' + s.serializeToString(d)"
     Print js_evaluar(js, c, "t.js")
     c = "var x = document.implementation.createDocument(null, null, null), q = x.createElementNS(null, 'q'); q.setAttributeNS('uri', 'name', 'v');"
-    c = c + "'generado: ' + new XMLSerializer().serializeToString(q)"
+    c = c + "var q2 = x.createElementNS(null, 'q'); q2.setAttributeNS('uri', 'xl:type', 'v');"
+    c = c + "'generado: ' + new XMLSerializer().serializeToString(q) + ' | ' + new XMLSerializer().serializeToString(q2) + ' | attr [' + new XMLSerializer().serializeToString(document.createAttribute('a')) + ']'"
     Print js_evaluar(js, c, "t.js")
     c = "'svg: ' + document.querySelector('circle').namespaceURI + ' ' + document.createElement('svg').namespaceURI + ' ' + document.querySelector('p').namespaceURI + ' ' + document.querySelector('p').firstChild.namespaceURI"
     Print js_evaluar(js, c, "t.js")

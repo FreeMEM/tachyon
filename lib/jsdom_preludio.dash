@@ -2178,6 +2178,7 @@ func jsdom_preludio_js() -> String
     j = j + "}\n"
     j = j + "function XMLSerializer() {}\n"
     j = j + "XMLSerializer.prototype.serializeToString = function (n) {\n"
+    j = j + "if (n && typeof g.Attr == 'function' && n instanceof g.Attr) return '';\n"
     j = j + "if (!n || !esNodo(n)) throw new TypeError(\"Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.\");\n"
     j = j + "var m = new Map();\n"
     j = j + "m.set(XML_URI, ['xml']);\n"

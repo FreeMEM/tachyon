@@ -7224,3 +7224,16 @@ Formato:
   - xml-scripting-support-disabled 0 → 13/13; de paso empty-nodes 4 → 8, spurious-attributes 1 → 2,
     parse-serialize-roundtrip 0 → 2, parseFromString-html 6 → 7. Ninguno baja. tests/test_jsdom_domparser_scripts.dash;
     los de DOMParser, DOM y XML siguen; Acid3 100/100.
+- (después) appendHTML, prependHTML, beforeHTML, afterHTML, replaceWithHTML y setHTML (WPT domparsing 743 → 811/1090):
+  - Las Unsafe sin {runScripts: true}: sus <script>, ya empezados (no corren al meterlos).
+  - isConnected y getRootNode({composed: true}) salen de una raíz de sombra por su host (DOM "shadow-including
+    root"): lo de dentro de la sombra de un elemento de la página está conectado; así corren los <script> de runScripts
+    y los elementos propios de dentro de una sombra reciben connectedCallback. (Sin probar en YouTube.)
+  - El HTML, con el contexto de donde va (el innerHTML de un <div>: un <td> se pierde); en una tabla, un <select>, un
+    <head> o un <template>, como antes, con el de <template>.
+  - appendHTML y prependHTML en un <html>, HierarchyRequestError.
+  - positional-methods 396 → 452/480, html-insertion-methods-html-element 12 → 24/26. Ninguno baja.
+    tests/test_jsdom_html_seguro.dash, línea nueva; custom, interfaces, sin_doble y domparser_scripts siguen; Acid3
+    100/100.
+  - Quedan: los métodos en Node.prototype en vez de en Element y CharacterData (DocumentType también los tiene) y las
+    raíces de sombra declarativas (<template shadowrootmode>).

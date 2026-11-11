@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 743/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 811/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -22,7 +22,7 @@ WPT FILE domparsing/XMLSerializer-serializeToString.html 30/33 OK
 WPT FILE domparsing/createContextualFragment-external-scripts-async.html 0/1 OK
 WPT FILE domparsing/createContextualFragment.html 34/35 OK
 WPT FILE domparsing/domparser-spurious-attributes.html 2/2 OK
-WPT FILE domparsing/html-insertion-methods-html-element.html 12/26 OK
+WPT FILE domparsing/html-insertion-methods-html-element.html 24/26 OK
 WPT FILE domparsing/html-unsafe-external-scripts-async.html 0/15 OK
 WPT FILE domparsing/innerhtml-04.html 1/1 OK
 WPT FILE domparsing/innerhtml-06.html 1/1 OK
@@ -41,7 +41,7 @@ WPT FILE domparsing/positional-html-into-script-safe.html 90/91 OK
 WPT FILE domparsing/positional-methods-with-parser-options.html 0/0 TIMEOUT 
 WPT FILE domparsing/positional-methods-with-trusted-types-no-createParserOptions.html 0/0 TIMEOUT 
 WPT FILE domparsing/positional-methods-with-trusted-types.html 0/0 TIMEOUT 
-WPT FILE domparsing/positional-methods.html 396/480 OK
+WPT FILE domparsing/positional-methods.html 452/480 OK
 WPT FILE domparsing/positional-template-child.html 0/6 OK
 WPT FILE domparsing/stream-html-reentrancy.html 0/0 TIMEOUT 
 WPT FILE domparsing/style_attribute_html.html 0/4 OK
@@ -238,19 +238,7 @@ WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if a prefix
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Attribute nodes are serialized as the empty string | Failed to execute 'serializeToString' on 'XMLSerializer': parameter 1 is not of type 'Node'.
 WPT SUB FAIL domparsing/createContextualFragment-external-scripts-async.html | External scripts from createContextualFragment() have async=true and execute as async once connected | assert_true: script.async is true before insertion expected true got false
 WPT SUB FAIL domparsing/createContextualFragment.html | Must throw TypeError when calling without arguments | assert_throws_js: function "function() { range.createContextualFragment(); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on the html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on the html element of an inert document throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTML on a detached html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTML on the html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTML on the html element of an inert document throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTML on a detached html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | setHTML on the html element replaces head and body | assert_equals: expected Element node <meta name="x"></meta> but got null
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTMLUnsafe on the html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTMLUnsafe on the html element of an inert document throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | appendHTMLUnsafe on a detached html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTMLUnsafe on the html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTMLUnsafe on the html element of an inert document throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method]("<p>new</p>"); }" did not throw
-WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | prependHTMLUnsafe on a detached html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method]("<p>new</p>"); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | setHTMLUnsafe on the html element replaces head and body | promise_test: Unhandled rejection with value: object "TypeError: not a function"
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | setHTMLUnsafe with { runScripts: true } on connected element: external scripts execute as async | promise_test: Unhandled rejection with value: object "TypeError: not a function"
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | setHTMLUnsafe with { runScripts: true } on disconnected element: external scripts have async=true and execute as async once connected | promise_test: Unhandled rejection with value: object "TypeError: not a function"
@@ -301,34 +289,6 @@ WPT SUB FAIL domparsing/parsed-document-origin.window.html | Document.parseHTMLU
 WPT SUB FAIL domparsing/parsed-document-origin.window.html | createDocument() | assert_equals: expected (string) "127.0.0.1" but got (undefined) undefined
 WPT SUB FAIL domparsing/parsed-document-origin.window.html | createHTMLDocument() | assert_equals: expected (string) "127.0.0.1" but got (undefined) undefined
 WPT SUB FAIL domparsing/positional-html-into-script-safe.html | Element.setHTMLUnsafe() on HTML script element is not a no-op | not a function
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.appendHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.prependHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.beforeHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.afterHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.replaceWithHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.beforeHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.afterHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.replaceWithHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.beforeHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.afterHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.replaceWithHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.beforeHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.afterHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.replaceWithHTMLUnsafe (Element) (runScripts=false) | assert_equals: expected false but got true
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.appendHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.prependHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.beforeHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.afterHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Element.replaceWithHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.beforeHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.afterHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Comment.replaceWithHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.beforeHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.afterHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: Text.replaceWithHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.beforeHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.afterHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
-WPT SUB FAIL domparsing/positional-methods.html | Only unsafe variants should run scripts: ProcessingInstruction.replaceWithHTMLUnsafe (ShadowRoot) (runScripts=true) | assert_equals: expected true but got false
 WPT SUB FAIL domparsing/positional-methods.html | afterHTML is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
 WPT SUB FAIL domparsing/positional-methods.html | afterHTML is not available on DocumentType nodes | assert_equals: expected (undefined) undefined but got (function) function "function () { [native code] }"
 WPT SUB FAIL domparsing/positional-methods.html | beforeHTML is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
@@ -336,27 +296,13 @@ WPT SUB FAIL domparsing/positional-methods.html | beforeHTML is not available on
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTML is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTML is not available on DocumentType nodes | assert_equals: expected (undefined) undefined but got (function) function "function () { [native code] }"
 WPT SUB FAIL domparsing/positional-methods.html | appendHTML is exposed on Element and ShadowRoot only | assert_false: Node.prototype expected false got true
-WPT SUB FAIL domparsing/positional-methods.html | appendHTML on an html element throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method_name]("<p>fails</p>"); }" did not throw
-WPT SUB FAIL domparsing/positional-methods.html | appendHTML on a disconnected html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method_name]("<p>fails</p>"); }" did not throw
 WPT SUB FAIL domparsing/positional-methods.html | prependHTML is exposed on Element and ShadowRoot only | assert_false: Node.prototype expected false got true
-WPT SUB FAIL domparsing/positional-methods.html | prependHTML on an html element throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method_name]("<p>fails</p>"); }" did not throw
-WPT SUB FAIL domparsing/positional-methods.html | prependHTML on a disconnected html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method_name]("<p>fails</p>"); }" did not throw
 WPT SUB FAIL domparsing/positional-methods.html | setHTML on an html element succeeds | assert_equals: expected 1 but got 0
 WPT SUB FAIL domparsing/positional-methods.html | appendHTML supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | appendHTML drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | appendHTML parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | prependHTML supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | prependHTML drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | prependHTML parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | beforeHTML supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | beforeHTML drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | beforeHTML parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | afterHTML supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | afterHTML drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | afterHTML parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTML supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTML drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTML parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | afterHTMLUnsafe is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
 WPT SUB FAIL domparsing/positional-methods.html | afterHTMLUnsafe is not available on DocumentType nodes | assert_equals: expected (undefined) undefined but got (function) function "function () { [native code] }"
 WPT SUB FAIL domparsing/positional-methods.html | beforeHTMLUnsafe is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
@@ -364,27 +310,13 @@ WPT SUB FAIL domparsing/positional-methods.html | beforeHTMLUnsafe is not availa
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTMLUnsafe is exposed via the NonDocumentTypeChildNode mixin | assert_false: Node.prototype expected false got true
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTMLUnsafe is not available on DocumentType nodes | assert_equals: expected (undefined) undefined but got (function) function "function () { [native code] }"
 WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe is exposed on Element and ShadowRoot only | assert_false: Node.prototype expected false got true
-WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe on an html element throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method_name]("<p>fails</p>"); }" did not throw
-WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe on a disconnected html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method_name]("<p>fails</p>"); }" did not throw
 WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe is exposed on Element and ShadowRoot only | assert_false: Node.prototype expected false got true
-WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe on an html element throws HierarchyRequestError | assert_throws_dom: function "() => { doc.documentElement[method_name]("<p>fails</p>"); }" did not throw
-WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe on a disconnected html element throws HierarchyRequestError | assert_throws_dom: function "() => { html[method_name]("<p>fails</p>"); }" did not throw
 WPT SUB FAIL domparsing/positional-methods.html | setHTMLUnsafe on an html element succeeds | not a function
 WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | appendHTMLUnsafe parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | prependHTMLUnsafe parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | beforeHTMLUnsafe supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | beforeHTMLUnsafe drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | beforeHTMLUnsafe parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | afterHTMLUnsafe supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | afterHTMLUnsafe drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | afterHTMLUnsafe parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTMLUnsafe supports declarative shadow roots | cannot read property 'querySelector' of undefined
-WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTMLUnsafe drops <td> when parsed using parent <div> as context | assert_equals: <td> should be dropped when parsed in <div> context expected null but got Element node <td>x</td>
-WPT SUB FAIL domparsing/positional-methods.html | replaceWithHTMLUnsafe parses using ShadowRoot host as context | assert_equals: <td> should be dropped when parsed using ShadowRoot's <div> host as context expected null but got Element node <td>x</td>
 WPT SUB FAIL domparsing/positional-template-child.html | afterHTML on a direct child of a template element throws HierarchyRequestError | assert_throws_dom: function "() => { child[method_name]('<span></span>'); }" did not throw
 WPT SUB FAIL domparsing/positional-template-child.html | beforeHTML on a direct child of a template element throws HierarchyRequestError | assert_throws_dom: function "() => { child[method_name]('<span></span>'); }" did not throw
 WPT SUB FAIL domparsing/positional-template-child.html | replaceWithHTML on a direct child of a template element throws HierarchyRequestError | assert_throws_dom: function "() => { child[method_name]('<span></span>'); }" did not throw

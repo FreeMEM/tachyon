@@ -1,8 +1,10 @@
 # Test: setHTML, appendHTML, prependHTML, beforeHTML, afterHTML y replaceWithHTML seguros (HTML, whatwg/html#12753): sobre
 # un <script> (o con uno de padre) no hacen nada; sobre un elemento, el HTML sin <script> ni on...; las Unsafe sí
-# meten en un <script>. (WPT domparsing positional-html-into-script-safe)
+# meten en un <script>. (WPT domparsing positional-html-into-script-safe) Las Unsafe sin runScripts no ejecutan; con él,
+# también dentro de una raíz de sombra (isConnected la cruza); en un <div>, un <td> se pierde; en <html>, error.
 # expect-out: script vacío 0 0 0 | hijo intacto 1 | antes y después 1
 # expect-out: div <b>x</b> | append <b>x</b><i>y</i> | unsafe en script 1
+# expect-out: sin runScripts false | sombra true | td null x | html HierarchyRequestError
 
 import "../lib/jsdom.dash"
 import "../lib/html5.dash"
@@ -13,5 +15,6 @@ Main
     jsdom_preparar(js, doc)
     Print js_evaluar(js, "var s = document.createElement('script'); document.body.appendChild(s); s.setHTML('<b>a</b>'); var a = s.childNodes.length; s.appendHTML('<b>a</b>'); var b = s.childNodes.length; s.prependHTML('<b>a</b>'); var c = s.childNodes.length; var t = document.createElement('script'); var hijo = t.appendChild(document.createElement('span')); hijo.beforeHTML('<b>a</b>'); hijo.afterHTML('<b>a</b>'); hijo.replaceWithHTML('<b>a</b>'); 'script vacío ' + a + ' ' + b + ' ' + c + ' | hijo intacto ' + t.childNodes.length + ' | antes y después ' + (t.firstChild === hijo ? 1 : 0)", "t.js")
     Print js_evaluar(js, "var d = document.createElement('div'); d.setHTML('<b onclick=\"x()\">x</b><script>1<' + '/script>'); var r = 'div ' + d.innerHTML; d.appendHTML('<i>y</i>'); r += ' | append ' + d.innerHTML; var u = document.createElement('script'); u.appendHTMLUnsafe('x'); r + ' | unsafe en script ' + u.childNodes.length", "t.js")
+    Print js_evaluar(js, "var o = []; window.corrio = false; var d = document.body.appendChild(document.createElement('div')); d.appendHTMLUnsafe('<script>window.corrio = true</sc' + 'ript>'); o.push('sin runScripts ' + window.corrio); var h = document.body.appendChild(document.createElement('div')), sr = h.attachShadow({mode: 'open'}); sr.appendChild(document.createElement('p')).afterHTMLUnsafe('<script>window.corrio = true</sc' + 'ript>', {runScripts: true}); o.push('sombra ' + window.corrio); var dv = document.createElement('div'); dv.appendHTML('<td>x</td>'); o.push('td ' + dv.querySelector('td') + ' ' + dv.textContent); try { document.createElement('html').appendHTML('<p>a</p>'); o.push('html sin error'); } catch (e) { o.push('html ' + e.name); } o.join(' | ')", "t.js")
     js_liberar(js)
 end

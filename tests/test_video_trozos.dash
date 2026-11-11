@@ -1,0 +1,97 @@
+# Test: un vídeo que empieza mientras se baja, en trozos (tarea 64g: con la memoria troceada no cabía un vídeo largo
+# seguido). El servidor manda los 64 KB primeros de un MP4 H.264 de 12 s (índice al principio), espera 3 s y manda el
+# resto. La carga lo guarda en trozos de HTTP_TROZO bytes (http_volcar_en_trozos), que se le dan al vídeo según llegan
+# (video_trozos_poner, video_trozos_listos); se abre con lo que ha llegado (video_abrir_trozos), se decodifica hasta
+# que falta (2: esperar) y se sigue al llegar más. Salen las mismas imágenes que del fichero entero, también al abrirlo
+# otra vez de los trozos; y se sueltan.
+# emu-server: http.py 40898
+# memcheck
+# emu-config: cpu = 68030
+# emu-config: zorro_iii_memory = 65536
+# expect-out: abierto antes del final: true
+# expect-out: imágenes mientras se bajaba: true
+# expect-out: esperó: true
+# expect-out: iguales: true | otra vez: true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/video.dash"
+import "../lib/http.dash"
+
+Main
+    c = http_volcar_en_trozos(http_empezar_a_fichero("http://127.0.0.1:40898/goteo/video_prueba.mp4", "", 20000))
+    t = 0
+    puestos = 0
+    v = 0
+    antes = false
+    n = 0
+    n_bajando = 0
+    esperas = 0
+    hecha = false
+    s = 2
+    while s != 0 and s != -1
+        if not hecha
+            hecha = http_avanzar(c)
+        end
+        if t == 0 and http_trozos_total(c) > 0
+            t = video_trozos_nuevos(http_trozos_total(c))
+        end
+        if t != 0
+            ts = http_trozos(c)
+            while puestos < ts.length
+                video_trozos_poner(t, puestos, ts[puestos])
+                puestos = puestos + 1
+            end
+            video_trozos_listos(t, http_trozos_listos(c))
+        end
+        if v == 0
+            if t != 0 and http_trozos_listos(c) > 0
+                v = video_abrir_trozos(t)
+                antes = v != 0 and not hecha
+            end
+            if v == 0 and hecha
+                break
+            end
+            continue
+        end
+        s = video_siguiente(v)
+        while s == 1
+            n = n + 1
+            if not hecha
+                n_bajando = n_bajando + 1
+            end
+            s = video_siguiente(v)
+        end
+        if s == 2 and hecha
+            Print "falta con todo bajado"
+            break
+        end
+        if s == 2
+            esperas = esperas + 1
+            time_delay(1)
+        end
+    end
+    if v != 0
+        video_cerrar(v)
+    end
+    Print "abierto antes del final: " + antes
+    Print "imágenes mientras se bajaba: " + (n_bajando > 0)
+    Print "esperó: " + (esperas > 0)
+    f = "T:trozos.mp4"
+    http_a_fichero("http://127.0.0.1:40898/pages/video_prueba.mp4", f, 10000)
+    entero = video_abrir(f)
+    m = 0
+    while video_siguiente(entero) == 1
+        m = m + 1
+    end
+    video_cerrar(entero)
+    otra = video_abrir_trozos(t)
+    k = 0
+    while video_siguiente(otra) == 1
+        k = k + 1
+    end
+    video_cerrar(otra)
+    Print "iguales: " + (n == m and m > 0) + " | otra vez: " + (k == m)
+    video_trozos_soltar(t)
+    http_trozos_soltar(c)
+    file_delete(f)
+end

@@ -52,6 +52,11 @@ struct Reproductor
     t_espera: Int = 0        # time_ms() de cuando empezó a esperar
     bajada_rota: Bool = false  # la descarga falló a medias: lo que falte ya no llegará
     sin_memoria: Bool = false  # deja de traerse por falta de memoria: suena lo que llegó (_video_sin_sitio)
+    # se trae en trozos sueltos (lib/http.dash http_volcar_en_trozos; tarea 64g): la tabla del vídeo (video_trozos_
+    # nuevos), cuántos trozos tiene ya y la carga de los trozos una vez acabada (para soltarlos)
+    tabla: Int = 0
+    puestos: Int = 0
+    trozos_de: Carga = nil
     barra_hasta: Int = 0     # hasta cuándo se ve la barra de controles mientras suena (el ratón pasó por encima)
     duracion: Int = -2       # lo que dura en ms (video_duracion; -1 no se sabe, -2 aún sin mirar)
 end
@@ -104,7 +109,7 @@ func videos_alternar(vs: Videos, n: Nodo, base: String)
             r.yt = youtube_empezar(r.direccion)
             r.estado = V_RESOLVIENDO
         elif str_starts(r.direccion, "http://") or str_starts(r.direccion, "https://")
-            r.carga = http_empezar_a_fichero(r.direccion, r.fichero, 60000)
+            r.carga = http_volcar_en_trozos(http_empezar_a_fichero(r.direccion, "", 60000))
             r.estado = V_TRAYENDO
         else
             r.fichero = r.direccion
@@ -127,7 +132,11 @@ func videos_alternar(vs: Videos, n: Nodo, base: String)
 end
 
 func _video_empezar(r: Reproductor)
-    r.v = video_abrir(r.fichero)
+    if r.tabla != 0
+        r.v = video_abrir_trozos(r.tabla)
+    else
+        r.v = video_abrir(r.fichero)
+    end
     if r.v == 0
         r.estado = V_ERROR
         r.error = "no se puede reproducir"
@@ -169,7 +178,7 @@ func videos_avanzar(vs: Videos) -> Bool
         if r.estado == V_RESOLVIENDO
             if youtube_avanzar(r.yt)
                 if r.yt.media != ""
-                    r.carga = http_con_agente(http_empezar_a_fichero(r.yt.media, r.fichero, 60000), r.yt.agente)
+                    r.carga = http_volcar_en_trozos(http_con_agente(http_empezar_a_fichero(r.yt.media, "", 60000), r.yt.agente))
                     r.estado = V_TRAYENDO
                 else
                     r.estado = V_ERROR
@@ -188,8 +197,10 @@ func videos_avanzar(vs: Videos) -> Bool
                 cambio = true
             elif http_avanzar(r.carga)
                 resp = r.carga.respuesta
+                _video_trozos_al_dia(r)
+                r.trozos_de = r.carga
                 r.carga = nil
-                if resp.error == "" and resp.estado >= 200 and resp.estado < 300
+                if resp.error == "" and resp.estado >= 200 and resp.estado < 300 and r.tabla != 0
                     _video_empezar(r)
                 else
                     r.estado = V_ERROR
@@ -269,12 +280,13 @@ end
 
 # Mientras se baja: ¿se puede abrir ya con lo que ha llegado? (empieza a sonar)
 func _video_probar(r: Reproductor) -> Bool
-    listos = http_parcial_listos(r.carga)
-    if listos <= 0 or listos < r.probar_en
+    _video_trozos_al_dia(r)
+    listos = http_trozos_listos(r.carga)
+    if r.tabla == 0 or listos <= 0 or listos < r.probar_en
         return false
     end
     r.probar_en = listos + VIDEO_PROBAR
-    v = video_abrir_bajando(http_parcial(r.carga), listos, http_parcial_total(r.carga))
+    v = video_abrir_trozos(r.tabla)
     if v == 0
         return false
     end
@@ -289,17 +301,58 @@ func _video_bajar(r: Reproductor)
     if _video_sin_sitio(r)
         return
     end
-    if http_avanzar(r.carga)
+    hecha = http_avanzar(r.carga)
+    _video_trozos_al_dia(r)
+    if hecha
         resp = r.carga.respuesta
+        r.trozos_de = r.carga
         r.carga = nil
-        if resp.error == "" and resp.estado >= 200 and resp.estado < 300
-            video_bajado_fichero(r.v, r.fichero)
-        else
+        if resp.error != "" or resp.estado < 200 or resp.estado >= 300
             r.bajada_rota = true
         end
-    else
-        video_bajado(r.v, http_parcial(r.carga), http_parcial_listos(r.carga))
     end
+end
+
+# Los trozos que han llegado, al vídeo (la tabla, en cuanto se sabe el tamaño)
+func _video_trozos_al_dia(r: Reproductor)
+    c = r.carga
+    if c == nil
+        return
+    end
+    if r.tabla == 0
+        total = http_trozos_total(c)
+        if total <= 0 and c.hecha
+            total = http_trozos_listos(c)
+        end
+        if total <= 0
+            return
+        end
+        r.tabla = video_trozos_nuevos(total)
+        if r.tabla == 0
+            return
+        end
+    end
+    ts = http_trozos(c)
+    while r.puestos < ts.length
+        video_trozos_poner(r.tabla, r.puestos, ts[r.puestos])
+        r.puestos = r.puestos + 1
+    end
+    video_trozos_listos(r.tabla, http_trozos_listos(c))
+end
+
+# Lo traído y el total (para la barra y el estado); 0 y 0 sin carga
+func _video_listos(r: Reproductor) -> Int
+    if r.carga == nil
+        return 0
+    end
+    return http_trozos_listos(r.carga)
+end
+
+func _video_total(r: Reproductor) -> Int
+    if r.carga == nil
+        return 0
+    end
+    return http_trozos_total(r.carga)
 end
 
 # Sin memoria para que siga llegando: se deja de traer (sin cerrar la carga: el vídeo lee de su memoria) y suena lo
@@ -308,11 +361,11 @@ func _video_sin_sitio(r: Reproductor) -> Bool
     if r.sin_memoria
         return true
     end
-    if http_cabe_crecer(r.carga, VIDEO_RESERVA)
+    if http_cabe_trozo(VIDEO_RESERVA)
         return false
     end
     r.sin_memoria = true
-    traza("vídeo: sin memoria para traer más (" + mem_total() / 1024 + " KB libres): suena lo que llegó, " + http_parcial_listos(r.carga) / 1024 + " KB")
+    traza("vídeo: sin memoria para traer más (" + mem_total() / 1024 + " KB libres): suena lo que llegó, " + _video_listos(r) / 1024 + " KB")
     return true
 end
 
@@ -397,16 +450,16 @@ func videos_estado(vs: Videos) -> String
             return "Vídeo: preguntando a YouTube..."
         elif r.estado == V_TRAYENDO
             t = http_recibidos(r.carga) / 1024
-            if http_total(r.carga) > 0
-                return "Vídeo: trayéndolo, " + (http_recibidos(r.carga) * 100 / http_total(r.carga)) + " % de " + (http_total(r.carga) / 1024) + " KB"
+            if _video_total(r) > 0
+                return "Vídeo: trayéndolo, " + (_video_listos(r) / (_video_total(r) / 100 + 1)) + " % de " + (_video_total(r) / 1024) + " KB"
             end
             return "Vídeo: trayéndolo, " + t + " KB"
         elif r.estado == V_SONANDO
             bajando = ""
-            if r.carga != nil and http_parcial_total(r.carga) > 0
-                bajando = " (trayéndolo, " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+            if _video_total(r) > 0
+                bajando = " (trayéndolo, " + (_video_listos(r) / (_video_total(r) / 100 + 1)) + " %)"
                 if r.sin_memoria
-                    bajando = " (sin memoria para traer más: hasta el " + (http_parcial_listos(r.carga) / (http_parcial_total(r.carga) / 100 + 1)) + " %)"
+                    bajando = " (sin memoria para traer más: hasta el " + (_video_listos(r) / (_video_total(r) / 100 + 1)) + " %)"
                 end
             end
             if r.esperando
@@ -580,8 +633,8 @@ func videos_barra(r: Reproductor, x: Int, y: Int, ancho: Int, alto: Int)
     end
     gfx_pen(color_pen(90, 90, 90))
     gfx_rect(a, cy - 2, b, cy + 1)
-    if r.carga != nil and http_parcial_total(r.carga) > 0
-        bajado = a + (b - a) * (http_parcial_listos(r.carga) / 1024) / (http_parcial_total(r.carga) / 1024 + 1)
+    if _video_total(r) > 0
+        bajado = a + (b - a) * (_video_listos(r) / 1024) / (_video_total(r) / 1024 + 1)
         gfx_pen(color_pen(170, 170, 170))
         gfx_rect(a, cy - 2, bajado, cy + 1)
     else
@@ -761,6 +814,14 @@ func videos_liberar(vs: Videos)
         end
         if r.carga != nil
             http_cancelar(r.carga)       # (después de cerrar el vídeo: podía leer de su memoria)
+            http_trozos_soltar(r.carga)
+        end
+        if r.trozos_de != nil
+            http_trozos_soltar(r.trozos_de)
+        end
+        if r.tabla != 0
+            video_trozos_soltar(r.tabla)
+            r.tabla = 0
         end
         if str_starts(r.fichero, "T:dashweb_video")
             file_delete(r.fichero)

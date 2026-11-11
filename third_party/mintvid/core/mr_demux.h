@@ -125,6 +125,9 @@ void         mr_demux_rewind(mr_demux *d);
 int          mr_demux_can_seek(const mr_demux *d);
 /* (Tachyon) the video frames of a MOV/MP4 from its index, for its duration; 0 if unknown */
 uint32_t     mr_demux_video_frames(const mr_demux *d);
+/* Tachyon (task 64g): the video's length in ms from the instant of its last frame in the MOV index (the index mixes
+ * video frames and audio chunks, so video_frames over the frame rate overshoots); 0 if unknown */
+uint32_t     mr_demux_duration_ms(const mr_demux *d);
 /* Reposition to the nearest video keyframe at or before target_us (media
  * timeline, microseconds). *out_us receives the keyframe actually reached,
  * which is not necessarily target_us. Subsequent mr_demux_next_packet calls

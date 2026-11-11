@@ -34,6 +34,11 @@
 @extern("dashweb_video.h") func dwv_con_sonido(v: Int) -> Bool
 @extern("dashweb_video.h") func dwv_ir(v: Int, ms: Int) -> Int
 @extern("dashweb_video.h") func dwv_duracion(v: Int) -> Int
+@extern("dashweb_video.h") func dwv_trozos_nuevos(total: Int) -> Int
+@extern("dashweb_video.h") func dwv_trozos_poner(t: Int, i: Int, trozo: Int)
+@extern("dashweb_video.h") func dwv_trozos_listos(t: Int, listos: Int)
+@extern("dashweb_video.h") func dwv_abrir_trozos(t: Int) -> Int
+@extern("dashweb_video.h") func dwv_trozos_soltar(t: Int)
 
 
 func video_abrir(fichero: String) -> Int
@@ -49,6 +54,29 @@ end
 # Lo que ya ha llegado y dónde está (el búfer de la carga se mueve al crecer: después de cada http_avanzar)
 func video_bajado(v: Int, datos: Int, listos: Int)
     dwv_bajado(v, datos, listos)
+end
+
+# Un vídeo en trozos (lib/http.dash http_volcar_en_trozos; tarea 64g): una tabla para total bytes, sus trozos según
+# llegan (el i-ésimo, de HTTP_TROZO bytes) y cuánto hay; abrirlo (0: aún no se puede, probar con más) y, con el vídeo
+# ya cerrado, soltar la tabla (los trozos los suelta http_trozos_soltar)
+func video_trozos_nuevos(total: Int) -> Int
+    return dwv_trozos_nuevos(total)
+end
+
+func video_trozos_poner(t: Int, i: Int, trozo: Int)
+    dwv_trozos_poner(t, i, trozo)
+end
+
+func video_trozos_listos(t: Int, listos: Int)
+    dwv_trozos_listos(t, listos)
+end
+
+func video_abrir_trozos(t: Int) -> Int
+    return dwv_abrir_trozos(t)
+end
+
+func video_trozos_soltar(t: Int)
+    dwv_trozos_soltar(t)
 end
 
 # Ya ha llegado entero y está en fichero (la memoria de la carga se ha liberado)

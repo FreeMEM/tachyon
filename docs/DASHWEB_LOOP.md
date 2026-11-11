@@ -678,7 +678,8 @@ tarea, con el estilo de Dash.
       nueva. Hecho: con menos de 24 MB libres el JavaScript de la página se suelta entero (la página se queda como
       está), la página de antes se suelta entera con menos de 64 MB, y un vídeo deja de traerse antes de no caber (el
       búfer que se dobla al llenarse reiniciaba el Amiga). Pendiente: con la memoria troceada solo caben ~8 MB de un
-      vídeo (2 minutos): traerlo a trozos o a disco; y la duración de la barra sale mal con el vídeo a medias.
+      vídeo (2 minutos): hecho, se trae en trozos de 1 MB (el vídeo de 25 minutos, entero). (La duración de la
+      barra, arreglada: ver la bitácora.)
 - [ ] 63. **Lo que tiene Amelinium 1.6.4 y Tachyon no (usuario por la sesión telegram, 2026-11-09; plan aprobado:
       "sí", "adelante").** Con "como en Amelinium" en el commit y las notas. En este orden:
       (a) historial: buscar, y borrar una entrada o todo, con la última visita y el número de visitas (pestañas e
@@ -7067,3 +7068,100 @@ Formato:
   test_jsdom_fetch_flujo, test_jsdom_medios, test_maqueta_fijo_ancho, nuevos de estos días) dan "out of memory" al
   final del grupo grande del A1200 de memcheck (108 tests en una sesión) y pasan sueltos. (Una batería anterior se
   quedó 2 h en test_estilo_animacion, compilado con un estado intermedio de la 68: con el código final pasa.)
+
+### 2026-11-10 — Publicada la v0.9.4-alfa
+- Usuario: "sí, publica la versión nueva". PR #24 de dev a main (bb6b902), etiqueta v0.9.4-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.4-alfa con tachyon.lha, Tachyon.gz (SHA-256 153d8090...,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera. Notas en
+  castellano e inglés con Oskis R.P (registro de depuración de red) y David Martínez, JaviTecH y Oskis R.P
+  (dash.freemem.space); sin nombrar el gestor de paquetes sin anunciar.
+- Gracias en la web: los mismos en webs-freemem paquetes/retro/src/reconocimientos.ts, commit local sin subir (subir
+  publica la web: con el visto bueno del usuario).
+
+### 2026-11-10 — Tarea 64g: el inicio de sesión pasivo de Google, fuera (tumbaba Tachyon en la página de un vídeo)
+- La toma del vídeo 2 con la 0.9.4 publicada: Tachyon se cerró (sin devolver la memoria) al pasar de los resultados
+  de "demoscene" al vídeo. Con TRAZA, igual que el ensayo de la mañana: en la página del vídeo, con ~57 MB libres,
+  llega la respuesta de ~1 MB de accounts.google.com/v3/signin/identifier (el JavaScript de YouTube pide
+  ServiceLogin?passive=true) y medio segundo después se acaba la traza. En la búsqueda llegaba lo mismo con 111 MB
+  libres sin problema: algo de lo que se hace con una respuesta grande y la memoria justa falla sin comprobar (sin
+  encontrar aún).
+- lib/url.dash url_rastreador: accounts.google.com con passive=true, como un rastreador (el JavaScript recibe un error
+  de red; abrir accounts.google.com para entrar no pasa por aquí). tests/test_url.dash.
+- En Coffin: de los resultados al vídeo, 7 minutos sin cerrarse y sin pedirlo; el vídeo suena a 29,9 imágenes/s
+  (con 34 MB libres solo caben 4 MB: un minuto). Para una 0.9.5, con el visto bueno del usuario.
+- (después, 2026-11-11) El bloqueo no basta: la toma siguiente se cayó igual. Ensayos repetidos con TRAZA (ahora con
+  el mayor bloque libre seguido, [ms libreK/bloqueK], y con una línea al empezar y al acabar cada <script> que mete
+  el JavaScript, __dashweb_traza): se cae ~la mitad de las veces, ~45-50 s después de abrir la página del vídeo, con
+  ~56 MB libres y 26-28 MB seguidos (no es falta de memoria), dentro de los temporizadores del JavaScript justo tras
+  una maqueta pedida por él (o tras llegar lottie-light.js, sin llegar a ejecutarlo). lottie-light.js suelto, también
+  con una animación en marcha, va bien en FS-UAE. La pila es la de @stack (1 MB). Los nodos que tiene el JavaScript se
+  retienen (_dash_retain). Siguiente: el mismo ensayo con Tachyon compilado con --memcheck (avisa al momento, con
+  fichero y línea), en tools: ~/.cache/video-tachyon/ensayos/repetir_mc.sh.
+- Más: con --memcheck también se cae, sin aviso (no es de lo que mira memcheck). Sin el POST a youtubei/v1/feedback
+  (que llegaba con 400 justo antes en dos caídas) también. Lo común a las caídas: llega una respuesta grande pedida
+  por el JavaScript (lottie-light.js, 210 KB, o la de accounts.google.com) y Tachyon se cae antes de ejecutarla, a
+  los ~353-355 s de la traza. Siguiente: la máquina rtgmmu con MuForce (lecturas y escrituras fuera de sitio, con su
+  dirección), con las cookies de Coffin: tools/medir_visor.py --semillas (ficheros junto al programa).
+- Solo en Amiberry: la máquina rtgmmu con MuForce y las cookies de Coffin (--semillas) pasó de los resultados al vídeo
+  y siguió 25 min sin caerse (MuForce: solo 15 lecturas de la dirección 0x2B de muigfx.library al arrancar, de MUI);
+  FS-UAE con JIT (máquina rtg, las mismas cookies), 900 s sin caerse: lottie-light.js llega, se ejecuta y YouTube pide
+  sus animaciones (subscribe_action). En Amiberry con compfpu=false (sin JIT de coma flotante) se cae igual (1 de 2).
+  Siguiente: Amiberry sin JIT (cachesize=0), para saber si es su JIT; si no, su bsdsocket o el entorno de Coffin.
+- Amiberry sin JIT (cachesize=0): 2 de 2 sin caerse, 25 min cada uno en la página del vídeo (con JIT, ~5 de 8 se
+  caían a los ~50 s). La máquina rtgmmu, 2 h sin caerse y sin un aviso de MuForce de Tachyon. Así que es el JIT de
+  Amiberry (también con compfpu=false), no Tachyon (CORREGIDO abajo: no está demostrado). La configuración de Coffin lo tiene en lo más agresivo
+  (comp_trustbyte/word/long/naddr=direct); siguiente: 4 ensayos con indirect, para recomendarlo al usuario y grabar
+  el vídeo así.
+- Con comp_trust*=indirect (JIT encendido): 2 sin caerse y la 3.ª se cae. Así que "es el JIT" no está demostrado: con
+  una caída de ~40 %, 2 sin caerse sin JIT pueden ser suerte. Siguiente: más ensayos (FS-UAE con JIT, varios a la
+  vez) para tener números.
+- FS-UAE con JIT y las cookies de Coffin, 4 a la vez (700 s; de los resultados al vídeo, lottie-light.js ejecutado):
+  4 de 4 sin caerse; con las dos de antes, FS-UAE 6 de 6. Amiberry con JIT: 6 de 11 se caen. Es de Amiberry (con una
+  caída del 40 %, seis seguidas sin caerse es un 5 %); si es su JIT o no, 3 ensayos más sin JIT.
+- Amiberry sin JIT: 3 más sin caerse (5 de 5 en total, 25 min cada uno en la página del vídeo). Resumen: Amiberry con
+  JIT 6 de 11 se caen (también con compfpu=false y con comp_trust*=indirect), sin JIT 0 de 5; FS-UAE (JIT y MMU) 0
+  de 6. Es el JIT de Amiberry con algo de Tachyon. Sospecha: código que se escribe en marcha sin CacheClearU (lo que
+  también fallaría en un 68040/060 de verdad y en Emu68): preguntado a la sesión de Dash (freememlang-af).
+  Mientras, las tomas del vídeo se repiten hasta que salga una entera.
+- freememlang-af: dashc no genera código en marcha (solo --memcheck y --debug, con CacheClearU). Pista: Amiberry tuvo
+  un fallo del JIT con dbls (su issue 2591). En Tachyon, las DBcc condicionales de las librerías de C son casi todas
+  tablas leídas como código; la única real en lo de YouTube, un dbne en js_bigint_divrem. dbf/dbra: 49 en libqjs (ya
+  con -fno-branch-count-reg), 70 en libimg, 224 en libvideo y 493 de dashc. freememlang-af puede poner una variable
+  de entorno en dashc para cambiar dbra por subq+bne, con el visto bueno del usuario (pendiente de preguntarle).
+
+### 2026-11-11 — Tarea 64g: la duración del vídeo en la barra
+- La barra decía 1:02:11 de un vídeo de YouTube de 25:32: dwv_duracion contaba las entradas del índice del MP4
+  (mr_mov_sample_count) entre las imágenes por segundo, y ese índice mezcla imágenes y trozos de sonido.
+  third_party/mintvid/core/mr_demux.c mr_demux_duration_ms: el instante de la última imagen (más una); dwv_duracion
+  la usa (guardada en dwv.duracion_ms). tests/test_video_duracion.dash con tests/pages/video_sonido.mp4 (3 s a 10
+  imágenes/s, H.264 y AAC, de ffmpeg): 3000. Vídeo 5/5.
+- Las tomas del vídeo 2 (3 seguidas) se cayeron las tres en la página del vídeo (el JIT de Amiberry); pendiente de
+  decidir con el usuario cómo grabar YouTube.
+- lib/red.dash _red_crecido: el búfer de una conexión dobla hasta 8 MB (RED_GRANDE) y después crece de 4 en 4 MB
+  (red_cabe_crecer mira ese tamaño). En Coffin, el vídeo de 25 minutos: 12 MB traídos (antes 8; ~3 minutos), con 104
+  MB libres pero el mayor bloque seguido de 10,7 MB. Para más, el vídeo en trozos sueltos (no un búfer seguido) o a
+  disco: pendiente. test_red_cabe_crecer, red 4/4, http 8/8.
+
+### 2026-11-11 — Tarea 64g: el vídeo se trae en trozos de 1 MB
+- Con la memoria troceada (104 MB libres, el mayor bloque 10 MB) un vídeo largo no cabía en un búfer seguido.
+  lib/http.dash http_volcar_en_trozos: el cuerpo de la respuesta va a trozos de HTTP_TROZO (1 MB) sueltos según
+  llega (_carga_a_trozos desde el búfer de la conexión, que se queda pequeño); http_trozos, http_trozos_listos,
+  http_trozos_total, http_cabe_trozo, http_trozos_soltar. third_party/mintvid/dashweb_video.c: la fuente "bajando"
+  lee de una tabla de trozos (dwv_trozos_nuevos/poner/listos, dwv_abrir_trozos, dwv_trozos_soltar; la tabla es de
+  dashweb y vale para empezar otra vez). lib/videos.dash: los vídeos de las páginas y los de YouTube, así
+  (_video_trozos_al_dia, _video_listos/_video_total; _video_sin_sitio con http_cabe_trozo); se sueltan en
+  videos_liberar.
+- tests/test_video_trozos.dash (nuevo; empieza mientras se baja, espera, las mismas imágenes que el fichero, otra vez
+  desde los trozos; memcheck limpio), vídeo 6/6, youtube. FS-UAE: video_goteo.html suena entero con sonido.
+- En Coffin: el vídeo de 25 minutos, 97,5 MB traídos enteros en 38 s (quedan 31 MB libres) y sonando a los 5
+  minutos a 29,9 imágenes/s.
+- (Al hacer test_video_duracion se pisó tests/pages/video_sonido.mp4 de la tarea 30b: restaurado; el nuevo es
+  tests/pages/video_duracion.mp4.)
+- Batería entera con lo de hoy (vídeo en trozos, duración, búfer de 4 en 4 MB, sin el inicio de sesión pasivo de
+  Google, trazas nuevas): 177/181 (8580 s); los cuatro de siempre (inspeccionar, jsdom_fetch_flujo, jsdom_medios,
+  maqueta_fijo_ancho: "out of memory" al final del grupo de memcheck) pasan sueltos. Notas de una 0.9.5 preparadas;
+  publicar, con el visto bueno del usuario.
+- 0.9.5-alfa preparada (sin publicar: falta el visto bueno del usuario): versión en src/dashweb.dash y README*;
+  actualización de verdad desde el Tachyon.gz de la v0.9.4-alfa publicada (GitHub de mentira que redirige): idéntico
+  al compilado, los nueve catálogos y .old; humo con MUI 3.8, cuatro ventanas 300 s. Notas en el scratchpad
+  (notas095.md).

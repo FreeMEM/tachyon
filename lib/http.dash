@@ -588,7 +588,14 @@ struct Carga
     f: Int = 0
     volcados: Int = 0
     restan: Int = -1
+    # http_volcar_en_trozos: el cuerpo, a trozos de HTTP_TROZO bytes sueltos en memoria en vez de a un fichero (un
+    # vídeo: con la memoria troceada no cabía seguido; tarea 64g). Los suelta http_trozos_soltar
+    en_trozos: Bool = false
+    trozos: [Int] = nil
+    trozo_lleno: Int = 0
 end
+
+const HTTP_TROZO = 1048576
 
 # Que el cuerpo de esta carga a fichero (http_empezar_a_fichero) se escriba según llega, sin juntarlo entero en
 # memoria (las descargas): cuando son 2xx sin chunked ni compresión; si no, como siempre. No con http_parcial (lo
@@ -596,6 +603,75 @@ end
 func http_volcar(c: Carga) -> Carga
     c.volcar = true
     return c
+end
+
+# Lo mismo que http_volcar, a trozos sueltos en memoria (http_trozos) en vez de a su fichero: lo que llega se lee
+# mientras (lib/videos.dash) y no hace falta un hueco seguido de todo el tamaño
+func http_volcar_en_trozos(c: Carga) -> Carga
+    c.volcar = true
+    c.en_trozos = true
+    var t: [Int] = []
+    c.trozos = t
+    return c
+end
+
+# Los trozos (búferes de HTTP_TROZO bytes; el último, a medias) y cuánto ha llegado en total
+func http_trozos(c: Carga) -> [Int]
+    return c.trozos
+end
+
+func http_trozos_listos(c: Carga) -> Int
+    if not c.volcando and not c.hecha
+        return 0
+    end
+    return c.volcados
+end
+
+# El tamaño del cuerpo (Content-Length) de una que se vuelca; 0 si no se sabe aún
+func http_trozos_total(c: Carga) -> Int
+    if c.respuesta.cabeceras.has("content-length")
+        return Int(c.respuesta.cabeceras["content-length"])
+    end
+    return 0
+end
+
+# ¿Cabe otro trozo dejando reserva bytes libres?
+func http_cabe_trozo(reserva: Int) -> Bool
+    return mem_largest() >= HTTP_TROZO and mem_total() - HTTP_TROZO >= reserva
+end
+
+func http_trozos_soltar(c: Carga)
+    if c.trozos != nil
+        for b in c.trozos
+            buffer_free(b)
+        end
+        c.trozos.clear()
+    end
+end
+
+# n bytes de los que ya llegaron a la conexión, a los trozos; cuántos (menos si no hay memoria para otro trozo)
+func _carga_a_trozos(c: Carga, n: Int) -> Int
+    hechos = 0
+    while hechos < n
+        if c.trozos.length == 0 or c.trozo_lleno >= HTTP_TROZO
+            b = buffer_alloc(HTTP_TROZO)
+            if b == 0
+                c.respuesta.error = tr(422, "out of memory")
+                return hechos
+            end
+            c.trozos.push(b)
+            c.trozo_lleno = 0
+        end
+        toma = n - hechos
+        if toma > HTTP_TROZO - c.trozo_lleno
+            toma = HTTP_TROZO - c.trozo_lleno
+        end
+        buffer_copy(c.trozos[c.trozos.length - 1], c.trozo_lleno, c.conexion.buf, c.conexion.ini, toma)
+        c.conexion.ini = c.conexion.ini + toma
+        c.trozo_lleno = c.trozo_lleno + toma
+        hechos = hechos + toma
+    end
+    return hechos
 end
 
 # ¿Ya llegaron las cabeceras de una respuesta que se puede volcar? Entonces las lee (quedan en c.respuesta), abre el
@@ -626,10 +702,12 @@ func _carga_empezar_volcado(c: Carga)
         c.volcar = false
         return
     end
-    c.f = file_open(c.fichero, 1006)
-    if c.f == 0
-        r.error = hueco(tr(410, "can't write %1"), c.fichero)
-        return
+    if not c.en_trozos
+        c.f = file_open(c.fichero, 1006)
+        if c.f == 0
+            r.error = hueco(tr(410, "can't write %1"), c.fichero)
+            return
+        end
     end
     c.restan = -1
     if r.cabeceras.has("content-length")
@@ -864,7 +942,7 @@ func http_avanzar(c: Carga) -> Bool
         _carga_otra_conexion(c)
         return false
     end
-    if c.volcar and not c.volcando and c.fichero != ""
+    if c.volcar and not c.volcando and (c.fichero != "" or c.en_trozos)
         _carga_empezar_volcado(c)
         if c.respuesta.error != ""
             red_cerrar(c.conexion)
@@ -977,12 +1055,17 @@ func _carga_volcar(c: Carga, cerrada: Bool) -> Bool
     end
     if hay > 0
         # (no más de lo que ya hay: red_copiar no espera a la red)
-        escritos = red_copiar(c.conexion, c.f, hay)
+        escritos = 0
+        if c.en_trozos
+            escritos = _carga_a_trozos(c, hay)
+        else
+            escritos = red_copiar(c.conexion, c.f, hay)
+        end
         c.volcados = c.volcados + escritos
         if c.restan >= 0
             c.restan = c.restan - escritos
         end
-        if escritos < hay
+        if escritos < hay and c.respuesta.error == ""
             c.respuesta.error = hueco(tr(410, "can't write %1"), c.fichero)
         end
     end
@@ -995,7 +1078,9 @@ func _carga_volcar(c: Carga, cerrada: Bool) -> Bool
             return false
         end
     end
-    file_close(c.f)
+    if c.f != 0
+        file_close(c.f)
+    end
     c.f = 0
     c.volcando = false
     r.bytes = c.volcados

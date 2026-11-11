@@ -250,6 +250,19 @@ end
 
 # Sitio para un trozo más al final del buffer: lo no leído pasa al principio (sin solaparse)
 # o a un buffer más grande
+# El tamaño al que crece un búfer de cap bytes al llenarse: el doble hasta RED_GRANDE; después, RED_PASO_GRANDE más.
+# Con la memoria troceada, el doble de lo que ya llegó de un vídeo largo no había dónde ponerlo seguido y solo cabían
+# ~8 MB (2 minutos) aunque quedaran 100 libres; así cabe casi lo que mida el mayor bloque libre (tarea 64g)
+const RED_GRANDE = 8388608
+const RED_PASO_GRANDE = 4194304
+
+func _red_crecido(cap: Int) -> Int
+    if cap < RED_GRANDE
+        return cap * 2
+    end
+    return cap + RED_PASO_GRANDE
+end
+
 func _red_sitio(c: Conexion)
     sin_leer = c.fin - c.ini
     if c.cap - c.fin >= RED_TROZO
@@ -260,7 +273,7 @@ func _red_sitio(c: Conexion)
     else
         cap = c.cap
         while cap - sin_leer < RED_TROZO
-            cap = cap * 2
+            cap = _red_crecido(cap)
         end
         nuevo = buffer_alloc(cap)
         if nuevo == 0
@@ -279,15 +292,15 @@ func _red_sitio(c: Conexion)
     c.fin = sin_leer
 end
 
-# ¿Puede crecer el búfer de c, si le hace falta pronto, y quedar reserva bytes libres? Al llenarse pide uno del doble
-# y suelta el de antes después de copiar: con lo que llega de un vídeo largo, el Amiga se quedaba sin memoria
+# ¿Puede crecer el búfer de c, si le hace falta pronto, y quedar reserva bytes libres? Al llenarse pide uno mayor
+# (_red_crecido) y suelta el de antes después de copiar: con lo que llega de un vídeo largo, el Amiga se quedaba sin memoria
 # (lib/videos.dash deja de traer antes; tarea 64g)
 func red_cabe_crecer(c: Conexion, reserva: Int) -> Bool
     if c == nil or c.buf == 0 or c.cap - c.fin >= RED_TROZO * 16
         return true
     end
-    # (dividiendo: el doble de un búfer grande no cabe en 32 bits)
-    return c.cap <= mem_largest() / 2 and c.cap <= (mem_total() - reserva) / 2
+    nuevo = _red_crecido(c.cap)
+    return nuevo <= mem_largest() and nuevo <= mem_total() - reserva
 end
 
 # Trae otro trozo (espera hasta c.espera); false si la conexión se cerró o no llegó nada a tiempo

@@ -79,6 +79,8 @@ def main():
     ap.add_argument("--memcheck", action="store_true", help="build with ./dash --memcheck (memory errors to the output)")
     ap.add_argument("--gc-siempre", action="store_true", help="dashweb GCSIEMPRE: QuickJS's cycle collector after every script and call")
     ap.add_argument("--poca-memoria", metavar="KB", help="dashweb POCAMEMORIA=KB: below that free memory the tabs behind are discarded")
+    ap.add_argument("--semillas", metavar="FICHERO,...", help="files put next to the program before it starts (its "
+                    "PROGDIR:, e.g. a Tachyon.cookies and Tachyon.almacen to look like a given machine)")
     ap.add_argument("--js-minima", metavar="KB", help="dashweb JSMINIMA=KB: below that free memory the page's JavaScript is paused")
     ap.add_argument("--cajas", metavar="TEXTO", help="dashweb CAJAS=TEXTO: when the page is whole, the boxes and layout style of the elements with TEXTO in their class (or that tag name)")
     ap.add_argument("--cajas-en", metavar="MS", help="dashweb CAJASEN=MS: with --cajas, also once MS ms after the page started (for a page that never gets whole)")
@@ -208,7 +210,8 @@ def main():
                                                    MAQUINAS[args.maquina].replace("zorro_iii_memory = 131072",
                                                                                   f"zorro_iii_memory = {args.memoria * 1024}")),
                                screenshot=shot, system=args.sistema, keep=args.guardar,
-                               background=fondo or None, args=prog_args, workbench=args.workbench)[0]
+                               background=fondo or None, args=prog_args, workbench=args.workbench,
+                               on_disk=(lambda hd: [shutil.copy(f, hd) for f in args.semillas.split(",")]) if args.semillas else None)[0]
         finally:
             if server:
                 server.kill()

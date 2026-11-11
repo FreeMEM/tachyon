@@ -2682,6 +2682,13 @@ static JSValue _jsdom_reloj(JSContext *ctx, JSValueConst this_val, int argc, JSV
     return JS_NewInt32(ctx, _dash_time_ms());
 }
 
+/* __dashweb_traza(texto): a line in Tachyon's trace (lib/jsdom.dash jsdom_traza), if it is on */
+static JSValue _jsdom_traza_js(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    char *t = _jsdom_arg(ctx, argc, argv, 0);
+    if (t) { jsdom_traza((STRPTR)t); free(t); }
+    return JS_UNDEFINED;
+}
+
 /* Calls the global function name with the arguments; the result, or undefined after
    writing the exception in one line */
 static JSValue _jsdom_llamar(JSContext *ctx, const char *name, int argc, JSValueConst *argv) {
@@ -2954,6 +2961,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_coleccion", JS_NewCFunction(m->ctx, _col_js, "__dashweb_coleccion", 2));
     JS_SetPropertyStr(m->ctx, global, "window", JS_DupValue(m->ctx, global));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_reloj", JS_NewCFunction(m->ctx, _jsdom_reloj, "__dashweb_reloj", 0));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_traza", JS_NewCFunction(m->ctx, _jsdom_traza_js, "__dashweb_traza", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_version", JS_NewCFunction(m->ctx, _jsdom_version, "__dashweb_version", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galletas", JS_NewCFunction(m->ctx, _jsdom_galletas, "__dashweb_galletas", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));

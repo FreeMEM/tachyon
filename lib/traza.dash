@@ -1,5 +1,6 @@
 # La línea de tiempo de una carga (tarea 33): con traza_activa, cada paso sale por la salida con los ms desde
-# traza_t0 y la memoria libre ("[1234 98000K] llega https://...: 200, 5120 bytes en 830 ms"). dashweb la enciende con el argumento TRAZA
+# traza_t0, la memoria libre y su mayor bloque seguido ("[1234 98000K/16384K] llega https://...: 200, 5120 bytes en 830
+# ms"; el bloque: con la memoria troceada, lo grande no cabe aunque quede mucha; tarea 64g). dashweb la enciende con el argumento TRAZA
 # (tools/medir_visor.py --traza). Apagada no cuesta nada: quien la llama mira antes traza_activa.
 #
 # A un fichero (tarea 67, depuración de red; lo pidió Oskis R.P: Tachyon se le quedaba parado en una PiStorm): con
@@ -12,7 +13,7 @@ var traza_fichero: String = ""
 
 func traza(texto: String)
     if traza_activa
-        l = "[" + (time_ms() - traza_t0) + " " + mem_total() / 1024 + "K] " + texto
+        l = "[" + (time_ms() - traza_t0) + " " + mem_total() / 1024 + "K/" + mem_largest() / 1024 + "K] " + texto
         if traza_fichero != ""
             _traza_al_fichero(l)
         else

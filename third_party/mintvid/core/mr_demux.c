@@ -319,6 +319,21 @@ uint32_t mr_demux_video_frames(const mr_demux *d)
     return d && d->kind == MR_CONTAINER_MOV ? mr_mov_sample_count(&d->u.mov) : 0;
 }
 
+uint32_t mr_demux_duration_ms(const mr_demux *d)
+{
+    uint32_t i, n, last = 0, step = 0;
+    if (!d || d->kind != MR_CONTAINER_MOV) return 0;
+    n = mr_mov_sample_count(&d->u.mov);
+    for (i = 0; i < n; i++) {
+        uint64_t t = 0;
+        int video = 0;
+        mr_mov_sample_info(&d->u.mov, i, &t, &video, NULL);
+        if (!video) continue;
+        if (t > last) { if (last && t - last < 1000) step = (uint32_t)(t - last); last = (uint32_t)t; }
+    }
+    return last ? last + step : 0;
+}
+
 int mr_demux_can_seek(const mr_demux *d)
 {
     /* Excludes network sources on principle even though mr_mov_seek() itself

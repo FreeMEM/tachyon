@@ -7237,3 +7237,16 @@ Formato:
     100/100.
   - Quedan: los métodos en Node.prototype en vez de en Element y CharacterData (DocumentType también los tiene) y las
     raíces de sombra declarativas (<template shadowrootmode>).
+- (después) outerHTML y style.cssText (WPT domparsing 811 → 824/1090):
+  - outerHTML = html: no tenía setter (en modo estricto, "no setter for property"; si no, no hacía nada). Ahora cambia
+    el elemento por el HTML leído con el contexto del padre (de un fragmento, un <body>), con el fragmento de los
+    métodos posicionales; sin padre, nada; con el documento de padre, NoModificationAllowedError; sus <script>, ya
+    empezados. outerhtml-01, 02 y 03: 0 → 9/10. tests/test_jsdom_outerhtml.dash.
+  - style.cssText: las declaraciones que valen, "k: v;" separadas por un espacio (CSSOM), no el atributo tal cual; uno
+    que no vale ("color:: x", nombre que no es un identificador, valor vacío) no cuenta tampoco en getPropertyValue.
+    setProperty escribe el atributo igual. style_attribute_html 0 → 4/4.
+  - Queda positional-template-child (beforeHTML en un hijo directo de un <template>, HierarchyRequestError): aquí los
+    hijos de un <template> leído del HTML están en el elemento hasta que se pide content, y daría error en
+    plantillas de verdad.
+  - Los tests de estilo (documento_estilo_js, medir_js, ligero, limite, estilo_partes, maqueta_epoca) y de DOM
+    siguen; Acid3 100/100.

@@ -159,6 +159,11 @@ static void dwv_pcm_nada(void *user, const int16_t *pcm, unsigned frames, unsign
 static void dwv_sonido(dwv *v, const mr_packet *pkt)
 {
 #ifdef DWV_SOLO_DECODIFICAR
+#ifdef DWV_SOLO_ABRIR
+    /* (diagnóstico: el decodificador se abre pero no recibe nada; los paquetes de sonido se tiran) */
+    (void)pkt;
+    return;
+#endif
     if (v->ad) mr_audio_decoder_feed(v->ad, pkt->data, pkt->len, dwv_pcm_nada, NULL);
     return;
 #endif

@@ -7343,3 +7343,7 @@ Formato:
   no se caía ninguna: es el decodificador AAC de MintAMP, no la salida por Paula. Siguiente: el AAC sin su ensamblador
   de 68k (muls.l de 64 bits, cargas big-endian...): -DDWV_AAC_EN_C (third_party/mintvid/audio/mr_aac_m68k_config.h no
   pone los AMIGA_M68K_ASM_AAC_*), tomas con sonido: ~/.cache/video-tachyon/ensayos/repetir_aacc.sh.
+- Con -DDWV_AAC_EN_C (sonido y el AAC en C, sin ensamblador) se caen 3 de 6 (3, 5 y 6): no es el ensamblador. El C
+  compilado con -m68020-60 tampoco usa mul/div de 64 bits (gcc los pasa a funciones). Siguiente: -DDWV_SOLO_ABRIR (con
+  -DDWV_SOLO_DECODIFICAR: el decodificador se abre pero los paquetes de sonido se tiran sin decodificar), para saber si
+  basta con abrirlo o es la decodificación: ~/.cache/video-tachyon/ensayos/repetir_abrir.sh.

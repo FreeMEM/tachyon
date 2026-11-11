@@ -7263,3 +7263,15 @@ Formato:
   xmlns:xmlns. El prefijo sin declarar (x:test) se deja pasar a propósito (RSS de verdad que lo usan), y los
   surrogates también (el texto va en Latin-1). xml-parsererror 15 → 20/23. tests/test_jsdom_domparser.dash con una
   línea más; domparser_scripts y xml_ns siguen; WPT xhr igual (864/1131); Acid3 100/100.
+- (después, 41d) insertAdjacentHTML (WPT domparsing 829 → 842/1090): el HTML con el contexto de donde va (el fragmento
+  de los métodos posicionales: antes o después, el padre; dentro de <html> o con un fragmento de padre, un <body>);
+  antes o después sin padre o con el documento de padre, NoModificationAllowedError; una posición que no es de las
+  cuatro, SyntaxError (también insertAdjacentElement y Text, que sin padre dan null); sus <script>, ya empezados: al
+  llevar el padre a otro sitio no corren. insert_adjacent_html 23 → 31/31, insert-adjacent-parent-errors 2 → 7/7.
+  Ojo: la ayuda se llamaba primero "posicion" y había otra function posicion más abajo en el mismo ámbito (la de más
+  abajo gana, y la mía no se usaba): ahora posAdyacente. tests/test_jsdom_insertadjacent.dash; sin_doble,
+  load_peticion, html_seguro y outerhtml siguen; Acid3 100/100.
+- (vídeo 2) Con el Dash de main 88732ce (el arreglo de los registros tras una función copiada en línea), Amiberry con
+  JIT: las tomas 3 y 4 de 4 se caen. No era eso. Sospechosa: la tarea del sonido de MintVID
+  (third_party/mintvid/amiga/audio_paula.c:305, CreateNewProcTags sin tc_TrapCode: un fallo ahí no avisa); siguiente,
+  tomas con -DDWV_SIN_SONIDO (idea de freememlang-af).

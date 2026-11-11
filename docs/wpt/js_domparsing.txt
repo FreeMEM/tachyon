@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 829/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 842/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -30,9 +30,9 @@ WPT FILE domparsing/innerhtml-07.html 4/5 OK
 WPT FILE domparsing/innerhtml-08.html 0/2 OK
 WPT FILE domparsing/innerhtml-empty-document-element.html 0/1 OK
 WPT FILE domparsing/innerhtml-li-autoclosing.html 7/7 OK
-WPT FILE domparsing/insert-adjacent-parent-errors.html 2/7 OK
+WPT FILE domparsing/insert-adjacent-parent-errors.html 7/7 OK
 WPT FILE domparsing/insert-adjacent.html 4/4 OK
-WPT FILE domparsing/insert_adjacent_html.html 23/31 OK
+WPT FILE domparsing/insert_adjacent_html.html 31/31 OK
 WPT FILE domparsing/outerhtml-01.html 1/1 OK
 WPT FILE domparsing/outerhtml-02.html 5/5 OK
 WPT FILE domparsing/outerhtml-03.html 3/4 OK
@@ -254,19 +254,6 @@ WPT SUB FAIL domparsing/innerhtml-07.html | innerHTML and string conversion: nul
 WPT SUB FAIL domparsing/innerhtml-08.html | innerHTML on html element with trailing comment | assert_equals: expected 3 but got 1
 WPT SUB FAIL domparsing/innerhtml-08.html | innerHTML on html element with trailing comment (no explicit head) | assert_equals: expected 3 but got 1
 WPT SUB FAIL domparsing/innerhtml-empty-document-element.html | Setting innerHTML to empty string | assert_true: expected true got false
-WPT SUB FAIL domparsing/insert-adjacent-parent-errors.html | Throws when given an invalid position | assert_throws_dom: function "() => { el.insertAdjacentHTML("invalid", "test"); }" did not throw
-WPT SUB FAIL domparsing/insert-adjacent-parent-errors.html | Throws when inserting using "beforebegin" into an element whose parent is null | assert_throws_dom: function "() => { el.insertAdjacentHTML("beforebegin", "test"); }" threw object "TypeError: not a node" that is not a DOMException NoModifica
-WPT SUB FAIL domparsing/insert-adjacent-parent-errors.html | Throws when inserting using "afterend" into an element whose parent is null | assert_throws_dom: function "() => { el.insertAdjacentHTML("afterend", "test"); }" threw object "TypeError: not a node" that is not a DOMException NoModificatio
-WPT SUB FAIL domparsing/insert-adjacent-parent-errors.html | Throws when inserting using "beforebegin" into an element whose parent is a document | assert_throws_dom: function "() => { el.insertAdjacentHTML("beforebegin", "test"); }" did not throw
-WPT SUB FAIL domparsing/insert-adjacent-parent-errors.html | Throws when inserting using "afterend" into an element whose parent is a document | assert_throws_dom: function "() => { el.insertAdjacentHTML("afterend", "test"); }" did not throw
-WPT SUB FAIL domparsing/insert_adjacent_html.html | Should throw when inserting with invalid position string | assert_throws_dom: function "function() {content.insertAdjacentHTML("bar", "foo")}" did not throw
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is null, insertAdjacentHTML should throw for beforebegin and afterend (text) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "") }" threw object "TypeError: not a node" that is not a DOMException NO_MODIF
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is null, insertAdjacentHTML should throw for beforebegin and afterend (comments) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "<!-- fail -->") }" threw object "TypeError: not a node" that is not a DOMExcep
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is null, insertAdjacentHTML should throw for beforebegin and afterend (elements) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "<div></div>") }" threw object "TypeError: not a node" that is not a DOMExcepti
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is a document, insertAdjacentHTML should throw for beforebegin and afterend (text) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "") }" did not throw
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is a document, insertAdjacentHTML should throw for beforebegin and afterend (comments) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "<!-- fail -->") }" did not throw
-WPT SUB FAIL domparsing/insert_adjacent_html.html | When the parent node is a document, insertAdjacentHTML should throw for beforebegin and afterend (elements) | assert_throws_dom: function "function() { element.insertAdjacentHTML("afterend", "<div></div>") }" did not throw
-WPT SUB FAIL domparsing/insert_adjacent_html.html | Should not run script when appending things which have descendant <script> inserted via insertAdjacentHTML | assert_false: script should not have run expected false got true
 WPT SUB FAIL domparsing/outerhtml-03.html | Setting outerHTML on a <body> element should replace it but leave the element unchanged | cannot read property 'outerHTML' of null
 WPT SUB FAIL domparsing/parsed-document-origin.window.html | DOMParser's parseFromString() with text/html | assert_equals: expected (string) "127.0.0.1" but got (undefined) undefined
 WPT SUB FAIL domparsing/parsed-document-origin.window.html | DOMParser's parseFromString() with text/xml | assert_equals: expected (string) "127.0.0.1" but got (undefined) undefined

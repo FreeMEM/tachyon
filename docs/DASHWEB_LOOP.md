@@ -7117,3 +7117,8 @@ Formato:
 - FS-UAE con JIT y las cookies de Coffin, 4 a la vez (700 s; de los resultados al vídeo, lottie-light.js ejecutado):
   4 de 4 sin caerse; con las dos de antes, FS-UAE 6 de 6. Amiberry con JIT: 6 de 11 se caen. Es de Amiberry (con una
   caída del 40 %, seis seguidas sin caerse es un 5 %); si es su JIT o no, 3 ensayos más sin JIT.
+- Amiberry sin JIT: 3 más sin caerse (5 de 5 en total, 25 min cada uno en la página del vídeo). Resumen: Amiberry con
+  JIT 6 de 11 se caen (también con compfpu=false y con comp_trust*=indirect), sin JIT 0 de 5; FS-UAE (JIT y MMU) 0
+  de 6. Es el JIT de Amiberry con algo de Tachyon. Sospecha: código que se escribe en marcha sin CacheClearU (lo que
+  también fallaría en un 68040/060 de verdad y en Emu68): preguntado a la sesión de Dash (freememlang-af).
+  Mientras, las tomas del vídeo se repiten hasta que salga una entera.

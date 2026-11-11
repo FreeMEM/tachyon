@@ -7161,3 +7161,7 @@ Formato:
   Google, trazas nuevas): 177/181 (8580 s); los cuatro de siempre (inspeccionar, jsdom_fetch_flujo, jsdom_medios,
   maqueta_fijo_ancho: "out of memory" al final del grupo de memcheck) pasan sueltos. Notas de una 0.9.5 preparadas;
   publicar, con el visto bueno del usuario.
+- 0.9.5-alfa preparada (sin publicar: falta el visto bueno del usuario): versión en src/dashweb.dash y README*;
+  actualización de verdad desde el Tachyon.gz de la v0.9.4-alfa publicada (GitHub de mentira que redirige): idéntico
+  al compilado, los nueve catálogos y .old; humo con MUI 3.8, cuatro ventanas 300 s. Notas en el scratchpad
+  (notas095.md).

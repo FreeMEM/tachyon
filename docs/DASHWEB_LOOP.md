@@ -7114,3 +7114,6 @@ Formato:
 - Con comp_trust*=indirect (JIT encendido): 2 sin caerse y la 3.ª se cae. Así que "es el JIT" no está demostrado: con
   una caída de ~40 %, 2 sin caerse sin JIT pueden ser suerte. Siguiente: más ensayos (FS-UAE con JIT, varios a la
   vez) para tener números.
+- FS-UAE con JIT y las cookies de Coffin, 4 a la vez (700 s; de los resultados al vídeo, lottie-light.js ejecutado):
+  4 de 4 sin caerse; con las dos de antes, FS-UAE 6 de 6. Amiberry con JIT: 6 de 11 se caen. Es de Amiberry (con una
+  caída del 40 %, seis seguidas sin caerse es un 5 %); si es su JIT o no, 3 ensayos más sin JIT.

@@ -7387,6 +7387,13 @@ Formato:
   Quedan las tareas hijas de Dash (net_bg 64 KB, dash_dns 16 KB, sin manejador de excepciones). Sin JIT, YouTube
   compila su script de 10,8 MB en 148 s y con JIT en 4,1 s (36 veces más rápido). Siguiente (idea de freememlang-40):
   JIT frenado al 10 % (cpu_throttle=-900.0, lo más que deja), con e7lento.py: repetir_frenado.sh.
+- El JIT frenado (cpu_throttle=-900.0) va más lento que sin JIT (el script de 10,8 MB compila en 378 s, sin JIT en
+  148 s): con e7lento no llega a la página del vídeo; parado. Y un hallazgo: con JIT el cierre es muy regular, de 43 a 50 s
+  después de pedir la página del vídeo (9 trazas), justo tras "maqueta entera por el atributo actions-on-separate-line"
+  y la respuesta 400 de youtubei/v1/feedback (sigue maquetando y pintando; nada raro antes). Sin JIT, 36 veces más
+  lento, las tomas de 25 min solo pasan ese punto unos 220 s (~6 s de JIT): el "sin JIT 0 de 8" no es concluyente.
+  Siguiente: las tareas en la TRAZA con JIT (repetir_tareas.sh; antes, el arranque de Coffin a Traspaso: arranque_*.txt,
+  por si hay algo que capture los gurus, idea de freememlang-40) y luego sin JIT con mucho más tiempo en el vídeo.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

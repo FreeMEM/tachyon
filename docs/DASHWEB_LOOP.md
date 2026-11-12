@@ -7450,6 +7450,11 @@ Formato:
   bloques vivos. Dos binarios de diagnóstico: TachyonSinCharcos (-DTACHYON_JS_SIN_CHARCOS al compilar
   tools/build_pegamento.sh: QuickJS con AllocVec y FreeVec) y TachyonCuenta (QuickJS avisa con la pila de JS si un
   valor se libera más veces de las que se tomó: js_amiga_cuenta_negativa, quickjs.h y quickjs.c, cambio 11).
+- Cuidado con las tomas: YouTube pone ahora una lista delante de los resultados y el clic en "Incredible" a veces no
+  abre el vídeo (las primeras de SinCharcos no valían: sin POST de feedback). Abriendo watch?v=vIQ74_DRWEM a mano no
+  se cae nada, ni con pool (0 de 3, freememlang-40): hace falta llegar al vídeo con un clic desde la búsqueda, en el
+  mismo documento y el mismo QuickJS que cargó la búsqueda (escribir la dirección crea un documento y un runtime
+  nuevos). e7r.py: busca y hace clic con hasta 4 reintentos hasta que el título dice "Incredible".
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

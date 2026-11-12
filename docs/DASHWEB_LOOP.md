@@ -7422,6 +7422,11 @@ Formato:
   Dash: no es una excepción de la tarea principal. Idea: Tachyon sale "bien" (MUI devuelve Quit, -1, también con un
   Ctrl-C a la tarea, quizá del bsdsocket de Amiberry; o abiertas() llega a 0) y hace la limpieza normal. TachyonSalida
   apunta en la traza "el bucle de eventos acaba por el evento N", "fuera del bucle de eventos" y "fin de Main".
+- TachyonSalida, 9 tomas a la vez (freememlang-40): se caen 7. En ninguna sale "el bucle de eventos acaba", "fin de
+  Main", TRAMPA ni el aviso de Dash (la traza abre, escribe y cierra en cada línea: no se pierde nada). Main no sale
+  por el final normal: la tarea se va a media faena. TachyonTrampa2 acabó 2 de 9 y TachyonRelleno40 2 de 3. Siguiente:
+  el abort() y el __assert_func del C (src_c/tachyon.c; QuickJS sin NDEBUG, 62 abort()) escriben también en el
+  fichero de la traza (tachyon_traza_c): TachyonSalida2.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

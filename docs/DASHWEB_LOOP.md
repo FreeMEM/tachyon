@@ -7352,3 +7352,7 @@ Formato:
   y unos pocos KB de código (el binario sin sonido solo es 4 KB más pequeño). Siguiente: -DDWV_NO_ABRIR (con los dos
   anteriores: el decodificador se enlaza pero no se abre; ai = NULL tras un volatile), para separar el abrir de dónde
   cae el código: ~/.cache/video-tachyon/ensayos/repetir_noabrir.sh.
+- Con -DDWV_NO_ABRIR (decodificador enlazado y nunca abierto; en marcha hace lo mismo que sin sonido) se caen 6 de 6.
+  Así que no es el sonido: el 0 de 6 de TachyonSinSonido (compilado con el Dash 88732ce y el Tachyon de entonces) o fue
+  suerte o depende de dónde cae el código (un fallo del JIT sensible a la posición). Siguiente: 6 tomas con
+  -DDWV_SIN_SONIDO compilado otra vez con el Dash (15998eb) y el Tachyon de ahora: repetir_ss2.sh (TachyonSinSonido2).

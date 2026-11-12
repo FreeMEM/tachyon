@@ -9314,6 +9314,43 @@ JSValue JS_GetPropertyStr(JSContext *ctx, JSValueConst this_obj,
 #if defined(__amigaos__)
 /* (Tachyon) quien quiere enterarse de un fallo de QuickJS antes del abort: escribe la línea sin búfer */
 void (*js_amiga_decir)(const char *) = NULL;
+void js_amiga_cuenta_negativa(JSRuntime *rt, JSValue v)
+{
+    static char l[1600];
+    static int dichas = 0;
+    char nb[64], fb[96];
+    JSStackFrame *sf;
+    int n = 0, k, tag = JS_VALUE_GET_TAG(v);
+    if (!js_amiga_decir || dichas >= 3) return;
+    dichas++;
+    n += snprintf(l + n, sizeof l - n, "QuickJS: un valor liberado de más (cuenta %d, etiqueta %d", __js_rc(JS_VALUE_GET_PTR(v))->ref_count, tag);
+    if (tag == JS_TAG_OBJECT) {
+        JSObject *o = JS_VALUE_GET_OBJ(v);
+        n += snprintf(l + n, sizeof l - n, ", objeto de clase %d (%s)", o->class_id,
+                      o->class_id < rt->class_count ? JS_AtomGetStrRT(rt, nb, sizeof nb, rt->class_array[o->class_id].class_name) : "?");
+    } else if (tag == JS_TAG_STRING) {
+        JSString *st = JS_VALUE_GET_STRING(v);
+        n += snprintf(l + n, sizeof l - n, ", texto de %d", st->len);
+    }
+    n += snprintf(l + n, sizeof l - n, "); JS:");
+    for (sf = rt->current_stack_frame, k = 0; sf && k < 12 && n < (int)sizeof l - 200; sf = sf->prev_frame, k++) {
+        JSObject *f;
+        if (JS_VALUE_GET_TAG(sf->cur_func) != JS_TAG_OBJECT) { n += snprintf(l + n, sizeof l - n, " | ?"); continue; }
+        f = JS_VALUE_GET_OBJ(sf->cur_func);
+        if (js_class_has_bytecode(f->class_id)) {
+            JSFunctionBytecode *b = f->u.func.function_bytecode;
+            int lin = 0, col = 0;
+            if (b->has_debug) lin = find_line_num(NULL, b, sf->cur_pc - b->byte_code_buf - 1, &col);
+            n += snprintf(l + n, sizeof l - n, " | %s (%s:%d:%d)", JS_AtomGetStrRT(rt, nb, sizeof nb, b->func_name),
+                          b->has_debug ? JS_AtomGetStrRT(rt, fb, sizeof fb, b->debug.filename) : "?", lin, col);
+        } else {
+            n += snprintf(l + n, sizeof l - n, " | (nativa, clase %d)", f->class_id);
+        }
+    }
+    snprintf(l + n, sizeof l - n, "\n");
+    js_amiga_decir(l);
+}
+
 static void js_amiga_forma_compartida(JSContext *ctx, JSObject *p, JSAtom prop)
 {
     static char l[1600];

@@ -300,6 +300,15 @@ static int _jm_hay(size_t n) {
     _jm_desde = 0;
     return AvailMem(MEMF_ANY) > _jm_reserva + n;
 }
+#ifdef TACHYON_JS_SIN_CHARCOS
+/* (diagnóstico de la tarea 66: ¿pisa la memoria de QuickJS el FreePooled de exec? cada bloque con AllocVec y FreeVec,
+   sin charcos; lo que quede al acabar no se devuelve) */
+#undef AllocPooled
+#undef FreePooled
+#define AllocPooled(pool, n) AllocVec((n), MEMF_ANY)
+#define FreePooled(pool, p, n) FreeVec(p)
+#define _jm_sano(pool) ((void)0)
+#endif
 static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const char *)p - _JM_CABECERA))[0] : 0; }
 static void *_jm_malloc(JSMallocState *s, size_t n) {
     size_t *p;

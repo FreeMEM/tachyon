@@ -69,6 +69,10 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
     con TRAZA=fichero) la clase del objeto, la propiedad que se añade y las funciones de JavaScript de la pila, con su
     fichero y línea.
 
+11. `js_amiga_cuenta_negativa` (`quickjs.h`, `quickjs.c`, tarea 66, diagnóstico): `JS_FreeValue` y `JS_FreeValueRT`
+    miran si la cuenta queda por debajo de 0 (un valor liberado más veces de las que se tomó). Entonces no lo liberan
+    otra vez y lo cuentan por `js_amiga_decir` con la pila de JavaScript (las tres primeras veces).
+
 ## Problemas encontrados
 
 - Las matemáticas de doble precisión de la ROM (`mathieeedoubbas`, las que usa `-lm` de libnix) dan

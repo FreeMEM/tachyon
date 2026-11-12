@@ -7443,6 +7443,13 @@ Formato:
   nuevo o la forma inicial de su prototipo) más que un JS_FreeValue de más en un sitio fijo. Sospecha: la tarea de la
   red (net_bg) escribiendo en un búfer que la principal ya soltó (la caída llega con el POST de feedback y
   lottie-light.js a medias).
+  Las tomas que siguen dan siempre los mismos números basura (ref_count 0, 193462520 = $0B8800F8 propiedades): algo
+  determinista, no una carrera con la red. freememlang-40 miró net_bg: sus búferes son de la tarea y solo se copian a
+  los del programa con el semáforo; no ve cómo podría pisar. Sospechoso nuevo: el pool de exec de QuickJS (_jm_malloc,
+  charcos de 512 KB; _jm_sano solo cubre el primer charco, como en la D80): un FreePooled que suelta un charco con
+  bloques vivos. Dos binarios de diagnóstico: TachyonSinCharcos (-DTACHYON_JS_SIN_CHARCOS al compilar
+  tools/build_pegamento.sh: QuickJS con AllocVec y FreeVec) y TachyonCuenta (QuickJS avisa con la pila de JS si un
+  valor se libera más veces de las que se tomó: js_amiga_cuenta_negativa, quickjs.h y quickjs.c, cambio 11).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

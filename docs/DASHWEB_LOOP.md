@@ -7524,6 +7524,9 @@ Formato:
   no NIL:) con extensión de comprimido. (b) La consola de Inspeccionar enseñaba lo de todas las páginas (los "out of
   memory" de YouTube en la de amigaworld); ahora, como Chrome, desde la última línea "open " del registro.
   test_archivos y test_inspeccionar pasan. (c) Esa toma, el vídeo de YouTube no llegó a sonar a tiempo (variable).
+- 4.ª toma en inglés grabada (446 s, ~/.cache/video-tachyon/tomas/v2_en_t1) con dc6cdf7: SIN REVISAR todavía (mirar
+  fotogramas: el vídeo sonando, el .lha como comprimido, la consola de amigaworld). Luego la toma en castellano
+  (tomar2.sh es) y montar2.py. Publicar solo con el visto bueno del usuario.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

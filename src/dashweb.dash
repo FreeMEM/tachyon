@@ -2959,6 +2959,8 @@ Main
                 dw_rexx_evento = 0
             end
             if ev == -1 or ev == ID_SALIR
+                # (tarea 66: el cierre del vídeo 2 sin aviso; ¿sale por aquí? -1 es el Quit de MUI, también con Ctrl-C)
+                traza("el bucle de eventos acaba por el evento " + ev + " (ventanas abiertas: " + abiertas() + ")")
                 break
             end
             if ev == 0
@@ -3280,6 +3282,7 @@ Main
                 acerca_abierta = not acerca_abierta
             end
         end
+        traza("fuera del bucle de eventos (ventanas abiertas: " + abiertas() + "): se cierra todo")
         for w in dw_ventanas
             parar_carga(w)
             if w.actual != nil
@@ -3296,6 +3299,7 @@ Main
         if dw_pantalla != ""
             screen_close()
         end
+        traza("fin de Main")
         video_trampa_quitar()
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"

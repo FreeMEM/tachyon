@@ -7415,6 +7415,13 @@ Formato:
   el aviso con Flush; freememlang-40, con el visto bueno del usuario) y la trampa: 0 de 3, las tres pasan el POST de
   feedback y siguen 100 s más. Parece que 3921eb1 lo arregla. La trampa ahora recoge también las excepciones de la
   FPU y las demás (no la 9 ni TRAP #n). Para confirmarlo, 6 tomas más: repetir_trampa2.sh (TachyonTrampa2).
+- No lo arregla. Tomas en paralelo (varios Amiberry, cada uno con su copia del disco, su Xvfb y su Traspaso:; los míos
+  en ~/.cache/video-tachyon-i2 e -i3, los de freememlang-40 en -p1..p9): con 0f87633 y un relleno de código que no se
+  ejecuta (TachyonRelleno8 y TachyonRelleno40: +184 y +664 bytes) se caen 5 de 7. El control con el Dash de antes
+  (TachyonTareas) se cae 2 de 3. TachyonTrampa2 lleva 0 de 7. En ninguna caída salta la trampa ni sale el aviso de
+  Dash: no es una excepción de la tarea principal. Idea: Tachyon sale "bien" (MUI devuelve Quit, -1, también con un
+  Ctrl-C a la tarea, quizá del bsdsocket de Amiberry; o abiertas() llega a 0) y hace la limpieza normal. TachyonSalida
+  apunta en la traza "el bucle de eventos acaba por el evento N", "fuera del bucle de eventos" y "fin de Main".
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

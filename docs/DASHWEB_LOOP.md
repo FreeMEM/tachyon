@@ -7479,6 +7479,13 @@ Formato:
   propia; si dentro salta otra excepción (sin memoria: JS_AtomToCString, JS_NewString...), JS_Throw suelta la
   pendiente y build_backtrace sigue con ella. Arreglo (cambio 12 de docs/quickjs_amiga.md): Dup y Free alrededor, y
   un aviso "otra excepción (...) mientras se ponía la pila" para confirmarlo. TachyonArreglo, Acid3 100/100.
+- CONFIRMADO (freememlang-40, 9 tomas a la vez con búsqueda y clic): TachyonArreglo 0 caídas de 8 válidas (sin el
+  arreglo, 4-5 de 9), y en 6 de ellas, varias veces, "QuickJS: otra excepción (out of memory) mientras se ponía la
+  pila": justo el camino que antes cerraba Tachyon; ahora sigue. Queda aparte el "out of memory" del propio runtime
+  de YouTube tras navegar dentro de la página (malloc_limit fijado al crear el runtime: _js_memoria_tope). Y de Dash
+  (freememlang-40, con el usuario): vaciar Output() al salir y no esperar sin fin a las tareas tras un abort. La
+  tarea 66 (el vídeo 2) puede seguir: la toma ya no se cae. Pendiente decidir con el usuario si se avisa a
+  bellard/quickjs del fallo.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

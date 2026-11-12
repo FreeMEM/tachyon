@@ -236,8 +236,9 @@ func documento_texto(direccion: String, d: Documento) -> String
         d.direccion = r.url
         return http_texto(r)
     end
-    # (un comprimido del disco: lo que tiene, y cómo extraerlo; lib/archivos.dash, tarea 63d)
-    if str_starts(str_lower(direccion), "file:") and archivo_tipo(url_fichero(direccion)) != ""
+    # (un comprimido del disco: lo que tiene, y cómo extraerlo; lib/archivos.dash, tarea 63d; también escrito como
+    # ruta de AmigaDOS, "Traspaso:x.lha", sin file:, que si no se leía como texto)
+    if url_fichero(direccion) != "NIL:" and archivo_tipo(url_fichero(direccion)) != ""
         return archivo_html(url_fichero(direccion))
     end
     t = file_read_text(url_fichero(direccion))

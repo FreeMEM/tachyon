@@ -7518,6 +7518,12 @@ Formato:
   55 MB libres y un bloque de 23 MB. El tope que sube (b750a01) salía impar (malloc_size + n + 2 MB) y un tope impar
   es uno fijo de js_limite: ya no subía más. Ahora se redondea a par. (Y los dos pools no hacían falta para esto, pero
   se quedan: con la memoria troceada ayudan.)
+- 3.ª toma: el tope ya sube (YouTube llega a 107 MB y para con 33 MB libres: eso ya es falta de memoria de verdad);
+  al ir a amigaworld se suelta YouTube (183 MB libres). Pero: (a) "Traspaso:trasfondo-2.9.2.lha" salía como texto:
+  documento_texto solo abría como comprimido lo que empezaba por file:; ahora cualquier ruta de fichero (url_fichero
+  no NIL:) con extensión de comprimido. (b) La consola de Inspeccionar enseñaba lo de todas las páginas (los "out of
+  memory" de YouTube en la de amigaworld); ahora, como Chrome, desde la última línea "open " del registro.
+  test_archivos y test_inspeccionar pasan. (c) Esa toma, el vídeo de YouTube no llegó a sonar a tiempo (variable).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

@@ -7455,6 +7455,11 @@ Formato:
   se cae nada, ni con pool (0 de 3, freememlang-40): hace falta llegar al vídeo con un clic desde la búsqueda, en el
   mismo documento y el mismo QuickJS que cargó la búsqueda (escribir la dirección crea un documento y un runtime
   nuevos). e7r.py: busca y hace clic con hasta 4 reintentos hasta que el título dice "Incredible".
+  (Y el clic iba a la descripción, "A look at the incredible", que no es un enlace: ahora busca "Making Art".)
+- TachyonCuenta (con pool), 3 tomas: se caen 2, con el mismo assert y SIN aviso de "valor liberado de más" antes: ningún
+  JS_FreeValue deja una cuenta negativa. Una de las dos se cayó sin llegar a abrir el vídeo (en la página de la
+  búsqueda, tras varios clics). Lo de las formas no pasa por JS_FreeValue (js_free_shape lleva su propia cuenta), así
+  que no se descarta del todo, pero refuerza lo de la memoria pisada.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

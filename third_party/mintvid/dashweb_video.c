@@ -353,10 +353,34 @@ void dwv_pila_pintar(void)
     volatile unsigned char *fin = &aqui - 512;
     while (p < fin) *p++ = DWV_PILA_PATRON;
 }
+/* Cómo se ha tocado la pila pintada: dónde está el primer byte cambiado (desde tc_SPLower), cuántos cambiados hay en
+   los primeros 64 KB (pocos y sueltos: una escritura perdida de otro; todos: pila usada de verdad) y los 16 bytes de
+   ese primer cambio; sin los 64 primeros, como dwv_pila_minima */
+const char *dwv_pila_informe(void)
+{
+    static char t[160];
+    struct Task *yo = FindTask(NULL);
+    const volatile unsigned char *b = (const volatile unsigned char *)yo->tc_SPLower;
+    unsigned long total = (unsigned long)yo->tc_SPUpper - (unsigned long)yo->tc_SPLower, i, primero = total, n = 0;
+    unsigned long hasta = total < 65536 ? total : 65536;
+    char *q;
+    for (i = 64; i < hasta; i++)
+        if (b[i] != DWV_PILA_PATRON) { if (primero == total) primero = i; n++; }
+    if (primero == total) {
+        for (i = hasta; i < total && b[i] == DWV_PILA_PATRON; i++) ;
+        primero = i;
+    }
+    q = t + sprintf(t, "primer cambio en +%lu (pila en %08lx), %lu cambiados en los primeros 64 KB:", primero,
+                    (unsigned long)yo->tc_SPLower, n);
+    for (i = primero; i < primero + 16 && i < total; i++) q += sprintf(q, " %02x", (unsigned)b[i]);
+    return t;
+}
+
 long dwv_pila_minima(void)
 {
     struct Task *yo = FindTask(NULL);
-    const volatile unsigned char *p = (const volatile unsigned char *)yo->tc_SPLower;
+    /* (los primeros 64 bytes no cuentan: en CoffinOS algo escribe una marca, ba d1 ba d3, justo en tc_SPLower) */
+    const volatile unsigned char *p = (const volatile unsigned char *)yo->tc_SPLower + 64;
     const volatile unsigned char *tope = (const volatile unsigned char *)yo->tc_SPUpper;
     while (p < tope && *p == DWV_PILA_PATRON) p++;
     return (long)(p - (const volatile unsigned char *)yo->tc_SPLower);

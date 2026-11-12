@@ -7378,3 +7378,7 @@ Formato:
   antes, 5 de 5: sin JIT 0 de 8; con JIT y el Tachyon de ahora, 10 de 11 se caen (sin sonido 3 de 3, decodificador sin
   abrir 6 de 6, JIT prudente 1 de 2). Así que va con el JIT de Amiberry (o con su velocidad), no con el sonido.
   Siguiente: las tomas con la pila en la TRAZA (repetir_pila.sh), para ver lo menos libre antes de caerse.
+- Primeras tomas con la pila: ya a los 18 s "0 KB libres", pero era una marca: en CoffinOS algo escribe ba d1 ba d3
+  justo en tc_SPLower (4 bytes cambiados en los primeros 64 KB; el resto, el patrón intacto). La medida ahora se salta
+  los primeros 64 bytes y dice dónde está el primer cambio, cuántos hay en los primeros 64 KB y sus 16 bytes
+  (dwv_pila_informe). Otra vez las tomas: repetir_pila.sh.

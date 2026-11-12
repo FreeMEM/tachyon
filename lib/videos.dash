@@ -381,7 +381,7 @@ func videos_pila_traza()
         _video_pila_cuando = time_ms()
         m = video_pila_minima()
         if _video_pila_dicha < 0 or m < _video_pila_dicha
-            traza("pila: lo menos libre ha sido " + m / 1024 + " KB de " + video_pila_total() / 1024 + " KB")
+            traza("pila: lo menos libre ha sido " + m / 1024 + " KB de " + video_pila_total() / 1024 + " KB; " + video_pila_informe())
             _video_pila_dicha = m
         end
     end

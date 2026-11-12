@@ -26,6 +26,7 @@
 @extern("dashweb_video.h") func dwv_pila_total() -> Int
 @extern("dashweb_video.h") func dwv_pila_pintar()
 @extern("dashweb_video.h") func dwv_pila_minima() -> Int
+@extern("dashweb_video.h") func dwv_pila_informe() -> String
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -175,6 +176,10 @@ end
 
 func video_pila_minima() -> Int
     return dwv_pila_minima()
+end
+
+func video_pila_informe() -> String
+    return dwv_pila_informe()
 end
 
 func video_fallo_sonido() -> String

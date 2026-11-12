@@ -7382,3 +7382,8 @@ Formato:
   justo en tc_SPLower (4 bytes cambiados en los primeros 64 KB; el resto, el patrón intacto). La medida ahora se salta
   los primeros 64 bytes y dice dónde está el primer cambio, cuántos hay en los primeros 64 KB y sus 16 bytes
   (dwv_pila_informe). Otra vez las tomas: repetir_pila.sh.
+- Con la medida buena (3 tomas con JIT, las 2 acabadas se cayeron): la pila de la tarea principal baja a 556 KB libres
+  de 1024 a los ~44 s (con la página de YouTube) y no baja más hasta caerse (~5 min después). No es la pila de main.
+  Quedan las tareas hijas de Dash (net_bg 64 KB, dash_dns 16 KB, sin manejador de excepciones). Sin JIT, YouTube
+  compila su script de 10,8 MB en 148 s y con JIT en 4,1 s (36 veces más rápido). Siguiente (idea de freememlang-40):
+  JIT frenado al 10 % (cpu_throttle=-900.0, lo más que deja), con e7lento.py: repetir_frenado.sh.

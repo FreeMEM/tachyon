@@ -7374,3 +7374,7 @@ Formato:
   llevan solos el gancho de edición con MUI 3.8: Ctrl/Amiga + V pega, C copia, X corta). Tachyon solo se recompila: en
   sys32rtg38 la barra pega "Hola mundo" donde está el cursor (antes metía una "v"); test_formularios_pegar pasa.
   La tarea 70 queda hecha.
+- (vídeo 2) Sin JIT (cachesize=0) y el Tachyon de ahora: 3 de 3 sin caerse (25 min cada una, e7lento.py). Con el de
+  antes, 5 de 5: sin JIT 0 de 8; con JIT y el Tachyon de ahora, 10 de 11 se caen (sin sonido 3 de 3, decodificador sin
+  abrir 6 de 6, JIT prudente 1 de 2). Así que va con el JIT de Amiberry (o con su velocidad), no con el sonido.
+  Siguiente: las tomas con la pila en la TRAZA (repetir_pila.sh), para ver lo menos libre antes de caerse.

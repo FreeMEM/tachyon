@@ -7361,3 +7361,6 @@ Formato:
   freememlang-40): el Tachyon de ahora con el JIT de Amiberry en modo prudente (comp_flushmode=hard, comp_trust*=
   indirect, comp_constjump=false; el .uae se guarda y se repone): repetir_jitseguro.sh. comp_trust*=indirect solo ya
   se cayó; si este no, quitar flushmode o constjump por mitades para saber cuál basta (lo que contar a Amiberry).
+- Con el JIT prudente: la 1 sin caerse y la 2 se cae (paré ahí). Los ajustes del JIT no lo arreglan. Como el 0 de 6
+  sin sonido resultó engañoso, también hay que repetir el "sin JIT 0 de 5" (era con un Tachyon viejo): 3 tomas con el
+  Tachyon de ahora y cachesize=0, con e7lento.py (los tiempos de e6lento): repetir_sinjit3.sh.

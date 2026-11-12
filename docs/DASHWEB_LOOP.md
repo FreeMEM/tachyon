@@ -7387,3 +7387,11 @@ Formato:
   Quedan las tareas hijas de Dash (net_bg 64 KB, dash_dns 16 KB, sin manejador de excepciones). Sin JIT, YouTube
   compila su script de 10,8 MB en 148 s y con JIT en 4,1 s (36 veces más rápido). Siguiente (idea de freememlang-40):
   JIT frenado al 10 % (cpu_throttle=-900.0, lo más que deja), con e7lento.py: repetir_frenado.sh.
+
+### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
+- innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.
+- Range.createContextualFragment sin argumento lanza TypeError, y con null analiza "null" (un DOMString normal):
+  createContextualFragment 35/35.
+- En XML, una entidad sin definir (&times; de HTML) está mal formada: el documento de error <parsererror>
+  (xmlTexto, lib/jsdom_preludio.js): DOMParser-xml-character-entities 8/8.
+- Acid3 100/100; tests de jsdom 46/46 (los que se pasaron de tiempo con el emulador cargado, repetidos solos).

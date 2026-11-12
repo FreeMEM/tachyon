@@ -1,4 +1,4 @@
-WPT TOTAL domparsing: 843/1090 subpruebas en 49 de 49 ficheros
+WPT TOTAL domparsing: 849/1090 subpruebas en 49 de 49 ficheros
 
 WPT FILE domparsing/Comment-serialization-double-hyphen.html 3/3 OK
 WPT FILE domparsing/DOMParser-parseFromString-encoding.html 0/0 ERROR Error: assert_equals: the meta charset must be in effect, making the main document windows-1252 expected "windows-1252" but got "UTF-8"
@@ -17,16 +17,16 @@ WPT FILE domparsing/DOMParser-parseFromString-xml-internal-subset.html 0/1 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-parsererror.html 20/23 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml-scripting-support-disabled.html 13/13 OK
 WPT FILE domparsing/DOMParser-parseFromString-xml.html 20/20 OK
-WPT FILE domparsing/DOMParser-xml-character-entities.html 4/8 OK
+WPT FILE domparsing/DOMParser-xml-character-entities.html 8/8 OK
 WPT FILE domparsing/XMLSerializer-serializeToString.html 31/33 OK
 WPT FILE domparsing/createContextualFragment-external-scripts-async.html 0/1 OK
-WPT FILE domparsing/createContextualFragment.html 34/35 OK
+WPT FILE domparsing/createContextualFragment.html 35/35 OK
 WPT FILE domparsing/domparser-spurious-attributes.html 2/2 OK
 WPT FILE domparsing/html-insertion-methods-html-element.html 24/26 OK
 WPT FILE domparsing/html-unsafe-external-scripts-async.html 0/15 OK
 WPT FILE domparsing/innerhtml-04.html 1/1 OK
 WPT FILE domparsing/innerhtml-06.html 1/1 OK
-WPT FILE domparsing/innerhtml-07.html 4/5 OK
+WPT FILE domparsing/innerhtml-07.html 5/5 OK
 WPT FILE domparsing/innerhtml-08.html 0/2 OK
 WPT FILE domparsing/innerhtml-empty-document-element.html 0/1 OK
 WPT FILE domparsing/innerhtml-li-autoclosing.html 7/7 OK
@@ -224,14 +224,9 @@ WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-internal-subset.html | Par
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | DOMParser: <parsererror> element added on error, <span x:test="testing">1</span> | assert_equals: expecting one parsererror expected 1 but got 0
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A lone surrogate is replaced with U+FFFD | assert_equals: expected "broken \ufffd" but got "broken "
 WPT SUB FAIL domparsing/DOMParser-parseFromString-xml-parsererror.html | A valid surrogate pair is preserved | assert_equals: expected "works ?" but got "works ?"
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type text/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type application/xhtml+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
-WPT SUB FAIL domparsing/DOMParser-xml-character-entities.html | Should return an error document for undefined (HTML) character entities in type image/svg+xml | assert_equals: expected (string) "http://www.mozilla.org/newlayout/xml/parsererror.xml" but got (object) null
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if no special handling for XLink namespace unlike HTML serializer. | assert_equals: expected "<root xmlns:xl=\"http://www.w3.org/1999/xlink\" xl:type=\"v\"/>" but got "<root xmlns:ns1=\"http://www.w3.org/1999/xlink\" ns1:type=\"v
 WPT SUB FAIL domparsing/XMLSerializer-serializeToString.html | Check if a prefix bound to an empty namespace URI ("no namespace") serialize | assert_equals: expected "<root xmlns=\"\" xmlns:foo=\"\"/>" but got "<root xmlns:foo=\"\"/>"
 WPT SUB FAIL domparsing/createContextualFragment-external-scripts-async.html | External scripts from createContextualFragment() have async=true and execute as async once connected | assert_true: script.async is true before insertion expected true got false
-WPT SUB FAIL domparsing/createContextualFragment.html | Must throw TypeError when calling without arguments | assert_throws_js: function "function() { range.createContextualFragment(); }" did not throw
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | setHTML on the html element replaces head and body | assert_equals: expected Element node <meta name="x"></meta> but got null
 WPT SUB FAIL domparsing/html-insertion-methods-html-element.html | setHTMLUnsafe on the html element replaces head and body | promise_test: Unhandled rejection with value: object "TypeError: not a function"
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | setHTMLUnsafe with { runScripts: true } on connected element: external scripts execute as async | promise_test: Unhandled rejection with value: object "TypeError: not a function"
@@ -249,7 +244,6 @@ WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | replaceWithHTM
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | ShadowRoot.setHTMLUnsafe with { runScripts: true }: external scripts execute as async | promise_test: Unhandled rejection with value: object "TypeError: not a function"
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | ShadowRoot.appendHTMLUnsafe with { runScripts: true }: external scripts execute as async | assert_true: script.async is true expected true got false
 WPT SUB FAIL domparsing/html-unsafe-external-scripts-async.html | ShadowRoot.prependHTMLUnsafe with { runScripts: true }: external scripts execute as async | assert_true: script.async is true expected true got false
-WPT SUB FAIL domparsing/innerhtml-07.html | innerHTML and string conversion: null. | assert_equals: expected "" but got "null"
 WPT SUB FAIL domparsing/innerhtml-08.html | innerHTML on html element with trailing comment | assert_equals: expected 3 but got 1
 WPT SUB FAIL domparsing/innerhtml-08.html | innerHTML on html element with trailing comment (no explicit head) | assert_equals: expected 3 but got 1
 WPT SUB FAIL domparsing/innerhtml-empty-document-element.html | Setting innerHTML to empty string | assert_true: expected true got false

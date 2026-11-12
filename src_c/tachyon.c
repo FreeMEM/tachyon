@@ -1600,9 +1600,10 @@ static JSValue _jsdom_innerHTML(JSContext *ctx, JSValueConst this_val) {
 static JSValue _jsdom_set_innerHTML(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     char *t;
     _JSDOM_ESTE_PONER("innerHTML");
-    t = _js_texto(ctx, v);
+    /* (null es "", [LegacyNullToEmptyString]; WPT domparsing innerhtml-07) */
+    t = JS_IsNull(v) ? NULL : _js_texto(ctx, v);
     jsdom_poner_html(n, (STRPTR)(t ? t : ""));
-    _jsdom_soltar(t);
+    if (t) _jsdom_soltar(t);
     _jsdom_tocado(ctx, n);
     return JS_UNDEFINED;
 }

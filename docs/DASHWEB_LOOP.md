@@ -7435,6 +7435,14 @@ Formato:
   94 % (freememlang-40 lo mira: un segundo _dash_quit desde la limpieza). Sin JIT no se llegaba a ese punto.
   Ahora QuickJS (cambio 10 de docs/quickjs_amiga.md) cuenta antes del assert la clase del objeto, la propiedad y la
   pila de JavaScript con fichero y línea: TachyonForma (Acid3 100/100).
+- TachyonForma (3 + 3 caídas, mías y de freememlang-40): siempre "forma compartida sin tabla (ref_count 0,
+  193462520 propiedades, hash 0) al añadir 'stack' a un objeto de clase 0". Es build_backtrace al crear un Error (el
+  'stack' de una excepción nueva), y el objeto está deshecho: clase 0, forma ya liberada, cuenta de propiedades
+  basura. La pila de JavaScript cambia de una caída a otra (rect del preludio, leerEstilo, poner, el código de
+  YouTube): cualquier excepción da con ello. No apunta a una función concreta; parece memoria pisada (la del Error
+  nuevo o la forma inicial de su prototipo) más que un JS_FreeValue de más en un sitio fijo. Sospecha: la tarea de la
+  red (net_bg) escribiendo en un búfer que la principal ya soltó (la caída llega con el POST de feedback y
+  lottie-light.js a medias).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

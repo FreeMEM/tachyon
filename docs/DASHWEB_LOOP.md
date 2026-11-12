@@ -7501,6 +7501,9 @@ Formato:
 - (66) El vídeo 2, otra vez en marcha: guion2.py hace clic en "Making Art" (el título; "Incredible" daba con la
   descripción y YouTube pone ahora una lista delante), hasta 3 veces, y si no, escribe la dirección; paquete rehecho
   (tools/paquete.sh) con los arreglos; tomar2.sh en.
+- El fallo de QuickJS ya estaba avisado arriba (bellard/quickjs #533, otra persona) y Fabrice Bellard lo arregló el
+  2026-11-02 con el mismo cambio (el Dup dentro de build_backtrace); nuestra copia es la 2026-06-04. No se abre otro
+  aviso. El usuario pidió explicarlo en el grupo: texto pasado a la sesión telegram (con su visto bueno).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

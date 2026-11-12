@@ -78,6 +78,8 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
     otra excepción (sin memoria, por ejemplo), `JS_Throw` suelta la que había y `build_backtrace` seguía escribiendo
     'stack' en un Error ya liberado: el `assert(js_rc(p->shape)->ref_count == 1)` de `add_property` que cerraba
     Tachyon en YouTube. Ahora con `JS_DupValue` y `JS_FreeValue` alrededor; si pasa, lo cuenta por `js_amiga_decir`.
+    Ya estaba avisado y arreglado arriba: bellard/quickjs #533 (cerrado el 2026-11-02; el arreglo hace el Dup dentro
+    de `build_backtrace`). Al pasar a una versión posterior de QuickJS, este cambio sobra.
     Diagnóstico de la misma tarea: `js_amiga_liberados` (los últimos Error que libera `free_object`, con la pila de JS)
     y el volcado de bytes en `js_amiga_forma_compartida`.
 

@@ -28,6 +28,9 @@
 @extern("dashweb_video.h") func dwv_pila_minima() -> Int
 @extern("dashweb_video.h") func dwv_pila_informe() -> String
 @extern("dashweb_video.h") func dwv_tareas() -> String
+@extern("dashweb_video.h") func dwv_trampa_poner(fichero: String)
+@extern("dashweb_video.h") func dwv_trampa_quitar()
+@extern("dashweb_video.h") func dwv_trampa_probar()
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -181,6 +184,20 @@ end
 
 func video_pila_informe() -> String
     return dwv_pila_informe()
+end
+
+# (diagnóstico de la tarea 66, con TRAZA=fichero) una excepción de la CPU en la tarea principal se apunta en ese
+# fichero (número, PC con su hunk y desplazamiento, marco) y Tachyon se queda parado; video_trampa_quitar al acabar
+func video_trampa_poner(fichero: String)
+    dwv_trampa_poner(fichero)
+end
+
+func video_trampa_quitar()
+    dwv_trampa_quitar()
+end
+
+func video_trampa_probar()
+    dwv_trampa_probar()
 end
 
 # Las tareas hijas de Dash y de MintVID que siguen vivas, con su estado (diagnóstico de la tarea 66)

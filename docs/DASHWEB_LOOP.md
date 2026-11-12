@@ -7403,6 +7403,13 @@ Formato:
   _dash_exit(20), que libera mucho, y vuelta al shell) con el aviso perdido. Pedido a freememlang-40 que el aviso del
   trap se escriba sin búfer o a un fichero. El arranque de Coffin (arranque_*.txt en Traspaso:): C:MCP, C:StackAttack
   (dos veces; seguramente la marca ba d1 ba d3 de la pila), SaferPatches, ReqAttack en WBStartup; nada que mate tareas.
+- freememlang-40 encontró por qué no sale el aviso: en ./dash el manejador de excepciones se ponía antes del StackSwap,
+  y la pila de rescate era la del shell (4 KB con Run). El aviso y la limpieza la desbordaban: colgado gastando CPU, sin
+  salida y sin devolver la memoria (arreglo en su rama local trampa-pila; fusionarlo, con el visto bueno del usuario).
+  Mientras, Tachyon con TRAZA=fichero pone su trampa delante de la de Dash (dwv_trampa_main, dashweb_video.c): con una
+  excepción de la CPU apunta en la traza y en la salida (Write, sin búfer) el número, el PC con su hunk y desplazamiento
+  y el marco, y deja Tachyon parado. TRAMPAPROBAR (argumento) ejecuta una instrucción ilegal para probarla: en FS-UAE,
+  "TRAMPA: excepción 4 en PC 4026de88 (hunk 0 + $242258)". Tomas: repetir_trampamain.sh.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

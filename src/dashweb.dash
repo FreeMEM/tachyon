@@ -2886,8 +2886,12 @@ Main
                 traza_activa = true
                 traza_t0 = time_ms()
                 traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
+                video_trampa_poner(arg(i)[6:])
                 traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
                 video_pila_pintar()
+            elif arg(i) == "TRAMPAPROBAR"
+                # (diagnóstico de la tarea 66: una instrucción ilegal, para ver la trampa de TRAZA=fichero)
+                video_trampa_probar()
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
             elif str_starts(arg(i), "JSMINIMA=")
@@ -3292,6 +3296,7 @@ Main
         if dw_pantalla != ""
             screen_close()
         end
+        video_trampa_quitar()
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"
         end

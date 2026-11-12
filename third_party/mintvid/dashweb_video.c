@@ -20,6 +20,7 @@ typedef struct mr_audio mr_audio;
 #endif
 #include "dashweb_video.h"
 #include <proto/dos.h>
+#include <dos/dosextens.h>
 
 /* --- lo que no va en dashweb --- */
 const mr_codec mr_codec_mpeg2 = {0};
@@ -403,6 +404,123 @@ const char *dwv_tareas(void)
     Permit();
     sprintf(q, " [%d tareas]", total);
     return t;
+}
+
+/* La trampa de la tarea principal (tarea 66, el cierre del vídeo 2 con el JIT de Amiberry; diagnóstico, solo con
+   TRAZA=fichero): delante de la de Dash (que tras un fallo de la CPU cierra el programa y su aviso se pierde). Con una
+   excepción de la CPU (2 a 11, sin la 9), copia el número y los 32 primeros bytes del marco, quita el marco y sigue en
+   modo usuario en dwv_trampa_parada, que apunta en el fichero de la traza el número, el PC (con su hunk y
+   desplazamiento en el programa) y el marco, y deja Tachyon parado (la ventana sigue: así se ve dónde estaba). Las
+   demás excepciones van a la de antes. dwv_trampa_quitar la quita al acabar. */
+volatile unsigned long dwv_tm_marco[9];
+volatile unsigned char dwv_tm_hecho = 0;
+APTR dwv_tm_viejo = NULL;
+static char dwv_tm_fichero[256];
+void dwv_trampa_parada(void);
+extern void dwv_trampa_main(void);
+__asm__(
+"	.text\n"
+"	.even\n"
+"	.globl _dwv_trampa_main\n"
+"_dwv_trampa_main:\n"
+"	cmp.l #2,(%sp)\n"
+"	bcs 9f\n"
+"	cmp.l #11,(%sp)\n"
+"	bhi 9f\n"
+"	cmp.l #9,(%sp)\n"
+"	beq 9f\n"
+"	tst.b _dwv_tm_hecho\n"
+"	bne 9f\n"
+"	move.b #1,_dwv_tm_hecho\n"
+"	move.l %a0,-(%sp)\n"
+"	move.l %a1,-(%sp)\n"
+"	move.l %d0,-(%sp)\n"
+"	lea 12(%sp),%a0\n"
+"	lea _dwv_tm_marco,%a1\n"
+"	moveq #8,%d0\n"
+"1:	move.l (%a0)+,(%a1)+\n"
+"	dbra %d0,1b\n"
+"	lea 16(%sp),%a0\n"            /* el marco: después de d0, a1, a0 y el número */
+"	moveq #0,%d0\n"
+"	move.w 6(%a0),%d0\n"
+"	lsr.w #8,%d0\n"
+"	lsr.w #4,%d0\n"
+"	lea _dwv_tm_tam,%a1\n"
+"	move.b (%a1,%d0.w),%d0\n"
+"	and.l #0xff,%d0\n"
+"	add.l %d0,%a0\n"              /* a0: lo que había antes de la excepción */
+"	move.l (%sp)+,%d0\n"
+"	move.l (%sp)+,%a1\n"
+"	move.l %a0,-(%sp)\n"          /* (a0 viejo aún en la pila: se cambia por el destino) */
+"	move.l 4(%sp),%a0\n"
+"	move.l (%sp)+,%sp\n"          /* la pila de supervisor, sin el marco */
+"	clr.w -(%sp)\n"               /* un marco de formato 0 (68010 y siguientes) */
+"	pea _dwv_trampa_parada\n"
+"	clr.w -(%sp)\n"               /* SR: modo usuario */
+"	rte\n"
+"9:	move.l _dwv_tm_viejo,-(%sp)\n"
+"	rts\n"
+"	.data\n"
+"_dwv_tm_tam:\n"
+"	.byte 8,8,12,12,16,0,0,60,58,20,32,92,0,0,0,0\n"
+"	.text\n");
+
+static void dwv_tm_linea(const char *l)
+{
+    BPTR f = Open((CONST_STRPTR)dwv_tm_fichero, MODE_READWRITE);
+    if (!f) return;
+    Seek(f, 0, OFFSET_END);
+    Write(f, (APTR)l, strlen(l));
+    Close(f);
+}
+
+void dwv_trampa_parada(void)
+{
+    static char l[400];
+    struct Process *pr = (struct Process *)FindTask(NULL);
+    unsigned long pc = dwv_tm_marco[1] << 16 | dwv_tm_marco[2] >> 16;   /* el marco: SR (2 bytes), PC (4), ... */
+    BPTR seg = 0;
+    long n, hunk = -1;
+    unsigned long off = 0;
+    char *q;
+    int i;
+    if (pr->pr_CLI) seg = ((struct CommandLineInterface *)BADDR(pr->pr_CLI))->cli_Module;
+    if (!seg && pr->pr_SegList) seg = ((BPTR *)BADDR(pr->pr_SegList))[3];
+    for (n = 0; seg && n < 1000; n++, seg = *(BPTR *)BADDR(seg)) {
+        ULONG *p = (ULONG *)BADDR(seg), ini = (ULONG)(p + 1), fin = (ULONG)p - 4 + p[-1];
+        if (pc >= ini && pc < fin) { hunk = n; off = pc - ini; break; }
+    }
+    q = l + sprintf(l, "TRAMPA: excepción %lu en PC %08lx", dwv_tm_marco[0], pc);
+    if (hunk >= 0) q += sprintf(q, " (hunk %ld + $%lx)", hunk, off);
+    else q += sprintf(q, " (fuera del programa)");
+    q += sprintf(q, "; marco:");
+    for (i = 1; i < 9; i++) q += sprintf(q, " %08lx", dwv_tm_marco[i]);
+    sprintf(q, "\n");
+    dwv_tm_linea(l);
+    if (Output()) Write(Output(), (APTR)l, strlen(l));    /* (y a la salida, sin búfer) */
+    for (;;) Wait(0);
+}
+
+void dwv_trampa_poner(const char *fichero)
+{
+    struct Task *yo = FindTask(NULL);
+    if (dwv_tm_viejo || !fichero || !*fichero) return;
+    strncpy(dwv_tm_fichero, fichero, sizeof dwv_tm_fichero - 1);
+    dwv_tm_viejo = yo->tc_TrapCode;
+    yo->tc_TrapCode = (APTR)dwv_trampa_main;
+}
+
+/* (para probar la trampa: una instrucción ilegal) */
+void dwv_trampa_probar(void)
+{
+    __asm__ volatile ("illegal");
+}
+
+void dwv_trampa_quitar(void)
+{
+    struct Task *yo = FindTask(NULL);
+    if (dwv_tm_viejo && yo->tc_TrapCode == (APTR)dwv_trampa_main) yo->tc_TrapCode = dwv_tm_viejo;
+    dwv_tm_viejo = NULL;
 }
 
 long dwv_pila_minima(void)

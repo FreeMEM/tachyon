@@ -7394,6 +7394,15 @@ Formato:
   lento, las tomas de 25 min solo pasan ese punto unos 220 s (~6 s de JIT): el "sin JIT 0 de 8" no es concluyente.
   Siguiente: las tareas en la TRAZA con JIT (repetir_tareas.sh; antes, el arranque de Coffin a Traspaso: arranque_*.txt,
   por si hay algo que capture los gurus, idea de freememlang-40) y luego sin JIT con mucho más tiempo en el vídeo.
+- Tareas en la TRAZA (TachyonTareas, 3 de 3 caídas): las dash_task, listas o esperando y nunca TS_EXCEPT; ninguna
+  dash_dns viva al final. En las 9+3 caídas, el cierre llega entre 0 y 3,5 s después de "pide POST
+  .../youtubei/v1/feedback" (con lottie-light.js también a medias); sin JIT nunca se llegó a ese POST. En la foto de
+  justo después (c3_fin) la ventana ya no está pero Trasfondo enseña "Programs:Network/Tachyon" al 94 % de CPU; en las
+  de más tarde ya no está: tras el fallo el proceso sigue un rato y se va. salida.txt solo tiene "[CLI 11]" (ni los
+  Print normales de Tachyon). Encaja con _dash_trap_recover (una excepción de la CPU en la tarea principal: el aviso,
+  _dash_exit(20), que libera mucho, y vuelta al shell) con el aviso perdido. Pedido a freememlang-40 que el aviso del
+  trap se escriba sin búfer o a un fichero. El arranque de Coffin (arranque_*.txt en Traspaso:): C:MCP, C:StackAttack
+  (dos veces; seguramente la marca ba d1 ba d3 de la pila), SaferPatches, ReqAttack en WBStartup; nada que mate tareas.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

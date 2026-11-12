@@ -377,8 +377,8 @@ const char *dwv_pila_informe(void)
 }
 
 /* Las tareas hijas de Dash y de MintVID que siguen ahí (tarea 66; idea de freememlang-40): con Forbid, las listas
-   TaskReady y TaskWait de exec; de cada una cuyo nombre empiece por "dash_" o "MintVID", su nombre, tc_State (2 lista,
-   4 esperando; 6 TS_EXCEPT, 5 TS_REMOVED) y tc_SigWait. Una que muere con una excepción se queda parada con su aviso */
+   TaskReady y TaskWait de exec; de cada una cuyo nombre empiece por "dash_" o "MintVID", su nombre, tc_State (3
+   TS_READY, 4 TS_WAIT, 5 TS_EXCEPT, 6 TS_REMOVED) y tc_SigWait. Una que muere con una excepción se queda parada con su aviso */
 #include <exec/execbase.h>
 const char *dwv_tareas(void)
 {

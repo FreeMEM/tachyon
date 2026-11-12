@@ -64,6 +64,11 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
    igualdades y `<=`/`>=` de dos double miran los bits cuando son infinitos. testharness.js de WPT distingue 0 de -0
    con `1/x === 1/y`, y todas sus comparaciones con 0 fallaban ("expected 0 but got 0").
 
+10. `js_amiga_forma_compartida` (`quickjs.c`, tarea 66, diagnóstico): antes del `assert` de `add_property` (una forma
+    compartida sin tabla: un contador de referencias roto), cuenta por `js_amiga_decir` (si alguien lo pone; Tachyon
+    con TRAZA=fichero) la clase del objeto, la propiedad que se añade y las funciones de JavaScript de la pila, con su
+    fichero y línea.
+
 ## Problemas encontrados
 
 - Las matemáticas de doble precisión de la ROM (`mathieeedoubbas`, las que usa `-lm` de libnix) dan

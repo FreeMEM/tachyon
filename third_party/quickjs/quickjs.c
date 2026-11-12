@@ -9311,6 +9311,39 @@ JSValue JS_GetPropertyStr(JSContext *ctx, JSValueConst this_obj,
 
 /* Note: the property value is not initialized. Return NULL if memory
    error. */
+#if defined(__amigaos__)
+/* (Tachyon) quien quiere enterarse de un fallo de QuickJS antes del abort: escribe la línea sin búfer */
+void (*js_amiga_decir)(const char *) = NULL;
+static void js_amiga_forma_compartida(JSContext *ctx, JSObject *p, JSAtom prop)
+{
+    static char l[1600];
+    char nb[64], cb[64], fb[96];
+    JSStackFrame *sf;
+    int n = 0, k;
+    if (!js_amiga_decir) return;
+    n += snprintf(l + n, sizeof l - n, "QuickJS: forma compartida sin tabla (ref_count %d, %d propiedades, hash %d) al añadir '%s' a un objeto de clase %d (%s); JS:",
+                  js_rc(p->shape)->ref_count, p->shape->prop_count, p->shape->is_hashed,
+                  JS_AtomGetStr(ctx, nb, sizeof nb, prop), p->class_id,
+                  JS_AtomGetStr(ctx, cb, sizeof cb, ctx->rt->class_array[p->class_id].class_name));
+    for (sf = ctx->rt->current_stack_frame, k = 0; sf && k < 12 && n < (int)sizeof l - 200; sf = sf->prev_frame, k++) {
+        JSObject *f;
+        if (JS_VALUE_GET_TAG(sf->cur_func) != JS_TAG_OBJECT) { n += snprintf(l + n, sizeof l - n, " | ?"); continue; }
+        f = JS_VALUE_GET_OBJ(sf->cur_func);
+        if (js_class_has_bytecode(f->class_id)) {
+            JSFunctionBytecode *b = f->u.func.function_bytecode;
+            int lin = 0, col = 0;
+            if (b->has_debug) lin = find_line_num(ctx, b, sf->cur_pc - b->byte_code_buf - 1, &col);
+            n += snprintf(l + n, sizeof l - n, " | %s (%s:%d:%d)", JS_AtomGetStr(ctx, nb, sizeof nb, b->func_name),
+                          b->has_debug ? JS_AtomGetStr(ctx, fb, sizeof fb, b->debug.filename) : "?", lin, col);
+        } else {
+            n += snprintf(l + n, sizeof l - n, " | (nativa, clase %d)", f->class_id);
+        }
+    }
+    snprintf(l + n, sizeof l - n, "\n");
+    js_amiga_decir(l);
+}
+#endif
+
 static JSProperty *add_property(JSContext *ctx,
                                 JSObject *p, JSAtom prop, int prop_flags)
 {
@@ -9367,6 +9400,12 @@ static JSProperty *add_property(JSContext *ctx,
             p->shape = new_sh;
         }
     }
+#if defined(__amigaos__)
+    /* (Tachyon, tarea 66: el cierre del vídeo 2 con el JIT de Amiberry) antes del assert, qué objeto, qué propiedad
+       y desde qué JavaScript, por js_amiga_decir */
+    if (js_rc(p->shape)->ref_count != 1)
+        js_amiga_forma_compartida(ctx, p, prop);
+#endif
     assert(js_rc(p->shape)->ref_count == 1);
     if (add_shape_property(ctx, &p->shape, p, prop, prop_flags))
         return NULL;

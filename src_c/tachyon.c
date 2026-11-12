@@ -42,9 +42,12 @@ static void _traza_c_linea(const char *t) {
     Write(f, (APTR)t, strlen(t));
     Close(f);
 }
+extern void (*js_amiga_decir)(const char *);
+static void _js_decir(const char *t);
 void tachyon_traza_c(const char *fichero) {
     if (!fichero || _traza_c[0]) return;
     strncpy(_traza_c, fichero, sizeof _traza_c - 1);
+    js_amiga_decir = _js_decir;      /* (QuickJS: qué objeto y qué JavaScript antes de un assert de las formas) */
 }
 static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); _traza_c_linea(t); }
 /* a la salida y al registro */

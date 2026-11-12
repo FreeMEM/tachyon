@@ -7427,6 +7427,14 @@ Formato:
   por el final normal: la tarea se va a media faena. TachyonTrampa2 acabó 2 de 9 y TachyonRelleno40 2 de 3. Siguiente:
   el abort() y el __assert_func del C (src_c/tachyon.c; QuickJS sin NDEBUG, 62 abort()) escriben también en el
   fichero de la traza (tachyon_traza_c): TachyonSalida2.
+- ¡Cazado! (freememlang-40, 9 tomas a la vez de TachyonSalida2): 3 caídas, las tres con "dashweb: assert de QuickJS:
+  js_rc(p->shape)->ref_count == 1 (quickjs.c, 9370)" y "dashweb: abort". Es add_property: el objeto tiene una forma
+  compartida que no está en la tabla de formas, cosa que solo pasa con un contador de referencias roto (un
+  JS_FreeValue de más o un Dup de menos: el objeto o su forma se liberan antes de tiempo). Encaja con el POST de
+  feedback (fetch con respuesta 400). Y un segundo fallo, de Dash: tras el abort la limpieza se cuelga con la CPU al
+  94 % (freememlang-40 lo mira: un segundo _dash_quit desde la limpieza). Sin JIT no se llegaba a ese punto.
+  Ahora QuickJS (cambio 10 de docs/quickjs_amiga.md) cuenta antes del assert la clase del objeto, la propiedad y la
+  pila de JavaScript con fichero y línea: TachyonForma (Acid3 100/100).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

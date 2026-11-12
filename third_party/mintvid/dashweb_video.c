@@ -290,6 +290,12 @@ long dwv_abrir(const char *fichero)
 #ifndef DWV_SIN_SONIDO
     {
         const mr_audio_info *ai = mr_demux_audio(v->dx);
+#ifdef DWV_NO_ABRIR
+        /* (diagnóstico: el código del decodificador está enlazado pero no se abre; dwv_no_abrir es volatile para que
+           el compilador no lo quite) */
+        static volatile int dwv_no_abrir = 1;
+        if (dwv_no_abrir) ai = NULL;
+#endif
         if (ai && ai->valid) {
             v->ad = mr_audio_decoder_open(ai, 0, 0);
 #ifndef DWV_SOLO_DECODIFICAR

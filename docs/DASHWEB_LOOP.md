@@ -7347,3 +7347,8 @@ Formato:
   compilado con -m68020-60 tampoco usa mul/div de 64 bits (gcc los pasa a funciones). Siguiente: -DDWV_SOLO_ABRIR (con
   -DDWV_SOLO_DECODIFICAR: el decodificador se abre pero los paquetes de sonido se tiran sin decodificar), para saber si
   basta con abrirlo o es la decodificación: ~/.cache/video-tachyon/ensayos/repetir_abrir.sh.
+- Con -DDWV_SOLO_ABRIR (decodificador abierto, ningún paquete decodificado, sin Paula) se caen 4 de 6 (1, 4, 5, 6).
+  Decodificar no hace falta. Lo único distinto de -DDWV_SIN_SONIDO (0 de 6) es mr_audio_decoder_open (sus calloc)
+  y unos pocos KB de código (el binario sin sonido solo es 4 KB más pequeño). Siguiente: -DDWV_NO_ABRIR (con los dos
+  anteriores: el decodificador se enlaza pero no se abre; ai = NULL tras un volatile), para separar el abrir de dónde
+  cae el código: ~/.cache/video-tachyon/ensayos/repetir_noabrir.sh.

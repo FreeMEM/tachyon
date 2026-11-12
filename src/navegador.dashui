@@ -496,6 +496,17 @@
                 "tr": {
                   "help": 44
                 }
+              },
+              {
+                "type": "button",
+                "name": "pest_cerrar",
+                "label": "x",
+                "event": 50,
+                "weight": 0,
+                "help": "Close tab",
+                "tr": {
+                  "help": 46
+                }
               }
             ]
           },

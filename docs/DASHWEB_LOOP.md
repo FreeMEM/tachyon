@@ -7563,3 +7563,9 @@ Formato:
 - test_maqueta* 35/35, Acid2 2/2, test_texto* 5/5, Acid3 100/100. El usuario: que lo vigilen los reftests de WPT
   (normal-flow y tables, antes y después: tras la versión).
 
+### 2026-11-13 — Un botón para cerrar la pestaña
+- El usuario (por la sesión Tachyon2): "cuando abro una pestaña no tengo luego forma de cerrarla". Amiga-W y el menú
+  Proyecto > "Close tab" sí la cierran (visto en sys32rtg38, MUI 3.8), pero en la barra de pestañas solo había un "+".
+  Ahora, al lado, una "x" (pest_cerrar, evento 50, ayuda "Close tab", texto 46 de los catálogos): probado en
+  sys32rtg38, con dos pestañas el clic en la x deja una.
+

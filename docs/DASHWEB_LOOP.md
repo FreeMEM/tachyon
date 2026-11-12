@@ -7370,3 +7370,7 @@ Formato:
   ("pila 1024 KB"), llena la libre con un patrón (dwv_pila_pintar, third_party/mintvid/dashweb_video.c) y cada 10 s,
   si ha bajado, "pila: lo menos libre ha sido N KB de 1024 KB" (videos_pila_traza, desde el bucle de eventos).
   gh_repo.html en FS-UAE: 970 KB libres como mínimo. Tomas: ~/.cache/video-tachyon/ensayos/repetir_pila.sh.
+- (70) Amiga+V con el teclado en la barra con MUI 3.8: hecho en Dash (main 15998eb, PR #159; mui_string y mui_combo
+  llevan solos el gancho de edición con MUI 3.8: Ctrl/Amiga + V pega, C copia, X corta). Tachyon solo se recompila: en
+  sys32rtg38 la barra pega "Hola mundo" donde está el cursor (antes metía una "v"); test_formularios_pegar pasa.
+  La tarea 70 queda hecha.

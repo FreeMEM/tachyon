@@ -7504,6 +7504,20 @@ Formato:
 - El fallo de QuickJS ya estaba avisado arriba (bellard/quickjs #533, otra persona) y Fabrice Bellard lo arregló el
   2026-11-02 con el mismo cambio (el Dup dentro de build_backtrace); nuestra copia es la 2026-06-04. No se abre otro
   aviso. El usuario pidió explicarlo en el grupo: texto pasado a la sesión telegram (con su visto bueno).
+- (66) La 1.ª toma en inglés salió entera (458 s; el vídeo de YouTube se ve y suena), pero no vale: la consola de
+  Inspeccionar enseña decenas de "InternalError: out of memory" en rojo (de YouTube), el .lha era el 2.8.7 que ya no
+  está (página de error) y www.amigaworld.net da "hostname mismatch" (su certificado solo vale para amigaworld.net:
+  Tachyon hace bien). Guion: el .lha que haya en Traspaso: y https://amigaworld.net.
+- Los "out of memory" con 57 MB libres: la memoria del Amiga troceada (el mayor bloque seguido, ~500-800 KB) y el pool
+  de QuickJS pide charcos de 512 KB. Ahora cada motor lleva dos pools (_jm_pool_crear): el de siempre y, si un charco
+  nuevo ya no cabe, otro de charcos de 64 KB; el bit alto del tamaño de la cabecera dice de cuál es cada bloque. Se
+  quita el diagnóstico TACHYON_JS_SIN_CHARCOS. Acid3 100/100.
+- La 2.ª toma en inglés: amigaworld.net ya se ve (con una noticia de Tachyon), pero su consola, llena de "out of
+  memory". Con TRAZA=fichero, _jm_fallo dice por qué falla cada petición a QuickJS (tope, reserva o pool), y en
+  e7aw.py (YouTube y luego amigaworld en la misma ventana) salía siempre "tope": lleva 91116053 de 91116755, con
+  55 MB libres y un bloque de 23 MB. El tope que sube (b750a01) salía impar (malloc_size + n + 2 MB) y un tope impar
+  es uno fijo de js_limite: ya no subía más. Ahora se redondea a par. (Y los dos pools no hacían falta para esto, pero
+  se quedan: con la memoria troceada ayudan.)
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

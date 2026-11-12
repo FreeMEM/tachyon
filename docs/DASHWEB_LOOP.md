@@ -7486,6 +7486,14 @@ Formato:
   (freememlang-40, con el usuario): vaciar Output() al salir y no esperar sin fin a las tareas tras un abort. La
   tarea 66 (el vídeo 2) puede seguir: la toma ya no se cae. Pendiente decidir con el usuario si se avisa a
   bellard/quickjs del fallo.
+- Mis tomas con TachyonArreglo: 8 de 8 sin caerse (con 0 a 44 "otra excepción (out of memory)" por toma).
+- El "out of memory" del motor de YouTube: el tope de QuickJS (dos tercios de la memoria libre al crear el motor) se
+  alcanzaba con 40-55 MB aún libres. Ahora _jm_cabe (src_c/tachyon.c) lo sube lo justo si, tras darle el bloque, quedan
+  más de 32 MB libres (por encima de los 24 MB de dw_js_minima con los que se suelta el JavaScript), hasta
+  JS_MEMORIA_MAX (256 MB). Un tope puesto con js_limite (impar) no se mueve: test_js sigue saltando. TachyonTope, 9
+  tomas con búsqueda y clic: 0 caídas y menos avisos (0 a 9 por toma, una con 61). Lo que queda es fragmentación: con
+  26-46 MB libres, el mayor bloque seguido rondaba los 800 KB.
+- Tests test_js* 57/57 (10 de jsdom se pasaron de tiempo con tres Amiberry en marcha; repetidos uno a uno, pasan).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

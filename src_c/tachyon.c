@@ -79,7 +79,7 @@ static size_t _js_memoria_tope(void) {
     ULONG libre = AvailMem(MEMF_ANY), tope = libre / 3 * 2;
     if (tope < (ULONG)JS_MEMORIA) tope = JS_MEMORIA;
     if (tope > (ULONG)JS_MEMORIA_MAX) tope = JS_MEMORIA_MAX;
-    return (size_t)tope;
+    return (size_t)tope & ~(size_t)1;
 }
 static size_t _js_pila_tope(void) {
     struct Task *yo = FindTask(NULL);
@@ -310,9 +310,26 @@ static int _jm_hay(size_t n) {
 #define _jm_sano(pool) ((void)0)
 #endif
 static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const char *)p - _JM_CABECERA))[0] : 0; }
+/* El tope de QuickJS se fija al crear el motor (dos tercios de la memoria libre). Con YouTube, al navegar dentro de
+   la página (el mismo motor que cargó la búsqueda), se llegaba al tope con 55 MB aún libres y saltaban decenas de
+   "out of memory" (tarea 66). Si al llegar al tope queda bastante memoria (más de 32 MB tras darle n: por encima de
+   los 24 MB con los que dashweb suelta el JavaScript de la página, dw_js_minima), el tope sube lo justo, sin pasar
+   de JS_MEMORIA_MAX. */
+#define _JM_HOLGURA (32UL * 1024 * 1024)
+static int _jm_cabe(JSMallocState *s, size_t n) {
+    ULONG libre;
+    if (s->malloc_size + n <= s->malloc_limit) return 1;
+    /* (un tope impar es de js_limite, puesto a mano: ese no se mueve; los de _js_memoria_tope son pares) */
+    if ((s->malloc_limit & 1) || s->malloc_size + n > JS_MEMORIA_MAX) return 0;
+    libre = AvailMem(MEMF_ANY);
+    if (libre < _JM_HOLGURA + n) return 0;
+    s->malloc_limit = s->malloc_size + n + 2UL * 1024 * 1024;
+    if (s->malloc_limit > JS_MEMORIA_MAX) s->malloc_limit = JS_MEMORIA_MAX;
+    return 1;
+}
 static void *_jm_malloc(JSMallocState *s, size_t n) {
     size_t *p;
-    if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
+    if (!_jm_cabe(s, n) || !_jm_hay(n)) return NULL;
     p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     _jm_sano((APTR)s->opaque);
@@ -332,7 +349,7 @@ static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     if (!q) return n ? _jm_malloc(s, n) : NULL;
     if (!n) { _jm_free(s, q); return NULL; }
     antes = _jm_tamano(q);
-    if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
+    if (n > antes && (!_jm_cabe(s, n - antes) || !_jm_hay(n - antes))) return NULL;
     p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
     if (!p) return NULL;
     _jm_sano((APTR)s->opaque);
@@ -874,7 +891,7 @@ LONG js_memoria(LONG js)
 void js_limite(LONG js, LONG bytes)
 {
     _JsMotor *m = (_JsMotor *)js;
-    if (m) JS_SetMemoryLimit(m->rt, (size_t)bytes);
+    if (m) JS_SetMemoryLimit(m->rt, (size_t)bytes | 1);   /* (impar: fijo, _jm_cabe no lo sube) */
 }
 STRPTR js_error(LONG js)
 {

@@ -614,6 +614,15 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
+      esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
+      marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31
+      (amigaworld.net, aminet.net, amiga.abime.net, ami64.com, amigastore.eu, amigang.com) y otras muy visitadas
+      (amiga-news.de, eab.abime.net, amigans.net, lemonamiga.com, amigafuture.de, a1k.org), y arreglar lo que se vea mal.
+      (a) hecha: ver la bitácora del 2026-11-12.
+- [ ] 72. **Publicar la próxima versión (usuario, 2026-11-12: "si ya está corregido lo de YouTube y no se queda colgado
+      lanza la release si ya se puede").** Con lo de siempre antes (memoria publicar-versiones): batería entera,
+      paquete, actualización de verdad desde la 0.9.5 publicada, humo con MUI 3.8; las Gracias en la web.
 - [ ] 69. **Con JIT (Emu68 en PiStorm, Amiberry) Tachyon se cuelga, se cae o pisa memoria; sin JIT no (registros de
       la 0.9.5 por la sesión telegram, 2026-11-11).** David Martínez (A600 con PiStorm, 68040, OS 3.2, #1131-#1140): ya
       llegan todos los ficheros ("recursos listos: scripts") y se queda con la CPU a tope sin apuntar ni el primer
@@ -7535,3 +7544,22 @@ Formato:
 - En XML, una entidad sin definir (&times; de HTML) está mal formada: el documento de error <parsererror>
   (xmlTexto, lib/jsdom_preludio.js): DOMParser-xml-character-entities 8/8.
 - Acid3 100/100; tests de jsdom 46/46 (los que se pasaron de tiempo con el emulador cargado, repetidos solos).
+
+### 2026-11-12 — Tarea 71a: amigaworld.net, la columna de la derecha cuadrada
+- Copia local (tests/pages/zz_amigaworld.html y .css, sin sus imágenes; no se sube: es de terceros) y una prueba propia
+  (tests/pages/tabla_columna_minima.html). Cuatro cosas de las tablas y del texto (lib/maqueta.dash):
+  1. Cada celda se maqueta al ancho de su columna aunque su width diga otra cosa (_celda_maquetar, también al
+     recolocarla por vertical-align): con width=20% se maquetaba al 20 % de la tabla y sus tablas al 100 % se quedaban
+     estrechas aunque la columna hubiera crecido.
+  2. Al medir lo mínimo o lo máximo de un contenido (sitio de mentira de 1 o FLEX_GRANDE), un width en % es auto: una
+     tabla con width=100% medía 1 y su columna no crecía. Y cuentan los fondos de tablas y celdas, que ya están a su
+     ancho (su relleno y border-spacing de la derecha no contaban: la de Aminet se salía 27 px).
+  3. Las columnas con width en % ceden hasta lo mínimo de su contenido solo si los mínimos no caben.
+  4. Las palabras se pueden partir tras "/", "?" y un "-" entre letras (UAX #14, como Chrome): las direcciones de
+     Aminet y OS4 Depot no ensanchaban tanto la columna. Una pieza con 2 en blancos: sin espacio, cortable.
+- Comparada con Chrome al mismo ancho (tools/comparar_chrome.py --solo-chrome con la copia): Chrome también deja ancha
+  la columna de la derecha (~395 de 940; Tachyon 350), por las direcciones completas de "OS4 Depot Latest Files".
+  Reparto: Tachyon 204/389/350, Chrome ~175/345/395. La letra de Tachyon sale más grande.
+- test_maqueta* 35/35, Acid2 2/2, test_texto* 5/5, Acid3 100/100. El usuario: que lo vigilen los reftests de WPT
+  (normal-flow y tables, antes y después: tras la versión).
+

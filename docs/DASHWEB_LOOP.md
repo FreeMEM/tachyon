@@ -7410,6 +7410,11 @@ Formato:
   excepción de la CPU apunta en la traza y en la salida (Write, sin búfer) el número, el PC con su hunk y desplazamiento
   y el marco, y deja Tachyon parado. TRAMPAPROBAR (argumento) ejecuta una instrucción ilegal para probarla: en FS-UAE,
   "TRAMPA: excepción 4 en PC 4026de88 (hunk 0 + $242258)". Tomas: repetir_trampamain.sh.
+- Con la trampa y el Dash de antes (Ctrl-C ya dentro): 1 de 2 se cae y la trampa no salta (ni TRAMPA ni aviso). Con
+  el Dash de main 0f87633 (3921eb1: el manejador de excepciones tras el StackSwap, la pila de rescate la de @stack y
+  el aviso con Flush; freememlang-40, con el visto bueno del usuario) y la trampa: 0 de 3, las tres pasan el POST de
+  feedback y siguen 100 s más. Parece que 3921eb1 lo arregla. La trampa ahora recoge también las excepciones de la
+  FPU y las demás (no la 9 ni TRAP #n). Para confirmarlo, 6 tomas más: repetir_trampa2.sh (TachyonTrampa2).
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

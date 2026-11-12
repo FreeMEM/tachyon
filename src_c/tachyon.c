@@ -30,7 +30,23 @@ static void _registro(const char *t) {
         if (_reg_fin == _REG_TAM) { _reg_fin = 0; _reg_lleno = 1; }
     }
 }
-static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); }
+/* (diagnóstico del cierre del vídeo 2, tarea 66) con TRAZA=fichero, lo que dice _js_decir (los abort y assert del C)
+   va también a ese fichero (abriéndolo y cerrándolo: queda escrito aunque el programa no acabe bien) */
+static char _traza_c[256];
+static void _traza_c_linea(const char *t) {
+    BPTR f;
+    if (!_traza_c[0]) return;
+    f = Open((CONST_STRPTR)_traza_c, MODE_READWRITE);
+    if (!f) return;
+    Seek(f, 0, OFFSET_END);
+    Write(f, (APTR)t, strlen(t));
+    Close(f);
+}
+void tachyon_traza_c(const char *fichero) {
+    if (!fichero || _traza_c[0]) return;
+    strncpy(_traza_c, fichero, sizeof _traza_c - 1);
+}
+static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); _traza_c_linea(t); }
 /* a la salida y al registro */
 static void _js_poner(const char *t) { PutStr((CONST_STRPTR)t); _registro(t); }
 __stdargs void __assert_func(const char *f, int l, const char *fn, const char *e) {

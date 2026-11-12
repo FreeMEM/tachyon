@@ -17,6 +17,8 @@ const LZ_GRANDE = 90000
 
 
 # El lienzo de un elemento <canvas> (0 si su JavaScript no pidió getContext("2d"))
+# (diagnóstico de la tarea 66) con TRAZA=fichero, los abort, assert y exit() del C también a ese fichero
+@extern("lienzo") func tachyon_traza_c(fichero: String)
 @extern("lienzo") func lienzo_de(n: Nodo) -> Int
 
 @extern("lienzo") func lienzo_rgb(l: Int) -> Int

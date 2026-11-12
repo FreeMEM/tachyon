@@ -2887,6 +2887,7 @@ Main
                 traza_t0 = time_ms()
                 traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
                 video_trampa_poner(arg(i)[6:])
+                tachyon_traza_c(arg(i)[6:])
                 traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
                 video_pila_pintar()
             elif arg(i) == "TRAMPAPROBAR"

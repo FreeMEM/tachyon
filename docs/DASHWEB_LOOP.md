@@ -7460,6 +7460,12 @@ Formato:
   JS_FreeValue deja una cuenta negativa. Una de las dos se cayó sin llegar a abrir el vídeo (en la página de la
   búsqueda, tras varios clics). Lo de las formas no pasa por JS_FreeValue (js_free_shape lleva su propia cuenta), así
   que no se descarta del todo, pero refuerza lo de la memoria pisada.
+- TachyonSinCharcos (QuickJS con AllocVec y FreeVec) también se cae, con la misma firma exacta: no es el pool de exec.
+  Y los números basura son idénticos en todas las caídas, con pool y sin él: no es memoria reutilizada al azar; p
+  apunta siempre a la misma clase de estructura. Ideas: un JSValue con etiqueta de objeto que no lo es (NaN-boxing de
+  32 bits; freememlang-40: el NaN de x86 del JIT de la FPU, 0xFFF80000..., aunque __JS_NewFloat64 ya canoniza), o un
+  objeto ya liberado. TachyonBytes: el aviso vuelca 48 bytes del objeto y 48 de su forma, con sus direcciones.
+  freememlang-40 prueba el Tachyon normal con compfpu=false en el escenario de búsqueda y clic.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

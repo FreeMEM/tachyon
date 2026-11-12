@@ -9362,7 +9362,18 @@ static void js_amiga_forma_compartida(JSContext *ctx, JSObject *p, JSAtom prop)
                   js_rc(p->shape)->ref_count, p->shape->prop_count, p->shape->is_hashed,
                   JS_AtomGetStr(ctx, nb, sizeof nb, prop), p->class_id,
                   JS_AtomGetStr(ctx, cb, sizeof cb, ctx->rt->class_array[p->class_id].class_name));
-    for (sf = ctx->rt->current_stack_frame, k = 0; sf && k < 12 && n < (int)sizeof l - 200; sf = sf->prev_frame, k++) {
+    /* (los bytes del objeto y de su forma, para saber qué hay ahí de verdad) */
+    {
+        const unsigned char *b = (const unsigned char *)p;
+        int i;
+        n += snprintf(l + n, sizeof l - n, " objeto %p:", (void *)p);
+        for (i = 0; i < 48; i++) n += snprintf(l + n, sizeof l - n, "%s%02x", i % 4 ? "" : " ", b[i]);
+        b = (const unsigned char *)p->shape;
+        n += snprintf(l + n, sizeof l - n, "; forma %p:", (void *)p->shape);
+        for (i = 0; i < 48; i++) n += snprintf(l + n, sizeof l - n, "%s%02x", i % 4 ? "" : " ", b[i]);
+        n += snprintf(l + n, sizeof l - n, ";");
+    }
+    for (sf = ctx->rt->current_stack_frame, k = 0; sf && k < 6 && n < (int)sizeof l - 200; sf = sf->prev_frame, k++) {
         JSObject *f;
         if (JS_VALUE_GET_TAG(sf->cur_func) != JS_TAG_OBJECT) { n += snprintf(l + n, sizeof l - n, " | ?"); continue; }
         f = JS_VALUE_GET_OBJ(sf->cur_func);

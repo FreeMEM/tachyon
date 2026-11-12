@@ -20839,7 +20839,29 @@ static JSValue JS_CallInternal(JSContext *caller_ctx, JSValueConst func_obj,
            before if the exception happens in a bytecode
            operation */
         sf->cur_pc = pc;
+#if defined(__amigaos__)
+        {
+            /* (Tachyon, tarea 66) con su propia referencia: si dentro de build_backtrace salta otra excepción (sin
+               memoria, por ejemplo), JS_Throw suelta la que había y build_backtrace seguía escribiendo en un Error
+               ya liberado (el "assert js_rc(p->shape)->ref_count == 1" de add_property con YouTube) */
+            JSValue ex = JS_DupValue(ctx, rt->current_exception);
+            build_backtrace(ctx, ex, NULL, 0, 0, 0);
+            if (rt->current_exception != ex && js_amiga_decir) {
+                /* (diagnóstico: que se vea cuándo pasa; antes, aquí se rompía) */
+                char b[200], m[120];
+                const char *t = "?";
+                if (JS_IsObject(rt->current_exception)) {
+                    const char *c = get_prop_string(ctx, rt->current_exception, JS_ATOM_message);
+                    if (c) { snprintf(m, sizeof m, "%s", c); JS_FreeCString(ctx, c); t = m; }
+                }
+                snprintf(b, sizeof b, "QuickJS: otra excepción (%s) mientras se ponía la pila a la de antes\n", t);
+                js_amiga_decir(b);
+            }
+            JS_FreeValue(ctx, ex);
+        }
+#else
         build_backtrace(ctx, rt->current_exception, NULL, 0, 0, 0);
+#endif
     }
     if (!rt->current_exception_is_uncatchable) {
         while (sp > stack_buf) {
@@ -22515,8 +22537,17 @@ static int js_parse_error_v(JSParseState *s, const uint8_t *ptr, const char *fmt
     int line_num, col_num;
     line_num = get_line_col(&col_num, s->buf_start, ptr - s->buf_start);
     JS_ThrowError2(ctx, JS_SYNTAX_ERROR, fmt, ap, FALSE);
+#if defined(__amigaos__)
+    {
+        /* (Tachyon, tarea 66: lo mismo que en la excepción del intérprete) */
+        JSValue ex = JS_DupValue(ctx, ctx->rt->current_exception);
+        build_backtrace(ctx, ex, s->filename, line_num + 1, col_num + 1, 0);
+        JS_FreeValue(ctx, ex);
+    }
+#else
     build_backtrace(ctx, ctx->rt->current_exception, s->filename,
                     line_num + 1, col_num + 1, 0);
+#endif
     return -1;
 }
 

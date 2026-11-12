@@ -7472,6 +7472,13 @@ Formato:
   búsqueda y clic): 5 de 9 caídas con la misma firma; el JIT de la FPU y el NaN quedan descartados. Siguiente:
   TachyonLiberados, QuickJS apunta en un anillo los 64 últimos Error que libera (dirección, fase del recolector,
   pila de JS) y el aviso dice si el roto está ahí y desde dónde se liberó.
+- TachyonLiberados (1 mía + 5 de freememlang-40): siempre "LIBERADO ANTES (fase 1, 0 Error liberados después)": un
+  decref normal (free_zero_refcount pone la fase 1), justo el último Error liberado, en la misma función de JS donde
+  luego se le añade 'stack' (las líneas son comienzos de función del código de YouTube: la excepción salta al entrar).
+  Lectura: en la etiqueta exception: del intérprete, build_backtrace(ctx, rt->current_exception) no tiene referencia
+  propia; si dentro salta otra excepción (sin memoria: JS_AtomToCString, JS_NewString...), JS_Throw suelta la
+  pendiente y build_backtrace sigue con ella. Arreglo (cambio 12 de docs/quickjs_amiga.md): Dup y Free alrededor, y
+  un aviso "otra excepción (...) mientras se ponía la pila" para confirmarlo. TachyonArreglo, Acid3 100/100.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

@@ -73,6 +73,14 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
     miran si la cuenta queda por debajo de 0 (un valor liberado más veces de las que se tomó). Entonces no lo liberan
     otra vez y lo cuentan por `js_amiga_decir` con la pila de JavaScript (las tres primeras veces).
 
+12. La pila de una excepción pendiente (`quickjs.c`, la etiqueta `exception:` del intérprete y `js_parse_error_v`,
+    tarea 66): `build_backtrace(ctx, rt->current_exception, ...)` se llamaba sin referencia propia. Si dentro salta
+    otra excepción (sin memoria, por ejemplo), `JS_Throw` suelta la que había y `build_backtrace` seguía escribiendo
+    'stack' en un Error ya liberado: el `assert(js_rc(p->shape)->ref_count == 1)` de `add_property` que cerraba
+    Tachyon en YouTube. Ahora con `JS_DupValue` y `JS_FreeValue` alrededor; si pasa, lo cuenta por `js_amiga_decir`.
+    Diagnóstico de la misma tarea: `js_amiga_liberados` (los últimos Error que libera `free_object`, con la pila de JS)
+    y el volcado de bytes en `js_amiga_forma_compartida`.
+
 ## Problemas encontrados
 
 - Las matemáticas de doble precisión de la ROM (`mathieeedoubbas`, las que usa `-lm` de libnix) dan

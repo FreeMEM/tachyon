@@ -408,7 +408,7 @@ const char *dwv_tareas(void)
 
 /* La trampa de la tarea principal (tarea 66, el cierre del vídeo 2 con el JIT de Amiberry; diagnóstico, solo con
    TRAZA=fichero): delante de la de Dash (que tras un fallo de la CPU cierra el programa y su aviso se pierde). Con una
-   excepción de la CPU (2 a 11, sin la 9), copia el número y los 32 primeros bytes del marco, quita el marco y sigue en
+   excepción de la CPU (todas menos la 9, traza, y las 32 a 47, TRAP #n: también las de la FPU, 48 a 55), copia el número y los 32 primeros bytes del marco, quita el marco y sigue en
    modo usuario en dwv_trampa_parada, que apunta en el fichero de la traza el número, el PC (con su hunk y
    desplazamiento en el programa) y el marco, y deja Tachyon parado (la ventana sigue: así se ve dónde estaba). Las
    demás excepciones van a la de antes. dwv_trampa_quitar la quita al acabar. */
@@ -425,11 +425,13 @@ __asm__(
 "_dwv_trampa_main:\n"
 "	cmp.l #2,(%sp)\n"
 "	bcs 9f\n"
-"	cmp.l #11,(%sp)\n"
-"	bhi 9f\n"
 "	cmp.l #9,(%sp)\n"
 "	beq 9f\n"
-"	tst.b _dwv_tm_hecho\n"
+"	cmp.l #32,(%sp)\n"
+"	bcs 8f\n"
+"	cmp.l #47,(%sp)\n"
+"	bls 9f\n"
+"8:	tst.b _dwv_tm_hecho\n"
 "	bne 9f\n"
 "	move.b #1,_dwv_tm_hecho\n"
 "	move.l %a0,-(%sp)\n"

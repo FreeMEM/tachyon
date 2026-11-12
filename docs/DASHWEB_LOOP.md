@@ -7466,6 +7466,12 @@ Formato:
   32 bits; freememlang-40: el NaN de x86 del JIT de la FPU, 0xFFF80000..., aunque __JS_NewFloat64 ya canoniza), o un
   objeto ya liberado. TachyonBytes: el aviso vuelca 48 bytes del objeto y 48 de su forma, con sus direcciones.
   freememlang-40 prueba el Tachyon normal con compfpu=false en el escenario de búsqueda y clic.
+- ¡El objeto es un JSObject ya liberado! TachyonBytes: p->shape == NULL (la "forma" leída era la dirección 0:
+  400008bc es ExecBase en $4, y 00f80bc2... los vectores de la ROM: por eso los números basura eran siempre iguales).
+  free_object deja p->shape = NULL: se añade 'stack' a un Error que QuickJS ya soltó. compfpu=false (freememlang-40,
+  búsqueda y clic): 5 de 9 caídas con la misma firma; el JIT de la FPU y el NaN quedan descartados. Siguiente:
+  TachyonLiberados, QuickJS apunta en un anillo los 64 últimos Error que libera (dirección, fase del recolector,
+  pila de JS) y el aviso dice si el roto está ahí y desde dónde se liberó.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

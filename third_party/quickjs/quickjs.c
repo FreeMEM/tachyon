@@ -6376,6 +6376,45 @@ static void js_for_in_iterator_mark(JSRuntime *rt, JSValueConst val,
     JS_MarkValue(rt, it->obj, mark_func);
 }
 
+#if defined(__amigaos__)
+/* (Tachyon, tarea 66) los últimos Error liberados: dirección, fase del recolector y la pila de JavaScript de ese
+   momento; js_amiga_forma_compartida busca ahí el objeto roto */
+static int find_line_num(JSContext *ctx, JSFunctionBytecode *b, uint32_t pc_value, int *pcol_num);
+#define JS_AMIGA_LIBERADOS 64
+static struct { void *p; int fase; char donde[160]; } js_amiga_liberados[JS_AMIGA_LIBERADOS];
+static int js_amiga_liberados_n = 0;
+static void js_amiga_apuntar_liberado(JSRuntime *rt, JSObject *p)
+{
+    JSStackFrame *sf;
+    char nb[48], fb[64], *q;
+    int k, i = js_amiga_liberados_n++ % JS_AMIGA_LIBERADOS;
+    size_t r;
+    js_amiga_liberados[i].p = p;
+    js_amiga_liberados[i].fase = rt->gc_phase;
+    q = js_amiga_liberados[i].donde;
+    r = sizeof js_amiga_liberados[i].donde;
+    q[0] = 0;
+    for (sf = rt->current_stack_frame, k = 0; sf && k < 3 && r > 40; sf = sf->prev_frame, k++) {
+        JSObject *f;
+        int w;
+        if (JS_VALUE_GET_TAG(sf->cur_func) != JS_TAG_OBJECT) continue;
+        f = JS_VALUE_GET_OBJ(sf->cur_func);
+        if (js_class_has_bytecode(f->class_id)) {
+            JSFunctionBytecode *b = f->u.func.function_bytecode;
+            int lin = 0, col = 0;
+            const char *fn = b->has_debug ? JS_AtomGetStrRT(rt, fb, sizeof fb, b->debug.filename) : "?";
+            const char *barra = strrchr(fn, '/');
+            if (b->has_debug) lin = find_line_num(NULL, b, sf->cur_pc - b->byte_code_buf - 1, &col);
+            w = snprintf(q, r, " %s(%s:%d)", JS_AtomGetStrRT(rt, nb, sizeof nb, b->func_name), barra ? barra + 1 : fn, lin);
+        } else {
+            w = snprintf(q, r, " nativa");
+        }
+        if (w < 0 || (size_t)w >= r) break;
+        q += w; r -= w;
+    }
+}
+#endif
+
 static void free_object(JSRuntime *rt, JSObject *p)
 {
     int i;
@@ -6383,6 +6422,9 @@ static void free_object(JSRuntime *rt, JSObject *p)
     JSShape *sh;
     JSShapeProperty *pr;
 
+#if defined(__amigaos__)
+    if (p->class_id == JS_CLASS_ERROR) js_amiga_apuntar_liberado(rt, p);
+#endif
     p->free_mark = 1; /* used to tell the object is invalid when
                          freeing cycles */
     /* free all the fields */
@@ -9362,6 +9404,19 @@ static void js_amiga_forma_compartida(JSContext *ctx, JSObject *p, JSAtom prop)
                   js_rc(p->shape)->ref_count, p->shape->prop_count, p->shape->is_hashed,
                   JS_AtomGetStr(ctx, nb, sizeof nb, prop), p->class_id,
                   JS_AtomGetStr(ctx, cb, sizeof cb, ctx->rt->class_array[p->class_id].class_name));
+    /* (si es un Error liberado hace poco: cuándo y desde dónde) */
+    {
+        int i, visto = 0;
+        for (i = 0; i < JS_AMIGA_LIBERADOS; i++)
+            if (js_amiga_liberados[i].p == (void *)p) {
+                n += snprintf(l + n, sizeof l - n, " LIBERADO ANTES (fase del recolector %d, %d Error liberados después):%s;",
+                              js_amiga_liberados[i].fase,
+                              (js_amiga_liberados_n - 1 - i + JS_AMIGA_LIBERADOS * 1000) % JS_AMIGA_LIBERADOS,
+                              js_amiga_liberados[i].donde);
+                visto = 1;
+            }
+        if (!visto) n += snprintf(l + n, sizeof l - n, " (no está entre los %d últimos Error liberados);", JS_AMIGA_LIBERADOS);
+    }
     /* (los bytes del objeto y de su forma, para saber qué hay ahí de verdad) */
     {
         const unsigned char *b = (const unsigned char *)p;

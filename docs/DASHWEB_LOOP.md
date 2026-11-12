@@ -7356,3 +7356,8 @@ Formato:
   Así que no es el sonido: el 0 de 6 de TachyonSinSonido (compilado con el Dash 88732ce y el Tachyon de entonces) o fue
   suerte o depende de dónde cae el código (un fallo del JIT sensible a la posición). Siguiente: 6 tomas con
   -DDWV_SIN_SONIDO compilado otra vez con el Dash (15998eb) y el Tachyon de ahora: repetir_ss2.sh (TachyonSinSonido2).
+- TachyonSinSonido2 (sin sonido, Dash 15998eb): se caen las 3 primeras (paré la tanda ahí). El sonido queda
+  descartado del todo; el 0 de 6 del primero sin sonido fue suerte o la posición del código. Siguiente (idea de
+  freememlang-40): el Tachyon de ahora con el JIT de Amiberry en modo prudente (comp_flushmode=hard, comp_trust*=
+  indirect, comp_constjump=false; el .uae se guarda y se repone): repetir_jitseguro.sh. comp_trust*=indirect solo ya
+  se cayó; si este no, quitar flushmode o constjump por mitades para saber cuál basta (lo que contar a Amiberry).

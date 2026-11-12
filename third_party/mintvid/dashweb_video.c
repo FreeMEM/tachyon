@@ -503,6 +503,64 @@ void dwv_trampa_parada(void)
     for (;;) Wait(0);
 }
 
+/* El gancho de la salida (idea de freememlang-40): en ./dash, exit(), abort() y el fin de Main van a _dash_quit
+   (dashc/runtime/rt_math.s: move.l 4(sp),d2; jsr _dash_finish; ...). Sus 6 primeros bytes pasan a ser un jmp.l a
+   dwv_quit_gancho, que apunta en la traza el código, quién llamó (con su hunk y desplazamiento) y lo que hay en la
+   pila, y luego hace lo tapado y sigue en _dash_quit+10. */
+extern void _dash_quit(int);
+extern void _dash_finish(void);
+extern void dwv_quit_gancho(void);
+void dwv_quit_apuntar(long codigo, unsigned long *pila);
+__asm__(
+"	.text\n"
+"	.even\n"
+"	.globl _dwv_quit_gancho\n"
+"_dwv_quit_gancho:\n"
+"	movem.l %d0-%d1/%a0-%a1,-(%sp)\n"
+"	pea 16(%sp)\n"                /* la pila de la llamada: (pila)=vuelta, 4(pila)=código */
+"	move.l 24(%sp),-(%sp)\n"      /* el código */
+"	jsr _dwv_quit_apuntar\n"
+"	addq.l #8,%sp\n"
+"	movem.l (%sp)+,%d0-%d1/%a0-%a1\n"
+"	move.l 4(%sp),%d2\n"
+"	jsr __dash_finish\n"
+"	jmp __dash_quit+10\n");
+
+static void dwv_donde(unsigned long pc, long *hunk, unsigned long *off)
+{
+    struct Process *pr = (struct Process *)FindTask(NULL);
+    BPTR seg = 0;
+    long n;
+    *hunk = -1; *off = 0;
+    if (pr->pr_Task.tc_Node.ln_Type != NT_PROCESS) return;
+    if (pr->pr_CLI) seg = ((struct CommandLineInterface *)BADDR(pr->pr_CLI))->cli_Module;
+    if (!seg && pr->pr_SegList) seg = ((BPTR *)BADDR(pr->pr_SegList))[3];
+    for (n = 0; seg && n < 1000; n++, seg = *(BPTR *)BADDR(seg)) {
+        ULONG *p = (ULONG *)BADDR(seg), ini = (ULONG)(p + 1), fin = (ULONG)p - 4 + p[-1];
+        if (pc >= ini && pc < fin) { *hunk = n; *off = pc - ini; return; }
+    }
+}
+
+void dwv_quit_apuntar(long codigo, unsigned long *pila)
+{
+    static char l[600];
+    char *q;
+    long h;
+    unsigned long o;
+    int i;
+    dwv_donde(pila[0], &h, &o);
+    q = l + sprintf(l, "SALIDA: _dash_quit(%ld) desde PC %08lx", codigo, pila[0]);
+    if (h >= 0) q += sprintf(q, " (hunk %ld + $%lx)", h, o);
+    q += sprintf(q, "; tarea %s; pila:", FindTask(NULL)->tc_Node.ln_Name ? FindTask(NULL)->tc_Node.ln_Name : "?");
+    for (i = 1; i < 24; i++) {
+        dwv_donde(pila[i], &h, &o);
+        if (h >= 0) q += sprintf(q, " %d:h%ld+$%lx", i, h, o);
+    }
+    sprintf(q, "\n");
+    dwv_tm_linea(l);
+    if (Output()) Write(Output(), (APTR)l, strlen(l));
+}
+
 void dwv_trampa_poner(const char *fichero)
 {
     struct Task *yo = FindTask(NULL);
@@ -510,6 +568,18 @@ void dwv_trampa_poner(const char *fichero)
     strncpy(dwv_tm_fichero, fichero, sizeof dwv_tm_fichero - 1);
     dwv_tm_viejo = yo->tc_TrapCode;
     yo->tc_TrapCode = (APTR)dwv_trampa_main;
+    {
+        volatile unsigned short *q = (volatile unsigned short *)(void *)_dash_quit;
+        if (q[0] == 0x242f && q[1] == 0x0004 && q[2] == 0x4eb9) {     /* move.l 4(sp),d2; jsr.l */
+            unsigned long a = (unsigned long)(void *)dwv_quit_gancho;
+            Forbid();
+            q[0] = 0x4ef9; q[1] = (unsigned short)(a >> 16); q[2] = (unsigned short)a;
+            CacheClearU();
+            Permit();
+        } else {
+            dwv_tm_linea("SALIDA: _dash_quit no empieza como se esperaba: sin gancho\n");
+        }
+    }
 }
 
 /* (para probar la trampa: una instrucción ilegal) */

@@ -334,6 +334,34 @@ const char *dwv_fallo_sonido(void)
     return "";
 }
 
+/* La pila de la tarea principal (tarea 66, el cierre del vídeo 2; idea de freememlang-40): dwv_pila_pintar llena lo
+   que queda libre bajo el puntero de pila con un patrón y dwv_pila_minima mide lo que nunca se ha pisado desde
+   entonces (lo menos libre que ha llegado a quedar). Tras el StackSwap de Dash, tc_SPLower/tc_SPUpper son los de la
+   pila nueva. Solo con la TRAZA. */
+#include <proto/exec.h>
+#define DWV_PILA_PATRON 0xA5u
+long dwv_pila_total(void)
+{
+    struct Task *yo = FindTask(NULL);
+    return (long)((unsigned long)yo->tc_SPUpper - (unsigned long)yo->tc_SPLower);
+}
+void dwv_pila_pintar(void)
+{
+    volatile unsigned char aqui = 0;
+    struct Task *yo = FindTask(NULL);
+    volatile unsigned char *p = (volatile unsigned char *)yo->tc_SPLower;
+    volatile unsigned char *fin = &aqui - 512;
+    while (p < fin) *p++ = DWV_PILA_PATRON;
+}
+long dwv_pila_minima(void)
+{
+    struct Task *yo = FindTask(NULL);
+    const volatile unsigned char *p = (const volatile unsigned char *)yo->tc_SPLower;
+    const volatile unsigned char *tope = (const volatile unsigned char *)yo->tc_SPUpper;
+    while (p < tope && *p == DWV_PILA_PATRON) p++;
+    return (long)(p - (const volatile unsigned char *)yo->tc_SPLower);
+}
+
 /* Sin marca de tiempo en el contenedor, el instante sale de la cuenta de paquetes de vídeo leídos (no de
    imágenes: el modo turbo se salta algunas), menos los que el decodificador guarda para reordenar */
 static long dwv_ms_de(dwv *v, long indice)

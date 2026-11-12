@@ -23,6 +23,9 @@
 @extern("dashweb_video.h") func dwv_fps_mil(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_codecs(v: Int) -> String
 @extern("dashweb_video.h") func dwv_fallo_sonido() -> String
+@extern("dashweb_video.h") func dwv_pila_total() -> Int
+@extern("dashweb_video.h") func dwv_pila_pintar()
+@extern("dashweb_video.h") func dwv_pila_minima() -> Int
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -160,6 +163,20 @@ end
 
 # La excepción de la CPU en la tarea del sonido de MintVID ("excepcion N en PC X"), solo con libvideo compilada con
 # -DDWV_TRAMPA_SONIDO (diagnóstico del cierre con el JIT de Amiberry); si no, ""
+# La pila de la tarea principal (diagnóstico de la tarea 66, con la TRAZA): video_pila_pintar al empezar llena la libre
+# con un patrón; video_pila_minima dice lo menos libre que ha llegado a quedar desde entonces
+func video_pila_total() -> Int
+    return dwv_pila_total()
+end
+
+func video_pila_pintar()
+    dwv_pila_pintar()
+end
+
+func video_pila_minima() -> Int
+    return dwv_pila_minima()
+end
+
 func video_fallo_sonido() -> String
     return dwv_fallo_sonido()
 end

@@ -7364,3 +7364,9 @@ Formato:
 - Con el JIT prudente: la 1 sin caerse y la 2 se cae (paré ahí). Los ajustes del JIT no lo arreglan. Como el 0 de 6
   sin sonido resultó engañoso, también hay que repetir el "sin JIT 0 de 5" (era con un Tachyon viejo): 3 tomas con el
   Tachyon de ahora y cachesize=0, con e7lento.py (los tiempos de e6lento): repetir_sinjit3.sh.
+- (idea de freememlang-40) ¿Una pila desbordada? Tachyon pide 1 MB (@stack) y dashc hace StackSwap al arrancar
+  (dashc/runtime/rt_math.s), también con Run; las tareas hijas de Dash tienen pila fija (dash_task 128 KB, net_bg
+  64 KB, dash_dns 16 KB) y sin el manejador de excepciones. Con TRAZA, Tachyon apunta ahora la pila al empezar
+  ("pila 1024 KB"), llena la libre con un patrón (dwv_pila_pintar, third_party/mintvid/dashweb_video.c) y cada 10 s,
+  si ha bajado, "pila: lo menos libre ha sido N KB de 1024 KB" (videos_pila_traza, desde el bucle de eventos).
+  gh_repo.html en FS-UAE: 970 KB libres como mínimo. Tomas: ~/.cache/video-tachyon/ensayos/repetir_pila.sh.

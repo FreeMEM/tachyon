@@ -1820,6 +1820,7 @@ func tic(w: Ventana)
             mui_canvas_redraw(w.v.pagina)
         end
     end
+    videos_pila_traza()
     animar_ventana(w)
     if w.js_cuando >= 0 and time_ms() >= w.js_cuando
         temporizadores(w)
@@ -2878,13 +2879,15 @@ Main
             if arg(i) == "TRAZA"
                 traza_activa = true
                 traza_t0 = time_ms()
-                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
+                video_pila_pintar()
             elif str_starts(arg(i), "TRAZA=")
                 # TRAZA=fichero: lo mismo, a ese fichero (lo que se escribe ahí sigue aunque se cuelgue el Amiga)
                 traza_activa = true
                 traza_t0 = time_ms()
                 traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
-                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
+                video_pila_pintar()
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
             elif str_starts(arg(i), "JSMINIMA=")

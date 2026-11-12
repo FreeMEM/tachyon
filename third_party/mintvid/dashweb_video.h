@@ -17,6 +17,9 @@ long dwv_ancho(long v);
 long dwv_alto(long v);
 long dwv_fps_mil(long v);                      /* imágenes por segundo x 1000 (0 si no se sabe) */
 const char *dwv_codecs(long v);                /* "video=..., audio=..." */
+long dwv_pila_total(void);             /* la pila de la tarea que llama, en bytes (diagnóstico) */
+void dwv_pila_pintar(void);            /* llena con un patrón la pila libre (diagnóstico, con la TRAZA) */
+long dwv_pila_minima(void);            /* lo menos libre que ha quedado desde dwv_pila_pintar, en bytes */
 const char *dwv_fallo_sonido(void);   /* la excepción de la tarea del sonido (diagnóstico) o "" */
 long dwv_siguiente(long v);                    /* 1 una imagen nueva, 0 fin, -1 error, 2 esperar (aún se baja) */
 const unsigned char *dwv_rgb(long v);          /* la imagen: RGB24, dwv_paso() bytes por fila */

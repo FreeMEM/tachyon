@@ -7498,6 +7498,9 @@ Formato:
   tomas con búsqueda y clic: 0 caídas y menos avisos (0 a 9 por toma, una con 61). Lo que queda es fragmentación: con
   26-46 MB libres, el mayor bloque seguido rondaba los 800 KB.
 - Tests test_js* 57/57 (10 de jsdom se pasaron de tiempo con tres Amiberry en marcha; repetidos uno a uno, pasan).
+- (66) El vídeo 2, otra vez en marcha: guion2.py hace clic en "Making Art" (el título; "Incredible" daba con la
+  descripción y YouTube pone ahora una lista delante), hasta 3 veces, y si no, escribe la dirección; paquete rehecho
+  (tools/paquete.sh) con los arreglos; tomar2.sh en.
 
 ### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
 - innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.

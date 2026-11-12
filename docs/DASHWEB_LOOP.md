@@ -623,7 +623,11 @@ tarea, con el estilo de Dash.
       siempre, no del JS?). David lleva Emu68 1.1 Beta1 del 01/09 (#1150). Amiberry con JIT: el cierre en la página de un vídeo de YouTube (sin el
       sonido del vídeo, de momento no). Buscar lo común: la tarea del sonido de MintVID y las de task_start/DNS (sin
       manejador de excepciones), código que cambie en marcha, carreras entre tareas que el JIT destapa.
-- [ ] 70. **Pegar en la barra de direcciones (lo contaron Alex Agauser, #1143, y antes Ferrán García, 2026-11-05).**
+      (2026-11-12) Lo de Amiberry era un fallo de QuickJS (45b7ff0: build_backtrace sin referencia propia a la excepción
+      pendiente; un "out of memory" dentro soltaba el Error y luego se escribía en él) más el tope de memoria del motor
+      (b750a01); con JIT solo se llegaba antes al punto. Queda lo de David (CPU a tope sin el primer script) y lo de
+      JaviTecH (AN_BadFreeAddr), que pueden ser otra cosa: probarlo con la versión que lleve esos arreglos.
+- [x] 70. **Pegar en la barra de direcciones (lo contaron Alex Agauser, #1143, y antes Ferrán García, 2026-11-05).**
       Amiga+V no pega en el campo de la dirección. Tachyon no tiene atajo con V; el campo es un String de MUI, y en
       MUI 3.8 (sin comprobar) no pega; Alex tiene MUI 3.8 (#1148). Probarlo en sys32rtg38 y con MUI 5, y si hace falta un pegar propio (menú con V
       que meta el portapapeles en el campo activo, también en los de la página).

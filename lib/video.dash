@@ -27,6 +27,7 @@
 @extern("dashweb_video.h") func dwv_pila_pintar()
 @extern("dashweb_video.h") func dwv_pila_minima() -> Int
 @extern("dashweb_video.h") func dwv_pila_informe() -> String
+@extern("dashweb_video.h") func dwv_tareas() -> String
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -180,6 +181,11 @@ end
 
 func video_pila_informe() -> String
     return dwv_pila_informe()
+end
+
+# Las tareas hijas de Dash y de MintVID que siguen vivas, con su estado (diagnóstico de la tarea 66)
+func video_tareas() -> String
+    return dwv_tareas()
 end
 
 func video_fallo_sonido() -> String

@@ -20,7 +20,8 @@ const char *dwv_codecs(long v);                /* "video=..., audio=..." */
 long dwv_pila_total(void);             /* la pila de la tarea que llama, en bytes (diagnóstico) */
 void dwv_pila_pintar(void);            /* llena con un patrón la pila libre (diagnóstico, con la TRAZA) */
 long dwv_pila_minima(void);
-const char *dwv_pila_informe(void);    /* dónde y cómo se tocó la pila pintada (diagnóstico) */            /* lo menos libre que ha quedado desde dwv_pila_pintar, en bytes */
+const char *dwv_pila_informe(void);
+const char *dwv_tareas(void);          /* las tareas dash_* y MintVID* de exec, con su estado (diagnóstico) */    /* dónde y cómo se tocó la pila pintada (diagnóstico) */            /* lo menos libre que ha quedado desde dwv_pila_pintar, en bytes */
 const char *dwv_fallo_sonido(void);   /* la excepción de la tarea del sonido (diagnóstico) o "" */
 long dwv_siguiente(long v);                    /* 1 una imagen nueva, 0 fin, -1 error, 2 esperar (aún se baja) */
 const unsigned char *dwv_rgb(long v);          /* la imagen: RGB24, dwv_paso() bytes por fila */

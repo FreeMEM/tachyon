@@ -379,6 +379,7 @@ var _video_pila_dicha: Int = -1
 func videos_pila_traza()
     if traza_activa and time_ms() - _video_pila_cuando > 10000
         _video_pila_cuando = time_ms()
+        traza("tareas:" + video_tareas())
         m = video_pila_minima()
         if _video_pila_dicha < 0 or m < _video_pila_dicha
             traza("pila: lo menos libre ha sido " + m / 1024 + " KB de " + video_pila_total() / 1024 + " KB; " + video_pila_informe())

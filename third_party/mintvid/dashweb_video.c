@@ -376,6 +376,35 @@ const char *dwv_pila_informe(void)
     return t;
 }
 
+/* Las tareas hijas de Dash y de MintVID que siguen ahí (tarea 66; idea de freememlang-40): con Forbid, las listas
+   TaskReady y TaskWait de exec; de cada una cuyo nombre empiece por "dash_" o "MintVID", su nombre, tc_State (2 lista,
+   4 esperando; 6 TS_EXCEPT, 5 TS_REMOVED) y tc_SigWait. Una que muere con una excepción se queda parada con su aviso */
+#include <exec/execbase.h>
+const char *dwv_tareas(void)
+{
+    static char t[600];
+    struct ExecBase *eb = *(struct ExecBase **)4;
+    struct List *listas[2];
+    struct Node *nd;
+    char *q = t, *fin = t + sizeof t - 64;
+    int i, total = 0;
+    listas[0] = &eb->TaskReady;
+    listas[1] = &eb->TaskWait;
+    t[0] = 0;
+    Forbid();
+    for (i = 0; i < 2; i++)
+        for (nd = listas[i]->lh_Head; nd->ln_Succ; nd = nd->ln_Succ) {
+            struct Task *k = (struct Task *)nd;
+            const char *n = nd->ln_Name ? nd->ln_Name : "";
+            total++;
+            if (q < fin && (!strncmp(n, "dash_", 5) || !strncmp(n, "MintVID", 7)))
+                q += sprintf(q, " %.24s(%c,%d,%08lx)", n, i ? 'W' : 'R', (int)k->tc_State, (unsigned long)k->tc_SigWait);
+        }
+    Permit();
+    sprintf(q, " [%d tareas]", total);
+    return t;
+}
+
 long dwv_pila_minima(void)
 {
     struct Task *yo = FindTask(NULL);

@@ -7614,3 +7614,12 @@ Formato:
   pares tenían una tabla de 840 que se apretaba distinto en la prueba y en la referencia (en el navegador salen
   iguales). Tables 87 → 94/150 (060-078 pares); normal-flow 74/100, los mismos. Pasan a fallar
   separated-border-model-007, -008 y -009 (a 600 no se veía): la siguiente.
+
+### 2026-11-13 — Velocidad (usuario: "vamos a parar con wpt y centrarnos en optimizar; estoy seguro de que la performance ha caído")
+- Medido con las versiones publicadas ($S/medir_vers.py: rtg, MUI 3.8, 256 MB, TRAZA; páginas guardadas
+  gh_repo.html y zz_amigaworld.html; tiempo hasta "entera"). Una vez: 0.8.1 31,7 s / 14,5 s; 0.9.0 32,1 / 15,1;
+  0.9.3 17,9 / 9,1; 0.9.5 16,8 / 7,0; 0.9.6 17,6 / 7,0. No ha caído: desde la 0.8.1 es casi el doble de rápida.
+- dev (con las tablas de hoy) parecía más lenta en una pasada (20,4 / 9,6); tres pasadas de 0.9.6, 73436e2, 8ec134d
+  y dev: todas 17,5-20,3 s y 7,0-8,1 s, ruido. La maqueta de GitHub, 6,6-7,5 s en la 0.9.6 y 6,9-7,0 en dev.
+- Dónde se va el tiempo en GitHub: ~7 de 18 s en una maqueta. Siguiente: el perfil de esa maqueta (tarea 61).
+- La 0.9.7 (el usuario: "quizá podrías lanzar una nueva release?"): batería en marcha.

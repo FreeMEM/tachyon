@@ -7636,3 +7636,16 @@ Formato:
 - Publicada la v0.9.7-alfa (pre-release, 13-11 hacia las 23:00): PR #27 fusionada (main 4167f56), once ficheros; los
   bajados de GitHub tienen el SHA-256 de los compilados (Tachyon.gz 76c369d6..., tachyon.lha d64a04a8...). Sin nombres
   que agradecer. Siguiente: velocidad (tarea 61), el perfil de la maqueta de GitHub (~7 de 18 s).
+
+### 2026-11-13 — Tarea 61: dónde se va el tiempo (GitHub guardado, rtg, MUI 3.8)
+- Perfil (--perfil, 80 s; la página entera en 18,6 s): maquetar 8,6 % de las muestras (~8 s: casi todo flex;
+  _ancho_flotante 6,3 %, 4052 llamadas; _flex_ancho_columna 3,9 %, 367), estilo_aplicar 6,1 % (~5,8 s: _cumple_desde
+  338.895 llamadas, _estilo_propio 5,6 %, calc 1,5 %), jsdom_preparar 2,1 % (~2 s), SVG 1,5 %, imágenes 1,5 %.
+- La traza de "maquetada en" dice ahora bloques, medidas y guardadas. GitHub: 6,95 s, 5862 bloques (≈700 cajas de
+  bloque: cada una ~8 veces), 2131 medidas, 453 de la caché. amigaworld: 3,4 s, 3796 bloques (~6 veces), 2279
+  medidas, 80 de la caché.
+- Probado y deshecho: sin volver a maquetar cada celda más baja que su fila (vertical-align), GitHub 6,61 s (−5 %) y
+  amigaworld 2,84 s (−16 %). Candidato: estirar sus fondos y bordes en vez de maquetarla otra vez, salvo si dentro
+  hay alturas en %.
+- Siguientes, de más a menos peso: (1) el estilo: comprobar selectores (filtro de antepasados para los de
+  descendiente); (2) las medidas de flex en GitHub y por qué la caché acierta tan poco; (3) lo de las celdas.

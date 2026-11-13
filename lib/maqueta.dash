@@ -5342,9 +5342,16 @@ end
 func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     e = t.estilo
     esp = 0
+    espv = 0
     if _val(e, "border-collapse", "separate") != "collapse"
         partes = css_partir(str_trim(_val(e, "border-spacing", "0")), 32)
-        esp = estilo_px(partes[0], estilo_px(_val(e, "font-size", "16px"), 0, 0), ancho)
+        fs = estilo_px(_val(e, "font-size", "16px"), 0, 0)
+        esp = estilo_px(partes[0], fs, ancho)
+        # (con dos valores, el segundo es el de entre filas: WPT separated-border-model-007, "0em 3em")
+        espv = esp
+        if partes.length > 1
+            espv = estilo_px(partes[1], fs, ancho)
+        end
     end
     cy = y
     for h in t.hijos
@@ -5602,7 +5609,7 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     end
     for cel in celdas
         if cel.filas > 1
-            tiene = esp * (cel.filas - 1)
+            tiene = espv * (cel.filas - 1)
             for i in (cel.fila..cel.fila + cel.filas - 1)
                 tiene = tiene + altos[i]
             end
@@ -5613,7 +5620,7 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
         end
     end
     var ys: [Int] = []
-    py = cy + esp
+    py = cy + espv
     for r in (0..filas.length - 1)
         ys.push(py)
         # el fondo de la fila, debajo de sus celdas
@@ -5626,11 +5633,11 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
             fondo.nodo = filas[r]
             m.pagina.dibujos.push(fondo)
         end
-        py = py + altos[r] + esp
+        py = py + altos[r] + espv
     end
     # a su sitio, con vertical-align
     for cel in celdas
-        area = esp * (cel.filas - 1)
+        area = espv * (cel.filas - 1)
         for i in (cel.fila..cel.fila + cel.filas - 1)
             area = area + altos[i]
         end

@@ -101,18 +101,18 @@ WPT FAIL css/CSS2/tables/fixed-table-layout-003f06.xht 2160
 WPT FAIL css/CSS2/tables/fixed-table-layout-003f07.xht 1344
 WPT FAIL css/CSS2/tables/fixed-table-layout-003f08.xht 1344
 WPT FAIL css/CSS2/tables/fixed-table-layout-017.xht 3399
-WPT FAIL css/CSS2/tables/fixed-table-layout-018.xht 4679
-WPT FAIL css/CSS2/tables/fixed-table-layout-019.xht 4679
-WPT FAIL css/CSS2/tables/fixed-table-layout-020.xht 4679
-WPT FAIL css/CSS2/tables/fixed-table-layout-021.xht 16429
-WPT FAIL css/CSS2/tables/fixed-table-layout-022.xht 24759
-WPT FAIL css/CSS2/tables/fixed-table-layout-023.xht 26499
-WPT FAIL css/CSS2/tables/separated-border-model-003b.xht 100000
-WPT FAIL css/CSS2/tables/separated-border-model-004d.xht 124928
-WPT FAIL css/CSS2/tables/separated-border-model-004e.xht 11104
-WPT FAIL css/CSS2/tables/separated-border-model-007.xht 10240
-WPT FAIL css/CSS2/tables/separated-border-model-008.xht 10240
-WPT FAIL css/CSS2/tables/separated-border-model-009.xht 10240
+WPT FAIL css/CSS2/tables/fixed-table-layout-018.xht 3399
+WPT FAIL css/CSS2/tables/fixed-table-layout-019.xht 3399
+WPT FAIL css/CSS2/tables/fixed-table-layout-020.xht 3399
+WPT FAIL css/CSS2/tables/fixed-table-layout-021.xht 12504
+WPT FAIL css/CSS2/tables/fixed-table-layout-022.xht 18449
+WPT FAIL css/CSS2/tables/fixed-table-layout-023.xht 17496
+WPT PASS css/CSS2/tables/separated-border-model-003b.xht
+WPT FAIL css/CSS2/tables/separated-border-model-004d.xht 67600
+WPT FAIL css/CSS2/tables/separated-border-model-004e.xht 4960
+WPT FAIL css/CSS2/tables/separated-border-model-007.xht 33280
+WPT FAIL css/CSS2/tables/separated-border-model-008.xht 33280
+WPT FAIL css/CSS2/tables/separated-border-model-009.xht 33280
 WPT PASS css/CSS2/tables/table-anonymous-border-spacing.xht
 WPT FAIL css/CSS2/tables/table-anonymous-objects-009.xht 112
 WPT FAIL css/CSS2/tables/table-anonymous-objects-010.xht 492
@@ -149,4 +149,4 @@ WPT FAIL css/CSS2/tables/table-anonymous-objects-080.xht 7216
 WPT FAIL css/CSS2/tables/table-anonymous-objects-081.xht 7216
 WPT FAIL css/CSS2/tables/table-anonymous-objects-082.xht 7216
 WPT FAIL css/CSS2/tables/table-anonymous-objects-083.xht 7216
-WPT TOTAL 94/150
+WPT TOTAL 95/150

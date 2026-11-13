@@ -5,7 +5,8 @@
 # Y celdas sin su tabla (en un bloque) van en una tabla anónima, en fila, con el pie al final (17.2.1; WPT
 # table-anonymous-objects).
 # expect-out: suelto: alto true | col: 3 celdas en fila true | colgroup display table-column-group | otra vez: alto true
-# expect-out: sin tabla: en fila true | pie abajo true
+# Y una tabla absoluta con left y right no se estira: va a lo que pide (como los navegadores).
+# expect-out: sin tabla: en fila true | pie abajo true | absoluta sin estirar true
 
 import "../lib/maqueta.dash"
 import "../lib/jsdom.dash"
@@ -38,12 +39,13 @@ Main
     Print "suelto: alto " + (p.alto > 0) + " | col: 3 celdas en fila " + fila + " | colgroup display " + g.estilo["display"] + " | otra vez: alto " + (maquetar(a, 800).alto > 0)
     h = "<html><body><div><span id=x style='display:table-cell'>a</span> <span id=y style='display:table-cell'>b</span>"
     h = h + "<span style='display:table-footer-group'><span id=f style='display:table-cell'>pie</span></span>"
-    h = h + "<span id=z style='display:table-cell'>c</span></div></body></html>"
+    h = h + "<span id=z style='display:table-cell'>c</span></div>"
+    h = h + "<div style='position:relative'><table id=t style='position:absolute;left:1px;right:1px'><tr><td>x</td></tr></table></div></body></html>"
     c = pagina(h)
     js2 = js_nuevo()
     jsdom_preparar(js2, c)
     q2 = maquetar(c, 1000)
     jsdom_vista(js2, 1000, 600, 0, q2.alto)
     js_evaluar(js2, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
-    Print js_evaluar(js2, "'sin tabla: en fila ' + (r('x').top == r('y').top && r('x').right <= r('y').left) + ' | pie abajo ' + (r('f').top > r('z').top)", "t.js")
+    Print js_evaluar(js2, "'sin tabla: en fila ' + (r('x').top == r('y').top && r('x').right <= r('y').left) + ' | pie abajo ' + (r('f').top > r('z').top) + ' | absoluta sin estirar ' + (r('t').width < 500)", "t.js")
 end

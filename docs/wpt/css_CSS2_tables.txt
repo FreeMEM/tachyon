@@ -124,29 +124,29 @@ WPT PASS css/CSS2/tables/table-anonymous-objects-017.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-018.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-019.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-020.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-059.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-060.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-061.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-062.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-063.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-064.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-065.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-066.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-067.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-068.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-069.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-070.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-071.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-072.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-073.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-074.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-075.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-076.xht 4824
-WPT FAIL css/CSS2/tables/table-anonymous-objects-077.xht 4740
-WPT FAIL css/CSS2/tables/table-anonymous-objects-078.xht 4824
+WPT PASS css/CSS2/tables/table-anonymous-objects-059.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-060.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-061.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-062.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-063.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-064.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-065.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-066.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-067.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-068.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-069.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-070.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-071.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-072.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-073.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-074.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-075.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-076.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-077.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-078.xht 6931
 WPT FAIL css/CSS2/tables/table-anonymous-objects-079.xht 6970
 WPT FAIL css/CSS2/tables/table-anonymous-objects-080.xht 6970
 WPT FAIL css/CSS2/tables/table-anonymous-objects-081.xht 6970
 WPT FAIL css/CSS2/tables/table-anonymous-objects-082.xht 6970
 WPT FAIL css/CSS2/tables/table-anonymous-objects-083.xht 6970
-WPT TOTAL 77/150
+WPT TOTAL 87/150

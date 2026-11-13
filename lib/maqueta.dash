@@ -2258,7 +2258,10 @@ func _absoluto(m: Maquetador, n: Nodo, cx0: Int, cy0: Int, cw0: Int, ch0: Int, p
         r = _px(e, "right", cw)
     end
     w = 0
-    if tiene_l and tiene_r and not (e.has("width") and e["width"] != "auto")
+    # (una tabla no se estira con left y right: va a lo que pide, como en los navegadores; la referencia de WPT
+    # table-anonymous-objects, una tabla absoluta con left: 1px y right: 1px, salía a todo lo ancho)
+    es_tabla = _val(e, "display", "") == "table"
+    if tiene_l and tiene_r and not (e.has("width") and e["width"] != "auto") and not es_tabla
         w = cw - l - r
     elif _val(e, "width", "auto") == "auto"
         # sin width, lo que pide su contenido sin pasar de lo que queda hasta el borde (CSS 2.1 10.3.7: el

@@ -7607,3 +7607,6 @@ Formato:
   acid2, tabla, jquery y Acid3 100. Visto de paso: getBoundingClientRect de un grupo de filas (tbody) da 0 (sin caja).
   Siguiente: los otros table-anonymous-objects (059-083 aún fallan; el 070 ya se maqueta como la referencia en la
   traza, mirar por qué el reftest no casa) y caption-side-applies-to.
+- Una tabla absoluta con left y right no se estira (_absoluto: es_tabla), como los navegadores: la referencia de
+  table-anonymous-objects salía a 922 y la prueba a 840. WPT tables 77 → 87/150 (059-077 impares), normal-flow 74
+  igual, maqueta 36/36, acid2, tabla y Acid3 100. Siguiente: los pares de 060-082 y caption-side-applies-to.

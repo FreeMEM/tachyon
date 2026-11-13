@@ -7633,3 +7633,6 @@ Formato:
   redirige): idéntico al compilado, los nueve catálogos y la 0.9.6 como .old.
 - Humo con MUI 3.8: cuatro ventanas 300 s sin colgarse; una tabla con <col> (zz_col_a.html) abre y cierra (la 0.9.6
   colgaba el Amiga).
+- Publicada la v0.9.7-alfa (pre-release, 13-11 hacia las 23:00): PR #27 fusionada (main 4167f56), once ficheros; los
+  bajados de GitHub tienen el SHA-256 de los compilados (Tachyon.gz 76c369d6..., tachyon.lha d64a04a8...). Sin nombres
+  que agradecer. Siguiente: velocidad (tarea 61), el perfil de la maqueta de GitHub (~7 de 18 s).

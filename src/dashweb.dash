@@ -2318,8 +2318,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.9.6-alfa"
-@version "Tachyon 0.9.6-alfa"
+const DASHWEB_VERSION = "0.9.7-alfa"
+@version "Tachyon 0.9.7-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)

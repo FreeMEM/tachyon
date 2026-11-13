@@ -12,9 +12,11 @@
 import "../lib/pintor.dash"
 import "../lib/jsdom.dash"
 
+# (800 de ancho, el de WPT: a 600, una tabla de 840 se apretaba distinto en la prueba y en su referencia, las
+# table-anonymous-objects; de alto 400 basta y se leen menos píxeles)
 Window Pruebas
     title "WPT"
-    width 600
+    width 800
     height 400
 end
 

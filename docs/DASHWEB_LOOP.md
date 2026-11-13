@@ -7580,3 +7580,56 @@ Formato:
   compilado y la 0.9.5 queda como .old; la barra dice "0.9.6-alfa installed: click the green icon".
 - Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
   Wikipedia Amiga) 300 s sin colgarse.
+- Publicada la v0.9.6-alfa (pre-release, 13-11 hacia las 05:00): PR #26 fusionada (main b21ba4b), etiqueta y los once
+  ficheros; el Tachyon.gz y el tachyon.lha bajados de GitHub tienen el SHA-256 de los compilados (f88b7f56...ed2a y
+  f0c3ba0b...0adc). Ferrán García y Alex Agauser en Gracias de la web de Tachyon (webs-freemem b3a369d, subido; el
+  servidor lo recoge solo). Siguiente: WPT en el bucle ($S/wpt_antes_despues.sh, reftests de normal-flow y tables).
+
+### 2026-11-13 — WPT tablas: el cuelgue de las cajas anónimas (EN PAUSA, sin commit; el usuario paró el bucle por cuota)
+- WPT normal-flow: 74/100 con la maqueta de antes y de después de la tarea 71, los mismos aprobados.
+- WPT tables se colgaba en los border-collapse-dynamic-colgroup/column (también en la 0.9.5 publicada): cualquier
+  <col>, o algo suelto en una tabla de CSS (un <span> vacío), colgaba el Amiga. Causa: padre es weak; la fila anónima
+  solo vivía en la lista local de _tabla y la celda anónima (en m.cajas y en los dibujos) subía por un padre ya
+  liberado (_en_fijo en _cajas_finales).
+- Arreglo en el árbol de trabajo, SIN COMMIT: lib/estilo.dash (col/colgroup table-column*), lib/maqueta.dash
+  (Pagina.anonimas sujeta las anónimas de _tramo_anonimo con _midiendo == 0; _filas y _celdas_de saltan las columnas;
+  maqueta_rehacer envuelve _maqueta_rehacer) y tests/test_maqueta_tabla_anonima.dash (TIMEOUT sin el arreglo, pasa con
+  él). Con el arreglo, WPT tables 71/150 (antes no acababa). Para seguir: mirar la tanda de maqueta, acid2, tabla y
+  Acid3 (tarea bo2eowz5q, salida en el scratchpad de la sesión) o repetirla; si va bien, commit y guardar
+  docs/wpt/css_CSS2_tables.txt. Ojo: maqueta_rehacer añade anónimas a p.anonimas sin quitar las viejas.
+- Las páginas zz_col_*.html de tests/pages son de depurar: no van al commit.
+- Retomado ("sigue con tachyon"): maqueta 36/36, acid2 2/2, tabla 4/4 y Acid3 100 con el arreglo; commit, y
+  docs/wpt/css_CSS2_tables.txt con el 71/150.
+- Tablas anónimas (CSS 2.1 17.2.1): en _contenido, cada tramo de filas, grupos o celdas sin su tabla va en una tabla
+  anónima (_envolver_en_tablas, sujeta por la página con _anon_sujetar); el primer table-header-group delante y el
+  primer table-footer-group detrás (_orden_grupos); thead y tfoot son table-header-group y table-footer-group.
+  WPT tables 71 → 77/150 (table-anonymous-objects 011, 012, 017-020), normal-flow 74/100 igual; maqueta 36/36,
+  acid2, tabla, jquery y Acid3 100. Visto de paso: getBoundingClientRect de un grupo de filas (tbody) da 0 (sin caja).
+  Siguiente: los otros table-anonymous-objects (059-083 aún fallan; el 070 ya se maqueta como la referencia en la
+  traza, mirar por qué el reftest no casa) y caption-side-applies-to.
+- Una tabla absoluta con left y right no se estira (_absoluto: es_tabla), como los navegadores: la referencia de
+  table-anonymous-objects salía a 922 y la prueba a 840. WPT tables 77 → 87/150 (059-077 impares), normal-flow 74
+  igual, maqueta 36/36, acid2, tabla y Acid3 100. Siguiente: los pares de 060-082 y caption-side-applies-to.
+- El corredor de reftests (tools/wpt_reftest.dash) a 800 de ancho, el de WPT (era 600): las table-anonymous-objects
+  pares tenían una tabla de 840 que se apretaba distinto en la prueba y en la referencia (en el navegador salen
+  iguales). Tables 87 → 94/150 (060-078 pares); normal-flow 74/100, los mismos. Pasan a fallar
+  separated-border-model-007, -008 y -009 (a 600 no se veía): la siguiente.
+
+### 2026-11-13 — Velocidad (usuario: "vamos a parar con wpt y centrarnos en optimizar; estoy seguro de que la performance ha caído")
+- Medido con las versiones publicadas ($S/medir_vers.py: rtg, MUI 3.8, 256 MB, TRAZA; páginas guardadas
+  gh_repo.html y zz_amigaworld.html; tiempo hasta "entera"). Una vez: 0.8.1 31,7 s / 14,5 s; 0.9.0 32,1 / 15,1;
+  0.9.3 17,9 / 9,1; 0.9.5 16,8 / 7,0; 0.9.6 17,6 / 7,0. No ha caído: desde la 0.8.1 es casi el doble de rápida.
+- dev (con las tablas de hoy) parecía más lenta en una pasada (20,4 / 9,6); tres pasadas de 0.9.6, 73436e2, 8ec134d
+  y dev: todas 17,5-20,3 s y 7,0-8,1 s, ruido. La maqueta de GitHub, 6,6-7,5 s en la 0.9.6 y 6,9-7,0 en dev.
+- Dónde se va el tiempo en GitHub: ~7 de 18 s en una maqueta. Siguiente: el perfil de esa maqueta (tarea 61).
+- La 0.9.7 (el usuario: "quizá podrías lanzar una nueva release?"): batería en marcha.
+- Vídeo 2 (tarea 66): el usuario vio la 4.ª toma en inglés: "no vale", borrada; se regraba "en unos días" (con la 0.9.7
+  o la que haya), en inglés y castellano.
+
+### 2026-11-13 — La 0.9.7-alfa (el usuario: "quizá podrías lanzar una nueva release?")
+- Batería entera 181/189; los ocho que fallan en tanda (memoria o tiempo; test_maqueta_tabla_anonima, nuevo) pasan
+  sueltos. Compilada con Dash main 1460838 (2.14.0).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.6-alfa publicada (RTG, MUI 3.8, GitHub de mentira que
+  redirige): idéntico al compilado, los nueve catálogos y la 0.9.6 como .old.
+- Humo con MUI 3.8: cuatro ventanas 300 s sin colgarse; una tabla con <col> (zz_col_a.html) abre y cierra (la 0.9.6
+  colgaba el Amiga).

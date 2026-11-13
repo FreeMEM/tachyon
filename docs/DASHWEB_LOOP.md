@@ -7584,3 +7584,17 @@ Formato:
   ficheros; el Tachyon.gz y el tachyon.lha bajados de GitHub tienen el SHA-256 de los compilados (f88b7f56...ed2a y
   f0c3ba0b...0adc). Ferrán García y Alex Agauser en Gracias de la web de Tachyon (webs-freemem b3a369d, subido; el
   servidor lo recoge solo). Siguiente: WPT en el bucle ($S/wpt_antes_despues.sh, reftests de normal-flow y tables).
+
+### 2026-11-13 — WPT tablas: el cuelgue de las cajas anónimas (EN PAUSA, sin commit; el usuario paró el bucle por cuota)
+- WPT normal-flow: 74/100 con la maqueta de antes y de después de la tarea 71, los mismos aprobados.
+- WPT tables se colgaba en los border-collapse-dynamic-colgroup/column (también en la 0.9.5 publicada): cualquier
+  <col>, o algo suelto en una tabla de CSS (un <span> vacío), colgaba el Amiga. Causa: padre es weak; la fila anónima
+  solo vivía en la lista local de _tabla y la celda anónima (en m.cajas y en los dibujos) subía por un padre ya
+  liberado (_en_fijo en _cajas_finales).
+- Arreglo en el árbol de trabajo, SIN COMMIT: lib/estilo.dash (col/colgroup table-column*), lib/maqueta.dash
+  (Pagina.anonimas sujeta las anónimas de _tramo_anonimo con _midiendo == 0; _filas y _celdas_de saltan las columnas;
+  maqueta_rehacer envuelve _maqueta_rehacer) y tests/test_maqueta_tabla_anonima.dash (TIMEOUT sin el arreglo, pasa con
+  él). Con el arreglo, WPT tables 71/150 (antes no acababa). Para seguir: mirar la tanda de maqueta, acid2, tabla y
+  Acid3 (tarea bo2eowz5q, salida en el scratchpad de la sesión) o repetirla; si va bien, commit y guardar
+  docs/wpt/css_CSS2_tables.txt. Ojo: maqueta_rehacer añade anónimas a p.anonimas sin quitar las viejas.
+- Las páginas zz_col_*.html de tests/pages son de depurar: no van al commit.

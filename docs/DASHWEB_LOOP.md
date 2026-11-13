@@ -7580,3 +7580,7 @@ Formato:
   compilado y la 0.9.5 queda como .old; la barra dice "0.9.6-alfa installed: click the green icon".
 - Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
   Wikipedia Amiga) 300 s sin colgarse.
+- Publicada la v0.9.6-alfa (pre-release, 13-11 hacia las 05:00): PR #26 fusionada (main b21ba4b), etiqueta y los once
+  ficheros; el Tachyon.gz y el tachyon.lha bajados de GitHub tienen el SHA-256 de los compilados (f88b7f56...ed2a y
+  f0c3ba0b...0adc). Ferrán García y Alex Agauser en Gracias de la web de Tachyon (webs-freemem b3a369d, subido; el
+  servidor lo recoge solo). Siguiente: WPT en el bucle ($S/wpt_antes_despues.sh, reftests de normal-flow y tables).

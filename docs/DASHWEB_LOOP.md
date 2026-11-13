@@ -614,6 +614,34 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
+      esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
+      marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31
+      (amigaworld.net, aminet.net, amiga.abime.net, ami64.com, amigastore.eu, amigang.com) y otras muy visitadas
+      (amiga-news.de, eab.abime.net, amigans.net, lemonamiga.com, amigafuture.de, a1k.org), y arreglar lo que se vea mal.
+      (a) hecha: ver la bitácora del 2026-11-12.
+- [ ] 72. **Publicar la próxima versión (usuario, 2026-11-12: "si ya está corregido lo de YouTube y no se queda colgado
+      lanza la release si ya se puede").** Con lo de siempre antes (memoria publicar-versiones): batería entera,
+      paquete, actualización de verdad desde la 0.9.5 publicada, humo con MUI 3.8; las Gracias en la web.
+      (2026-11-13, usuario: "cuando esté lista la release, la publicas sin pedir permiso a nadie y sigues en loop con
+      wpt".)
+- [ ] 69. **Con JIT (Emu68 en PiStorm, Amiberry) Tachyon se cuelga, se cae o pisa memoria; sin JIT no (registros de
+      la 0.9.5 por la sesión telegram, 2026-11-11).** David Martínez (A600 con PiStorm, 68040, OS 3.2, #1131-#1140): ya
+      llegan todos los ficheros ("recursos listos: scripts") y se queda con la CPU a tope sin apuntar ni el primer
+      script, en dash.freemem.space y en YouTube; en FS-UAE (que no compila con JIT: ver la bitácora del 2026-11-11)
+      avanza. JaviTecH (A1200 con PiStorm, Caffeine 9318, #1141): Recoverable Alert 0100000F (AN_BadFreeAddr) al ir de
+      la portada a github.com/FreeMEM/tachyon, y en todas las páginas (#1149; Emu68 1.1 beta 2: ¿un FreeMem/FreeVec de
+      siempre, no del JS?). David lleva Emu68 1.1 Beta1 del 01/09 (#1150). Amiberry con JIT: el cierre en la página de un vídeo de YouTube (sin el
+      sonido del vídeo, de momento no). Buscar lo común: la tarea del sonido de MintVID y las de task_start/DNS (sin
+      manejador de excepciones), código que cambie en marcha, carreras entre tareas que el JIT destapa.
+      (2026-11-12) Lo de Amiberry era un fallo de QuickJS (45b7ff0: build_backtrace sin referencia propia a la excepción
+      pendiente; un "out of memory" dentro soltaba el Error y luego se escribía en él) más el tope de memoria del motor
+      (b750a01); con JIT solo se llegaba antes al punto. Queda lo de David (CPU a tope sin el primer script) y lo de
+      JaviTecH (AN_BadFreeAddr), que pueden ser otra cosa: probarlo con la versión que lleve esos arreglos.
+- [x] 70. **Pegar en la barra de direcciones (lo contaron Alex Agauser, #1143, y antes Ferrán García, 2026-11-05).**
+      Amiga+V no pega en el campo de la dirección. Tachyon no tiene atajo con V; el campo es un String de MUI, y en
+      MUI 3.8 (sin comprobar) no pega; Alex tiene MUI 3.8 (#1148). Probarlo en sys32rtg38 y con MUI 5, y si hace falta un pegar propio (menú con V
+      que meta el portapapeles en el campo activo, también en los de la página).
 - [ ] 67. **Tachyon parado en "Trayendo hojas de estilo y scripts..." en una PiStorm, y lento (lo contó Oskis R.P,
       2026-11-10, por la sesión telegram; prioridad).** Tachyon 0.9.3, PiStorm CM4, AmigaOS 3.2.3, wifi: desde los
       resultados de DuckDuckGo, el enlace de Aminet se quedó más de un minuto en "Trayendo hojas..." (sin la cuenta
@@ -670,8 +698,8 @@ tarea, con el estilo de Dash.
       De un vídeo a otro por los relacionados, también (64e). (64f, usuario 2026-11-10, sobre los controles de
       YouTube encima del vídeo) Una barra de controles de Tachyon sobre el vídeo al pasar el ratón: reproducir/parar,
       la línea de tiempo con lo bajado y clic para saltar, el tiempo, el volumen y pantalla completa (los de YouTube no
-      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Pendiente: desplegar la descripción ("more", sin
-      comprobar: queda al borde de la ventana), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
+      salen: su reproductor no funciona en Tachyon y el recuadro lo lleva el de Tachyon). Desplegar la descripción ("more"): hecho
+      (2026-11-11), oír el sonido en una máquina de verdad y medir en PiStorm. (El aviso
       de cookies descolocado, arreglado: el ancho de lo fijo sin width y el resize.)
       (64g, ensayo del vídeo 2 en Coffin con 256 MB) Tachyon se cerraba sin decir nada: los resultados de YouTube se
       comían la memoria hasta el último KB, y al abrir un vídeo la página de antes seguía entera mientras llegaba la
@@ -7165,3 +7193,390 @@ Formato:
   actualización de verdad desde el Tachyon.gz de la v0.9.4-alfa publicada (GitHub de mentira que redirige): idéntico
   al compilado, los nueve catálogos y .old; humo con MUI 3.8, cuatro ventanas 300 s. Notas en el scratchpad
   (notas095.md).
+
+### 2026-11-11 — Publicada la v0.9.5-alfa
+- Usuario: "Sí, publícala". PR #25 de dev a main (77bc585), etiqueta v0.9.5-alfa y pre-release
+  https://github.com/FreeMEM/tachyon/releases/tag/v0.9.5-alfa con tachyon.lha, Tachyon.gz (SHA-256 b7618ec3...,
+  bajado otra vez de GitHub e idéntico) y los nueve catálogos; la API de versiones la da la primera. Sin nombres
+  nuevos que agradecer.
+- Usuario: el vídeo 2, esperar al arreglo del cierre con el JIT de Amiberry; y "sí" a que freememlang-af ponga en
+  dashc la variable de entorno que cambie dbra por subq+bne, para ensayar con ella.
+
+### 2026-11-11 — Tarea 63h: los PDF, con el visor del sistema (como en Amelinium)
+- lib/documento.dash documento_es_pdf (por el tipo, application/pdf o x-pdf; sin tipo u octet-stream, por la
+  extensión). src/dashweb.dash empezar_descarga: un PDF se baja a T: sin preguntar dónde (descargas_empezar_abriendo)
+  y al acabar se abre con lo que tenga el sistema (lib/descargas.dash descargas_abrir_documento: wb_open, como un
+  doble clic, con DefIcons; si no, SYS:Utilities/MultiView con los datatypes). Texto 530 en los nueve catálogos.
+  tests/test_documento_pdf.dash, test_descargas. Sin probar en un Amiga de verdad lo de abrirlo (depende de sus
+  DefIcons y datatypes).
+
+### 2026-11-11 — Tarea 64: "more" despliega la descripción de un vídeo de YouTube
+- Probado en FS-UAE (RTG, con las cookies de Coffin por --semillas): el clic llega a #expand con pointerdown,
+  mousedown, pointerup, mouseup, click y el tap de Polymer, pero no desplegaba: el JavaScript de YouTube pregunta
+  matches(':focus-visible') y el motor de selectores de Tachyon daba SyntaxError con esa pseudo-clase (y con :focus,
+  :active, :visited...): se cortaba el código del clic.
+- lib/estilo.dash _pseudo_de_interaccion: focus, focus-visible, focus-within, active, visited, target,
+  target-within, autofill, fullscreen, modal, popover-open, user-(in)valid, playing, paused, picture-in-picture: se
+  conocen y no se cumplen (:not(:focus) sí); :placeholder-shown de verdad (un campo con placeholder sin nada
+  escrito). :defined no (los elementos propios sin definir se esconden con :not(:defined)). Con un clic en "more", la
+  descripción entera (la lista de demos). tests/test_jsdom_pseudo_interaccion.dash; selectores, estilo_pseudo, acid
+  y Acid3 100/100.
+- Además: los 6 ensayos con DASHC_SIN_DBRA (Tachyon sin los dbra de Dash) en Amiberry con JIT: 2 de 6 se caen. No son
+  los dbra de Dash.
+- (61, perfil de gh_repo.html en la máquina objetivo) _pseudo_de_interaccion, recién puesta delante de las demás en
+  _cumple_pseudo, se llevaba el 5,4 % (206 057 llamadas recorriendo su lista): fuera de _cumple_pseudo (esas acaban en
+  el false del final) y, en css_pseudo_conocida, con un diccionario. El estilo de gh_repo.html, 12,6 → 5,6 s con el
+  perfil puesto. (Ese cambio no salió en la 0.9.5.)
+
+### 2026-11-11 — Tarea 41d: baseURI de un documento de DOMParser (WPT domparsing 620 → 638/1090)
+- DOMParser-parseFromString-url-base y url-base-pushstate, 0/45: el documento de DOMParser heredaba el getter de
+  document.baseURI (docAparte le pone el prototipo del de la ventana), que daba siempre el <base> de la página.
+  lib/jsdom_preludio.js: ese getter, con otro documento, da el suyo (su primer <base href> contra su URL, o su URL);
+  y baseURI de un nodo cualquiera, el de su documento. 0 → 9/45 cada uno (las 36 que faltan usan frames[0], el
+  iframe). tests/test_jsdom_baseuri_documento.dash; Acid3 100/100.
+- (tools/wpt_js.py apunta cada fichero por location.pathname: los de pushstate salen como
+  fake/push-state-from-outer-frame.)
+- (después) setHTML, appendHTML, prependHTML, beforeHTML, afterHTML y replaceWithHTML seguros (whatwg/html#12753): sobre
+  un <script> de HTML o SVG, o con uno de padre, no hacen nada; setHTML, nuevo (vacía y mete el HTML seguro). WPT
+  positional-html-into-script-safe 14 → 90/91; domparsing 638 → 714/1090. tests/test_jsdom_html_seguro.dash; Acid3
+  100/100.
+- (después) DOMParser (WPT domparsing 714 → 743/1090), en lib/jsdom_preludio.js:
+  - CDATA del XML: nodos 4, "#cdata-section", no texto (xml-CDATA 0 → 8/8).
+  - text/html, con el analizador de HTML5 del documento entero (como document.close()): con el innerHTML del <html>,
+    "<div>..." quedaba sin <body> y d.body era null. También el responseXML de HTML de XMLHttpRequest.
+  - Los <script> de DOMParser, ya empezados ("XML scripting support disabled"): pasados a la página con appendChild,
+    importNode, adoptNode o cloneNode no corren. cloneNode copia la marca solo si DOMParser marcó alguno (para no
+    buscar <script> en cada clon de una plantilla).
+  - Los elementos XHTML de un documento XML guardan su espacio de nombres (__xml daba null); rootElement del documento
+    (su <svg> raíz, o null).
+  - xml-scripting-support-disabled 0 → 13/13; de paso empty-nodes 4 → 8, spurious-attributes 1 → 2,
+    parse-serialize-roundtrip 0 → 2, parseFromString-html 6 → 7. Ninguno baja. tests/test_jsdom_domparser_scripts.dash;
+    los de DOMParser, DOM y XML siguen; Acid3 100/100.
+- (después) appendHTML, prependHTML, beforeHTML, afterHTML, replaceWithHTML y setHTML (WPT domparsing 743 → 811/1090):
+  - Las Unsafe sin {runScripts: true}: sus <script>, ya empezados (no corren al meterlos).
+  - isConnected y getRootNode({composed: true}) salen de una raíz de sombra por su host (DOM "shadow-including
+    root"): lo de dentro de la sombra de un elemento de la página está conectado; así corren los <script> de runScripts
+    y los elementos propios de dentro de una sombra reciben connectedCallback. (Sin probar en YouTube.)
+  - El HTML, con el contexto de donde va (el innerHTML de un <div>: un <td> se pierde); en una tabla, un <select>, un
+    <head> o un <template>, como antes, con el de <template>.
+  - appendHTML y prependHTML en un <html>, HierarchyRequestError.
+  - positional-methods 396 → 452/480, html-insertion-methods-html-element 12 → 24/26. Ninguno baja.
+    tests/test_jsdom_html_seguro.dash, línea nueva; custom, interfaces, sin_doble y domparser_scripts siguen; Acid3
+    100/100.
+  - Quedan: los métodos en Node.prototype en vez de en Element y CharacterData (DocumentType también los tiene) y las
+    raíces de sombra declarativas (<template shadowrootmode>).
+- (después) outerHTML y style.cssText (WPT domparsing 811 → 824/1090):
+  - outerHTML = html: no tenía setter (en modo estricto, "no setter for property"; si no, no hacía nada). Ahora cambia
+    el elemento por el HTML leído con el contexto del padre (de un fragmento, un <body>), con el fragmento de los
+    métodos posicionales; sin padre, nada; con el documento de padre, NoModificationAllowedError; sus <script>, ya
+    empezados. outerhtml-01, 02 y 03: 0 → 9/10. tests/test_jsdom_outerhtml.dash.
+  - style.cssText: las declaraciones que valen, "k: v;" separadas por un espacio (CSSOM), no el atributo tal cual; uno
+    que no vale ("color:: x", nombre que no es un identificador, valor vacío) no cuenta tampoco en getPropertyValue.
+    setProperty escribe el atributo igual. style_attribute_html 0 → 4/4.
+  - Queda positional-template-child (beforeHTML en un hijo directo de un <template>, HierarchyRequestError): aquí los
+    hijos de un <template> leído del HTML están en el elemento hasta que se pide content, y daría error en
+    plantillas de verdad.
+  - Los tests de estilo (documento_estilo_js, medir_js, ligero, limite, estilo_partes, maqueta_epoca) y de DOM
+    siguen; Acid3 100/100.
+- CORRECCIÓN al cierre con el JIT de Amiberry: el JIT de FS-UAE no compila nada. Un bucle de Dash de 400 M vueltas
+  (fpu=68040, uae_cpu_speed=max, un logs_dir por ejecución): cpu=68040 con jit_compiler=1, 37,5 s; 68040-NOMMU con
+  JIT, 38,3 s; 68040-NOMMU sin JIT, 38,5 s; cpu=68040 sin JIT, 62,5 s (con la MMU emulada). El registro dice "JIT:
+  Enabling JIT compiler" y cachesize=8192, pero "CPU=68040, FPU=68040, MMU=0, JIT=0": lo único que hace jit_compiler=1
+  es quitar la MMU. Así que "FS-UAE con JIT 0 de 6" fue sin JIT, como Amiberry sin JIT (0 de 5): no está demostrado
+  que sea solo de Amiberry (puede ser un JIT de UAE con algo de Tachyon). También: la máquina "objetivo" de
+  tools/medir_visor.py y las medidas de "68040 + JIT" han sido sin JIT. Lo pidió el usuario (vía freememlang-af), que
+  ahora lleva un caso pequeño del fallo para avisar a Amiberry.
+- (después, 41d) XML bien formado en DOMParser (WPT domparsing 824 → 829/1090): xmlAnalizar da parsererror con un
+  espacio tras "</" (el nombre de cierre ya no se recorta) y con atributos con ':' al principio o al final, dos ':' o
+  xmlns:xmlns. El prefijo sin declarar (x:test) se deja pasar a propósito (RSS de verdad que lo usan), y los
+  surrogates también (el texto va en Latin-1). xml-parsererror 15 → 20/23. tests/test_jsdom_domparser.dash con una
+  línea más; domparser_scripts y xml_ns siguen; WPT xhr igual (864/1131); Acid3 100/100.
+- (después, 41d) insertAdjacentHTML (WPT domparsing 829 → 842/1090): el HTML con el contexto de donde va (el fragmento
+  de los métodos posicionales: antes o después, el padre; dentro de <html> o con un fragmento de padre, un <body>);
+  antes o después sin padre o con el documento de padre, NoModificationAllowedError; una posición que no es de las
+  cuatro, SyntaxError (también insertAdjacentElement y Text, que sin padre dan null); sus <script>, ya empezados: al
+  llevar el padre a otro sitio no corren. insert_adjacent_html 23 → 31/31, insert-adjacent-parent-errors 2 → 7/7.
+  Ojo: la ayuda se llamaba primero "posicion" y había otra function posicion más abajo en el mismo ámbito (la de más
+  abajo gana, y la mía no se usaba): ahora posAdyacente. tests/test_jsdom_insertadjacent.dash; sin_doble,
+  load_peticion, html_seguro y outerhtml siguen; Acid3 100/100.
+- (vídeo 2) Con el Dash de main 88732ce (el arreglo de los registros tras una función copiada en línea), Amiberry con
+  JIT: las tomas 3 y 4 de 4 se caen. No era eso. Sospechosa: la tarea del sonido de MintVID
+  (third_party/mintvid/amiga/audio_paula.c:305, CreateNewProcTags sin tc_TrapCode: un fallo ahí no avisa); siguiente,
+  tomas con -DDWV_SIN_SONIDO (idea de freememlang-af).
+- (vídeo 2) Las 6 tomas con el Dash 88732ce: se caen la 3, la 4 y la 6 (3 de 6). En las caídas, el vídeo de la página
+  pedía videoplayback desde ~28 s antes (sonando). En marcha: 6 tomas con -DDWV_SIN_SONIDO
+  (~/.cache/video-tachyon/ensayos/repetir_ss.sh; Tachyon en el scratchpad, TachyonSinSonido).
+- (vídeo 2) Sin el sonido del vídeo (-DDWV_SIN_SONIDO), Amiberry con JIT: 6 de 6 sin caída (con sonido, 3 de 6 con el
+  mismo Dash; antes 6 de 11). Por azar sería ~1,6 %: el cierre viene de la salida de sonido de MintVID (la tarea
+  "MintVID Paula output" de third_party/mintvid/amiga/audio_paula.c y lo que comparte con la principal), que solo sale
+  con JIT. Siguiente: un manejador de excepciones en esa tarea que apunte la dirección, y buscar la carrera.
+- (después, 41d) XMLSerializer: un Attr da "" (WPT domparsing 842 → 843/1090). Se probó conservar el prefijo propio de
+  un atributo (xl:type) y se quitó: rompía "p:name sale ns1:name" (DOM-Parsing#29), que es lo del estándar; quedan
+  esas dos pruebas incompatibles y la de xmlns="" con un prefijo atado a "". test_jsdom_xml_ns con una línea más; WPT
+  xhr 881/1155 (antes 864/1131: más subpruebas que llegan a correr, ninguna menos); Acid3 100/100.
+- (70) Visto en sys32rtg38 (MUI 3.8, medir_visor --acciones con Amiga derecha + V en la barra): no pega, mete una "v".
+  Para un pegar propio (opción de menú con V que pegue donde está el cursor, y que en una página vaya al campo de la
+  página) faltan en Dash el objeto activo de la ventana y la posición del cursor de un String: pedidos a
+  freememlang-af (mui_active_object, mui_string_pos, mui_set_string_pos), con el visto bueno del usuario en su sesión.
+- (vídeo 2) third_party/mintvid: con -DDWV_TRAMPA_SONIDO (solo para ensayar; por defecto no cambia nada), la tarea del
+  sonido lleva un tc_TrapCode que apunta el número de la excepción y su PC y la deja parada; lib/videos.dash lo
+  escribe en la TRAZA ("vídeo: la tarea del sonido se paró: ..."). Tomas con ese Tachyon:
+  ~/.cache/video-tachyon/ensayos/repetir_tr.sh.
+- (70) Pegar hecho y probado en sys32rtg38 (MUI 3.8) con los builtins de freememlang-af (mui_active_object,
+  mui_string_pos, mui_set_string_pos; rama local mui-cursor de FreeMEMLang, 226ff73, sin fusionar): una opción
+  "Paste" (Amiga-V, texto 56 en los nueve catálogos) en el menú Proyecto. Con la barra activa, la primera línea del
+  portapapeles donde está el cursor ("http:Hola mundo//127..."); con la página (MUI da 0 de objeto activo: el canvas
+  no lo es) y un campo con el foco, en ese campo, también con el puntero fuera de la página. Pero con MUI 3.8 y la
+  barra activa, Amiga+V no llega al menú: el String se la queda y mete una "v"; solo pega eligiendo el menú con el
+  ratón. Pedido a freememlang-af un mui_string_clipboard (MUIA_String_EditHook con Amiga+V/C/X). Guardado en
+  git stash ("tarea 70: pegar...") hasta que los builtins estén en el main de Dash: con el Dash de main no compila.
+- (vídeo 2) Con la trampa en la tarea del sonido (TachyonTrampa), Amiberry con JIT: se caen la 1, la 2 y la 4 de 5, y
+  la trampa no salta nunca (ninguna excepción de la CPU en esa tarea). Tampoco sale el aviso de Dash:
+  Traspaso:salida.txt (copiada al cambiar, scratchpad/trazas_tr/salida_*.txt) solo tiene "[CLI 9]". En la foto,
+  Tachyon ya no está en la lista de tareas de Trasfondo y la memoria no vuelve (la 6.ª, sin caída: 3 de 6). Así que no es una excepción en la
+  tarea del sonido. Queda: el decodificador AAC de MintAMP (con ensamblador de 68k, en la tarea principal) o la
+  salida por Paula. Para separarlo, -DDWV_SOLO_DECODIFICAR (third_party/mintvid/dashweb_video.c: decodifica el sonido
+  y lo tira, sin audio_open ni su tarea); tomas: ~/.cache/video-tachyon/ensayos/repetir_sd2.sh.
+- (70) Los builtins ya en el main de Dash (a3d7bb2, PR #156): el pegar, fuera del stash y otra vez visto con el Dash de
+  main en sys32rtg38 (barra con el menú y campo de la página con Amiga+V, bien); test_formularios_pegar pasa. Queda
+  Amiga+V con el teclado en la barra en MUI 3.8 (freememlang-af hace mui_string_clipboard con V, C y X).
+- (vídeo 2) Amiberry 8.5.0 (instalado por el usuario con yay, 2026-11-11): la 1.ª toma con el Tachyon normal
+  (TachyonMain88732ce, sonido y JIT, video2.uae sin cambios) se cae igual (a los ~60 s de la página del vídeo, tras un
+  POST a youtubei/v1/feedback). La 8.5.0 no lo arregla. Tanda parada ahí por el reinicio de la máquina; siguiente:
+  las tomas con -DDWV_SOLO_DECODIFICAR (repetir_sd2.sh).
+- (69) Registro de JaviTecH (#1169, por la sesión telegram): PiStorm con Emu68 1.1 beta 2, exec 45.20 (OS 3.9/
+  CaffeineOS), Roadshow 4.110, MUI 19.35, 1,7 GB de Fast libre (mayor bloque 925 MB). aminet.net llega entera (139 KB)
+  y la traza se corta en "leyendo el HTML" (con el AN_BadFreeAddr; Alvaro Brown, #1153, la carga bien en una PiStorm
+  con 3.2.3). Sospecha: memoria por encima de 0x80000000, negativa en un Int. Probado: tools/medir_visor.py
+  --memoria-alta (1 GB + 512 MB de Z3; tools/amiga/comer.dash se queda antes con toda la memoria de abajo de 2 GB, hasta
+  que un trozo pequeño sale negativo) en la máquina objetivo con sys31muiweb: prueba.html y gh_repo.html (290 KB,
+  con su JavaScript) cargan bien con la memoria de arriba (Tachyon con ~490 MB libres, todos por encima). No es eso
+  (al menos en 3.1 con FS-UAE). Con RTG y la Z3 en su sitio real FS-UAE no arranca (y con JIT no deja RTG).
+  Lo distinto que queda de JaviTecH: OS 3.9 (exec 45), Roadshow y Emu68.
+- (vídeo 2, tras el reinicio, Amiberry 8.5.0) Con -DDWV_SOLO_DECODIFICAR (el AAC se decodifica en la tarea principal y
+  se tira; sin audio_open ni la tarea de Paula): se caen 2 de 6 (la 1 y la 3). Sin decodificar (-DDWV_SIN_SONIDO)
+  no se caía ninguna: es el decodificador AAC de MintAMP, no la salida por Paula. Siguiente: el AAC sin su ensamblador
+  de 68k (muls.l de 64 bits, cargas big-endian...): -DDWV_AAC_EN_C (third_party/mintvid/audio/mr_aac_m68k_config.h no
+  pone los AMIGA_M68K_ASM_AAC_*), tomas con sonido: ~/.cache/video-tachyon/ensayos/repetir_aacc.sh.
+- Con -DDWV_AAC_EN_C (sonido y el AAC en C, sin ensamblador) se caen 3 de 6 (3, 5 y 6): no es el ensamblador. El C
+  compilado con -m68020-60 tampoco usa mul/div de 64 bits (gcc los pasa a funciones). Siguiente: -DDWV_SOLO_ABRIR (con
+  -DDWV_SOLO_DECODIFICAR: el decodificador se abre pero los paquetes de sonido se tiran sin decodificar), para saber si
+  basta con abrirlo o es la decodificación: ~/.cache/video-tachyon/ensayos/repetir_abrir.sh.
+- Con -DDWV_SOLO_ABRIR (decodificador abierto, ningún paquete decodificado, sin Paula) se caen 4 de 6 (1, 4, 5, 6).
+  Decodificar no hace falta. Lo único distinto de -DDWV_SIN_SONIDO (0 de 6) es mr_audio_decoder_open (sus calloc)
+  y unos pocos KB de código (el binario sin sonido solo es 4 KB más pequeño). Siguiente: -DDWV_NO_ABRIR (con los dos
+  anteriores: el decodificador se enlaza pero no se abre; ai = NULL tras un volatile), para separar el abrir de dónde
+  cae el código: ~/.cache/video-tachyon/ensayos/repetir_noabrir.sh.
+- Con -DDWV_NO_ABRIR (decodificador enlazado y nunca abierto; en marcha hace lo mismo que sin sonido) se caen 6 de 6.
+  Así que no es el sonido: el 0 de 6 de TachyonSinSonido (compilado con el Dash 88732ce y el Tachyon de entonces) o fue
+  suerte o depende de dónde cae el código (un fallo del JIT sensible a la posición). Siguiente: 6 tomas con
+  -DDWV_SIN_SONIDO compilado otra vez con el Dash (15998eb) y el Tachyon de ahora: repetir_ss2.sh (TachyonSinSonido2).
+- TachyonSinSonido2 (sin sonido, Dash 15998eb): se caen las 3 primeras (paré la tanda ahí). El sonido queda
+  descartado del todo; el 0 de 6 del primero sin sonido fue suerte o la posición del código. Siguiente (idea de
+  freememlang-40): el Tachyon de ahora con el JIT de Amiberry en modo prudente (comp_flushmode=hard, comp_trust*=
+  indirect, comp_constjump=false; el .uae se guarda y se repone): repetir_jitseguro.sh. comp_trust*=indirect solo ya
+  se cayó; si este no, quitar flushmode o constjump por mitades para saber cuál basta (lo que contar a Amiberry).
+- Con el JIT prudente: la 1 sin caerse y la 2 se cae (paré ahí). Los ajustes del JIT no lo arreglan. Como el 0 de 6
+  sin sonido resultó engañoso, también hay que repetir el "sin JIT 0 de 5" (era con un Tachyon viejo): 3 tomas con el
+  Tachyon de ahora y cachesize=0, con e7lento.py (los tiempos de e6lento): repetir_sinjit3.sh.
+- (idea de freememlang-40) ¿Una pila desbordada? Tachyon pide 1 MB (@stack) y dashc hace StackSwap al arrancar
+  (dashc/runtime/rt_math.s), también con Run; las tareas hijas de Dash tienen pila fija (dash_task 128 KB, net_bg
+  64 KB, dash_dns 16 KB) y sin el manejador de excepciones. Con TRAZA, Tachyon apunta ahora la pila al empezar
+  ("pila 1024 KB"), llena la libre con un patrón (dwv_pila_pintar, third_party/mintvid/dashweb_video.c) y cada 10 s,
+  si ha bajado, "pila: lo menos libre ha sido N KB de 1024 KB" (videos_pila_traza, desde el bucle de eventos).
+  gh_repo.html en FS-UAE: 970 KB libres como mínimo. Tomas: ~/.cache/video-tachyon/ensayos/repetir_pila.sh.
+- (70) Amiga+V con el teclado en la barra con MUI 3.8: hecho en Dash (main 15998eb, PR #159; mui_string y mui_combo
+  llevan solos el gancho de edición con MUI 3.8: Ctrl/Amiga + V pega, C copia, X corta). Tachyon solo se recompila: en
+  sys32rtg38 la barra pega "Hola mundo" donde está el cursor (antes metía una "v"); test_formularios_pegar pasa.
+  La tarea 70 queda hecha.
+- (vídeo 2) Sin JIT (cachesize=0) y el Tachyon de ahora: 3 de 3 sin caerse (25 min cada una, e7lento.py). Con el de
+  antes, 5 de 5: sin JIT 0 de 8; con JIT y el Tachyon de ahora, 10 de 11 se caen (sin sonido 3 de 3, decodificador sin
+  abrir 6 de 6, JIT prudente 1 de 2). Así que va con el JIT de Amiberry (o con su velocidad), no con el sonido.
+  Siguiente: las tomas con la pila en la TRAZA (repetir_pila.sh), para ver lo menos libre antes de caerse.
+- Primeras tomas con la pila: ya a los 18 s "0 KB libres", pero era una marca: en CoffinOS algo escribe ba d1 ba d3
+  justo en tc_SPLower (4 bytes cambiados en los primeros 64 KB; el resto, el patrón intacto). La medida ahora se salta
+  los primeros 64 bytes y dice dónde está el primer cambio, cuántos hay en los primeros 64 KB y sus 16 bytes
+  (dwv_pila_informe). Otra vez las tomas: repetir_pila.sh.
+- Con la medida buena (3 tomas con JIT, las 2 acabadas se cayeron): la pila de la tarea principal baja a 556 KB libres
+  de 1024 a los ~44 s (con la página de YouTube) y no baja más hasta caerse (~5 min después). No es la pila de main.
+  Quedan las tareas hijas de Dash (net_bg 64 KB, dash_dns 16 KB, sin manejador de excepciones). Sin JIT, YouTube
+  compila su script de 10,8 MB en 148 s y con JIT en 4,1 s (36 veces más rápido). Siguiente (idea de freememlang-40):
+  JIT frenado al 10 % (cpu_throttle=-900.0, lo más que deja), con e7lento.py: repetir_frenado.sh.
+- El JIT frenado (cpu_throttle=-900.0) va más lento que sin JIT (el script de 10,8 MB compila en 378 s, sin JIT en
+  148 s): con e7lento no llega a la página del vídeo; parado. Y un hallazgo: con JIT el cierre es muy regular, de 43 a 50 s
+  después de pedir la página del vídeo (9 trazas), justo tras "maqueta entera por el atributo actions-on-separate-line"
+  y la respuesta 400 de youtubei/v1/feedback (sigue maquetando y pintando; nada raro antes). Sin JIT, 36 veces más
+  lento, las tomas de 25 min solo pasan ese punto unos 220 s (~6 s de JIT): el "sin JIT 0 de 8" no es concluyente.
+  Siguiente: las tareas en la TRAZA con JIT (repetir_tareas.sh; antes, el arranque de Coffin a Traspaso: arranque_*.txt,
+  por si hay algo que capture los gurus, idea de freememlang-40) y luego sin JIT con mucho más tiempo en el vídeo.
+- Tareas en la TRAZA (TachyonTareas, 3 de 3 caídas): las dash_task, listas o esperando y nunca TS_EXCEPT; ninguna
+  dash_dns viva al final. En las 9+3 caídas, el cierre llega entre 0 y 3,5 s después de "pide POST
+  .../youtubei/v1/feedback" (con lottie-light.js también a medias); sin JIT nunca se llegó a ese POST. En la foto de
+  justo después (c3_fin) la ventana ya no está pero Trasfondo enseña "Programs:Network/Tachyon" al 94 % de CPU; en las
+  de más tarde ya no está: tras el fallo el proceso sigue un rato y se va. salida.txt solo tiene "[CLI 11]" (ni los
+  Print normales de Tachyon). Encaja con _dash_trap_recover (una excepción de la CPU en la tarea principal: el aviso,
+  _dash_exit(20), que libera mucho, y vuelta al shell) con el aviso perdido. Pedido a freememlang-40 que el aviso del
+  trap se escriba sin búfer o a un fichero. El arranque de Coffin (arranque_*.txt en Traspaso:): C:MCP, C:StackAttack
+  (dos veces; seguramente la marca ba d1 ba d3 de la pila), SaferPatches, ReqAttack en WBStartup; nada que mate tareas.
+- freememlang-40 encontró por qué no sale el aviso: en ./dash el manejador de excepciones se ponía antes del StackSwap,
+  y la pila de rescate era la del shell (4 KB con Run). El aviso y la limpieza la desbordaban: colgado gastando CPU, sin
+  salida y sin devolver la memoria (arreglo en su rama local trampa-pila; fusionarlo, con el visto bueno del usuario).
+  Mientras, Tachyon con TRAZA=fichero pone su trampa delante de la de Dash (dwv_trampa_main, dashweb_video.c): con una
+  excepción de la CPU apunta en la traza y en la salida (Write, sin búfer) el número, el PC con su hunk y desplazamiento
+  y el marco, y deja Tachyon parado. TRAMPAPROBAR (argumento) ejecuta una instrucción ilegal para probarla: en FS-UAE,
+  "TRAMPA: excepción 4 en PC 4026de88 (hunk 0 + $242258)". Tomas: repetir_trampamain.sh.
+- Con la trampa y el Dash de antes (Ctrl-C ya dentro): 1 de 2 se cae y la trampa no salta (ni TRAMPA ni aviso). Con
+  el Dash de main 0f87633 (3921eb1: el manejador de excepciones tras el StackSwap, la pila de rescate la de @stack y
+  el aviso con Flush; freememlang-40, con el visto bueno del usuario) y la trampa: 0 de 3, las tres pasan el POST de
+  feedback y siguen 100 s más. Parece que 3921eb1 lo arregla. La trampa ahora recoge también las excepciones de la
+  FPU y las demás (no la 9 ni TRAP #n). Para confirmarlo, 6 tomas más: repetir_trampa2.sh (TachyonTrampa2).
+- No lo arregla. Tomas en paralelo (varios Amiberry, cada uno con su copia del disco, su Xvfb y su Traspaso:; los míos
+  en ~/.cache/video-tachyon-i2 e -i3, los de freememlang-40 en -p1..p9): con 0f87633 y un relleno de código que no se
+  ejecuta (TachyonRelleno8 y TachyonRelleno40: +184 y +664 bytes) se caen 5 de 7. El control con el Dash de antes
+  (TachyonTareas) se cae 2 de 3. TachyonTrampa2 lleva 0 de 7. En ninguna caída salta la trampa ni sale el aviso de
+  Dash: no es una excepción de la tarea principal. Idea: Tachyon sale "bien" (MUI devuelve Quit, -1, también con un
+  Ctrl-C a la tarea, quizá del bsdsocket de Amiberry; o abiertas() llega a 0) y hace la limpieza normal. TachyonSalida
+  apunta en la traza "el bucle de eventos acaba por el evento N", "fuera del bucle de eventos" y "fin de Main".
+- TachyonSalida, 9 tomas a la vez (freememlang-40): se caen 7. En ninguna sale "el bucle de eventos acaba", "fin de
+  Main", TRAMPA ni el aviso de Dash (la traza abre, escribe y cierra en cada línea: no se pierde nada). Main no sale
+  por el final normal: la tarea se va a media faena. TachyonTrampa2 acabó 2 de 9 y TachyonRelleno40 2 de 3. Siguiente:
+  el abort() y el __assert_func del C (src_c/tachyon.c; QuickJS sin NDEBUG, 62 abort()) escriben también en el
+  fichero de la traza (tachyon_traza_c): TachyonSalida2.
+- ¡Cazado! (freememlang-40, 9 tomas a la vez de TachyonSalida2): 3 caídas, las tres con "dashweb: assert de QuickJS:
+  js_rc(p->shape)->ref_count == 1 (quickjs.c, 9370)" y "dashweb: abort". Es add_property: el objeto tiene una forma
+  compartida que no está en la tabla de formas, cosa que solo pasa con un contador de referencias roto (un
+  JS_FreeValue de más o un Dup de menos: el objeto o su forma se liberan antes de tiempo). Encaja con el POST de
+  feedback (fetch con respuesta 400). Y un segundo fallo, de Dash: tras el abort la limpieza se cuelga con la CPU al
+  94 % (freememlang-40 lo mira: un segundo _dash_quit desde la limpieza). Sin JIT no se llegaba a ese punto.
+  Ahora QuickJS (cambio 10 de docs/quickjs_amiga.md) cuenta antes del assert la clase del objeto, la propiedad y la
+  pila de JavaScript con fichero y línea: TachyonForma (Acid3 100/100).
+- TachyonForma (3 + 3 caídas, mías y de freememlang-40): siempre "forma compartida sin tabla (ref_count 0,
+  193462520 propiedades, hash 0) al añadir 'stack' a un objeto de clase 0". Es build_backtrace al crear un Error (el
+  'stack' de una excepción nueva), y el objeto está deshecho: clase 0, forma ya liberada, cuenta de propiedades
+  basura. La pila de JavaScript cambia de una caída a otra (rect del preludio, leerEstilo, poner, el código de
+  YouTube): cualquier excepción da con ello. No apunta a una función concreta; parece memoria pisada (la del Error
+  nuevo o la forma inicial de su prototipo) más que un JS_FreeValue de más en un sitio fijo. Sospecha: la tarea de la
+  red (net_bg) escribiendo en un búfer que la principal ya soltó (la caída llega con el POST de feedback y
+  lottie-light.js a medias).
+  Las tomas que siguen dan siempre los mismos números basura (ref_count 0, 193462520 = $0B8800F8 propiedades): algo
+  determinista, no una carrera con la red. freememlang-40 miró net_bg: sus búferes son de la tarea y solo se copian a
+  los del programa con el semáforo; no ve cómo podría pisar. Sospechoso nuevo: el pool de exec de QuickJS (_jm_malloc,
+  charcos de 512 KB; _jm_sano solo cubre el primer charco, como en la D80): un FreePooled que suelta un charco con
+  bloques vivos. Dos binarios de diagnóstico: TachyonSinCharcos (-DTACHYON_JS_SIN_CHARCOS al compilar
+  tools/build_pegamento.sh: QuickJS con AllocVec y FreeVec) y TachyonCuenta (QuickJS avisa con la pila de JS si un
+  valor se libera más veces de las que se tomó: js_amiga_cuenta_negativa, quickjs.h y quickjs.c, cambio 11).
+- Cuidado con las tomas: YouTube pone ahora una lista delante de los resultados y el clic en "Incredible" a veces no
+  abre el vídeo (las primeras de SinCharcos no valían: sin POST de feedback). Abriendo watch?v=vIQ74_DRWEM a mano no
+  se cae nada, ni con pool (0 de 3, freememlang-40): hace falta llegar al vídeo con un clic desde la búsqueda, en el
+  mismo documento y el mismo QuickJS que cargó la búsqueda (escribir la dirección crea un documento y un runtime
+  nuevos). e7r.py: busca y hace clic con hasta 4 reintentos hasta que el título dice "Incredible".
+  (Y el clic iba a la descripción, "A look at the incredible", que no es un enlace: ahora busca "Making Art".)
+- TachyonCuenta (con pool), 3 tomas: se caen 2, con el mismo assert y SIN aviso de "valor liberado de más" antes: ningún
+  JS_FreeValue deja una cuenta negativa. Una de las dos se cayó sin llegar a abrir el vídeo (en la página de la
+  búsqueda, tras varios clics). Lo de las formas no pasa por JS_FreeValue (js_free_shape lleva su propia cuenta), así
+  que no se descarta del todo, pero refuerza lo de la memoria pisada.
+- TachyonSinCharcos (QuickJS con AllocVec y FreeVec) también se cae, con la misma firma exacta: no es el pool de exec.
+  Y los números basura son idénticos en todas las caídas, con pool y sin él: no es memoria reutilizada al azar; p
+  apunta siempre a la misma clase de estructura. Ideas: un JSValue con etiqueta de objeto que no lo es (NaN-boxing de
+  32 bits; freememlang-40: el NaN de x86 del JIT de la FPU, 0xFFF80000..., aunque __JS_NewFloat64 ya canoniza), o un
+  objeto ya liberado. TachyonBytes: el aviso vuelca 48 bytes del objeto y 48 de su forma, con sus direcciones.
+  freememlang-40 prueba el Tachyon normal con compfpu=false en el escenario de búsqueda y clic.
+- ¡El objeto es un JSObject ya liberado! TachyonBytes: p->shape == NULL (la "forma" leída era la dirección 0:
+  400008bc es ExecBase en $4, y 00f80bc2... los vectores de la ROM: por eso los números basura eran siempre iguales).
+  free_object deja p->shape = NULL: se añade 'stack' a un Error que QuickJS ya soltó. compfpu=false (freememlang-40,
+  búsqueda y clic): 5 de 9 caídas con la misma firma; el JIT de la FPU y el NaN quedan descartados. Siguiente:
+  TachyonLiberados, QuickJS apunta en un anillo los 64 últimos Error que libera (dirección, fase del recolector,
+  pila de JS) y el aviso dice si el roto está ahí y desde dónde se liberó.
+- TachyonLiberados (1 mía + 5 de freememlang-40): siempre "LIBERADO ANTES (fase 1, 0 Error liberados después)": un
+  decref normal (free_zero_refcount pone la fase 1), justo el último Error liberado, en la misma función de JS donde
+  luego se le añade 'stack' (las líneas son comienzos de función del código de YouTube: la excepción salta al entrar).
+  Lectura: en la etiqueta exception: del intérprete, build_backtrace(ctx, rt->current_exception) no tiene referencia
+  propia; si dentro salta otra excepción (sin memoria: JS_AtomToCString, JS_NewString...), JS_Throw suelta la
+  pendiente y build_backtrace sigue con ella. Arreglo (cambio 12 de docs/quickjs_amiga.md): Dup y Free alrededor, y
+  un aviso "otra excepción (...) mientras se ponía la pila" para confirmarlo. TachyonArreglo, Acid3 100/100.
+- CONFIRMADO (freememlang-40, 9 tomas a la vez con búsqueda y clic): TachyonArreglo 0 caídas de 8 válidas (sin el
+  arreglo, 4-5 de 9), y en 6 de ellas, varias veces, "QuickJS: otra excepción (out of memory) mientras se ponía la
+  pila": justo el camino que antes cerraba Tachyon; ahora sigue. Queda aparte el "out of memory" del propio runtime
+  de YouTube tras navegar dentro de la página (malloc_limit fijado al crear el runtime: _js_memoria_tope). Y de Dash
+  (freememlang-40, con el usuario): vaciar Output() al salir y no esperar sin fin a las tareas tras un abort. La
+  tarea 66 (el vídeo 2) puede seguir: la toma ya no se cae. Pendiente decidir con el usuario si se avisa a
+  bellard/quickjs del fallo.
+- Mis tomas con TachyonArreglo: 8 de 8 sin caerse (con 0 a 44 "otra excepción (out of memory)" por toma).
+- El "out of memory" del motor de YouTube: el tope de QuickJS (dos tercios de la memoria libre al crear el motor) se
+  alcanzaba con 40-55 MB aún libres. Ahora _jm_cabe (src_c/tachyon.c) lo sube lo justo si, tras darle el bloque, quedan
+  más de 32 MB libres (por encima de los 24 MB de dw_js_minima con los que se suelta el JavaScript), hasta
+  JS_MEMORIA_MAX (256 MB). Un tope puesto con js_limite (impar) no se mueve: test_js sigue saltando. TachyonTope, 9
+  tomas con búsqueda y clic: 0 caídas y menos avisos (0 a 9 por toma, una con 61). Lo que queda es fragmentación: con
+  26-46 MB libres, el mayor bloque seguido rondaba los 800 KB.
+- Tests test_js* 57/57 (10 de jsdom se pasaron de tiempo con tres Amiberry en marcha; repetidos uno a uno, pasan).
+- (66) El vídeo 2, otra vez en marcha: guion2.py hace clic en "Making Art" (el título; "Incredible" daba con la
+  descripción y YouTube pone ahora una lista delante), hasta 3 veces, y si no, escribe la dirección; paquete rehecho
+  (tools/paquete.sh) con los arreglos; tomar2.sh en.
+- El fallo de QuickJS ya estaba avisado arriba (bellard/quickjs #533, otra persona) y Fabrice Bellard lo arregló el
+  2026-11-02 con el mismo cambio (el Dup dentro de build_backtrace); nuestra copia es la 2026-06-04. No se abre otro
+  aviso. El usuario pidió explicarlo en el grupo: texto pasado a la sesión telegram (con su visto bueno).
+- (66) La 1.ª toma en inglés salió entera (458 s; el vídeo de YouTube se ve y suena), pero no vale: la consola de
+  Inspeccionar enseña decenas de "InternalError: out of memory" en rojo (de YouTube), el .lha era el 2.8.7 que ya no
+  está (página de error) y www.amigaworld.net da "hostname mismatch" (su certificado solo vale para amigaworld.net:
+  Tachyon hace bien). Guion: el .lha que haya en Traspaso: y https://amigaworld.net.
+- Los "out of memory" con 57 MB libres: la memoria del Amiga troceada (el mayor bloque seguido, ~500-800 KB) y el pool
+  de QuickJS pide charcos de 512 KB. Ahora cada motor lleva dos pools (_jm_pool_crear): el de siempre y, si un charco
+  nuevo ya no cabe, otro de charcos de 64 KB; el bit alto del tamaño de la cabecera dice de cuál es cada bloque. Se
+  quita el diagnóstico TACHYON_JS_SIN_CHARCOS. Acid3 100/100.
+- La 2.ª toma en inglés: amigaworld.net ya se ve (con una noticia de Tachyon), pero su consola, llena de "out of
+  memory". Con TRAZA=fichero, _jm_fallo dice por qué falla cada petición a QuickJS (tope, reserva o pool), y en
+  e7aw.py (YouTube y luego amigaworld en la misma ventana) salía siempre "tope": lleva 91116053 de 91116755, con
+  55 MB libres y un bloque de 23 MB. El tope que sube (b750a01) salía impar (malloc_size + n + 2 MB) y un tope impar
+  es uno fijo de js_limite: ya no subía más. Ahora se redondea a par. (Y los dos pools no hacían falta para esto, pero
+  se quedan: con la memoria troceada ayudan.)
+- 3.ª toma: el tope ya sube (YouTube llega a 107 MB y para con 33 MB libres: eso ya es falta de memoria de verdad);
+  al ir a amigaworld se suelta YouTube (183 MB libres). Pero: (a) "Traspaso:trasfondo-2.9.2.lha" salía como texto:
+  documento_texto solo abría como comprimido lo que empezaba por file:; ahora cualquier ruta de fichero (url_fichero
+  no NIL:) con extensión de comprimido. (b) La consola de Inspeccionar enseñaba lo de todas las páginas (los "out of
+  memory" de YouTube en la de amigaworld); ahora, como Chrome, desde la última línea "open " del registro.
+  test_archivos y test_inspeccionar pasan. (c) Esa toma, el vídeo de YouTube no llegó a sonar a tiempo (variable).
+- 4.ª toma en inglés grabada (446 s, ~/.cache/video-tachyon/tomas/v2_en_t1) con dc6cdf7: SIN REVISAR todavía (mirar
+  fotogramas: el vídeo sonando, el .lha como comprimido, la consola de amigaworld). Luego la toma en castellano
+  (tomar2.sh es) y montar2.py. Publicar solo con el visto bueno del usuario.
+
+### 2026-11-12 — Tarea 41d: innerHTML con null, createContextualFragment y las entidades sin definir en XML (domparsing 843 → 849/1090)
+- innerHTML = null deja "" ([LegacyNullToEmptyString], src_c/tachyon.c): innerhtml-07 5/5.
+- Range.createContextualFragment sin argumento lanza TypeError, y con null analiza "null" (un DOMString normal):
+  createContextualFragment 35/35.
+- En XML, una entidad sin definir (&times; de HTML) está mal formada: el documento de error <parsererror>
+  (xmlTexto, lib/jsdom_preludio.js): DOMParser-xml-character-entities 8/8.
+- Acid3 100/100; tests de jsdom 46/46 (los que se pasaron de tiempo con el emulador cargado, repetidos solos).
+
+### 2026-11-12 — Tarea 71a: amigaworld.net, la columna de la derecha cuadrada
+- Copia local (tests/pages/zz_amigaworld.html y .css, sin sus imágenes; no se sube: es de terceros) y una prueba propia
+  (tests/pages/tabla_columna_minima.html). Cuatro cosas de las tablas y del texto (lib/maqueta.dash):
+  1. Cada celda se maqueta al ancho de su columna aunque su width diga otra cosa (_celda_maquetar, también al
+     recolocarla por vertical-align): con width=20% se maquetaba al 20 % de la tabla y sus tablas al 100 % se quedaban
+     estrechas aunque la columna hubiera crecido.
+  2. Al medir lo mínimo o lo máximo de un contenido (sitio de mentira de 1 o FLEX_GRANDE), un width en % es auto: una
+     tabla con width=100% medía 1 y su columna no crecía. Y cuentan los fondos de tablas y celdas, que ya están a su
+     ancho (su relleno y border-spacing de la derecha no contaban: la de Aminet se salía 27 px).
+  3. Las columnas con width en % ceden hasta lo mínimo de su contenido solo si los mínimos no caben.
+  4. Las palabras se pueden partir tras "/", "?" y un "-" entre letras (UAX #14, como Chrome): las direcciones de
+     Aminet y OS4 Depot no ensanchaban tanto la columna. Una pieza con 2 en blancos: sin espacio, cortable.
+- Comparada con Chrome al mismo ancho (tools/comparar_chrome.py --solo-chrome con la copia): Chrome también deja ancha
+  la columna de la derecha (~395 de 940; Tachyon 350), por las direcciones completas de "OS4 Depot Latest Files".
+  Reparto: Tachyon 204/389/350, Chrome ~175/345/395. La letra de Tachyon sale más grande.
+- test_maqueta* 35/35, Acid2 2/2, test_texto* 5/5, Acid3 100/100. El usuario: que lo vigilen los reftests de WPT
+  (normal-flow y tables, antes y después: tras la versión).
+
+### 2026-11-13 — Un botón para cerrar la pestaña
+- El usuario (por la sesión Tachyon2): "cuando abro una pestaña no tengo luego forma de cerrarla". Amiga-W y el menú
+  Proyecto > "Close tab" sí la cierran (visto en sys32rtg38, MUI 3.8), pero en la barra de pestañas solo había un "+".
+  Ahora, al lado, una "x" (pest_cerrar, evento 50, ayuda "Close tab", texto 46 de los catálogos): probado en
+  sys32rtg38, con dos pestañas el clic en la x deja una.
+
+### 2026-11-13 — La 0.9.6-alfa: pruebas antes de publicar (el usuario: "cuando esté lista la release, la publicas sin pedir permiso")
+- Batería entera: 180/188; los ocho que fallan en tanda (siete por memoria o tiempo) pasan sueltos, y test_jquery
+  esperaba el style sin ";" final: desde 2743a4e se escribe con él, como Chrome (cambiado el test).
+- Compilada con Dash main 1460838 (2.14.0; Tachyon no usa nada nuevo salvo salir sin esperar a las imágenes).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.5-alfa publicada (SHA-256 b7618ec3...77d4), máquina RTG con
+  MUI 3.8 y el GitHub de mentira que redirige: baja Tachyon.gz y los nueve catálogos, el instalado es idéntico al
+  compilado y la 0.9.5 queda como .old; la barra dice "0.9.6-alfa installed: click the green icon".
+- Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
+  Wikipedia Amiga) 300 s sin colgarse.

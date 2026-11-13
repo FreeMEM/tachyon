@@ -167,6 +167,9 @@ Inspecteren
 MSG_55
 Netwerk-foutopsporingslog
 ; Network debug log
+MSG_56
+Plakken
+; Paste
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Netwerk-foutopsporingslog uit
 MSG_528
 Weinig geheugen: het JavaScript van de pagina is gestopt
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+%1 wordt geopend met de viewer van het systeem...
+; Opening %1 with the system's viewer...

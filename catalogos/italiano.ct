@@ -167,6 +167,9 @@ Ispeziona
 MSG_55
 Registro di debug della rete
 ; Network debug log
+MSG_56
+Incolla
+; Paste
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Registro di debug della rete spento
 MSG_528
 Poca memoria: il JavaScript della pagina è stato fermato
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+Apertura di %1 con il visualizzatore del sistema...
+; Opening %1 with the system's viewer...

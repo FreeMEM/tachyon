@@ -22,6 +22,15 @@
 @extern("dashweb_video.h") func dwv_alto(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_fps_mil(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_codecs(v: Int) -> String
+@extern("dashweb_video.h") func dwv_fallo_sonido() -> String
+@extern("dashweb_video.h") func dwv_pila_total() -> Int
+@extern("dashweb_video.h") func dwv_pila_pintar()
+@extern("dashweb_video.h") func dwv_pila_minima() -> Int
+@extern("dashweb_video.h") func dwv_pila_informe() -> String
+@extern("dashweb_video.h") func dwv_tareas() -> String
+@extern("dashweb_video.h") func dwv_trampa_poner(fichero: String)
+@extern("dashweb_video.h") func dwv_trampa_quitar()
+@extern("dashweb_video.h") func dwv_trampa_probar()
 @extern("dashweb_video.h") func dwv_siguiente(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_rgb(v: Int) -> Int
 @extern("dashweb_video.h") func dwv_paso(v: Int) -> Int
@@ -155,4 +164,47 @@ end
 # Salta a ms del vídeo (al fotograma clave de antes más cercano): el ms al que llegó, o -1 si no se puede
 func video_ir(v: Int, ms: Int) -> Int
     return dwv_ir(v, ms)
+end
+
+# La excepción de la CPU en la tarea del sonido de MintVID ("excepcion N en PC X"), solo con libvideo compilada con
+# -DDWV_TRAMPA_SONIDO (diagnóstico del cierre con el JIT de Amiberry); si no, ""
+# La pila de la tarea principal (diagnóstico de la tarea 66, con la TRAZA): video_pila_pintar al empezar llena la libre
+# con un patrón; video_pila_minima dice lo menos libre que ha llegado a quedar desde entonces
+func video_pila_total() -> Int
+    return dwv_pila_total()
+end
+
+func video_pila_pintar()
+    dwv_pila_pintar()
+end
+
+func video_pila_minima() -> Int
+    return dwv_pila_minima()
+end
+
+func video_pila_informe() -> String
+    return dwv_pila_informe()
+end
+
+# (diagnóstico de la tarea 66, con TRAZA=fichero) una excepción de la CPU en la tarea principal se apunta en ese
+# fichero (número, PC con su hunk y desplazamiento, marco) y Tachyon se queda parado; video_trampa_quitar al acabar
+func video_trampa_poner(fichero: String)
+    dwv_trampa_poner(fichero)
+end
+
+func video_trampa_quitar()
+    dwv_trampa_quitar()
+end
+
+func video_trampa_probar()
+    dwv_trampa_probar()
+end
+
+# Las tareas hijas de Dash y de MintVID que siguen vivas, con su estado (diagnóstico de la tarea 66)
+func video_tareas() -> String
+    return dwv_tareas()
+end
+
+func video_fallo_sonido() -> String
+    return dwv_fallo_sonido()
 end

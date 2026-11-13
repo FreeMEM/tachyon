@@ -17,6 +17,15 @@ long dwv_ancho(long v);
 long dwv_alto(long v);
 long dwv_fps_mil(long v);                      /* imágenes por segundo x 1000 (0 si no se sabe) */
 const char *dwv_codecs(long v);                /* "video=..., audio=..." */
+long dwv_pila_total(void);             /* la pila de la tarea que llama, en bytes (diagnóstico) */
+void dwv_pila_pintar(void);            /* llena con un patrón la pila libre (diagnóstico, con la TRAZA) */
+long dwv_pila_minima(void);
+const char *dwv_pila_informe(void);
+const char *dwv_tareas(void);
+void dwv_trampa_poner(const char *fichero);  /* la trampa de la tarea principal, delante de la de Dash (diagnóstico) */
+void dwv_trampa_quitar(void);
+void dwv_trampa_probar(void);             /* una instrucción ilegal, para probar la trampa */          /* las tareas dash_* y MintVID* de exec, con su estado (diagnóstico) */    /* dónde y cómo se tocó la pila pintada (diagnóstico) */            /* lo menos libre que ha quedado desde dwv_pila_pintar, en bytes */
+const char *dwv_fallo_sonido(void);   /* la excepción de la tarea del sonido (diagnóstico) o "" */
 long dwv_siguiente(long v);                    /* 1 una imagen nueva, 0 fin, -1 error, 2 esperar (aún se baja) */
 const unsigned char *dwv_rgb(long v);          /* la imagen: RGB24, dwv_paso() bytes por fila */
 long dwv_paso(long v);

@@ -8,7 +8,8 @@
 #ifndef MR_AAC_M68K_CONFIG_H
 #define MR_AAC_M68K_CONFIG_H
 
-#ifndef __ASSEMBLER__
+#if !defined(__ASSEMBLER__) && !defined(DWV_AAC_EN_C)
+/* (dashweb: con -DDWV_AAC_EN_C, el AAC sin su ensamblador de 68k: diagnóstico del cierre con el JIT de Amiberry) */
 #include "aac_m68k_aac_optimized.h"
 
 #define AMIGA_M68K_ASM_AAC_HUFFMAN 1

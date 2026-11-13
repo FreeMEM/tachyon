@@ -167,6 +167,9 @@ Inspecionar
 MSG_55
 Registo de depuração da rede
 ; Network debug log
+MSG_56
+Colar
+; Paste
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Registo de depuração da rede desligado
 MSG_528
 Pouca memória: o JavaScript da página foi parado
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+A abrir %1 com o visualizador do sistema...
+; Opening %1 with the system's viewer...

@@ -1,0 +1,20 @@
+# Test: outerHTML = html (DOM Parsing; WPT domparsing outerhtml-02 y 03): cambia el elemento por el HTML (null, "";
+# undefined, "undefined"; toString o valueOf); sin padre, nada; de un fragmento, con un <body> de contexto (el <body>
+# del texto no entra); el elemento viejo queda igual; con un documento de padre, NoModificationAllowedError; en un
+# <div>, un <td> se pierde; un <script>, no corre
+# expect-out: null [] | undefined [undefined] | 42 [42] | toString [pass] | valueOf [pass]
+# expect-out: suelto <div>foo</div> | fragmento <h1>a</h1> | viejo <div>foo<p>bar</p></div>
+# expect-out: página <b>az</b> | doc NoModificationAllowedError | td [x] | script false
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body><div id=c><i>x</i></div></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "function f(v) { var d = document.createElement('div'); d.appendChild(document.createElement('p')).outerHTML = v; return '[' + d.innerHTML + ']'; } ['null ' + f(null), 'undefined ' + f(undefined), '42 ' + f(42), 'toString ' + f({toString: function () { return 'pass'; }, valueOf: function () { return 'fail'; }}), 'valueOf ' + f({toString: undefined, valueOf: function () { return 'pass'; }})].join(' | ')", "t.js")
+    Print js_evaluar(js, "var e = document.createElement('div'); e.textContent = 'foo'; e.outerHTML = '<p>bar</p>'; var fr = document.createDocumentFragment(), v = fr.appendChild(document.createElement('div')); v.innerHTML = 'foo<p>bar</p>'; v.outerHTML = '<body><h1>a</h1></body>'; 'suelto ' + e.outerHTML + ' | fragmento ' + fr.firstChild.outerHTML + ' | viejo ' + v.outerHTML", "t.js")
+    Print js_evaluar(js, "var o = [], c = document.getElementById('c'); c.firstChild.outerHTML = '<b>az</b>'; o.push('página ' + c.innerHTML); try { document.documentElement.outerHTML = '<p>x</p>'; o.push('doc sin error'); } catch (e) { o.push('doc ' + e.name); } var d = document.createElement('div'); d.appendChild(document.createElement('span')).outerHTML = '<td>x</td>'; o.push('td [' + d.innerHTML + ']'); window.corrio = false; c.firstChild.outerHTML = '<script>window.corrio = true</sc' + 'ript>'; o.push('script ' + window.corrio); o.join(' | ')", "t.js")
+    js_liberar(js)
+end

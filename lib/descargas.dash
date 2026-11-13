@@ -28,6 +28,7 @@ struct Descarga
     bytes: Int = 0             # los que llegaron (con la acabada: su tamaño)
     total: Int = -1            # los que serán (-1: no se sabe)
     error: String = ""
+    abrir: Bool = false        # al acabar, se abre con el programa del sistema (un PDF; tarea 63h)
 end
 
 var descargas: [Descarga] = []
@@ -42,6 +43,23 @@ func descargas_empezar(direccion: String, ruta: String, nombre: String) -> Desca
     d.carga = http_volcar(http_empezar_a_fichero(direccion, ruta, 30000))
     descargas.insert(0, d)
     return d
+end
+
+# Lo mismo, y al acabar se abre con el programa que tenga el sistema para ese tipo (descargas_abrir_documento): un PDF,
+# como en Amelinium (tarea 63h)
+func descargas_empezar_abriendo(direccion: String, ruta: String, nombre: String) -> Descarga
+    d = descargas_empezar(direccion, ruta, nombre)
+    d.abrir = true
+    return d
+end
+
+# Un documento, con su programa: como un doble clic en su icono (wb_open, AmigaOS 3.5 o más, con DefIcons) o, si no,
+# con MultiView (los datatypes del sistema)
+func descargas_abrir_documento(ruta: String) -> Bool
+    if wb_open(ruta)
+        return true
+    end
+    return run_program("SYS:Utilities/MultiView \"" + ruta + "\"")
 end
 
 # Cuántas están bajando
@@ -94,6 +112,9 @@ func descargas_avanzar() -> Bool
                     d.bytes = file_size(d.ruta)
                 end
                 d.total = d.bytes
+                if d.abrir
+                    descargas_abrir_documento(d.ruta)
+                end
             else
                 d.estado = DESCARGA_ERROR
                 d.error = r.error

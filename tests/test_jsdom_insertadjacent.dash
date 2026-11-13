@@ -1,0 +1,18 @@
+# Test: insertAdjacentHTML (DOM Parsing; WPT domparsing insert_adjacent_html e insert-adjacent-parent-errors): una
+# posición que no vale, SyntaxError (también insertAdjacentElement); antes o después sin padre o con el documento de
+# padre, NoModificationAllowedError (insertAdjacentElement sin padre, null); en un <div>, un <td> se pierde; los
+# <script> no corren ni al meterlos ni al llevar el padre a otro sitio; las cuatro posiciones en su sitio
+# expect-out: mala SyntaxError | elemento mala SyntaxError | sin padre NoModificationAllowedError | elemento sin padre null
+# expect-out: doc NoModificationAllowedError | td [x] | script false false | orden <a></a><p><b></b>x<i></i></p><s></s>
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><body><div id=c><p>x</p></div></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    Print js_evaluar(js, "function n(f) { try { return String(f()); } catch (e) { return e.name; } } var s = document.createElement('div'); ['mala ' + n(function () { document.body.insertAdjacentHTML('bar', 'x'); }), 'elemento mala ' + n(function () { s.insertAdjacentElement('bar', document.createElement('i')); }), 'sin padre ' + n(function () { s.insertAdjacentHTML('afterend', 'x'); }), 'elemento sin padre ' + n(function () { return s.insertAdjacentElement('beforebegin', document.createElement('i')); })].join(' | ')", "t.js")
+    Print js_evaluar(js, "function n(f) { try { return String(f()); } catch (e) { return e.name; } } var o = ['doc ' + n(function () { document.documentElement.insertAdjacentHTML('beforebegin', '<!-- x -->'); })]; var d = document.createElement('div'); d.insertAdjacentHTML('afterbegin', '<td>x</td>'); o.push('td [' + d.innerHTML + ']'); window.corrio = false; var c = document.getElementById('c'), v = document.createElement('div'); c.appendChild(v); v.insertAdjacentHTML('afterbegin', '<script>window.corrio = true</sc' + 'ript>'); var a = window.corrio; document.body.appendChild(v); o.push('script ' + a + ' ' + window.corrio); v.remove(); var p = c.firstChild; p.insertAdjacentHTML('beforebegin', '<a></a>'); p.insertAdjacentHTML('afterbegin', '<b></b>'); p.insertAdjacentHTML('beforeend', '<i></i>'); p.insertAdjacentHTML('afterend', '<s></s>'); o.push('orden ' + c.innerHTML); o.join(' | ')", "t.js")
+    js_liberar(js)
+end

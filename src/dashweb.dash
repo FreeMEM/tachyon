@@ -74,6 +74,7 @@ const ID_CERRAR_PESTANA = 50   # (Amiga-W)
 const ID_PANTALLA = 51         # menú Herramientas: en su propia pantalla (la próxima vez que se abra)
 const ID_INSPECCIONAR = 35     # menú Herramientas: Inspeccionar la página (Amiga-I; tarea 65)
 const ID_DEPURACION = 36       # menú Herramientas: el registro de depuración de red, a un fichero (tarea 67)
+const ID_PEGAR = 37            # menú Proyecto (Amiga-V): pegar en la barra de direcciones o en el campo de la página (tarea 70)
 # (al lado del programa: lo que se escribe ahí sigue aunque haya que reiniciar el Amiga, como no lo haría en RAM:)
 const DEPURACION_FICHERO = "PROGDIR:Tachyon-debug.txt"
 const MAX_PESTANAS = 8
@@ -1027,6 +1028,15 @@ func empezar_descarga(w: Ventana, r: Respuesta)
     if w.actual != nil
         mui_set_text(w.v.url, w.actual.direccion)
     end
+    # un PDF: a T: y, al acabar, con el visor del sistema, sin preguntar dónde (como en Amelinium; tarea 63h)
+    if documento_es_pdf(r)
+        descargas_empezar_abriendo(direccion, "T:" + url_fichero_nombre(nombre), nombre)
+        dw_estado(w, hueco(tr(530, "Opening %1 with the system's viewer..."), nombre))
+        descargas_tic()
+        actualizar_giro(w)
+        programar()
+        return
+    end
     ruta = pedir_ruta(nombre)
     if ruta == ""
         dw_estado(w, hueco(tr(113, "Download cancelled: %1"), nombre))
@@ -1171,6 +1181,41 @@ func guardar_pagina(w: Ventana)
         dw_estado(w, hueco(tr(167, "Saved in %1"), ruta))
     else
         dw_estado(w, hueco(tr(164, "Can't save %1"), ruta))
+    end
+end
+
+# Amiga+V (menú Proyecto, tarea 70; lo contaron Alex Agauser y Ferrán García): el String de MUI 3.8 no pega (mete
+# una "v"). Con la barra de direcciones activa, la primera línea del portapapeles donde está el cursor; con la página
+# activa y un campo con el foco, en ese campo (como con el puntero sobre la página, tarea 59). Con MUI 3.8, Amiga+V
+# en la barra no llega al menú (el String se lo queda y mete la "v"): ahí solo pega eligiendo el menú con el ratón
+func pegar(w: Ventana)
+    activo = mui_active_object(w.v.window)
+    if activo == w.v.url
+        texto = utf8_to_latin1(clip_read_text())
+        i = str_find(texto, "\n")
+        if i >= 0
+            texto = texto[:i]
+        end
+        texto = str_trim(str_replace(str_replace(texto, "\r", ""), "\t", " "))
+        if texto == ""
+            return
+        end
+        antes = mui_get_text(w.v.url)
+        p = mui_string_pos(w.v.url)
+        if p < 0 or p > antes.length
+            p = antes.length
+        end
+        nuevo = antes[:p] + texto + antes[p:]
+        if nuevo.length > 1024
+            return
+        end
+        mui_set_text(w.v.url, nuevo)
+        mui_set_string_pos(w.v.url, p + texto.length)
+    elif (activo == 0 or activo == w.v.pagina) and w.foco != nil
+        # (la página no es un objeto activo de MUI: con ella, el de la ventana es 0)
+        if formulario_pegar(w.foco, utf8_to_latin1(clip_read_text())) == FORM_CAMBIO
+            mui_canvas_redraw(w.v.pagina)
+        end
     end
 end
 
@@ -1775,6 +1820,7 @@ func tic(w: Ventana)
             mui_canvas_redraw(w.v.pagina)
         end
     end
+    videos_pila_traza()
     animar_ventana(w)
     if w.js_cuando >= 0 and time_ms() >= w.js_cuando
         temporizadores(w)
@@ -2272,8 +2318,8 @@ end
 
 # La versión, en "Acerca de..." (menú Proyecto) con la fecha en que se compiló; y para el comando Version del Amiga,
 # la cadena $VER del ejecutable (@version, con la fecha en que se compila: las dos versiones van juntas)
-const DASHWEB_VERSION = "0.9.5-alfa"
-@version "Tachyon 0.9.5-alfa"
+const DASHWEB_VERSION = "0.9.6-alfa"
+@version "Tachyon 0.9.6-alfa"
 
 func texto_version(v: String) -> String
     esc = str_char(27)
@@ -2833,13 +2879,20 @@ Main
             if arg(i) == "TRAZA"
                 traza_activa = true
                 traza_t0 = time_ms()
-                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
+                video_pila_pintar()
             elif str_starts(arg(i), "TRAZA=")
                 # TRAZA=fichero: lo mismo, a ese fichero (lo que se escribe ahí sigue aunque se cuelgue el Amiga)
                 traza_activa = true
                 traza_t0 = time_ms()
                 traza_a_fichero(arg(i)[6:], "Tachyon trace\n" + informe_texto(DASHWEB_VERSION, http_idiomas, "") + "\n--- trace ---\n")
-                traza("memoria libre al empezar " + mem_total() / 1024 + " KB")
+                video_trampa_poner(arg(i)[6:])
+                tachyon_traza_c(arg(i)[6:])
+                traza("memoria libre al empezar " + mem_total() / 1024 + " KB; pila " + video_pila_total() / 1024 + " KB")
+                video_pila_pintar()
+            elif arg(i) == "TRAMPAPROBAR"
+                # (diagnóstico de la tarea 66: una instrucción ilegal, para ver la trampa de TRAZA=fichero)
+                video_trampa_probar()
             elif arg(i) == "GCSIEMPRE"
                 js_gc_siempre(true)
             elif str_starts(arg(i), "JSMINIMA=")
@@ -2907,6 +2960,8 @@ Main
                 dw_rexx_evento = 0
             end
             if ev == -1 or ev == ID_SALIR
+                # (tarea 66: el cierre del vídeo 2 sin aviso; ¿sale por aquí? -1 es el Quit de MUI, también con Ctrl-C)
+                traza("el bucle de eventos acaba por el evento " + ev + " (ventanas abiertas: " + abiertas() + ")")
                 break
             end
             if ev == 0
@@ -3034,6 +3089,9 @@ Main
             end
             if ev == ID_LECTURA
                 leer_pagina(w)
+            end
+            if ev == ID_PEGAR
+                pegar(w)
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")
@@ -3225,6 +3283,7 @@ Main
                 acerca_abierta = not acerca_abierta
             end
         end
+        traza("fuera del bucle de eventos (ventanas abiertas: " + abiertas() + "): se cierra todo")
         for w in dw_ventanas
             parar_carga(w)
             if w.actual != nil
@@ -3241,6 +3300,8 @@ Main
         if dw_pantalla != ""
             screen_close()
         end
+        traza("fin de Main")
+        video_trampa_quitar()
         if dw_reiniciar and not actualizar_lanzar(actualizar_programa())
             Print "Tachyon: no se pudo abrir la versión nueva; ábrela a mano"
         end

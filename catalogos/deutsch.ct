@@ -167,6 +167,9 @@ Untersuchen
 MSG_55
 Netzwerk-Debugprotokoll
 ; Network debug log
+MSG_56
+Einfügen
+; Paste
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Netzwerk-Debugprotokoll aus
 MSG_528
 Wenig Speicher: das JavaScript der Seite wurde beendet
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+%1 wird mit dem Betrachter des Systems geöffnet...
+; Opening %1 with the system's viewer...

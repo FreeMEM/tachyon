@@ -1,0 +1,32 @@
+# Pruebas con memoria por encima de 2 GB (tarea 69; lo de JaviTecH en una PiStorm con 1,7 GB): se queda con N trozos de
+# 100 MB de la memoria baja y espera, para que lo que pida después el programa probado venga de arriba de 0x80000000
+# (direcciones que en un Int de 32 bits salen negativas). Lo lanza tools/medir_visor.py --memoria-alta en segundo plano.
+#
+#   comer 10
+
+Main
+    n = Int(arg(0))
+    i = 0
+    while i < n
+        b = buffer_alloc(100000000)
+        if b == 0
+            break
+        end
+        i = i + 1
+    end
+    # (y a trozos de 1 MB lo que quede abajo, hasta que un trozo pequeño salga por encima: un Int negativo)
+    p = buffer_alloc(4096)
+    j = 0
+    while p > 0 and j < 400
+        buffer_free(p)
+        if buffer_alloc(1000000) == 0
+            break
+        end
+        j = j + 1
+        p = buffer_alloc(4096)
+    end
+    Print "comer: " + i + " trozos de 100 MB y " + j + " de 1 MB; lo siguiente que se pida, arriba (un trozo de prueba en " + p + ")"
+    buffer_free(p)
+    console_flush()
+    time_delay(50 * 3600)
+end

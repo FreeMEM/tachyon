@@ -555,6 +555,16 @@ func _cumple_pseudo(n: Nodo, p: String) -> Bool
     end
     if p == "hover"
         return n.raton
+    elif p == "placeholder-shown"
+        # (un campo con placeholder y sin nada escrito)
+        if (n.nombre == "input" or n.nombre == "textarea") and dom_tiene_atributo(n, "placeholder")
+            v = n.valor
+            if v == nil
+                v = dom_atributo(n, "value")
+            end
+            return v == ""
+        end
+        return false
     elif p == "scope"
         # (el elemento del :has() que se está mirando; fuera de uno, la raíz)
         if _ambito == nil
@@ -729,10 +739,27 @@ func _tiene_debajo(n: Nodo, sel: Selector) -> Bool
     return false
 end
 
-# Las pseudo-clases que se saben sin interacción y :hover (las demás, :focus..., nunca se cumplen;
-# querySelector da un error con ellas, como los navegadores con las que no conocen)
+# Las de interacción o de estado que Tachyon no lleva (el foco, el clic, los enlaces visitados, el ancla...): se conocen
+# y no se cumplen, como en un navegador cuando no pasa. Antes, matches(':focus-visible') daba un error y el JavaScript
+# de YouTube se cortaba en el clic de "more" (no desplegaba la descripción; tarea 64). :defined no: los elementos
+# propios sin definir se esconden con :not(:defined)
+var _de_interaccion: {String: Bool} = nil
+
+func _pseudo_de_interaccion(p: String) -> Bool
+    if _de_interaccion == nil
+        var m: {String: Bool} = {}
+        for x in ["focus", "focus-visible", "focus-within", "active", "visited", "target", "target-within", "autofill", "-webkit-autofill", "fullscreen", "modal", "popover-open", "user-invalid", "user-valid", "playing", "paused", "picture-in-picture"]
+            m[x] = true
+        end
+        _de_interaccion = m
+    end
+    return _de_interaccion.has(p)
+end
+
+# Las pseudo-clases que se saben sin interacción y :hover; las de interacción (_pseudo_de_interaccion) se conocen y no
+# se cumplen; querySelector da un error con las demás, como los navegadores con las que no conocen
 func css_pseudo_conocida(p: String) -> Bool
-    if p == "scope"
+    if p == "scope" or p == "placeholder-shown" or _pseudo_de_interaccion(p)
         return true
     end
     if p == "hover"

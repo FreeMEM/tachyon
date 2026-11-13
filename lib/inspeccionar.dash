@@ -130,11 +130,21 @@ func _insp_arbol(n: Nodo, ruta: String, nivel: Int, elegida: String, cuenta: [In
     return t
 end
 
-# La consola: lo último del registro de lib/js.dash (lo de todas las páginas, lo último abajo)
+# La consola: lo último del registro de lib/js.dash, lo último abajo; como en Chrome, solo desde que se abrió la página
+# que se mira (la última línea "open " del registro; sin ella, todo). Antes salía lo de todas las páginas: en el vídeo 2,
+# la consola de amigaworld.net enseñaba los "out of memory" de YouTube (tarea 66)
 func _insp_consola(consola: String) -> String
     lineas = str_split(registro_texto(), "\n")
     desde = 0
-    if lineas.length > INSP_CONSOLA_MAX
+    k = lineas.length - 1
+    while k >= 0
+        if str_starts(lineas[k], "open ")
+            desde = k
+            break
+        end
+        k = k - 1
+    end
+    if lineas.length - desde > INSP_CONSOLA_MAX
         desde = lineas.length - INSP_CONSOLA_MAX
     end
     t = ""

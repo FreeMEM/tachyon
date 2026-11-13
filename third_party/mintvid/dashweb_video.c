@@ -20,6 +20,7 @@ typedef struct mr_audio mr_audio;
 #endif
 #include "dashweb_video.h"
 #include <proto/dos.h>
+#include <dos/dosextens.h>
 
 /* --- lo que no va en dashweb --- */
 const mr_codec mr_codec_mpeg2 = {0};
@@ -148,8 +149,25 @@ static void dwv_pcm(void *user, const int16_t *pcm, unsigned frames, unsigned ch
 }
 
 /* El sonido de un paquete; la salida empieza cuando hay 150 ms en cola */
+#ifdef DWV_SOLO_DECODIFICAR
+/* (diagnóstico del vídeo 2: el sonido se decodifica y se tira, sin la salida por Paula ni su tarea) */
+static void dwv_pcm_nada(void *user, const int16_t *pcm, unsigned frames, unsigned channels)
+{
+    (void)user; (void)pcm; (void)frames; (void)channels;
+}
+#endif
+
 static void dwv_sonido(dwv *v, const mr_packet *pkt)
 {
+#ifdef DWV_SOLO_DECODIFICAR
+#ifdef DWV_SOLO_ABRIR
+    /* (diagnóstico: el decodificador se abre pero no recibe nada; los paquetes de sonido se tiran) */
+    (void)pkt;
+    return;
+#endif
+    if (v->ad) mr_audio_decoder_feed(v->ad, pkt->data, pkt->len, dwv_pcm_nada, NULL);
+    return;
+#endif
     if (!v->ad || !v->au) return;
     mr_audio_decoder_feed(v->ad, pkt->data, pkt->len, dwv_pcm, v->au);
     audio_service(v->au);
@@ -273,10 +291,18 @@ long dwv_abrir(const char *fichero)
 #ifndef DWV_SIN_SONIDO
     {
         const mr_audio_info *ai = mr_demux_audio(v->dx);
+#ifdef DWV_NO_ABRIR
+        /* (diagnóstico: el código del decodificador está enlazado pero no se abre; dwv_no_abrir es volatile para que
+           el compilador no lo quite) */
+        static volatile int dwv_no_abrir = 1;
+        if (dwv_no_abrir) ai = NULL;
+#endif
         if (ai && ai->valid) {
             v->ad = mr_audio_decoder_open(ai, 0, 0);
+#ifndef DWV_SOLO_DECODIFICAR
             if (v->ad) v->au = audio_open(mr_audio_decoder_rate(v->ad), (int)mr_audio_decoder_channels(v->ad), 16);
             if (!v->au && v->ad) { mr_audio_decoder_close(v->ad); v->ad = NULL; }
+#endif
         }
     }
 #endif
@@ -294,6 +320,290 @@ long dwv_fps_mil(long h)
     return vi->scale ? (long)((unsigned long long)vi->rate * 1000u / vi->scale) : 0;
 }
 const char *dwv_codecs(long h) { return ((dwv *)h)->codecs; }
+
+/* La excepción de la tarea del sonido (con -DDWV_TRAMPA_SONIDO; si no, o sin excepción, "") */
+#ifdef DWV_TRAMPA_SONIDO
+extern volatile unsigned long dwv_fallo_num, dwv_fallo_pc;
+extern void audio_trampa(void);
+#endif
+const char *dwv_fallo_sonido(void)
+{
+#ifdef DWV_TRAMPA_SONIDO
+    static char t[96];
+    if (dwv_fallo_pc) { sprintf(t, "excepcion %lu en PC %08lx (audio_trampa en %08lx)", dwv_fallo_num, dwv_fallo_pc, (unsigned long)audio_trampa); return t; }
+#endif
+    return "";
+}
+
+/* La pila de la tarea principal (tarea 66, el cierre del vídeo 2; idea de freememlang-40): dwv_pila_pintar llena lo
+   que queda libre bajo el puntero de pila con un patrón y dwv_pila_minima mide lo que nunca se ha pisado desde
+   entonces (lo menos libre que ha llegado a quedar). Tras el StackSwap de Dash, tc_SPLower/tc_SPUpper son los de la
+   pila nueva. Solo con la TRAZA. */
+#include <proto/exec.h>
+#define DWV_PILA_PATRON 0xA5u
+long dwv_pila_total(void)
+{
+    struct Task *yo = FindTask(NULL);
+    return (long)((unsigned long)yo->tc_SPUpper - (unsigned long)yo->tc_SPLower);
+}
+void dwv_pila_pintar(void)
+{
+    volatile unsigned char aqui = 0;
+    struct Task *yo = FindTask(NULL);
+    volatile unsigned char *p = (volatile unsigned char *)yo->tc_SPLower;
+    volatile unsigned char *fin = &aqui - 512;
+    while (p < fin) *p++ = DWV_PILA_PATRON;
+}
+/* Cómo se ha tocado la pila pintada: dónde está el primer byte cambiado (desde tc_SPLower), cuántos cambiados hay en
+   los primeros 64 KB (pocos y sueltos: una escritura perdida de otro; todos: pila usada de verdad) y los 16 bytes de
+   ese primer cambio; sin los 64 primeros, como dwv_pila_minima */
+const char *dwv_pila_informe(void)
+{
+    static char t[160];
+    struct Task *yo = FindTask(NULL);
+    const volatile unsigned char *b = (const volatile unsigned char *)yo->tc_SPLower;
+    unsigned long total = (unsigned long)yo->tc_SPUpper - (unsigned long)yo->tc_SPLower, i, primero = total, n = 0;
+    unsigned long hasta = total < 65536 ? total : 65536;
+    char *q;
+    for (i = 64; i < hasta; i++)
+        if (b[i] != DWV_PILA_PATRON) { if (primero == total) primero = i; n++; }
+    if (primero == total) {
+        for (i = hasta; i < total && b[i] == DWV_PILA_PATRON; i++) ;
+        primero = i;
+    }
+    q = t + sprintf(t, "primer cambio en +%lu (pila en %08lx), %lu cambiados en los primeros 64 KB:", primero,
+                    (unsigned long)yo->tc_SPLower, n);
+    for (i = primero; i < primero + 16 && i < total; i++) q += sprintf(q, " %02x", (unsigned)b[i]);
+    return t;
+}
+
+/* Las tareas hijas de Dash y de MintVID que siguen ahí (tarea 66; idea de freememlang-40): con Forbid, las listas
+   TaskReady y TaskWait de exec; de cada una cuyo nombre empiece por "dash_" o "MintVID", su nombre, tc_State (3
+   TS_READY, 4 TS_WAIT, 5 TS_EXCEPT, 6 TS_REMOVED) y tc_SigWait. Una que muere con una excepción se queda parada con su aviso */
+#include <exec/execbase.h>
+const char *dwv_tareas(void)
+{
+    static char t[600];
+    struct ExecBase *eb = *(struct ExecBase **)4;
+    struct List *listas[2];
+    struct Node *nd;
+    char *q = t, *fin = t + sizeof t - 64;
+    int i, total = 0;
+    listas[0] = &eb->TaskReady;
+    listas[1] = &eb->TaskWait;
+    t[0] = 0;
+    Forbid();
+    for (i = 0; i < 2; i++)
+        for (nd = listas[i]->lh_Head; nd->ln_Succ; nd = nd->ln_Succ) {
+            struct Task *k = (struct Task *)nd;
+            const char *n = nd->ln_Name ? nd->ln_Name : "";
+            total++;
+            if (q < fin && (!strncmp(n, "dash_", 5) || !strncmp(n, "MintVID", 7)))
+                q += sprintf(q, " %.24s(%c,%d,%08lx)", n, i ? 'W' : 'R', (int)k->tc_State, (unsigned long)k->tc_SigWait);
+        }
+    Permit();
+    sprintf(q, " [%d tareas]", total);
+    return t;
+}
+
+/* La trampa de la tarea principal (tarea 66, el cierre del vídeo 2 con el JIT de Amiberry; diagnóstico, solo con
+   TRAZA=fichero): delante de la de Dash (que tras un fallo de la CPU cierra el programa y su aviso se pierde). Con una
+   excepción de la CPU (todas menos la 9, traza, y las 32 a 47, TRAP #n: también las de la FPU, 48 a 55), copia el número y los 32 primeros bytes del marco, quita el marco y sigue en
+   modo usuario en dwv_trampa_parada, que apunta en el fichero de la traza el número, el PC (con su hunk y
+   desplazamiento en el programa) y el marco, y deja Tachyon parado (la ventana sigue: así se ve dónde estaba). Las
+   demás excepciones van a la de antes. dwv_trampa_quitar la quita al acabar. */
+volatile unsigned long dwv_tm_marco[9];
+volatile unsigned char dwv_tm_hecho = 0;
+APTR dwv_tm_viejo = NULL;
+static char dwv_tm_fichero[256];
+void dwv_trampa_parada(void);
+extern void dwv_trampa_main(void);
+__asm__(
+"	.text\n"
+"	.even\n"
+"	.globl _dwv_trampa_main\n"
+"_dwv_trampa_main:\n"
+"	cmp.l #2,(%sp)\n"
+"	bcs 9f\n"
+"	cmp.l #9,(%sp)\n"
+"	beq 9f\n"
+"	cmp.l #32,(%sp)\n"
+"	bcs 8f\n"
+"	cmp.l #47,(%sp)\n"
+"	bls 9f\n"
+"8:	tst.b _dwv_tm_hecho\n"
+"	bne 9f\n"
+"	move.b #1,_dwv_tm_hecho\n"
+"	move.l %a0,-(%sp)\n"
+"	move.l %a1,-(%sp)\n"
+"	move.l %d0,-(%sp)\n"
+"	lea 12(%sp),%a0\n"
+"	lea _dwv_tm_marco,%a1\n"
+"	moveq #8,%d0\n"
+"1:	move.l (%a0)+,(%a1)+\n"
+"	dbra %d0,1b\n"
+"	lea 16(%sp),%a0\n"            /* el marco: después de d0, a1, a0 y el número */
+"	moveq #0,%d0\n"
+"	move.w 6(%a0),%d0\n"
+"	lsr.w #8,%d0\n"
+"	lsr.w #4,%d0\n"
+"	lea _dwv_tm_tam,%a1\n"
+"	move.b (%a1,%d0.w),%d0\n"
+"	and.l #0xff,%d0\n"
+"	add.l %d0,%a0\n"              /* a0: lo que había antes de la excepción */
+"	move.l (%sp)+,%d0\n"
+"	move.l (%sp)+,%a1\n"
+"	move.l %a0,-(%sp)\n"          /* (a0 viejo aún en la pila: se cambia por el destino) */
+"	move.l 4(%sp),%a0\n"
+"	move.l (%sp)+,%sp\n"          /* la pila de supervisor, sin el marco */
+"	clr.w -(%sp)\n"               /* un marco de formato 0 (68010 y siguientes) */
+"	pea _dwv_trampa_parada\n"
+"	clr.w -(%sp)\n"               /* SR: modo usuario */
+"	rte\n"
+"9:	move.l _dwv_tm_viejo,-(%sp)\n"
+"	rts\n"
+"	.data\n"
+"_dwv_tm_tam:\n"
+"	.byte 8,8,12,12,16,0,0,60,58,20,32,92,0,0,0,0\n"
+"	.text\n");
+
+static void dwv_tm_linea(const char *l)
+{
+    BPTR f = Open((CONST_STRPTR)dwv_tm_fichero, MODE_READWRITE);
+    if (!f) return;
+    Seek(f, 0, OFFSET_END);
+    Write(f, (APTR)l, strlen(l));
+    Close(f);
+}
+
+void dwv_trampa_parada(void)
+{
+    static char l[400];
+    struct Process *pr = (struct Process *)FindTask(NULL);
+    unsigned long pc = dwv_tm_marco[1] << 16 | dwv_tm_marco[2] >> 16;   /* el marco: SR (2 bytes), PC (4), ... */
+    BPTR seg = 0;
+    long n, hunk = -1;
+    unsigned long off = 0;
+    char *q;
+    int i;
+    if (pr->pr_CLI) seg = ((struct CommandLineInterface *)BADDR(pr->pr_CLI))->cli_Module;
+    if (!seg && pr->pr_SegList) seg = ((BPTR *)BADDR(pr->pr_SegList))[3];
+    for (n = 0; seg && n < 1000; n++, seg = *(BPTR *)BADDR(seg)) {
+        ULONG *p = (ULONG *)BADDR(seg), ini = (ULONG)(p + 1), fin = (ULONG)p - 4 + p[-1];
+        if (pc >= ini && pc < fin) { hunk = n; off = pc - ini; break; }
+    }
+    q = l + sprintf(l, "TRAMPA: excepción %lu en PC %08lx", dwv_tm_marco[0], pc);
+    if (hunk >= 0) q += sprintf(q, " (hunk %ld + $%lx)", hunk, off);
+    else q += sprintf(q, " (fuera del programa)");
+    q += sprintf(q, "; marco:");
+    for (i = 1; i < 9; i++) q += sprintf(q, " %08lx", dwv_tm_marco[i]);
+    sprintf(q, "\n");
+    dwv_tm_linea(l);
+    if (Output()) Write(Output(), (APTR)l, strlen(l));    /* (y a la salida, sin búfer) */
+    for (;;) Wait(0);
+}
+
+/* El gancho de la salida (idea de freememlang-40): en ./dash, exit(), abort() y el fin de Main van a _dash_quit
+   (dashc/runtime/rt_math.s: move.l 4(sp),d2; jsr _dash_finish; ...). Sus 6 primeros bytes pasan a ser un jmp.l a
+   dwv_quit_gancho, que apunta en la traza el código, quién llamó (con su hunk y desplazamiento) y lo que hay en la
+   pila, y luego hace lo tapado y sigue en _dash_quit+10. */
+extern void _dash_quit(int);
+extern void _dash_finish(void);
+extern void dwv_quit_gancho(void);
+void dwv_quit_apuntar(long codigo, unsigned long *pila);
+__asm__(
+"	.text\n"
+"	.even\n"
+"	.globl _dwv_quit_gancho\n"
+"_dwv_quit_gancho:\n"
+"	movem.l %d0-%d1/%a0-%a1,-(%sp)\n"
+"	pea 16(%sp)\n"                /* la pila de la llamada: (pila)=vuelta, 4(pila)=código */
+"	move.l 24(%sp),-(%sp)\n"      /* el código */
+"	jsr _dwv_quit_apuntar\n"
+"	addq.l #8,%sp\n"
+"	movem.l (%sp)+,%d0-%d1/%a0-%a1\n"
+"	move.l 4(%sp),%d2\n"
+"	jsr __dash_finish\n"
+"	jmp __dash_quit+10\n");
+
+static void dwv_donde(unsigned long pc, long *hunk, unsigned long *off)
+{
+    struct Process *pr = (struct Process *)FindTask(NULL);
+    BPTR seg = 0;
+    long n;
+    *hunk = -1; *off = 0;
+    if (pr->pr_Task.tc_Node.ln_Type != NT_PROCESS) return;
+    if (pr->pr_CLI) seg = ((struct CommandLineInterface *)BADDR(pr->pr_CLI))->cli_Module;
+    if (!seg && pr->pr_SegList) seg = ((BPTR *)BADDR(pr->pr_SegList))[3];
+    for (n = 0; seg && n < 1000; n++, seg = *(BPTR *)BADDR(seg)) {
+        ULONG *p = (ULONG *)BADDR(seg), ini = (ULONG)(p + 1), fin = (ULONG)p - 4 + p[-1];
+        if (pc >= ini && pc < fin) { *hunk = n; *off = pc - ini; return; }
+    }
+}
+
+void dwv_quit_apuntar(long codigo, unsigned long *pila)
+{
+    static char l[600];
+    char *q;
+    long h;
+    unsigned long o;
+    int i;
+    dwv_donde(pila[0], &h, &o);
+    q = l + sprintf(l, "SALIDA: _dash_quit(%ld) desde PC %08lx", codigo, pila[0]);
+    if (h >= 0) q += sprintf(q, " (hunk %ld + $%lx)", h, o);
+    q += sprintf(q, "; tarea %s; pila:", FindTask(NULL)->tc_Node.ln_Name ? FindTask(NULL)->tc_Node.ln_Name : "?");
+    for (i = 1; i < 24; i++) {
+        dwv_donde(pila[i], &h, &o);
+        if (h >= 0) q += sprintf(q, " %d:h%ld+$%lx", i, h, o);
+    }
+    sprintf(q, "\n");
+    dwv_tm_linea(l);
+    if (Output()) Write(Output(), (APTR)l, strlen(l));
+}
+
+void dwv_trampa_poner(const char *fichero)
+{
+    struct Task *yo = FindTask(NULL);
+    if (dwv_tm_viejo || !fichero || !*fichero) return;
+    strncpy(dwv_tm_fichero, fichero, sizeof dwv_tm_fichero - 1);
+    dwv_tm_viejo = yo->tc_TrapCode;
+    yo->tc_TrapCode = (APTR)dwv_trampa_main;
+    {
+        volatile unsigned short *q = (volatile unsigned short *)(void *)_dash_quit;
+        if (q[0] == 0x242f && q[1] == 0x0004 && q[2] == 0x4eb9) {     /* move.l 4(sp),d2; jsr.l */
+            unsigned long a = (unsigned long)(void *)dwv_quit_gancho;
+            Forbid();
+            q[0] = 0x4ef9; q[1] = (unsigned short)(a >> 16); q[2] = (unsigned short)a;
+            CacheClearU();
+            Permit();
+        } else {
+            dwv_tm_linea("SALIDA: _dash_quit no empieza como se esperaba: sin gancho\n");
+        }
+    }
+}
+
+/* (para probar la trampa: una instrucción ilegal) */
+void dwv_trampa_probar(void)
+{
+    __asm__ volatile ("illegal");
+}
+
+void dwv_trampa_quitar(void)
+{
+    struct Task *yo = FindTask(NULL);
+    if (dwv_tm_viejo && yo->tc_TrapCode == (APTR)dwv_trampa_main) yo->tc_TrapCode = dwv_tm_viejo;
+    dwv_tm_viejo = NULL;
+}
+
+long dwv_pila_minima(void)
+{
+    struct Task *yo = FindTask(NULL);
+    /* (los primeros 64 bytes no cuentan: en CoffinOS algo escribe una marca, ba d1 ba d3, justo en tc_SPLower) */
+    const volatile unsigned char *p = (const volatile unsigned char *)yo->tc_SPLower + 64;
+    const volatile unsigned char *tope = (const volatile unsigned char *)yo->tc_SPUpper;
+    while (p < tope && *p == DWV_PILA_PATRON) p++;
+    return (long)(p - (const volatile unsigned char *)yo->tc_SPLower);
+}
 
 /* Sin marca de tiempo en el contenedor, el instante sale de la cuenta de paquetes de vídeo leídos (no de
    imágenes: el modo turbo se salta algunas), menos los que el decodificador guarda para reordenar */

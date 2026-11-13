@@ -1,11 +1,13 @@
 # Test: DOMParser (tarea 55). Un RSS como el de amigatronics.com con parseFromString(texto, "application/xml"): sus
 # <item> con querySelectorAll, el texto de <title> y de <link> (en HTML, <link> no tiene texto), CDATA, entidades,
-# prefijos (atom:link) y documentElement. text/html con el analizador de HTML. Un XML mal formado da <parsererror>.
+# prefijos (atom:link) y documentElement. text/html con el analizador de HTML. Un XML mal formado da <parsererror>
+# (también </ span>, :a=, ::=, xmlns:= y xmlns:xmlns; WPT domparsing xml-parsererror; </b > y p:a=, bien).
 # Y XMLSerializer.
 # memcheck
 # expect-out: rss: rss 2 | Uno & dos | https://x.com/1 | <b>dos</b> | atom:link self
 # expect-out: html: 1 hola
 # expect-out: mal: parsererror true
+# expect-out: mal formados: 1 1 1 1 1 | bien: 0 0
 # expect-out: serializado: <a b="1">c</a>
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
@@ -25,6 +27,7 @@ Main
     Print "rss: " + ev(d, "var x = new DOMParser().parseFromString(rss, 'application/xml'), it = x.querySelectorAll('item'); [x.documentElement.nodeName.toLowerCase() + ' ' + it.length, it[0].querySelector('title').textContent, it[0].querySelector('link').textContent, it[1].querySelector('title').textContent, x.getElementsByTagName('atom:link')[0].nodeName.toLowerCase() + ' ' + x.getElementsByTagName('atom:link')[0].getAttribute('rel')].join(' | ')")
     Print "html: " + ev(d, "var h = new DOMParser().parseFromString('<!doctype html><html><body><p class=a>hola</p></body></html>', 'text/html'); h.querySelectorAll('p.a').length + ' ' + h.querySelector('p').textContent")
     Print "mal: " + ev(d, "var m = new DOMParser().parseFromString('<a><b></a>', 'text/xml'); m.documentElement.nodeName.toLowerCase() + ' ' + (m.getElementsByTagName('parsererror').length == 1)")
+    Print "mal formados: " + ev(d, "function e(x) { return new DOMParser().parseFromString(x, 'text/xml').getElementsByTagName('parsererror').length; } [e('<a>8</ a>'), e('<a :t=\"1\">3</a>'), e('<a ::=\"1\">11</a>'), e('<a xmlns:=\"urn:x\">12</a>'), e('<a xmlns:xmlns=\"\">13</a>')].join(' ') + ' | bien: ' + e('<a><b>x</b ></a>') + ' ' + e('<a xmlns:p=\"urn:x\" p:t=\"1\"/>')")
     Print "serializado: " + ev(d, "new XMLSerializer().serializeToString(new DOMParser().parseFromString('<a b=\"1\">c</a>', 'application/xml'))")
     documento_liberar(d)
 end

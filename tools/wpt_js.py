@@ -36,8 +36,10 @@ from medir_visor import MAQUINAS          # noqa: E402
 # (el informe: cada subprueba y el total del fichero, en __dashweb_wpt; sin la tabla de resultados en la página)
 INFORME = r"""
 setup({output: false, timeout_multiplier: 5});  // (el emulador es lento: como hace wptrunner con las plataformas lentas)
+// (la ruta al cargar: las de pushstate cambian location antes de acabar)
+var __wpt_ruta = String(location.pathname).replace(/^\//, '') + String(location.search);
 add_completion_callback(function (tests, status) {
-    var ruta = String(location.pathname).replace(/^\//, '') + String(location.search);
+    var ruta = __wpt_ruta;
     var est = ['PASS', 'FAIL', 'TIMEOUT', 'NOTRUN', 'PRECONDITION_FAILED'];
     var harness = ['OK', 'ERROR', 'TIMEOUT', 'PRECONDITION_FAILED'];
     var pasan = 0, l = [];

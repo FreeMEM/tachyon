@@ -608,6 +608,24 @@ static void audio_worker_cleanup(mr_audio *a)
     if (a->wake_sig >= 0) { FreeSignal(a->wake_sig); a->wake_sig = -1; }
 }
 
+#ifdef DWV_TRAMPA_SONIDO
+/* dashweb (diagnóstico del vídeo 2): esta tarea no lleva el manejador de excepciones de Dash. Con
+   -DDWV_TRAMPA_SONIDO, una excepción de la CPU en ella apunta su número y su PC, y la tarea se queda parada
+   para siempre (cerrar el vídeo se cuelga: solo para ensayar); la principal lo escribe en la traza. */
+volatile unsigned long dwv_fallo_num = 0, dwv_fallo_pc = 0;
+void audio_fallo_parar(void) { for (;;) Wait(0); }
+extern void audio_trampa(void);
+__asm__(
+"	.text\n"
+"	.even\n"
+"	.globl _audio_trampa\n"
+"_audio_trampa:\n"
+"	move.l (%sp)+,_dwv_fallo_num\n"
+"	move.l 2(%sp),_dwv_fallo_pc\n"
+"	move.l #_audio_fallo_parar,2(%sp)\n"
+"	rte\n");
+#endif
+
 static void audio_worker_entry(void)
 {
     static UBYTE stereo_pairs[4] = { 3, 5, 10, 12 };
@@ -616,6 +634,9 @@ static void audio_worker_entry(void)
     int i, side;
     ULONG mask, channel[SIDES];
     /* Parent publishes tc_UserData after CreateNewProcTags() returns. */
+#ifdef DWV_TRAMPA_SONIDO
+    self->tc_TrapCode = (APTR)audio_trampa;
+#endif
     Wait(SIGBREAKF_CTRL_F);
     a = (mr_audio *)self->tc_UserData;
     if (!a) return;

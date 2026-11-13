@@ -2783,12 +2783,14 @@ func _medida_de(m: Maquetador, md: Medida, n: Nodo, alto: Int, antes: Int, x: In
         if d.y + d.alto > md.y2
             md.y2 = d.y + d.alto
         end
-        # (lo que cuenta para un ancho, como en _ancho_flotante_medir: de dentro, nunca es lo medido)
+        # (lo que cuenta para un ancho, como en _ancho_flotante_medir: de dentro, nunca es lo medido; también los fondos
+        # de tablas y celdas, que ya están a su ancho de verdad: si no, su relleno y border-spacing de la derecha no
+        # contaban y la tabla de Aminet de amigaworld.net se salía 27 px de su columna; tarea 71)
         decoracion = d.tipo == D_RECT or d.tipo == D_LINEA or d.tipo == D_FONDO or d.tipo == D_DEGRADADO or d.tipo == D_REDONDO or d.tipo == D_ELIPSE or (d.tipo == D_CONTROL and d.estilo == 1)
         cuenta = not decoracion
         if decoracion and d.nodo != nil
             w = _val(d.nodo.estilo, "width", "auto")
-            cuenta = (w != "auto" and not str_ends(w, "%")) or _min_ancho(d.nodo.estilo, 0, 0) > 0
+            cuenta = (w != "auto" and not str_ends(w, "%")) or _min_ancho(d.nodo.estilo, 0, 0) > 0 or _val(d.nodo.estilo, "display", "") == "table" or _val(d.nodo.estilo, "display", "") == "table-cell"
         end
         if cuenta
             dx0 = d.x
@@ -2948,7 +2950,10 @@ func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
     caja = _borde(e, "left") + _borde(e, "right") + _px(e, "padding-left", ancho) + _px(e, "padding-right", ancho)
     # (con min-width, nunca menos: en el contenido, sin la caja)
     mn = _min_ancho(e, ancho, caja)
-    if e.has("width") and e["width"] != "auto"
+    # (un ancho en % al medir lo mínimo o lo máximo del contenido, con un sitio de mentira de 1 o FLEX_GRANDE, es auto,
+    # como en CSS con el contenedor sin ancho: una tabla con width=100% medía 1 y su columna no crecía; tarea 66)
+    medir_pc = e.has("width") and str_ends(e["width"], "%") and (ancho <= 1 or ancho >= FLEX_GRANDE)
+    if e.has("width") and e["width"] != "auto" and not medir_pc
         w = _px(e, "width", ancho)
         if w > 0
             if (e.has("box-sizing") and e["box-sizing"] == "border-box") or e["display"] == "table" or e["display"] == "inline-table"
@@ -3007,7 +3012,7 @@ func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
         cuenta = not decoracion
         if decoracion and d.nodo != nil and d.nodo != h
             w = _val(d.nodo.estilo, "width", "auto")
-            cuenta = (w != "auto" and not str_ends(w, "%")) or _min_ancho(d.nodo.estilo, 0, 0) > 0
+            cuenta = (w != "auto" and not str_ends(w, "%")) or _min_ancho(d.nodo.estilo, 0, 0) > 0 or _val(d.nodo.estilo, "display", "") == "table" or _val(d.nodo.estilo, "display", "") == "table-cell"
         end
         if cuenta and d.nodo != nil and d.nodo != h
             # lo de un absoluto de dentro no cuenta (CSS 2.1 10.3.7: está fuera del flujo); con right: 0 llegaba al
@@ -4519,13 +4524,45 @@ func _palabras_texto(m: Maquetador, texto_dom: String, e: {String: String}, piez
                 if transformar == "capitalize"
                     palabra = str_upper(palabra[:1]) + palabra[1:]
                 end
-                palabras.push(palabra)
-                if hubo
+                # Dentro de una palabra también se puede cortar tras "/" y "?" y tras un "-" entre letras (UAX #14:
+                # SY, EX, HY; como Chrome): las direcciones largas de amigaworld.net (Aminet, OS4 Depot) no cabían en su
+                # columna y la ensanchaban (tarea 71). Cada trozo, otra pieza con 2 en blancos: sin espacio, cortable.
+                trozo0 = 0
+                q = 0
+                while q < palabra.length - 1
+                    cq = str_code(palabra, q)
+                    cn = str_code(palabra, q + 1)
+                    corta = false
+                    if (cq == 47 or cq == 63) and cn != 47 and cn != 63
+                        corta = true
+                    elif cq == 45 and q > 0 and _es_letra(str_code(palabra, q - 1)) and _es_letra(cn)
+                        corta = true
+                    end
+                    if corta and q + 1 - trozo0 >= 2
+                        t = palabra[trozo0:q + 1]
+                        palabras.push(t)
+                        if trozo0 > 0
+                            blancos.push(2)
+                        elif hubo
+                            blancos.push(1)
+                        else
+                            blancos.push(0)
+                        end
+                        anchos.push(font_text_width(t) + ls * t.length)
+                        trozo0 = q + 1
+                    end
+                    q = q + 1
+                end
+                t = palabra[trozo0:]
+                palabras.push(t)
+                if trozo0 > 0
+                    blancos.push(2)
+                elif hubo
                     blancos.push(1)
                 else
                     blancos.push(0)
                 end
-                anchos.push(font_text_width(palabra) + ls * palabra.length)
+                anchos.push(font_text_width(t) + ls * t.length)
                 hubo = false
                 i = j
             end
@@ -4562,7 +4599,7 @@ func _palabras_texto(m: Maquetador, texto_dom: String, e: {String: String}, piez
         pz.sub_color = sub_color
         pz.sub_grosor = sub_grosor
         pz.sub_sep = sub_sep
-        if not hubo_blanco and piezas.length > 0
+        if not hubo_blanco and piezas.length > 0 and blancos[k] != 2
             anterior = piezas[piezas.length - 1]
             pz.pegada = not anterior.salto and not anterior.imagen and not anterior.control and not str_ends(anterior.texto, " ")
         end
@@ -4586,6 +4623,11 @@ func _palabras_texto(m: Maquetador, texto_dom: String, e: {String: String}, piez
             ultima.ancho = ultima.ancho + espacio_ancho
         end
     end
+end
+
+# Una letra o un dígito (ASCII, o cualquier carácter por encima de 127)
+func _es_letra(c: Int) -> Bool
+    return (c >= 48 and c <= 57) or (c >= 65 and c <= 90) or (c >= 97 and c <= 122) or c > 127
 end
 
 func _termina_en_blanco(piezas: [Pieza]) -> Bool
@@ -5239,6 +5281,34 @@ struct Celda
     dibujos: [Dibujo] = nil
 end
 
+# Una celda maquetada al ancho de su columna (w, con borde y relleno) aunque su width diga otra cosa: con width=20% se
+# maquetaba al 20 % de la tabla y, si la columna había crecido por otra celda, sus tablas al 100 % se quedaban
+# estrechas (la columna de la derecha de amigaworld.net, descuadrada; tarea 71). h: el alto forzado, o -1
+func _celda_maquetar(m: Maquetador, fh: FlexHijo, w: Int, ancho: Int, h: Int) -> Int
+    ce = fh.nodo.estilo
+    var antes_w: String = ""
+    var antes_bs: String = ""
+    con_w = ce.has("width") and ce["width"] != "auto"
+    if con_w
+        antes_w = ce["width"]
+        if ce.has("box-sizing")
+            antes_bs = ce["box-sizing"]
+        end
+        ce["width"] = "" + w + "px"
+        ce["box-sizing"] = "border-box"
+    end
+    alto = _flex_maquetar(m, fh, w, ancho, -1, h)
+    if con_w
+        ce["width"] = antes_w
+        if antes_bs != ""
+            ce["box-sizing"] = antes_bs
+        else
+            ce.remove("box-sizing")
+        end
+    end
+    return alto
+end
+
 func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     e = t.estilo
     esp = 0
@@ -5296,10 +5366,14 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     var minc: [Int] = []
     var maxc: [Int] = []
     var fija: [Bool] = []
+    var pct: [Bool] = []
+    var minpc: [Int] = []
     for i in (0..ncols - 1)
         minc.push(0)
         maxc.push(0)
         fija.push(false)
+        pct.push(false)
+        minpc.push(0)
     end
     fijo = _val(e, "table-layout", "auto") == "fixed" and _val(e, "width", "auto") != "auto"
     for span in (1..ncols)
@@ -5317,6 +5391,13 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
                 if not fijo
                     # el contenido no cabe en menos que su mínimo
                     minimo = _ancho_flotante(m, cel.nodo, 1)
+                    if span == 1 and str_ends(_val(ce, "width", ""), "%")
+                        # (lo mínimo de su contenido: si las columnas no caben, las de % ceden hasta ahí)
+                        pct[cel.col] = true
+                        if minimo > minpc[cel.col]
+                            minpc[cel.col] = minimo
+                        end
+                    end
                     if minimo > mn
                         mn = minimo
                         mx = minimo
@@ -5367,6 +5448,35 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     end
     disponible = ancho - esp * (ncols + 1)
     ancho_tabla = disponible
+    # Si los mínimos no caben, las columnas con width en % ceden hasta lo mínimo de su contenido (un % es lo que
+    # prefieren, no un mínimo), en proporción a lo que pueden ceder: en amigaworld.net-como, una del 80 % no dejaba sitio
+    # a la del 20 % con nombres de Aminet largos y la tabla se salía por la derecha (tarea 71)
+    if not fijo and suma_min > ancho_tabla
+        cede = 0
+        for i in (0..ncols - 1)
+            if pct[i] and minc[i] > minpc[i]
+                cede = cede + minc[i] - minpc[i]
+            end
+        end
+        if cede > 0
+            sobra = suma_min - ancho_tabla
+            if sobra > cede
+                sobra = cede
+            end
+            suma_min = 0
+            suma_max = 0
+            for i in (0..ncols - 1)
+                if pct[i] and minc[i] > minpc[i]
+                    minc[i] = minc[i] - (minc[i] - minpc[i]) * sobra / cede
+                    if maxc[i] > minc[i] and maxc[i] > minpc[i]
+                        maxc[i] = minc[i]
+                    end
+                end
+                suma_min = suma_min + minc[i]
+                suma_max = suma_max + maxc[i]
+            end
+        end
+    end
     con_ancho_tabla = _val(e, "width", "auto") != "auto"
     if not con_ancho_tabla and suma_max < ancho_tabla
         ancho_tabla = suma_max
@@ -5443,7 +5553,7 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
         end
         cel.ancho = w
         fh = FlexHijo(cel.nodo)
-        cel.alto = _flex_maquetar(m, fh, w, ancho, -1, -1)
+        cel.alto = _celda_maquetar(m, fh, w, ancho, -1)
         cel.dibujos = fh.dibujos
     end
     var altos: [Int] = []
@@ -5501,7 +5611,7 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
             bpv = _borde(ce, "top") + _borde(ce, "bottom") + _px(ce, "padding-top", ancho) + _px(ce, "padding-bottom", ancho)
             natural = cel.alto
             fh = FlexHijo(cel.nodo)
-            _flex_maquetar(m, fh, cel.ancho, ancho, -1, area - mv - bpv)
+            _celda_maquetar(m, fh, cel.ancho, ancho, area - mv - bpv)
             cel.dibujos = fh.dibujos
             va = _val(ce, "vertical-align", "middle")
             if va == "middle"

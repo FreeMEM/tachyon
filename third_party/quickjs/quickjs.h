@@ -684,11 +684,20 @@ static inline JSRefCountHeader *__js_rc(void *ptr)
     return (JSRefCountHeader *)((uint32_t *)ptr - 1);
 }
 
+#if defined(__amigaos__)
+/* (Tachyon, tarea 66) un valor liberado más veces de las que se tomó: lo cuenta (por js_amiga_decir) con la pila de
+   JavaScript, y no se libera otra vez */
+void js_amiga_cuenta_negativa(JSRuntime *rt, JSValue v);
+JSRuntime *JS_GetRuntime(JSContext *ctx);
+#endif
 static inline void JS_FreeValue(JSContext *ctx, JSValue v)
 {
     if (JS_VALUE_HAS_REF_COUNT(v)) {
         JSRefCountHeader *p = __js_rc(JS_VALUE_GET_PTR(v));
         if (--p->ref_count <= 0) {
+#if defined(__amigaos__)
+            if (p->ref_count < 0) { js_amiga_cuenta_negativa(JS_GetRuntime(ctx), v); return; }
+#endif
             __JS_FreeValue(ctx, v);
         }
     }
@@ -699,6 +708,9 @@ static inline void JS_FreeValueRT(JSRuntime *rt, JSValue v)
     if (JS_VALUE_HAS_REF_COUNT(v)) {
         JSRefCountHeader *p = __js_rc(JS_VALUE_GET_PTR(v));
         if (--p->ref_count <= 0) {
+#if defined(__amigaos__)
+            if (p->ref_count < 0) { js_amiga_cuenta_negativa(rt, v); return; }
+#endif
             __JS_FreeValueRT(rt, v);
         }
     }

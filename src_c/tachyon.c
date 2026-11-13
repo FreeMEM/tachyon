@@ -30,7 +30,26 @@ static void _registro(const char *t) {
         if (_reg_fin == _REG_TAM) { _reg_fin = 0; _reg_lleno = 1; }
     }
 }
-static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); }
+/* (diagnóstico del cierre del vídeo 2, tarea 66) con TRAZA=fichero, lo que dice _js_decir (los abort y assert del C)
+   va también a ese fichero (abriéndolo y cerrándolo: queda escrito aunque el programa no acabe bien) */
+static char _traza_c[256];
+static void _traza_c_linea(const char *t) {
+    BPTR f;
+    if (!_traza_c[0]) return;
+    f = Open((CONST_STRPTR)_traza_c, MODE_READWRITE);
+    if (!f) return;
+    Seek(f, 0, OFFSET_END);
+    Write(f, (APTR)t, strlen(t));
+    Close(f);
+}
+extern void (*js_amiga_decir)(const char *);
+static void _js_decir(const char *t);
+void tachyon_traza_c(const char *fichero) {
+    if (!fichero || _traza_c[0]) return;
+    strncpy(_traza_c, fichero, sizeof _traza_c - 1);
+    js_amiga_decir = _js_decir;      /* (QuickJS: qué objeto y qué JavaScript antes de un assert de las formas) */
+}
+static void _js_decir(const char *t) { BPTR o = Output(); if (o) Write(o, (APTR)t, strlen(t)); _registro(t); _traza_c_linea(t); }
 /* a la salida y al registro */
 static void _js_poner(const char *t) { PutStr((CONST_STRPTR)t); _registro(t); }
 __stdargs void __assert_func(const char *f, int l, const char *fn, const char *e) {
@@ -60,7 +79,7 @@ static size_t _js_memoria_tope(void) {
     ULONG libre = AvailMem(MEMF_ANY), tope = libre / 3 * 2;
     if (tope < (ULONG)JS_MEMORIA) tope = JS_MEMORIA;
     if (tope > (ULONG)JS_MEMORIA_MAX) tope = JS_MEMORIA_MAX;
-    return (size_t)tope;
+    return (size_t)tope & ~(size_t)1;
 }
 static size_t _js_pila_tope(void) {
     struct Task *yo = FindTask(NULL);
@@ -281,14 +300,82 @@ static int _jm_hay(size_t n) {
     _jm_desde = 0;
     return AvailMem(MEMF_ANY) > _jm_reserva + n;
 }
-static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const char *)p - _JM_CABECERA))[0] : 0; }
+/* Dos pools por motor: el de siempre (charcos de 512 KB) y, si un charco nuevo de esos ya no cabe seguido (la memoria
+   del Amiga troceada: con YouTube, 57 MB libres pero ningún bloque de más de ~800 KB, y QuickJS daba decenas de "out
+   of memory"; tarea 66), otro de charcos de 64 KB. El bit alto del tamaño de la cabecera dice de cuál es cada bloque. */
+#define _JM_CHICO 0x80000000UL
+#define _JM_CHARCO_CHICO (64UL * 1024)
+#define _JM_SOLO_CHICO (16UL * 1024)
+typedef struct { APTR grande, chico; } _JmPools;
+static APTR _jm_pool_crear(void) {
+    _JmPools *p = (_JmPools *)AllocVec(sizeof(_JmPools), MEMF_ANY | MEMF_CLEAR);
+    if (!p) return NULL;
+    p->grande = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+    if (!p->grande) { FreeVec(p); return NULL; }
+    return p;
+}
+static void _jm_pool_borrar(APTR q) {
+    _JmPools *p = (_JmPools *)q;
+    if (!p) return;
+    if (p->chico) DeletePool(p->chico);
+    DeletePool(p->grande);
+    FreeVec(p);
+}
+/* n + la cabecera, del pool grande o, si no cabe, del chico; *chico dice de cuál */
+static size_t *_jm_pedir(APTR q, size_t n, int *chico) {
+    _JmPools *p = (_JmPools *)q;
+    size_t *b = (size_t *)AllocPooled(p->grande, n + _JM_CABECERA);
+    *chico = 0;
+    if (b) { _jm_sano(p->grande); return b; }
+    if (!p->chico) p->chico = CreatePool(MEMF_ANY, _JM_CHARCO_CHICO, _JM_SOLO_CHICO);
+    if (!p->chico) return NULL;
+    b = (size_t *)AllocPooled(p->chico, n + _JM_CABECERA);
+    if (b) { _jm_sano(p->chico); *chico = 1; }
+    return b;
+}
+static void _jm_soltar(APTR q, size_t *b) {
+    _JmPools *p = (_JmPools *)q;
+    size_t n = b[0] & ~_JM_CHICO;
+    FreePooled((b[0] & _JM_CHICO) ? p->chico : p->grande, b, n + _JM_CABECERA);
+}
+static size_t _jm_tamano(const void *p) { return p ? ((const size_t *)((const char *)p - _JM_CABECERA))[0] & ~_JM_CHICO : 0; }
+/* El tope de QuickJS se fija al crear el motor (dos tercios de la memoria libre). Con YouTube, al navegar dentro de
+   la página (el mismo motor que cargó la búsqueda), se llegaba al tope con 55 MB aún libres y saltaban decenas de
+   "out of memory" (tarea 66). Si al llegar al tope queda bastante memoria (más de 32 MB tras darle n: por encima de
+   los 24 MB con los que dashweb suelta el JavaScript de la página, dw_js_minima), el tope sube lo justo, sin pasar
+   de JS_MEMORIA_MAX. */
+#define _JM_HOLGURA (32UL * 1024 * 1024)
+static int _jm_cabe(JSMallocState *s, size_t n) {
+    ULONG libre;
+    if (s->malloc_size + n <= s->malloc_limit) return 1;
+    /* (un tope impar es de js_limite, puesto a mano: ese no se mueve; los de _js_memoria_tope son pares) */
+    if ((s->malloc_limit & 1) || s->malloc_size + n > JS_MEMORIA_MAX) return 0;
+    libre = AvailMem(MEMF_ANY);
+    if (libre < _JM_HOLGURA + n) return 0;
+    /* (par: un tope impar sería uno fijo de js_limite y ya no subiría más; con YouTube se quedó en 91116755) */
+    s->malloc_limit = (s->malloc_size + n + 2UL * 1024 * 1024) & ~(size_t)1;
+    if (s->malloc_limit > JS_MEMORIA_MAX) s->malloc_limit = JS_MEMORIA_MAX;
+    return 1;
+}
+/* (con TRAZA=fichero, las primeras veces que QuickJS se queda sin memoria: por qué) */
+static int _jm_fallos = 0;
+static void _jm_fallo(JSMallocState *s, size_t n, const char *por) {
+    char b[200];
+    if (!_traza_c[0] || _jm_fallos >= 20) return;
+    _jm_fallos++;
+    sprintf(b, "[C] QuickJS sin memoria (%s): pide %lu, lleva %lu de %lu; libre %lu, mayor bloque %lu\n", por,
+            (ULONG)n, (ULONG)s->malloc_size, (ULONG)s->malloc_limit, (ULONG)AvailMem(MEMF_ANY),
+            (ULONG)AvailMem(MEMF_ANY | MEMF_LARGEST));
+    _traza_c_linea(b);
+}
 static void *_jm_malloc(JSMallocState *s, size_t n) {
     size_t *p;
-    if (s->malloc_size + n > s->malloc_limit || !_jm_hay(n)) return NULL;
-    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
-    if (!p) return NULL;
-    _jm_sano((APTR)s->opaque);
-    p[0] = n;
+    int chico;
+    if (!_jm_cabe(s, n)) { _jm_fallo(s, n, "tope"); return NULL; }
+    if (!_jm_hay(n)) { _jm_fallo(s, n, "reserva"); return NULL; }
+    p = _jm_pedir((APTR)s->opaque, n, &chico);
+    if (!p) { _jm_fallo(s, n, "pool"); return NULL; }
+    p[0] = n | (chico ? _JM_CHICO : 0);
     s->malloc_count++;
     s->malloc_size += n + _JM_CABECERA;
     return (char *)p + _JM_CABECERA;
@@ -297,20 +384,21 @@ static void _jm_free(JSMallocState *s, void *q) {
     if (!q) return;
     s->malloc_count--;
     s->malloc_size -= _jm_tamano(q) + _JM_CABECERA;
-    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, _jm_tamano(q) + _JM_CABECERA);
+    _jm_soltar((APTR)s->opaque, (size_t *)((char *)q - _JM_CABECERA));
 }
 static void *_jm_realloc(JSMallocState *s, void *q, size_t n) {
     size_t antes, *p;
+    int chico;
     if (!q) return n ? _jm_malloc(s, n) : NULL;
     if (!n) { _jm_free(s, q); return NULL; }
     antes = _jm_tamano(q);
-    if (n > antes && (s->malloc_size + n - antes > s->malloc_limit || !_jm_hay(n - antes))) return NULL;
-    p = (size_t *)AllocPooled((APTR)s->opaque, n + _JM_CABECERA);
-    if (!p) return NULL;
-    _jm_sano((APTR)s->opaque);
-    p[0] = n;
+    if (n > antes && !_jm_cabe(s, n - antes)) { _jm_fallo(s, n, "tope, realloc"); return NULL; }
+    if (n > antes && !_jm_hay(n - antes)) { _jm_fallo(s, n, "reserva, realloc"); return NULL; }
+    p = _jm_pedir((APTR)s->opaque, n, &chico);
+    if (!p) { _jm_fallo(s, n, "pool, realloc"); return NULL; }
+    p[0] = n | (chico ? _JM_CHICO : 0);
     memcpy((char *)p + _JM_CABECERA, q, antes < n ? antes : n);
-    FreePooled((APTR)s->opaque, (char *)q - _JM_CABECERA, antes + _JM_CABECERA);
+    _jm_soltar((APTR)s->opaque, (size_t *)((char *)q - _JM_CABECERA));
     s->malloc_size += n - antes;
     return (char *)p + _JM_CABECERA;
 }
@@ -541,7 +629,7 @@ LONG js_nuevo(void)
 #ifdef _JS_GUARDAS
     m->rt = JS_NewRuntime2(&_jg_funciones, NULL);
 #else
-    m->pool = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+    m->pool = _jm_pool_crear();
     if (!m->pool) { free(m); return 0; }
     m->rt = JS_NewRuntime2(&_jm_funciones, m->pool);
 #endif
@@ -563,7 +651,7 @@ LONG js_nuevo(void)
     }
     if (!m->ctx) {
         if (m->rt) JS_FreeRuntime(m->rt);
-        if (m->pool) DeletePool(m->pool);
+        if (m->pool) _jm_pool_borrar(m->pool);
         free(m);
         return 0;
     }
@@ -698,7 +786,7 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
 #ifdef _JS_GUARDAS
             trt = JS_NewRuntime2(&_jg_funciones, NULL);
 #else
-            tpool = CreatePool(MEMF_ANY, _JM_CHARCO, _JM_SOLO);
+            tpool = _jm_pool_crear();
             trt = tpool ? JS_NewRuntime2(&_jm_funciones, tpool) : NULL;
 #endif
             if (trt) {
@@ -718,7 +806,7 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
                 cctx = tctx;
             } else {
                 if (trt) JS_FreeRuntime(trt);
-                if (tpool) DeletePool(tpool);
+                if (tpool) _jm_pool_borrar(tpool);
                 tpool = NULL;
             }
         }
@@ -765,7 +853,7 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
             f = JS_UNDEFINED;
             JS_FreeContext(cctx);
             JS_FreeRuntime(crt);
-            if (tpool) DeletePool(tpool);
+            if (tpool) _jm_pool_borrar(tpool);
         }
         if (!bc || bc_fuente != n || bc_suma != suma) {
             JS_FreeValue(m->ctx, f);
@@ -846,7 +934,7 @@ LONG js_memoria(LONG js)
 void js_limite(LONG js, LONG bytes)
 {
     _JsMotor *m = (_JsMotor *)js;
-    if (m) JS_SetMemoryLimit(m->rt, (size_t)bytes);
+    if (m) JS_SetMemoryLimit(m->rt, (size_t)bytes | 1);   /* (impar: fijo, _jm_cabe no lo sube) */
 }
 STRPTR js_error(LONG js)
 {
@@ -863,7 +951,7 @@ void js_liberar(LONG js)
 #endif
     JS_FreeContext(m->ctx);
     JS_FreeRuntime(m->rt);
-    if (m->pool) DeletePool(m->pool);
+    if (m->pool) _jm_pool_borrar(m->pool);
     free(m->error);
     free(m);
 }
@@ -1600,9 +1688,10 @@ static JSValue _jsdom_innerHTML(JSContext *ctx, JSValueConst this_val) {
 static JSValue _jsdom_set_innerHTML(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
     char *t;
     _JSDOM_ESTE_PONER("innerHTML");
-    t = _js_texto(ctx, v);
+    /* (null es "", [LegacyNullToEmptyString]; WPT domparsing innerhtml-07) */
+    t = JS_IsNull(v) ? NULL : _js_texto(ctx, v);
     jsdom_poner_html(n, (STRPTR)(t ? t : ""));
-    _jsdom_soltar(t);
+    if (t) _jsdom_soltar(t);
     _jsdom_tocado(ctx, n);
     return JS_UNDEFINED;
 }

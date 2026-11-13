@@ -167,6 +167,9 @@ Inspecter
 MSG_55
 Journal de débogage réseau
 ; Network debug log
+MSG_56
+Coller
+; Paste
 MSG_100
 Cette page ne peut pas être mise en signet
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Journal de débogage réseau désactivé
 MSG_528
 Mémoire insuffisante : le JavaScript de la page a été arrêté
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+Ouverture de %1 avec la visionneuse du système...
+; Opening %1 with the system's viewer...

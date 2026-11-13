@@ -63,6 +63,8 @@ def main():
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
     ap.add_argument("--arexx", metavar="'ORDEN|ORDEN|...'", help="tools/amiga/arexx.dash in the background: these ARexx "
                     "commands to the TACHYON port, one every 4 s, once it exists; its answers in bg0.txt (with --guardar)")
+    ap.add_argument("--memoria-alta", action="store_true", help="1 GB + 512 MB of Zorro III memory and tools/amiga/comer.dash "
+                    "first keeps the low 1 GB, so the program gets memory above 0x80000000 (negative as a 32-bit Int; tarea 69)")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
                     "memory and the state and saved stack of the window's task (bgN.txt with --guardar; to find hangs)")
     ap.add_argument("--direccion", metavar="DIR", help="with --local: the address the program opens instead of DH0:p1 "
@@ -198,6 +200,8 @@ def main():
                 prog_args = [args.direccion or "DH0:p1", ""]
                 red = ""
             fondo = []
+            if args.memoria_alta:
+                fondo.insert(0, (str(ROOT / "tools" / "amiga" / "comer.dash"), "10"))
             if args.acciones:
                 fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
             if args.arexx:
@@ -206,8 +210,14 @@ def main():
                 fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,
                                kickstart=os.environ.get("DASH_KICKSTART_32" if args.maquina.startswith("rtg") else "DASH_KICKSTART"),
-                               extra_config=red + (MAQUINAS[args.maquina] if not args.memoria else
-                                                   MAQUINAS[args.maquina].replace("zorro_iii_memory = 131072",
+                               extra_config=red + (MAQUINAS[args.maquina] if not (args.memoria or args.memoria_alta) else
+                                                   # (con la Z3 en su sitio real, FS-UAE no deja RTG con JIT; su JIT de
+                                                   # todos modos no compila nada: ver la bitácora del 2026-11-11)
+                                                   MAQUINAS[args.maquina].replace("jit_compiler = 1",
+                                                                                  "jit_compiler = 0" if args.memoria_alta
+                                                                                  else "jit_compiler = 1").replace("zorro_iii_memory = 131072",
+                                                                                  "zorro_iii_memory = 1048576\nuae_z3mem2_size = 512"
+                                                                                  if args.memoria_alta else
                                                                                   f"zorro_iii_memory = {args.memoria * 1024}")),
                                screenshot=shot, system=args.sistema, keep=args.guardar,
                                background=fondo or None, args=prog_args, workbench=args.workbench,

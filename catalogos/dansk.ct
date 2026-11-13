@@ -167,6 +167,9 @@ Inspicér
 MSG_55
 Fejlfindingslog for netværket
 ; Network debug log
+MSG_56
+Indsæt
+; Paste
 MSG_100
 Denne side kan ikke gemmes som bogmærke
 ; This page can't be bookmarked
@@ -830,3 +833,6 @@ Fejlfindingslog for netværket fra
 MSG_528
 Lidt hukommelse: sidens JavaScript er stoppet
 ; Low memory: the page's JavaScript was stopped
+MSG_530
+Åbner %1 med systemets fremviser...
+; Opening %1 with the system's viewer...

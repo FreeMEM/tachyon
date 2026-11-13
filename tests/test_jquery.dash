@@ -35,7 +35,7 @@
 # expect-out: deferred: hecho
 # expect-out: deferred: resolved
 # expect-out: serialize: campo=nuevo&c=on&s=b
-# expect-out: css: 100px color: red; width: 100px; margin-left: 5px
+# expect-out: css: 100px color: red; width: 100px; margin-left: 5px;
 # expect-out: fin del script
 # expect-out: listo: interactive 3
 # expect-out: load

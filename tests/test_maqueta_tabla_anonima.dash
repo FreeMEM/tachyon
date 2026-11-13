@@ -2,7 +2,10 @@
 # fila y su celda anónimas) colgaba el Amiga: la fila anónima se liberaba al acabar _tabla (padre es débil) y
 # _cajas_finales subía desde la celda por un padre ya liberado. Y <col>/<colgroup> no tienen caja (table-column): antes
 # iban en una fila anónima y colgaban igual (WPT css/CSS2/tables, los border-collapse-dynamic-colgroup y -column).
+# Y celdas sin su tabla (en un bloque) van en una tabla anónima, en fila, con el pie al final (17.2.1; WPT
+# table-anonymous-objects).
 # expect-out: suelto: alto true | col: 3 celdas en fila true | colgroup display table-column-group | otra vez: alto true
+# expect-out: sin tabla: en fila true | pie abajo true
 
 import "../lib/maqueta.dash"
 import "../lib/jsdom.dash"
@@ -33,4 +36,14 @@ Main
     fila = js_evaluar(js, "r('a').top == r('b').top && r('b').top == r('c').top && r('a').right <= r('b').left && r('b').right <= r('c').left", "t.js")
     g = dom_por_id(b, "g")
     Print "suelto: alto " + (p.alto > 0) + " | col: 3 celdas en fila " + fila + " | colgroup display " + g.estilo["display"] + " | otra vez: alto " + (maquetar(a, 800).alto > 0)
+    h = "<html><body><div><span id=x style='display:table-cell'>a</span> <span id=y style='display:table-cell'>b</span>"
+    h = h + "<span style='display:table-footer-group'><span id=f style='display:table-cell'>pie</span></span>"
+    h = h + "<span id=z style='display:table-cell'>c</span></div></body></html>"
+    c = pagina(h)
+    js2 = js_nuevo()
+    jsdom_preparar(js2, c)
+    q2 = maquetar(c, 1000)
+    jsdom_vista(js2, 1000, 600, 0, q2.alto)
+    js_evaluar(js2, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
+    Print js_evaluar(js2, "'sin tabla: en fila ' + (r('x').top == r('y').top && r('x').right <= r('y').left) + ' | pie abajo ' + (r('f').top > r('z').top)", "t.js")
 end

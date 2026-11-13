@@ -7600,3 +7600,10 @@ Formato:
 - Las páginas zz_col_*.html de tests/pages son de depurar: no van al commit.
 - Retomado ("sigue con tachyon"): maqueta 36/36, acid2 2/2, tabla 4/4 y Acid3 100 con el arreglo; commit, y
   docs/wpt/css_CSS2_tables.txt con el 71/150.
+- Tablas anónimas (CSS 2.1 17.2.1): en _contenido, cada tramo de filas, grupos o celdas sin su tabla va en una tabla
+  anónima (_envolver_en_tablas, sujeta por la página con _anon_sujetar); el primer table-header-group delante y el
+  primer table-footer-group detrás (_orden_grupos); thead y tfoot son table-header-group y table-footer-group.
+  WPT tables 71 → 77/150 (table-anonymous-objects 011, 012, 017-020), normal-flow 74/100 igual; maqueta 36/36,
+  acid2, tabla, jquery y Acid3 100. Visto de paso: getBoundingClientRect de un grupo de filas (tbody) da 0 (sin caja).
+  Siguiente: los otros table-anonymous-objects (059-083 aún fallan; el 070 ya se maqueta como la referencia en la
+  traza, mirar por qué el reftest no casa) y caption-side-applies-to.

@@ -464,7 +464,7 @@ func _es_bloque(n: Nodo) -> Bool
         return false
     end
     d = n.estilo["display"]
-    return d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-cell" or d == "flex" or d == "grid"
+    return d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-cell" or d == "flex" or d == "grid"
 end
 
 func _oculto(n: Nodo) -> Bool
@@ -3250,6 +3250,26 @@ func _contenido(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int) -> Int
             break
         end
     end
+    # filas, grupos o celdas sin su tabla: cada tramo seguido, en una tabla anónima (CSS 2.1 17.2.1; WPT
+    # table-anonymous-objects: sin esto iban una debajo de otra como bloques)
+    for h in lista
+        if _de_tabla(h)
+            var l3: [Nodo] = []
+            var e3: [String] = nil
+            var p3: [{String: String}] = nil
+            if enlaces != nil
+                var e4: [String] = []
+                var p4: [{String: String}] = []
+                e3 = e4
+                p3 = p4
+            end
+            _envolver_en_tablas(n, lista, enlaces, padres, l3, e3, p3)
+            lista = l3
+            enlaces = e3
+            padres = p3
+            break
+        end
+    end
     ih = -1
     for h in lista
         ih = ih + 1
@@ -5330,7 +5350,7 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
         end
     end
     var filas: [Nodo] = []
-    _filas(t, filas)
+    _filas_de(t, _orden_grupos(t), filas)
     var celdas: [Celda] = []
     var ocupado: {String: Bool} = {}
     ncols = 0
@@ -5645,8 +5665,44 @@ end
 # table-*-group). Lo que no es una fila (un <li> dentro de un <ul> con display: table) va en una fila anónima, una
 # por cada tramo seguido (CSS 2.1, 17.2.1); sin esto no se maquetaba nada de dentro
 func _filas(n: Nodo, filas: [Nodo])
+    _filas_de(n, n.hijos, filas)
+end
+
+# Los hijos de una tabla con el primer grupo de cabecera delante y el primero de pie detrás (CSS 2.1 17.2)
+func _orden_grupos(t: Nodo) -> [Nodo]
+    var cab: Nodo = nil
+    var pie: Nodo = nil
+    for h in t.hijos
+        if h.tipo == DOM_ELEMENTO and not _oculto(h)
+            d = _val(h.estilo, "display", "")
+            if d == "table-header-group" and cab == nil
+                cab = h
+            elif d == "table-footer-group" and pie == nil
+                pie = h
+            end
+        end
+    end
+    if cab == nil and pie == nil
+        return t.hijos
+    end
+    var r: [Nodo] = []
+    if cab != nil
+        r.push(cab)
+    end
+    for h in t.hijos
+        if h != cab and h != pie
+            r.push(h)
+        end
+    end
+    if pie != nil
+        r.push(pie)
+    end
+    return r
+end
+
+func _filas_de(n: Nodo, hijos: [Nodo], filas: [Nodo])
     var suelta: [Nodo] = []
-    for h in n.hijos
+    for h in hijos
         d = ""
         if h.tipo == DOM_ELEMENTO
             d = _val(h.estilo, "display", "")
@@ -5704,7 +5760,15 @@ func _tramo_anonimo(padre: Nodo, suelta: [Nodo], lista: [Nodo])
     a.padre = padre
     lista.push(a)
     suelta.clear()
-    # (sujeta por la página mientras viva: ver Pagina.anonimas; al medir no hace falta, se tiran con la medida)
+    # (sujeta por la página mientras viva; al medir no hace falta, se tiran con la medida)
+    _anon_sujetar(a)
+end
+
+# La página que se está maquetando (para sujetar sus cajas anónimas)
+var _anon_pagina: Pagina = nil
+
+# Una caja anónima, sujeta por la página mientras viva (ver Pagina.anonimas)
+func _anon_sujetar(a: Nodo)
     if _midiendo == 0 and _anon_pagina != nil
         if _anon_pagina.anonimas == nil
             var vivas: [Nodo] = []
@@ -5714,8 +5778,43 @@ func _tramo_anonimo(padre: Nodo, suelta: [Nodo], lista: [Nodo])
     end
 end
 
-# La página que se está maquetando (para sujetar sus cajas anónimas)
-var _anon_pagina: Pagina = nil
+# Lo que solo tiene sentido dentro de una tabla
+func _de_tabla(h: Nodo) -> Bool
+    if h.tipo != DOM_ELEMENTO or h.estilo == nil
+        return false
+    end
+    d = _val(h.estilo, "display", "")
+    return d == "table-row" or d == "table-cell" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-column" or d == "table-column-group" or d == "table-caption"
+end
+
+# lista con cada tramo de lo de tabla (y los blancos entre ello) dentro de una tabla anónima hija de n; enlaces y
+# padres, si los hay, van a la par
+func _envolver_en_tablas(n: Nodo, lista: [Nodo], enlaces: [String], padres: [{String: String}], r: [Nodo], re: [String], rp: [{String: String}])
+    var t: Nodo = nil
+    for i in (0..lista.length - 1)
+        h = lista[i]
+        if _de_tabla(h) or (t != nil and h.tipo == DOM_TEXTO and str_trim(h.texto) == "")
+            if t == nil
+                t = _anonima(n)
+                t.estilo["display"] = "table"
+                _anon_sujetar(t)
+                r.push(t)
+                if re != nil
+                    re.push(enlaces[i])
+                    rp.push(padres[i])
+                end
+            end
+            t.hijos.push(h)
+        else
+            t = nil
+            r.push(h)
+            if re != nil
+                re.push(enlaces[i])
+                rp.push(padres[i])
+            end
+        end
+    end
+end
 
 # El elemento que hay en el punto x, y de la página (lo último que se pintó allí: un texto, una
 # imagen o un fondo de caja), o nil

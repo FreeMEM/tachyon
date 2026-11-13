@@ -134,6 +134,10 @@ struct Pagina
     alto: Int
     fondo: Int
     limites: [Limite] = nil   # las cajas que se pueden maquetar solas (tarea 48h)
+    # Las cajas anónimas de las tablas (filas y celdas que no están en el DOM): su padre es débil y nada más las
+    # sujetaba; al acabar _tabla se liberaban y la celda, que sigue en los dibujos y en las cajas, subía por un padre
+    # ya liberado: el Amiga se colgaba con un <col> o con algo suelto en una tabla (WPT tables, 6 reftests)
+    anonimas: [Nodo] = nil
 end
 
 # Un trozo de una línea: una palabra (o una imagen, o un salto de línea forzado)
@@ -503,6 +507,7 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     maqueta_guardadas = 0
     var dibujos: [Dibujo] = []
     p = Pagina(dibujos, ancho, 0, 16777215)
+    _anon_pagina = p
     if _topaz == 0
         _topaz = font_open("topaz.font", 8)
     end
@@ -511,6 +516,7 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     m.cajas = cajas
     html = dom_buscar(doc, "html")
     if html == nil
+        _anon_pagina = nil
         return p
     end
     cuerpo = dom_buscar(html, "body")
@@ -528,6 +534,7 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     _pegajosos(m)
     _alto_con_absolutos(p, doc)
     _por_capas(p)
+    _anon_pagina = nil
     return p
 end
 
@@ -5651,7 +5658,7 @@ func _filas(n: Nodo, filas: [Nodo])
             _tramo_anonimo(n, suelta, filas)
             _filas(h, filas)
         elif h.tipo == DOM_ELEMENTO
-            if h.nombre != "caption" and d != "table-caption" and d != "none" and not _oculto(h) and not _fuera_del_flujo(h)
+            if h.nombre != "caption" and d != "table-caption" and d != "none" and d != "table-column" and d != "table-column-group" and not _oculto(h) and not _fuera_del_flujo(h)
                 suelta.push(h)
             end
         elif h.tipo == DOM_TEXTO and str_trim(h.texto) != ""
@@ -5668,7 +5675,7 @@ func _celdas_de(fila: Nodo, celdas: [Nodo])
     for h in fila.hijos
         if h.tipo == DOM_ELEMENTO
             d = _val(h.estilo, "display", "")
-            if d == "none" or _oculto(h) or _fuera_del_flujo(h)
+            if d == "none" or d == "table-column" or d == "table-column-group" or _oculto(h) or _fuera_del_flujo(h)
                 continue
             end
             if h.nombre == "td" or h.nombre == "th" or d == "table-cell"
@@ -5697,7 +5704,18 @@ func _tramo_anonimo(padre: Nodo, suelta: [Nodo], lista: [Nodo])
     a.padre = padre
     lista.push(a)
     suelta.clear()
+    # (sujeta por la página mientras viva: ver Pagina.anonimas; al medir no hace falta, se tiran con la medida)
+    if _midiendo == 0 and _anon_pagina != nil
+        if _anon_pagina.anonimas == nil
+            var vivas: [Nodo] = []
+            _anon_pagina.anonimas = vivas
+        end
+        _anon_pagina.anonimas.push(a)
+    end
 end
+
+# La página que se está maquetando (para sujetar sus cajas anónimas)
+var _anon_pagina: Pagina = nil
 
 # El elemento que hay en el punto x, y de la página (lo último que se pintó allí: un texto, una
 # imagen o un fondo de caja), o nil
@@ -7515,6 +7533,14 @@ end
 # b otra vez en p (ya con su estilo nuevo): sus dibujos nuevos, ya puestos en p en lugar de los de antes; nil si no
 # se puede (algo de fuera la transforma, anima, fija o pega; lo de dentro se anima): entonces, la maqueta entera
 func maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
+    # (las anónimas de lo que se rehace, a la página de siempre)
+    _anon_pagina = p
+    r = _maqueta_rehacer(p, doc, b)
+    _anon_pagina = nil
+    return r
+end
+
+func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
     var nada: [Dibujo] = nil
     maqueta_bloques = 0
     l = _limite_en(p, b)

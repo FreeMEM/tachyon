@@ -1,0 +1,152 @@
+# css/CSS2/tables, las 150 primeras de 300 (tools/wpt.py css/CSS2/tables 150), 2026-11-13
+WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-003.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-004.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-005.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-colgroup-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-colgroup-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-colgroup-003.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-column-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-column-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-column-003.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-row-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-row-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-row-003.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-rowgroup-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-rowgroup-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-rowgroup-003.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-table-001.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-table-002.xht
+WPT PASS css/CSS2/tables/border-collapse-dynamic-table-003.xht
+WPT PASS css/CSS2/tables/border-collapse-empty-row.html
+WPT PASS css/CSS2/tables/border-collapse-offset-001.xht
+WPT FAIL css/CSS2/tables/border-collapse-offset-002.xht 498
+WPT FAIL css/CSS2/tables/border-conflict-element-001d.xht 62651
+WPT FAIL css/CSS2/tables/border-conflict-element-001e.xht 72204
+WPT FAIL css/CSS2/tables/caption-position-001.xht 6923
+WPT PASS css/CSS2/tables/caption-side-applies-to-001.xht
+WPT PASS css/CSS2/tables/caption-side-applies-to-002.xht
+WPT PASS css/CSS2/tables/caption-side-applies-to-003.xht
+WPT PASS css/CSS2/tables/caption-side-applies-to-005.xht
+WPT FAIL css/CSS2/tables/caption-side-applies-to-006.xht 167
+WPT FAIL css/CSS2/tables/caption-side-applies-to-007.xht 18599
+WPT FAIL css/CSS2/tables/caption-side-applies-to-008.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-009.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-010.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-011.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-012.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-013.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-014.xht 8064
+WPT FAIL css/CSS2/tables/caption-side-applies-to-015.xht 167
+WPT PASS css/CSS2/tables/caption-side-applies-to-017.xht
+WPT FAIL css/CSS2/tables/collapsing-border-model-001.xht 42675
+WPT FAIL css/CSS2/tables/collapsing-border-model-003.xht 7200
+WPT FAIL css/CSS2/tables/collapsing-border-model-004.xht 49275
+WPT FAIL css/CSS2/tables/collapsing-border-model-007.xht 42720
+WPT FAIL css/CSS2/tables/collapsing-border-model-008.xht 42720
+WPT FAIL css/CSS2/tables/collapsing-border-model-009.xht 7200
+WPT FAIL css/CSS2/tables/column-visibility-004.xht 10858
+WPT FAIL css/CSS2/tables/fixed-table-layout-002a.xht 2063
+WPT PASS css/CSS2/tables/fixed-table-layout-003a01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003a02.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003a03.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003a04.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003a05.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003a06.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b02.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b03.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b04.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b05.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b06.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b07.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b08.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b09.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b10.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b11.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003b12.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c02.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c03.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c04.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c05.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c06.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c07.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003c08.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d02.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d03.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d04.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d05.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003d06.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e02.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e03.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e04.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e05.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003e06.xht
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e07.xht 1296
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e08.xht 1296
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e09.xht 1296
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e10.xht 1296
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e11.xht 768
+WPT FAIL css/CSS2/tables/fixed-table-layout-003e12.xht 768
+WPT PASS css/CSS2/tables/fixed-table-layout-003f01.xht
+WPT PASS css/CSS2/tables/fixed-table-layout-003f02.xht
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f03.xht 2160
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f04.xht 2160
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f05.xht 2160
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f06.xht 2160
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f07.xht 1344
+WPT FAIL css/CSS2/tables/fixed-table-layout-003f08.xht 1344
+WPT FAIL css/CSS2/tables/fixed-table-layout-017.xht 3399
+WPT FAIL css/CSS2/tables/fixed-table-layout-018.xht 4679
+WPT FAIL css/CSS2/tables/fixed-table-layout-019.xht 4679
+WPT FAIL css/CSS2/tables/fixed-table-layout-020.xht 4679
+WPT FAIL css/CSS2/tables/fixed-table-layout-021.xht 16429
+WPT FAIL css/CSS2/tables/fixed-table-layout-022.xht 24759
+WPT FAIL css/CSS2/tables/fixed-table-layout-023.xht 26412
+WPT FAIL css/CSS2/tables/separated-border-model-003b.xht 100000
+WPT FAIL css/CSS2/tables/separated-border-model-004d.xht 88328
+WPT FAIL css/CSS2/tables/separated-border-model-004e.xht 7904
+WPT PASS css/CSS2/tables/separated-border-model-007.xht
+WPT PASS css/CSS2/tables/separated-border-model-008.xht
+WPT PASS css/CSS2/tables/separated-border-model-009.xht
+WPT PASS css/CSS2/tables/table-anonymous-border-spacing.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-009.xht 161
+WPT FAIL css/CSS2/tables/table-anonymous-objects-010.xht 590
+WPT FAIL css/CSS2/tables/table-anonymous-objects-011.xht 429
+WPT FAIL css/CSS2/tables/table-anonymous-objects-012.xht 858
+WPT FAIL css/CSS2/tables/table-anonymous-objects-015.xht 270
+WPT FAIL css/CSS2/tables/table-anonymous-objects-016.xht 540
+WPT FAIL css/CSS2/tables/table-anonymous-objects-017.xht 270
+WPT FAIL css/CSS2/tables/table-anonymous-objects-018.xht 540
+WPT FAIL css/CSS2/tables/table-anonymous-objects-019.xht 270
+WPT FAIL css/CSS2/tables/table-anonymous-objects-020.xht 540
+WPT FAIL css/CSS2/tables/table-anonymous-objects-059.xht 4740
+WPT FAIL css/CSS2/tables/table-anonymous-objects-060.xht 4824
+WPT FAIL css/CSS2/tables/table-anonymous-objects-061.xht 7252
+WPT FAIL css/CSS2/tables/table-anonymous-objects-062.xht 5553
+WPT FAIL css/CSS2/tables/table-anonymous-objects-063.xht 4740
+WPT FAIL css/CSS2/tables/table-anonymous-objects-064.xht 4824
+WPT FAIL css/CSS2/tables/table-anonymous-objects-065.xht 7252
+WPT FAIL css/CSS2/tables/table-anonymous-objects-066.xht 5553
+WPT FAIL css/CSS2/tables/table-anonymous-objects-067.xht 7415
+WPT FAIL css/CSS2/tables/table-anonymous-objects-068.xht 5494
+WPT FAIL css/CSS2/tables/table-anonymous-objects-069.xht 7570
+WPT FAIL css/CSS2/tables/table-anonymous-objects-070.xht 5792
+WPT FAIL css/CSS2/tables/table-anonymous-objects-071.xht 7486
+WPT FAIL css/CSS2/tables/table-anonymous-objects-072.xht 5642
+WPT FAIL css/CSS2/tables/table-anonymous-objects-073.xht 7486
+WPT FAIL css/CSS2/tables/table-anonymous-objects-074.xht 5642
+WPT FAIL css/CSS2/tables/table-anonymous-objects-075.xht 7252
+WPT FAIL css/CSS2/tables/table-anonymous-objects-076.xht 5553
+WPT FAIL css/CSS2/tables/table-anonymous-objects-077.xht 7252
+WPT FAIL css/CSS2/tables/table-anonymous-objects-078.xht 5553
+WPT FAIL css/CSS2/tables/table-anonymous-objects-079.xht 6970
+WPT FAIL css/CSS2/tables/table-anonymous-objects-080.xht 6970
+WPT FAIL css/CSS2/tables/table-anonymous-objects-081.xht 9593
+WPT FAIL css/CSS2/tables/table-anonymous-objects-082.xht 9738
+WPT FAIL css/CSS2/tables/table-anonymous-objects-083.xht 9593
+WPT TOTAL 71/150

@@ -7598,3 +7598,5 @@ Formato:
   Acid3 (tarea bo2eowz5q, salida en el scratchpad de la sesión) o repetirla; si va bien, commit y guardar
   docs/wpt/css_CSS2_tables.txt. Ojo: maqueta_rehacer añade anónimas a p.anonimas sin quitar las viejas.
 - Las páginas zz_col_*.html de tests/pages son de depurar: no van al commit.
+- Retomado ("sigue con tachyon"): maqueta 36/36, acid2 2/2, tabla 4/4 y Acid3 100 con el arreglo; commit, y
+  docs/wpt/css_CSS2_tables.txt con el 71/150.

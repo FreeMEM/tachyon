@@ -176,6 +176,8 @@ func _estilo_leer_navegador() -> HojaCSS
     c = c + "head, script, style, title, meta, link, base, template, noscript, [hidden] { display: none } "
     c = c + "li { display: list-item } table { display: table } tr { display: table-row } "
     c = c + "td, th { display: table-cell; padding: 1px; vertical-align: middle } thead, tbody, tfoot { display: table-row-group } "
+    # (las columnas no tienen caja: sin esto, un <col> iba en una fila anónima; CSS 2.1, 17.2)
+    c = c + "colgroup { display: table-column-group } col { display: table-column } "
     c = c + "table { border-spacing: 2px; border-collapse: separate } caption { text-align: center } "
     c = c + "body { margin: 8px } p, dl, blockquote, pre, ul, ol, figure { margin-top: 1em; margin-bottom: 1em } "
     c = c + "h1 { font-size: 2em; margin: 0.67em 0; font-weight: bold } "

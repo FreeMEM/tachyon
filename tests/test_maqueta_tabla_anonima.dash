@@ -1,0 +1,36 @@
+# Test: las cajas anónimas de una tabla viven lo que la página. Una tabla de CSS con solo un <span> vacío dentro (su
+# fila y su celda anónimas) colgaba el Amiga: la fila anónima se liberaba al acabar _tabla (padre es débil) y
+# _cajas_finales subía desde la celda por un padre ya liberado. Y <col>/<colgroup> no tienen caja (table-column): antes
+# iban en una fila anónima y colgaban igual (WPT css/CSS2/tables, los border-collapse-dynamic-colgroup y -column).
+# expect-out: suelto: alto true | col: 3 celdas en fila true | colgroup display table-column-group | otra vez: alto true
+
+import "../lib/maqueta.dash"
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func pagina(h: String) -> Nodo
+    doc = dom_desde_html5(h)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    return doc
+end
+
+Main
+    css_vista(1000, 600)
+    a = pagina("<html><body><div style='display:table'><span></span></div><p>fin</p></body></html>")
+    p = maquetar(a, 1000)
+    # (lo que sube por los padres desde cada dibujo, como al clicar)
+    for d in p.dibujos
+        maqueta_nodo_en_vista(p, d.x, d.y, 0)
+    end
+    h = "<html><body><table><colgroup><col></colgroup><colgroup id=g><col></colgroup><colgroup><col></colgroup>"
+    h = h + "<tr><td id=a>c11</td><td id=b>c12</td><td id=c>c13</td></tr></table></body></html>"
+    b = pagina(h)
+    js = js_nuevo()
+    jsdom_preparar(js, b)
+    q = maquetar(b, 1000)
+    jsdom_vista(js, 1000, 600, 0, q.alto)
+    js_evaluar(js, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
+    fila = js_evaluar(js, "r('a').top == r('b').top && r('b').top == r('c').top && r('a').right <= r('b').left && r('b').right <= r('c').left", "t.js")
+    g = dom_por_id(b, "g")
+    Print "suelto: alto " + (p.alto > 0) + " | col: 3 celdas en fila " + fila + " | colgroup display " + g.estilo["display"] + " | otra vez: alto " + (maquetar(a, 800).alto > 0)
+end

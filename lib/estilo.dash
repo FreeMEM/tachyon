@@ -963,6 +963,15 @@ func estilo_puede_cumplirse(sel: Selector) -> Bool
     return true
 end
 
+func _pseudo_root(s: SelSimple) -> Bool
+    for p in s.pseudo
+        if p == "root"
+            return true
+        end
+    end
+    return false
+end
+
 func _clave(s: SelSimple) -> String
     if s.id != ""
         return "#" + s.id
@@ -1311,6 +1320,10 @@ func _estilo_indexar(h: Hojas)
                     e.num = numero
                     ultima = sel.partes[sel.partes.length - 1].simple
                     clave = _clave(ultima)
+                    # (:root solo lo cumple la raíz: las hojas de GitHub traen ~100 y se probaban en cada elemento)
+                    if clave == "" and _pseudo_root(ultima)
+                        clave = ":root"
+                    end
                     if clave == "" and ultima.atributos.length > 0
                         clave = "[" + str_lower(ultima.atributos[0].nombre)
                         h.con_atributos = true
@@ -2640,6 +2653,9 @@ func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: 
     end
     if hojas.indice.has(n.nombre)
         _cumplidas(n, hojas.indice[n.nombre], cumplidas)
+    end
+    if n.padre != nil and n.padre.tipo == DOM_DOCUMENTO and hojas.indice.has(":root")
+        _cumplidas(n, hojas.indice[":root"], cumplidas)
     end
     id = dom_id(n)
     if id != "" and hojas.indice.has("#" + id)

@@ -54,5 +54,12 @@
   "ahora": 6.6,
   "unidad": "MB",
   "nota": "Antes el Amiga se quedaba sin memoria y Tachyon colgado; las hojas ya leídas se usan otra vez y el JavaScript deja una reserva (38c2)"
+ },
+ {
+  "medida": "Primer estilo de GitHub (página guardada)",
+  "antes": 5.3,
+  "ahora": 4.5,
+  "unidad": "s",
+  "nota": "Los selectores :root, solo en la raíz (GitHub trae ~100); la página entera de 17,8 a 16,9 s (61)"
  }
 ]

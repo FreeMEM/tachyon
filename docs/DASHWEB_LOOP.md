@@ -7649,3 +7649,6 @@ Formato:
   hay alturas en %.
 - Siguientes, de más a menos peso: (1) el estilo: comprobar selectores (filtro de antepasados para los de
   descendiente); (2) las medidas de flex en GitHub y por qué la caché acierta tan poco; (3) lo de las celdas.
+- Estilo: por grupos del índice, en GitHub los "universales" se miraban 266.574 veces (5431 se cumplen); casi la
+  mitad son :root (los temas de GitHub). Indexados bajo ":root" y probados solo en la raíz: el primer estilo 5,3 →
+  4,5 s y la página 17,8 → 16,9 s (dos pasadas iguales); estilo 17/17, css 8/8, selector, acid2 y Acid3 100.

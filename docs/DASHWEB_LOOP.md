@@ -623,6 +623,8 @@ tarea, con el estilo de Dash.
 - [ ] 72. **Publicar la próxima versión (usuario, 2026-11-12: "si ya está corregido lo de YouTube y no se queda colgado
       lanza la release si ya se puede").** Con lo de siempre antes (memoria publicar-versiones): batería entera,
       paquete, actualización de verdad desde la 0.9.5 publicada, humo con MUI 3.8; las Gracias en la web.
+      (2026-11-13, usuario: "cuando esté lista la release, la publicas sin pedir permiso a nadie y sigues en loop con
+      wpt".)
 - [ ] 69. **Con JIT (Emu68 en PiStorm, Amiberry) Tachyon se cuelga, se cae o pisa memoria; sin JIT no (registros de
       la 0.9.5 por la sesión telegram, 2026-11-11).** David Martínez (A600 con PiStorm, 68040, OS 3.2, #1131-#1140): ya
       llegan todos los ficheros ("recursos listos: scripts") y se queda con la CPU a tope sin apuntar ni el primer
@@ -7569,3 +7571,12 @@ Formato:
   Ahora, al lado, una "x" (pest_cerrar, evento 50, ayuda "Close tab", texto 46 de los catálogos): probado en
   sys32rtg38, con dos pestañas el clic en la x deja una.
 
+### 2026-11-13 — La 0.9.6-alfa: pruebas antes de publicar (el usuario: "cuando esté lista la release, la publicas sin pedir permiso")
+- Batería entera: 180/188; los ocho que fallan en tanda (siete por memoria o tiempo) pasan sueltos, y test_jquery
+  esperaba el style sin ";" final: desde 2743a4e se escribe con él, como Chrome (cambiado el test).
+- Compilada con Dash main 1460838 (2.14.0; Tachyon no usa nada nuevo salvo salir sin esperar a las imágenes).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.5-alfa publicada (SHA-256 b7618ec3...77d4), máquina RTG con
+  MUI 3.8 y el GitHub de mentira que redirige: baja Tachyon.gz y los nueve catálogos, el instalado es idéntico al
+  compilado y la 0.9.5 queda como .old; la barra dice "0.9.6-alfa installed: click the green icon".
+- Humo con MUI 3.8 (sys32rtg38, 256 MB): cuatro ventanas (dash.freemem.space, aminet.net, tachyon.freemem.space y
+  Wikipedia Amiga) 300 s sin colgarse.

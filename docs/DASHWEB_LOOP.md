@@ -7652,3 +7652,10 @@ Formato:
 - Estilo: por grupos del índice, en GitHub los "universales" se miraban 266.574 veces (5431 se cumplen); casi la
   mitad son :root (los temas de GitHub). Indexados bajo ":root" y probados solo en la raíz: el primer estilo 5,3 →
   4,5 s y la página 17,8 → 16,9 s (dos pasadas iguales); estilo 17/17, css 8/8, selector, acid2 y Acid3 100.
+- Por qué fallan las medidas de la caché (contador de un momento): GitHub 1087 nodos sin medida, 807 a otro ancho, 237
+  por lo demás; amigaworld 449, 1561 y 269. No es la caché: tablas y flex piden de verdad muchos anchos (mínimo, máximo
+  y el de cada pasada de fuera). Ganar ahí pide calcular los anchos mínimo y máximo sin maquetar (trabajo grande).
+- Probado y deshecho: estirar la celda en vez de maquetarla otra vez (salvo si dentro hay alturas en % o bottom):
+  amigaworld 3,16 → 3,00 s de maqueta, GitHub 6,82 → 6,63; la página entera igual. No compensa el riesgo.
+- jsdom_preparar (~2 s por página con scripts) es ejecutar el preludio (394 KB, ya en bytecode guardado en T:).
+  Prepararlo antes (en el rato libre, para la página siguiente) pide separarlo del document: pendiente de decidir.

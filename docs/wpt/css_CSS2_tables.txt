@@ -1,4 +1,4 @@
-# css/CSS2/tables, las 150 primeras de 300 (tools/wpt.py css/CSS2/tables 150), 2026-11-13
+# css/CSS2/tables, las 150 primeras de 300 (tools/wpt.py css/CSS2/tables 150, ventana de 800), 2026-11-13
 WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-001.xht
 WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-002.xht
 WPT PASS css/CSS2/tables/border-collapse-dynamic-cell-003.xht
@@ -23,7 +23,7 @@ WPT PASS css/CSS2/tables/border-collapse-empty-row.html
 WPT PASS css/CSS2/tables/border-collapse-offset-001.xht
 WPT FAIL css/CSS2/tables/border-collapse-offset-002.xht 498
 WPT FAIL css/CSS2/tables/border-conflict-element-001d.xht 62651
-WPT FAIL css/CSS2/tables/border-conflict-element-001e.xht 72204
+WPT FAIL css/CSS2/tables/border-conflict-element-001e.xht 80204
 WPT FAIL css/CSS2/tables/caption-position-001.xht 7453
 WPT PASS css/CSS2/tables/caption-side-applies-to-001.xht
 WPT PASS css/CSS2/tables/caption-side-applies-to-002.xht
@@ -40,14 +40,14 @@ WPT FAIL css/CSS2/tables/caption-side-applies-to-013.xht 8064
 WPT FAIL css/CSS2/tables/caption-side-applies-to-014.xht 8064
 WPT FAIL css/CSS2/tables/caption-side-applies-to-015.xht 167
 WPT PASS css/CSS2/tables/caption-side-applies-to-017.xht
-WPT FAIL css/CSS2/tables/collapsing-border-model-001.xht 42675
+WPT FAIL css/CSS2/tables/collapsing-border-model-001.xht 52675
 WPT FAIL css/CSS2/tables/collapsing-border-model-003.xht 7200
-WPT FAIL css/CSS2/tables/collapsing-border-model-004.xht 49275
-WPT FAIL css/CSS2/tables/collapsing-border-model-007.xht 42720
-WPT FAIL css/CSS2/tables/collapsing-border-model-008.xht 42720
+WPT FAIL css/CSS2/tables/collapsing-border-model-004.xht 59275
+WPT FAIL css/CSS2/tables/collapsing-border-model-007.xht 66720
+WPT FAIL css/CSS2/tables/collapsing-border-model-008.xht 66720
 WPT FAIL css/CSS2/tables/collapsing-border-model-009.xht 7200
 WPT FAIL css/CSS2/tables/column-visibility-004.xht 10858
-WPT FAIL css/CSS2/tables/fixed-table-layout-002a.xht 2063
+WPT FAIL css/CSS2/tables/fixed-table-layout-002a.xht 2321
 WPT PASS css/CSS2/tables/fixed-table-layout-003a01.xht
 WPT PASS css/CSS2/tables/fixed-table-layout-003a02.xht
 WPT PASS css/CSS2/tables/fixed-table-layout-003a03.xht
@@ -106,13 +106,13 @@ WPT FAIL css/CSS2/tables/fixed-table-layout-019.xht 4679
 WPT FAIL css/CSS2/tables/fixed-table-layout-020.xht 4679
 WPT FAIL css/CSS2/tables/fixed-table-layout-021.xht 16429
 WPT FAIL css/CSS2/tables/fixed-table-layout-022.xht 24759
-WPT FAIL css/CSS2/tables/fixed-table-layout-023.xht 26412
+WPT FAIL css/CSS2/tables/fixed-table-layout-023.xht 26499
 WPT FAIL css/CSS2/tables/separated-border-model-003b.xht 100000
-WPT FAIL css/CSS2/tables/separated-border-model-004d.xht 88328
-WPT FAIL css/CSS2/tables/separated-border-model-004e.xht 7904
-WPT PASS css/CSS2/tables/separated-border-model-007.xht
-WPT PASS css/CSS2/tables/separated-border-model-008.xht
-WPT PASS css/CSS2/tables/separated-border-model-009.xht
+WPT FAIL css/CSS2/tables/separated-border-model-004d.xht 124928
+WPT FAIL css/CSS2/tables/separated-border-model-004e.xht 11104
+WPT FAIL css/CSS2/tables/separated-border-model-007.xht 10240
+WPT FAIL css/CSS2/tables/separated-border-model-008.xht 10240
+WPT FAIL css/CSS2/tables/separated-border-model-009.xht 10240
 WPT PASS css/CSS2/tables/table-anonymous-border-spacing.xht
 WPT FAIL css/CSS2/tables/table-anonymous-objects-009.xht 112
 WPT FAIL css/CSS2/tables/table-anonymous-objects-010.xht 492
@@ -125,28 +125,28 @@ WPT PASS css/CSS2/tables/table-anonymous-objects-018.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-019.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-020.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-059.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-060.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-060.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-061.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-062.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-062.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-063.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-064.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-064.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-065.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-066.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-066.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-067.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-068.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-068.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-069.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-070.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-070.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-071.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-072.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-072.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-073.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-074.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-074.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-075.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-076.xht 6931
+WPT PASS css/CSS2/tables/table-anonymous-objects-076.xht
 WPT PASS css/CSS2/tables/table-anonymous-objects-077.xht
-WPT FAIL css/CSS2/tables/table-anonymous-objects-078.xht 6931
-WPT FAIL css/CSS2/tables/table-anonymous-objects-079.xht 6970
-WPT FAIL css/CSS2/tables/table-anonymous-objects-080.xht 6970
-WPT FAIL css/CSS2/tables/table-anonymous-objects-081.xht 6970
-WPT FAIL css/CSS2/tables/table-anonymous-objects-082.xht 6970
-WPT FAIL css/CSS2/tables/table-anonymous-objects-083.xht 6970
-WPT TOTAL 87/150
+WPT PASS css/CSS2/tables/table-anonymous-objects-078.xht
+WPT FAIL css/CSS2/tables/table-anonymous-objects-079.xht 7216
+WPT FAIL css/CSS2/tables/table-anonymous-objects-080.xht 7216
+WPT FAIL css/CSS2/tables/table-anonymous-objects-081.xht 7216
+WPT FAIL css/CSS2/tables/table-anonymous-objects-082.xht 7216
+WPT FAIL css/CSS2/tables/table-anonymous-objects-083.xht 7216
+WPT TOTAL 94/150

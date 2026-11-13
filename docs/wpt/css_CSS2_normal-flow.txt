@@ -1,22 +1,22 @@
-# css/CSS2/normal-flow, las 100 primeras de 492 (tools/wpt.py css/CSS2/normal-flow 100), 2026-10-23
+# css/CSS2/normal-flow, las 100 primeras de 492 (tools/wpt.py css/CSS2/normal-flow 100, ventana de 800), 2026-11-13
 WPT FAIL css/CSS2/normal-flow/block-formatting-context-height-003.xht 7125
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-001.xht 130
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-003.xht 1516
+WPT PASS css/CSS2/normal-flow/block-formatting-contexts-001.xht
+WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-003.xht 1916
 WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-004.xht 3330
 WPT PASS css/CSS2/normal-flow/block-formatting-contexts-005.xht
 WPT PASS css/CSS2/normal-flow/block-formatting-contexts-006.xht
 WPT PASS css/CSS2/normal-flow/block-formatting-contexts-007.xht
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-008.xht 400
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-009.xht 17435
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-010.xht 400
+WPT PASS css/CSS2/normal-flow/block-formatting-contexts-008.xht
+WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-009.xht 17035
+WPT PASS css/CSS2/normal-flow/block-formatting-contexts-010.xht
 WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-011.xht 334
 WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-012.xht 20000
-WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-015.xht 5050
+WPT FAIL css/CSS2/normal-flow/block-formatting-contexts-015.xht 5000
 WPT PASS css/CSS2/normal-flow/block-in-inline-after-block-in-inline-with-margin-collapse.html
 WPT FAIL css/CSS2/normal-flow/block-in-inline-align-001.html 686
 WPT PASS css/CSS2/normal-flow/block-in-inline-align-justify-001.html
 WPT FAIL css/CSS2/normal-flow/block-in-inline-align-last-001.html 738
-WPT PASS css/CSS2/normal-flow/block-in-inline-append-001.xht
+WPT FAIL css/CSS2/normal-flow/block-in-inline-append-001.xht 56
 WPT PASS css/CSS2/normal-flow/block-in-inline-append-002.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-baseline-001.html
 WPT PASS css/CSS2/normal-flow/block-in-inline-empty-001.xht
@@ -56,7 +56,7 @@ WPT PASS css/CSS2/normal-flow/block-in-inline-insert-008a.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-008b.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-008c.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-009.xht
-WPT PASS css/CSS2/normal-flow/block-in-inline-insert-010.xht
+WPT FAIL css/CSS2/normal-flow/block-in-inline-insert-010.xht 62
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-011.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-012.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-insert-013.xht
@@ -84,7 +84,7 @@ WPT PASS css/CSS2/normal-flow/block-in-inline-remove-006.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-whitespace-001a.xht
 WPT PASS css/CSS2/normal-flow/block-in-inline-whitespace-001b.xht
 WPT PASS css/CSS2/normal-flow/block-non-replaced-height-001.xht
-WPT FAIL css/CSS2/normal-flow/block-non-replaced-height-005.xht 34016
+WPT FAIL css/CSS2/normal-flow/block-non-replaced-height-005.xht 33416
 WPT FAIL css/CSS2/normal-flow/block-non-replaced-width-001.xht 480
 WPT PASS css/CSS2/normal-flow/block-non-replaced-width-002.xht
 WPT PASS css/CSS2/normal-flow/block-non-replaced-width-003.xht
@@ -94,9 +94,9 @@ WPT PASS css/CSS2/normal-flow/block-non-replaced-width-006.xht
 WPT FAIL css/CSS2/normal-flow/block-non-replaced-width-007.xht 12751
 WPT PASS css/CSS2/normal-flow/block-replaced-height-001.xht
 WPT FAIL css/CSS2/normal-flow/block-replaced-height-002.xht 30
-WPT FAIL css/CSS2/normal-flow/block-replaced-height-004.xht 2520
-WPT FAIL css/CSS2/normal-flow/block-replaced-height-005.xht 1908
-WPT FAIL css/CSS2/normal-flow/block-replaced-height-006.xht 19600
-WPT FAIL css/CSS2/normal-flow/block-replaced-height-007.xht 2520
+WPT FAIL css/CSS2/normal-flow/block-replaced-height-004.xht 3720
+WPT FAIL css/CSS2/normal-flow/block-replaced-height-005.xht 3108
+WPT FAIL css/CSS2/normal-flow/block-replaced-height-006.xht 19200
+WPT FAIL css/CSS2/normal-flow/block-replaced-height-007.xht 3720
 WPT FAIL css/CSS2/normal-flow/block-replaced-width-002.xht 9667
-WPT TOTAL 73/100
+WPT TOTAL 74/100

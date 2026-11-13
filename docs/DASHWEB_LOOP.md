@@ -7610,3 +7610,7 @@ Formato:
 - Una tabla absoluta con left y right no se estira (_absoluto: es_tabla), como los navegadores: la referencia de
   table-anonymous-objects salía a 922 y la prueba a 840. WPT tables 77 → 87/150 (059-077 impares), normal-flow 74
   igual, maqueta 36/36, acid2, tabla y Acid3 100. Siguiente: los pares de 060-082 y caption-side-applies-to.
+- El corredor de reftests (tools/wpt_reftest.dash) a 800 de ancho, el de WPT (era 600): las table-anonymous-objects
+  pares tenían una tabla de 840 que se apretaba distinto en la prueba y en la referencia (en el navegador salen
+  iguales). Tables 87 → 94/150 (060-078 pares); normal-flow 74/100, los mismos. Pasan a fallar
+  separated-border-model-007, -008 y -009 (a 600 no se veía): la siguiente.

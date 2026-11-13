@@ -7623,3 +7623,5 @@ Formato:
   y dev: todas 17,5-20,3 s y 7,0-8,1 s, ruido. La maqueta de GitHub, 6,6-7,5 s en la 0.9.6 y 6,9-7,0 en dev.
 - Dónde se va el tiempo en GitHub: ~7 de 18 s en una maqueta. Siguiente: el perfil de esa maqueta (tarea 61).
 - La 0.9.7 (el usuario: "quizá podrías lanzar una nueva release?"): batería en marcha.
+- Vídeo 2 (tarea 66): el usuario vio la 4.ª toma en inglés: "no vale", borrada; se regraba "en unos días" (con la 0.9.7
+  o la que haya), en inglés y castellano.

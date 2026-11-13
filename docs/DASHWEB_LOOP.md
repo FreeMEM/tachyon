@@ -7625,3 +7625,11 @@ Formato:
 - La 0.9.7 (el usuario: "quizá podrías lanzar una nueva release?"): batería en marcha.
 - Vídeo 2 (tarea 66): el usuario vio la 4.ª toma en inglés: "no vale", borrada; se regraba "en unos días" (con la 0.9.7
   o la que haya), en inglés y castellano.
+
+### 2026-11-13 — La 0.9.7-alfa (el usuario: "quizá podrías lanzar una nueva release?")
+- Batería entera 181/189; los ocho que fallan en tanda (memoria o tiempo; test_maqueta_tabla_anonima, nuevo) pasan
+  sueltos. Compilada con Dash main 1460838 (2.14.0).
+- Actualización de verdad desde el Tachyon.gz de la v0.9.6-alfa publicada (RTG, MUI 3.8, GitHub de mentira que
+  redirige): idéntico al compilado, los nueve catálogos y la 0.9.6 como .old.
+- Humo con MUI 3.8: cuatro ventanas 300 s sin colgarse; una tabla con <col> (zz_col_a.html) abre y cierra (la 0.9.6
+  colgaba el Amiga).

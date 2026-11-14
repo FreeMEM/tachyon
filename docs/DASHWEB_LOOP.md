@@ -7713,3 +7713,5 @@ Formato:
   siempre y test_jsdom_svg_largo ("out of memory" en tanda, como outerhtml); los seis pasan sueltos. Actualización desde
   la 0.9.8 publicada (idéntico, 9 catálogos, .old) y humo con MUI 3.8: dashos.freemem.space entera y bien en 40,9 s,
   amigaworld en 5,9 s.
+- Publicada la v0.9.9-alfa: PR #29 (main 8db906e), etiqueta y pre-release con 11 ficheros; SHA-256 de lo bajado igual
+  que lo compilado (17ecc4c4…, 7296ead6…). Web: comparativa con la 0.9.9 y Gracias (webs-freemem ea9d63d, subido).

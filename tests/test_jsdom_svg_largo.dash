@@ -1,0 +1,21 @@
+# Test: getTotalLength y getPointAtLength de las figuras de SVG (SVGGeometryElement): rectas, H/V relativas, curvas
+# cúbicas, arcos, subtrazados, círculo y rect. dashos.freemem.space mueve un punto por un path con getPointAtLength;
+# sin él su JavaScript fallaba y Next.js ponía "This page couldn't load" (lo contó JaviTecH).
+# expect-out: L 200 P 100,50 | c 157 P 29,71 | a 157 P 50,-50 | m 20 P 105,100 | o 63 | r 60 P 10,15
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><svg width=10 height=10></svg></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var ns = 'http://www.w3.org/2000/svg', svg = document.querySelector('svg');"
+    c = c + "function f(n, at) { var e = document.createElementNS(ns, n); for (var k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; }"
+    c = c + "function p(e, l) { var q = e.getPointAtLength(l); return ' P ' + Math.round(q.x) + ',' + Math.round(q.y); }"
+    c = c + "var a = f('path', {d: 'M0 0 H100 v100'}), b = f('path', {d: 'M0,0 C0,55.23 44.77,100 100,100'}), d = f('path', {d: 'M0 0 A50 50 0 0 1 100 0'});"
+    c = c + "var m = f('path', {d: 'M0 0 L10 0 M100 100 L110 100'}), o = f('circle', {r: '10'}), r = f('rect', {width: '10', height: '20'});"
+    c = c + "'L ' + a.getTotalLength() + p(a, 150) + ' | c ' + Math.round(b.getTotalLength()) + p(b, b.getTotalLength() / 2) + ' | a ' + Math.round(d.getTotalLength()) + p(d, d.getTotalLength() / 2)"
+    c = c + " + ' | m ' + m.getTotalLength() + p(m, 15) + ' | o ' + Math.round(o.getTotalLength()) + ' | r ' + r.getTotalLength() + p(r, 25)"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

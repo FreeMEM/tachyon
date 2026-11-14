@@ -284,10 +284,15 @@ static const JSMallocFunctions _jg_funciones = { _jg_malloc, _jg_free, _jg_reall
 #define _JM_SOLO (128UL * 1024)
 /* El FreePooled de exec 40 (Kickstart 3.1) da un charco por vacío mirando el long que hay tras su MemHeader, que nadie
    escribe: si por casualidad vale el tamaño del charco, lo devuelve entero al sistema con sus bloques vivos. Como hace
-   el malloc del runtime de Dash 2.0 (dl_pool_sano): tras cada AllocPooled, ese long del primer charco a 0 */
+   el malloc del runtime de Dash 2.0 (dl_pool_sano): tras cada AllocPooled, ese long del primer charco a 0. Solo con
+   los charcos de exec 40 y 47 (sus bloques empiezan justo tras ese long, en +36): en el exec 45 de OS 3.9 empiezan en
+   +68 y ese long es un puntero de exec; ponerlo a 0 daba el Recoverable Alert 0100000F (AN_BadFreeAddr) en una PiStorm
+   con CaffeineOS (lo contó JaviTecH) */
 static void _jm_sano(APTR pool) {
     struct Node *h = (struct Node *)((struct MinList *)pool)->mlh_Head;
-    if (h->ln_Succ && h->ln_Type == NT_MEMORY) *(ULONG *)((UBYTE *)h + sizeof(struct MemHeader)) = 0;
+    if (h->ln_Succ && h->ln_Type == NT_MEMORY
+        && (UBYTE *)((struct MemHeader *)h)->mh_Lower == (UBYTE *)h + sizeof(struct MemHeader) + 4)
+        *(ULONG *)((UBYTE *)h + sizeof(struct MemHeader)) = 0;
 }
 static ULONG _jm_reserva = 0, _jm_desde = 0;
 static int _jm_hay(size_t n) {

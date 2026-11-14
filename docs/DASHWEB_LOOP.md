@@ -7633,3 +7633,67 @@ Formato:
   redirige): idéntico al compilado, los nueve catálogos y la 0.9.6 como .old.
 - Humo con MUI 3.8: cuatro ventanas 300 s sin colgarse; una tabla con <col> (zz_col_a.html) abre y cierra (la 0.9.6
   colgaba el Amiga).
+- Publicada la v0.9.7-alfa (pre-release, 13-11 hacia las 23:00): PR #27 fusionada (main 4167f56), once ficheros; los
+  bajados de GitHub tienen el SHA-256 de los compilados (Tachyon.gz 76c369d6..., tachyon.lha d64a04a8...). Sin nombres
+  que agradecer. Siguiente: velocidad (tarea 61), el perfil de la maqueta de GitHub (~7 de 18 s).
+
+### 2026-11-13 — Tarea 61: dónde se va el tiempo (GitHub guardado, rtg, MUI 3.8)
+- Perfil (--perfil, 80 s; la página entera en 18,6 s): maquetar 8,6 % de las muestras (~8 s: casi todo flex;
+  _ancho_flotante 6,3 %, 4052 llamadas; _flex_ancho_columna 3,9 %, 367), estilo_aplicar 6,1 % (~5,8 s: _cumple_desde
+  338.895 llamadas, _estilo_propio 5,6 %, calc 1,5 %), jsdom_preparar 2,1 % (~2 s), SVG 1,5 %, imágenes 1,5 %.
+- La traza de "maquetada en" dice ahora bloques, medidas y guardadas. GitHub: 6,95 s, 5862 bloques (≈700 cajas de
+  bloque: cada una ~8 veces), 2131 medidas, 453 de la caché. amigaworld: 3,4 s, 3796 bloques (~6 veces), 2279
+  medidas, 80 de la caché.
+- Probado y deshecho: sin volver a maquetar cada celda más baja que su fila (vertical-align), GitHub 6,61 s (−5 %) y
+  amigaworld 2,84 s (−16 %). Candidato: estirar sus fondos y bordes en vez de maquetarla otra vez, salvo si dentro
+  hay alturas en %.
+- Siguientes, de más a menos peso: (1) el estilo: comprobar selectores (filtro de antepasados para los de
+  descendiente); (2) las medidas de flex en GitHub y por qué la caché acierta tan poco; (3) lo de las celdas.
+- Estilo: por grupos del índice, en GitHub los "universales" se miraban 266.574 veces (5431 se cumplen); casi la
+  mitad son :root (los temas de GitHub). Indexados bajo ":root" y probados solo en la raíz: el primer estilo 5,3 →
+  4,5 s y la página 17,8 → 16,9 s (dos pasadas iguales); estilo 17/17, css 8/8, selector, acid2 y Acid3 100.
+- Por qué fallan las medidas de la caché (contador de un momento): GitHub 1087 nodos sin medida, 807 a otro ancho, 237
+  por lo demás; amigaworld 449, 1561 y 269. No es la caché: tablas y flex piden de verdad muchos anchos (mínimo, máximo
+  y el de cada pasada de fuera). Ganar ahí pide calcular los anchos mínimo y máximo sin maquetar (trabajo grande).
+- Probado y deshecho: estirar la celda en vez de maquetarla otra vez (salvo si dentro hay alturas en % o bottom):
+  amigaworld 3,16 → 3,00 s de maqueta, GitHub 6,82 → 6,63; la página entera igual. No compensa el riesgo.
+- jsdom_preparar (~2 s por página con scripts) es ejecutar el preludio (394 KB, ya en bytecode guardado en T:).
+  Prepararlo antes (en el rato libre, para la página siguiente) pide separarlo del document: pendiente de decidir.
+
+### 2026-11-14 — 61: el preludio de JavaScript (el usuario eligió: "1 y luego 2")
+- Medido (traza nueva "JavaScript preparado en ... (el preludio, ...)"): 1,6 s en la primera página con scripts y
+  0,25 s en las siguientes; lo caro es compilarlo, no ejecutarlo. Prepararlo antes solo ahorraría 0,25 s por página:
+  no compensa separar el preludio del document.
+- El bytecode compilado (300 KB) va ahora a PROGDIR:Tachyon.bc (disco: dura entre arranques y no parte la memoria),
+  y si no se puede escribir, a T: como antes (solo con 32 MB libres). Cabecera "TPB2" con la fecha de compilación de
+  tachyon.c: el de otra versión no se lee. Dos arranques del emulador: 1,63 s → 0,26 s. test_js* 57/57 (fetch_flujo,
+  suelto), jquery.
+- Siguiente: la 2, los anchos mínimo y máximo sin maquetar.
+- La 2 (anchos sin maquetar): de las medidas de más fuera, las "sencillas" (solo texto y en línea) son poco (GitHub 137,
+  0,3 s; amigaworld 18); las que tienen tablas o flex dentro, casi todo (GitHub 338, 4,65 s; amigaworld 8, 2,6 s: el 77 %
+  de su maqueta). Hecho: al medir (_midiendo > 0), _tabla calcula sus columnas (lo de cada celda sale de la caché) y deja
+  un dibujo de su ancho entero (D_TEXTO vacío: de una caja sin width solo cuenta borde y relleno) en vez de maquetar cada
+  celda; con width en %, como auto (suma de máximos). tabla_comprobar (en el código) mide con y sin el atajo y apunta lo
+  distinto: en amigaworld 41 medidas mínimas, +1..+5 (el atajo cuenta espaciado y relleno, como CSS) y siete de -1 a -55
+  (la maqueta de verdad desborda la suma de mínimos de sus columnas: mínimos de celda que ya se medían cortos).
+  amigaworld: maqueta 3,36 → 1,48 s, página 7,3 → 5,4 s; GitHub: maqueta 6,9 → 6,0 s, página 17,3 → 16,3 s. Captura de
+  amigaworld: la columna de la derecha unos px más ancha (más cerca de Chrome). WPT tables 95 y normal-flow 74, los
+  mismos; maqueta 36/36, acid2, tabla y Acid3 100.
+
+### 2026-11-14 — 0.9.8-alfa y la tarea 69: el Recoverable Alert 0100000F de JaviTecH (OS 3.9)
+
+- Pedido por el usuario ("quiero sacar nueva release"). Versión en 87c3b6c. Batería 184/189 (los cinco de siempre en
+  tanda; sueltos pasan), actualización desde la 0.9.7 publicada (idéntico, 9 catálogos, .old) y humo con MUI 3.8.
+- (69) JaviTecH (PiStorm32lite, Emu68 1.1.0-beta.2, CaffeineOS 9318, exec 45.20) vuelve a ver el Recoverable Alert
+  0100000F (AN_BadFreeAddr) con la 0.9.7 en aminet.net. Causa: el truco de dl_pool_sano (runtime de Dash) y de _jm_sano
+  (src_c/tachyon.c), que tras cada AllocPooled pone a 0 el long de +32 del primer charco. En exec 40.10 (3.1) y 47.13
+  (3.2.3) el charco tiene mh_Lower = nodo + 36 y ese long es un hueco; en exec 45.20 mh_Lower = nodo + 68 y en +32 hay un
+  puntero de exec (la cabecera del pool apunta ahí). Medido con una sonda en C en FS-UAE con un 3.9 de verdad: el WB39.hdf
+  del usuario sacado con amitools a scratchpad/sys39x/Workbench (sin tocar el original) y S/Startup-Extra con
+  "C:SetPatch QUIET" (SetPatch 44.38 carga el AmigaOS ROM Update: exec 45.20). La sonda con el 0 se cuelga; sin él acaba.
+  Arreglo: el 0 solo si mh_Lower == nodo + 36 (d70abf5 aquí; Dash 71972a1, PR #170, por freememlang-40). En el 3.9
+  emulado: test_jsdom_c 1/5 → 5/5; test_js 56/57 (fetch_flujo, que también falla en tanda en 3.1).
+- Herramienta para la próxima: tests/run.py con DASH_EMU_SYS=<sys39x/Workbench> corre los tests en OS 3.9 (exec 45).
+  CaffeineOS (en el grupo Amiga Storage; 9312, la más cercana a la de JaviTecH) queda para mañana (usuario).
+- La comparativa de la web (webs-freemem, sitios/tachyon/src/comparativa.ts) repasada con Amelinium 1.7.1 y AmiFire
+  0.9.303 (pedido por el usuario); sale con la 0.9.8.

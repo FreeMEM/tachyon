@@ -2753,7 +2753,26 @@ func _ancho_flotante(m: Maquetador, h: Nodo, ancho: Int) -> Int
         h.af_reloj = dom_reloj
     end
     alto = _alto_definido
-    v = _ancho_flotante_medir(m, h, ancho)
+    v = 0
+    if tabla_comprobar and _midiendo == 0
+        # (las dos, con cachés nuevas cada una: más lento, para comprobar el atajo de las tablas)
+        tabla_rapida = false
+        _maqueta_epoca = _maqueta_epoca + 1
+        lento = _ancho_flotante_medir(m, h, ancho)
+        tabla_rapida = true
+        _maqueta_epoca = _maqueta_epoca + 1
+        v = _ancho_flotante_medir(m, h, ancho)
+        if v != lento
+            traza("tabla rápida: " + h.nombre + "." + dom_atributo(h, "class") + " a " + ancho + ": " + lento + " y " + v)
+        end
+        v = lento
+        var nueva2: [Int] = []
+        h.af_lista = nueva2
+        h.af_pase = _maqueta_epoca
+        h.af_reloj = dom_reloj
+    else
+        v = _ancho_flotante_medir(m, h, ancho)
+    end
     h.af_lista.push(ancho)
     h.af_lista.push(alto)
     h.af_lista.push(v)
@@ -2953,6 +2972,10 @@ func _bajo_absoluto(n: Nodo, h: Nodo) -> Bool
     end
     return false
 end
+
+# El atajo de las tablas al medir (ver _tabla); tabla_comprobar mide con y sin él y apunta en la traza lo distinto
+var tabla_comprobar: Bool = false
+var tabla_rapida: Bool = true
 
 func _ancho_flotante_medir(m: Maquetador, h: Nodo, ancho: Int) -> Int
     e = h.estilo
@@ -5581,6 +5604,22 @@ func _tabla(m: Maquetador, t: Nodo, x: Int, y: Int, ancho: Int) -> Int
     for i in (0..ncols - 1)
         xs.push(px)
         px = px + anchos[i] + esp
+    end
+    # midiendo (ella o lo de fuera), solo cuenta su ancho: una caja de su ancho entero en vez de maquetar cada celda al de su
+    # columna (con tablas dentro de tablas, las de dentro se maquetaban una vez por cada medida de fuera, cada vez a otro
+    # ancho: amigaworld.net, 1561 medidas que no estaban guardadas; tarea 61)
+    if tabla_rapida and _midiendo > 0
+        # (un texto vacío y no una caja: de una caja sin width solo cuenta su borde y su relleno; así cuenta entera,
+        # hasta sus bordes, como el min-content y el max-content de una tabla en CSS)
+        # (con width en %, como auto: lo que piden sus columnas, no los 4000 del sitio de mentira de la medida)
+        total = px - x
+        if not (con_ancho_tabla and not str_ends(_val(e, "width", ""), "%")) and total > suma_max + esp * (ncols + 1)
+            total = suma_max + esp * (ncols + 1)
+        end
+        marca = _dibujo(D_TEXTO, x, cy, total, filas.length, 0)
+        marca.nodo = t
+        m.pagina.dibujos.push(marca)
+        return cy - y + filas.length
     end
     # cada celda a su ancho: su alto
     for cel in celdas

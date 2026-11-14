@@ -649,7 +649,7 @@ func documento_maquetar(d: Documento, ancho: Int)
     d.n_maquetas = d.n_maquetas + 1
     d.ms_maquetas = d.ms_maquetas + time_ms() - t0
     d.ms = d.ms + time_ms() - t0
-    traza("maquetada en " + (time_ms() - t0) + " ms")
+    traza("maquetada en " + (time_ms() - t0) + " ms (" + maqueta_bloques + " bloques, " + maqueta_medidas + " medidas y " + maqueta_guardadas + " guardadas)")
 end
 
 # A qué tamaño se ve cada imagen (las que aún no han llegado se decodificarán a ese tamaño)

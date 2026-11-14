@@ -7697,3 +7697,6 @@ Formato:
   CaffeineOS (en el grupo Amiga Storage; 9312, la más cercana a la de JaviTecH) queda para mañana (usuario).
 - La comparativa de la web (webs-freemem, sitios/tachyon/src/comparativa.ts) repasada con Amelinium 1.7.1 y AmiFire
   0.9.303 (pedido por el usuario); sale con la 0.9.8.
+- Publicada la v0.9.8-alfa: PR #28 (main bf8c6e3), etiqueta y pre-release con 11 ficheros; el Tachyon.gz y el
+  tachyon.lha bajados dan el mismo SHA-256 que los compilados (8f1061e8…, 418445ee…). Web: comparativa y Gracias
+  (webs-freemem dcbacb9, subido; el servidor la recoge en ~5 min).

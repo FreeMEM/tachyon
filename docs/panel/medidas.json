@@ -68,5 +68,12 @@
   "ahora": 0.26,
   "unidad": "s",
   "nota": "El preludio compilado (bytecode, 300 KB) en PROGDIR:Tachyon.bc, que dura entre arranques; antes en T: y solo con 32 MB libres (61)"
+ },
+ {
+  "medida": "Maqueta de amigaworld.net (página guardada)",
+  "antes": 3.36,
+  "ahora": 1.48,
+  "unidad": "s",
+  "nota": "Al medir, una tabla suma lo que piden sus columnas en vez de maquetar cada celda; la página entera de 7,3 a 5,4 s (61)"
  }
 ]

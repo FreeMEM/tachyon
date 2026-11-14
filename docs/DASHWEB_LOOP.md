@@ -7669,3 +7669,13 @@ Formato:
   tachyon.c: el de otra versión no se lee. Dos arranques del emulador: 1,63 s → 0,26 s. test_js* 57/57 (fetch_flujo,
   suelto), jquery.
 - Siguiente: la 2, los anchos mínimo y máximo sin maquetar.
+- La 2 (anchos sin maquetar): de las medidas de más fuera, las "sencillas" (solo texto y en línea) son poco (GitHub 137,
+  0,3 s; amigaworld 18); las que tienen tablas o flex dentro, casi todo (GitHub 338, 4,65 s; amigaworld 8, 2,6 s: el 77 %
+  de su maqueta). Hecho: al medir (_midiendo > 0), _tabla calcula sus columnas (lo de cada celda sale de la caché) y deja
+  un dibujo de su ancho entero (D_TEXTO vacío: de una caja sin width solo cuenta borde y relleno) en vez de maquetar cada
+  celda; con width en %, como auto (suma de máximos). tabla_comprobar (en el código) mide con y sin el atajo y apunta lo
+  distinto: en amigaworld 41 medidas mínimas, +1..+5 (el atajo cuenta espaciado y relleno, como CSS) y siete de -1 a -55
+  (la maqueta de verdad desborda la suma de mínimos de sus columnas: mínimos de celda que ya se medían cortos).
+  amigaworld: maqueta 3,36 → 1,48 s, página 7,3 → 5,4 s; GitHub: maqueta 6,9 → 6,0 s, página 17,3 → 16,3 s. Captura de
+  amigaworld: la columna de la derecha unos px más ancha (más cerca de Chrome). WPT tables 95 y normal-flow 74, los
+  mismos; maqueta 36/36, acid2, tabla y Acid3 100.

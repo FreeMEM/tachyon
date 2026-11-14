@@ -7706,3 +7706,10 @@ Formato:
   getTotalLength de verdad: test_jsdom_svg_largo; Acid3 100); (2) el bloqueo: scripts 9 s y maqueta 7,3 s (4362 bloques)
   sin atender a la ventana; luego quieto. Pendiente para mañana con flex (usuario): la maqueta más rápida y que cerrar la
   ventana responda durante las fases largas.
+
+### 2026-11-14 — 0.9.9-alfa (dashos.freemem.space)
+
+- Pedida por el usuario ("sale hoy") con getPointAtLength (2eccc56). Versión en 88ccaff. Batería 184/190: los cinco de
+  siempre y test_jsdom_svg_largo ("out of memory" en tanda, como outerhtml); los seis pasan sueltos. Actualización desde
+  la 0.9.8 publicada (idéntico, 9 catálogos, .old) y humo con MUI 3.8: dashos.freemem.space entera y bien en 40,9 s,
+  amigaworld en 5,9 s.

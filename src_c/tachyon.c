@@ -730,6 +730,39 @@ LONG js_ms_compilar(void)
 {
     return _js_compilado_ms;
 }
+/* La compilación de este programa (su fecha y hora): el bytecode guardado de otra versión de Tachyon no se lee */
+static ULONG _js_bc_compilacion(void)
+{
+    static const char *c = __DATE__ " " __TIME__;
+    ULONG h = 5381;
+    const char *p;
+    for (p = c; *p; p++) h = h * 33 + (unsigned char)*p;
+    return h;
+}
+
+/* El bytecode del preludio a ese fichero (a un nombre aparte y luego al de verdad); 0 si no se pudo */
+static int _js_bc_guardar(const char *nombre, size_t n, ULONG suma, const uint8_t *bc, size_t largo)
+{
+    char nuevo[64], viejo[64];
+    BPTR f2;
+    ULONG cab[5];
+    LONG bien;
+    strcpy(viejo, nombre);
+    strcpy(nuevo, nombre);
+    strcat(nuevo, ".nuevo");
+    f2 = Open((STRPTR)nuevo, MODE_NEWFILE);
+    if (!f2) return 0;
+    cab[0] = 0x54504232UL; cab[1] = n; cab[2] = suma; cab[3] = _js_bc_compilacion(); cab[4] = largo;
+    bien = Write(f2, cab, sizeof(cab)) == sizeof(cab) && Write(f2, (APTR)bc, largo) == (LONG)largo;
+    Close(f2);
+    if (bien) {
+        DeleteFile((STRPTR)viejo);
+        bien = Rename((STRPTR)nuevo, (STRPTR)viejo);
+    }
+    if (!bien) DeleteFile((STRPTR)nuevo);
+    return bien ? 1 : 0;
+}
+
 STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
 {
     static uint8_t *bc = NULL;
@@ -747,17 +780,23 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
     free(m->error);
     m->error = NULL;
     for (i = 0; i < n; i++) suma = suma * 33 + (unsigned char)t[i];
-    /* el de otra vez, de T: (cabecera: "TPBC", largo del texto, su suma y largo del bytecode) */
+    /* el de otra vez, de PROGDIR:Tachyon.bc (en el disco: dura entre arranques y no ocupa memoria; tarea 61: compilar
+       el preludio es 1,4 s de la primera página con scripts en el emulador rápido) o de T: (cabecera: "TPB2", largo
+       del texto, su suma, la compilación de este programa y largo del bytecode: el de otra versión no vale) */
     if (!bc || bc_fuente != n || bc_suma != suma) {
-        BPTR f2 = Open((STRPTR)"T:tachyon_preludio.bc", MODE_OLDFILE);
-        if (f2) {
-            ULONG cab[4];
-            if (Read(f2, cab, sizeof(cab)) == sizeof(cab) && cab[0] == 0x54504243UL && cab[1] == n && cab[2] == suma && cab[3] > 0 && cab[3] < 4000000UL) {
-                uint8_t *nb = (uint8_t *)malloc(cab[3]);
-                if (nb && Read(f2, nb, cab[3]) == (LONG)cab[3]) { free(bc); bc = nb; bc_largo = cab[3]; bc_fuente = n; bc_suma = suma; }
-                else free(nb);
+        static const char *nombres[2] = { "PROGDIR:Tachyon.bc", "T:tachyon_preludio.bc" };
+        int k;
+        for (k = 0; k < 2 && (!bc || bc_fuente != n || bc_suma != suma); k++) {
+            BPTR f2 = Open((STRPTR)nombres[k], MODE_OLDFILE);
+            if (f2) {
+                ULONG cab[5];
+                if (Read(f2, cab, sizeof(cab)) == sizeof(cab) && cab[0] == 0x54504232UL && cab[1] == n && cab[2] == suma && cab[3] == _js_bc_compilacion() && cab[4] > 0 && cab[4] < 4000000UL) {
+                    uint8_t *nb = (uint8_t *)malloc(cab[4]);
+                    if (nb && Read(f2, nb, cab[4]) == (LONG)cab[4]) { free(bc); bc = nb; bc_largo = cab[4]; bc_fuente = n; bc_suma = suma; }
+                    else free(nb);
+                }
+                Close(f2);
             }
-            Close(f2);
         }
     }
     f = JS_UNDEFINED;
@@ -828,23 +867,13 @@ STRPTR js_evaluar_guardado(LONG js, STRPTR codigo, STRPTR nombre)
             free(bc);
             bc = (uint8_t *)malloc(largo);
             if (bc) {
-                BPTR f2;
                 memcpy(bc, b, largo); bc_largo = largo; bc_fuente = n; bc_suma = suma;
-                /* para los programas que vengan (a un nombre aparte y luego al de verdad: dos Tachyon a la vez); solo
-                   con memoria de sobra: el fichero de RAM: se queda en medio de la memoria libre y la parte, y en una
-                   máquina de 8 MB el siguiente programa grande ya no cabía ("not enough memory") */
-                f2 = AvailMem(MEMF_ANY | MEMF_LARGEST) > 32UL * 1024 * 1024
-                     ? Open((STRPTR)"T:tachyon_preludio.bc.nuevo", MODE_NEWFILE) : 0;
-                if (f2) {
-                    ULONG cab[4];
-                    LONG bien;
-                    cab[0] = 0x54504243UL; cab[1] = n; cab[2] = suma; cab[3] = largo;
-                    bien = Write(f2, cab, sizeof(cab)) == sizeof(cab) && Write(f2, bc, largo) == (LONG)largo;
-                    Close(f2);
-                    DeleteFile((STRPTR)"T:tachyon_preludio.bc");
-                    if (!bien || !Rename((STRPTR)"T:tachyon_preludio.bc.nuevo", (STRPTR)"T:tachyon_preludio.bc"))
-                        DeleteFile((STRPTR)"T:tachyon_preludio.bc.nuevo");
-                }
+                /* para los programas que vengan (a un nombre aparte y luego al de verdad: dos Tachyon a la vez): en
+                   PROGDIR:, y si no se puede (un disco protegido), en T: solo con memoria de sobra: el fichero de RAM:
+                   se queda en medio de la memoria libre y la parte, y en una máquina de 8 MB el siguiente programa
+                   grande ya no cabía ("not enough memory") */
+                if (!_js_bc_guardar("PROGDIR:Tachyon.bc", n, suma, bc, largo) && AvailMem(MEMF_ANY | MEMF_LARGEST) > 32UL * 1024 * 1024)
+                    _js_bc_guardar("T:tachyon_preludio.bc", n, suma, bc, largo);
             }
             js_free(cctx, b);
         }

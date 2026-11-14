@@ -7659,3 +7659,13 @@ Formato:
   amigaworld 3,16 → 3,00 s de maqueta, GitHub 6,82 → 6,63; la página entera igual. No compensa el riesgo.
 - jsdom_preparar (~2 s por página con scripts) es ejecutar el preludio (394 KB, ya en bytecode guardado en T:).
   Prepararlo antes (en el rato libre, para la página siguiente) pide separarlo del document: pendiente de decidir.
+
+### 2026-11-14 — 61: el preludio de JavaScript (el usuario eligió: "1 y luego 2")
+- Medido (traza nueva "JavaScript preparado en ... (el preludio, ...)"): 1,6 s en la primera página con scripts y
+  0,25 s en las siguientes; lo caro es compilarlo, no ejecutarlo. Prepararlo antes solo ahorraría 0,25 s por página:
+  no compensa separar el preludio del document.
+- El bytecode compilado (300 KB) va ahora a PROGDIR:Tachyon.bc (disco: dura entre arranques y no parte la memoria),
+  y si no se puede escribir, a T: como antes (solo con 32 MB libres). Cabecera "TPB2" con la fecha de compilación de
+  tachyon.c: el de otra versión no se lee. Dos arranques del emulador: 1,63 s → 0,26 s. test_js* 57/57 (fetch_flujo,
+  suelto), jquery.
+- Siguiente: la 2, los anchos mínimo y máximo sin maquetar.

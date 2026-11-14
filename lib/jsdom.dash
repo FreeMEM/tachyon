@@ -1293,16 +1293,19 @@ var jsdom_idioma: String = "en-US"
 
 # document = doc en el motor js, con eventos y temporizadores (una sola vez por motor)
 func jsdom_preparar(js: Int, doc: Nodo)
+    t0 = time_ms()
     jsdom_motor_dom(js, doc)
     js_evaluar(js, "var __dashweb_idioma = '" + jsdom_idioma + "';", "dashweb")
     # (el texto, hecho una vez: son 2272 líneas juntadas)
     if _jsdom_preludio == ""
         _jsdom_preludio = jsdom_preludio_js()
     end
+    t1 = time_ms()
     js_evaluar_guardado(js, _jsdom_preludio, "dashweb")
     if js_error(js) != ""
         registro_decir("JS: " + js_error(js))
     end
+    traza("JavaScript preparado en " + (time_ms() - t0) + " ms (el preludio, " + (time_ms() - t1) + " ms)")
 end
 
 # document.cookie (lib/cookies.dash, sin las HttpOnly)

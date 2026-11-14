@@ -61,5 +61,12 @@
   "ahora": 4.5,
   "unidad": "s",
   "nota": "Los selectores :root, solo en la raíz (GitHub trae ~100); la página entera de 17,8 a 16,9 s (61)"
+ },
+ {
+  "medida": "Preparar el JavaScript en la primera página con scripts de cada arranque",
+  "antes": 1.6,
+  "ahora": 0.26,
+  "unidad": "s",
+  "nota": "El preludio compilado (bytecode, 300 KB) en PROGDIR:Tachyon.bc, que dura entre arranques; antes en T: y solo con 32 MB libres (61)"
  }
 ]

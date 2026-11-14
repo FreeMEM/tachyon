@@ -7697,3 +7697,19 @@ Formato:
   CaffeineOS (en el grupo Amiga Storage; 9312, la más cercana a la de JaviTecH) queda para mañana (usuario).
 - La comparativa de la web (webs-freemem, sitios/tachyon/src/comparativa.ts) repasada con Amelinium 1.7.1 y AmiFire
   0.9.303 (pedido por el usuario); sale con la 0.9.8.
+- Publicada la v0.9.8-alfa: PR #28 (main bf8c6e3), etiqueta y pre-release con 11 ficheros; el Tachyon.gz y el
+  tachyon.lha bajados dan el mismo SHA-256 que los compilados (8f1061e8…, 418445ee…). Web: comparativa y Gracias
+  (webs-freemem dcbacb9, subido; el servidor la recoge en ~5 min).
+- JaviTecH (tras la 0.9.8, por la sesión telegram): ya le va en CaffeineOS y YouTube con música; nuevo: en
+  dashos.freemem.space Tachyon se queda "un rato bloqueado completamente" y no se puede cerrar. En el emulador
+  (objetivo): (1) la página acababa en "This page couldn't load" de Next.js: faltaba getPointAtLength (arreglado, con
+  getTotalLength de verdad: test_jsdom_svg_largo; Acid3 100); (2) el bloqueo: scripts 9 s y maqueta 7,3 s (4362 bloques)
+  sin atender a la ventana; luego quieto. Pendiente para mañana con flex (usuario): la maqueta más rápida y que cerrar la
+  ventana responda durante las fases largas.
+
+### 2026-11-14 — 0.9.9-alfa (dashos.freemem.space)
+
+- Pedida por el usuario ("sale hoy") con getPointAtLength (2eccc56). Versión en 88ccaff. Batería 184/190: los cinco de
+  siempre y test_jsdom_svg_largo ("out of memory" en tanda, como outerhtml); los seis pasan sueltos. Actualización desde
+  la 0.9.8 publicada (idéntico, 9 catálogos, .old) y humo con MUI 3.8: dashos.freemem.space entera y bien en 40,9 s,
+  amigaworld en 5,9 s.

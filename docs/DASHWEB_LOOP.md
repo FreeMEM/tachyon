@@ -614,6 +614,10 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 73. **Tachyon con PROGDIR: de solo lectura (geosian-7d, que lleva DashOS, 2026-11-15; Tachyon ya corre en la
+      caja Amiga de DashOS con AmigaOS 3.2).** (a) Tachyon.cookies, prefs, marcadores, historial y Tachyon.bc van a
+      PROGDIR:; si no se puede escribir ahí (un disco del sistema o un paquete), a ENVARC:Tachyon/ (leer de los dos);
+      (b) el temporal de las imágenes (T:dashweb_img0) falla sin aviso si no hay T:: decirlo. Nada urgente.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31

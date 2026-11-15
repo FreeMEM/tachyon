@@ -625,6 +625,9 @@ tarea, con el estilo de Dash.
       sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
       0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).
       Javier de las Rivas lo vio en AmigaOS 4 con una versión vieja ("esperando"): primer dato de Tachyon en OS4.
+      (2026-11-15, David: PiStorm 3a+ con Emu68 beta del 01-09, y también en FS-UAE; CaffeineOS arrancando Workbench
+      3.2.3; la versión colgada el 14-11, 0.9.8 o 0.9.9.) Pedido por la sesión telegram: TRAZA=RAM:traza.txt, pila de red
+      (Roadshow u otra) y versión de AmiSSL. Aquí se prueba con la bsdsocket de FS-UAE; sys31roadshow no tiene red.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31

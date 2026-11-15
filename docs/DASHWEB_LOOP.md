@@ -618,6 +618,13 @@ tarea, con el estilo de Dash.
       caja Amiga de DashOS con AmigaOS 3.2).** (a) Tachyon.cookies, prefs, marcadores, historial y Tachyon.bc van a
       PROGDIR:; si no se puede escribir ahí (un disco del sistema o un paquete), a ENVARC:Tachyon/ (leer de los dos);
       (b) el temporal de las imágenes (T:dashweb_img0) falla sin aviso si no hay T:: decirlo. Nada urgente.
+- [ ] 74. **Favicon (idea de Alex Agauser, grupo Dash Amiga, 2026-11-14: si Tachyon muestra el favicon en algún
+      lado).** No lo muestra. Leer <link rel="icon"> (o /favicon.ico) y ponerlo junto a la dirección, en las pestañas o
+      en los marcadores. Nada urgente.
+- [ ] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
+      sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
+      0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).
+      Javier de las Rivas lo vio en AmigaOS 4 con una versión vieja ("esperando"): primer dato de Tachyon en OS4.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31

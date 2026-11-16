@@ -1006,11 +1006,15 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
             interior = w
         end
     end
-    # una tabla de CSS (display: table en otro elemento que <table>) sin width encoge a su contenido (CSS 2.1 17.5.2;
-    # el <ul> de Acid2 dejaba ver su fondo rojo a lo ancho)
-    if e["display"] == "table" and n.nombre != "table" and _val(e, "width", "auto") == "auto" and n != _medido
+    # una tabla sin width encoge a su contenido (CSS 2.1 17.5.2; el <ul> de Acid2, display: table, dejaba ver su fondo
+    # rojo a lo ancho), también una <table> (su fondo salía a todo el ancho: WPT separated-border-model-007), y con
+    # margin: auto a los dos lados (o align=center) se centra
+    if e["display"] == "table" and _val(e, "width", "auto") == "auto" and n != _medido
         wt = _ancho_flotante(m, n, ancho) - ml - mr - bl - br - pl - pr
         if wt > 0 and wt < interior
+            if e.has("margin-left") and e.has("margin-right") and e["margin-left"] == "auto" and e["margin-right"] == "auto"
+                ml = (ancho - wt - bl - br - pl - pr) / 2
+            end
             interior = wt
         end
     end

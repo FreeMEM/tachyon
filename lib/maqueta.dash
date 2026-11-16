@@ -498,6 +498,7 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
         _abs_py.pop()
     end
     _maqueta_pase = _maqueta_pase + 1
+    _ma_epoca = _ma_epoca + 1
     if not maqueta_conservar
         _maqueta_epoca = _maqueta_epoca + 1
     end
@@ -1006,11 +1007,15 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
             interior = w
         end
     end
-    # una tabla de CSS (display: table en otro elemento que <table>) sin width encoge a su contenido (CSS 2.1 17.5.2;
-    # el <ul> de Acid2 dejaba ver su fondo rojo a lo ancho)
-    if e["display"] == "table" and n.nombre != "table" and _val(e, "width", "auto") == "auto" and n != _medido
+    # una tabla sin width encoge a su contenido (CSS 2.1 17.5.2; el <ul> de Acid2, display: table, dejaba ver su fondo
+    # rojo a lo ancho), también una <table> (su fondo salía a todo el ancho: WPT separated-border-model-007), y con
+    # margin: auto a los dos lados (o align=center) se centra
+    if e["display"] == "table" and _val(e, "width", "auto") == "auto" and n != _medido
         wt = _ancho_flotante(m, n, ancho) - ml - mr - bl - br - pl - pr
         if wt > 0 and wt < interior
+            if e.has("margin-left") and e.has("margin-right") and e["margin-left"] == "auto" and e["margin-right"] == "auto"
+                ml = (ancho - wt - bl - br - pl - pr) / 2
+            end
             interior = wt
         end
     end
@@ -3822,21 +3827,25 @@ func _margen_abajo(n: Nodo, contenedor: Int) -> Int
 end
 
 # El margen de arriba de n ya lo pone su padre: n es su primer bloque (o va tras otros vacíos) y se juntan
+# (los hijos de p se miran una vez por maqueta: cada uno, si va antes del primero que no está vacío o es él; mirarlos
+# desde el principio por cada hijo era cuadrático: 600 <div> vacíos, 39 s de maqueta; tarea 76a)
+var _ma_epoca: Int = 0
 func _margen_absorbido(n: Nodo) -> Bool
     p = n.padre
     if p == nil or not _colapsa_arriba(p)
         return false
     end
-    for h in _hijos(p)
-        if h == n
-            return true
-        end
-        t = _hijo_margen(p, h)
-        if t == 2 or (t == 1 and not _vacio(h))
-            return false
+    if p.ma_pase != _ma_epoca
+        p.ma_pase = _ma_epoca
+        for h in _hijos(p)
+            h.ma_si = _ma_epoca
+            t = _hijo_margen(p, h)
+            if t == 2 or (t == 1 and not _vacio(h))
+                break
+            end
         end
     end
-    return false
+    return n.ma_si == _ma_epoca
 end
 
 # Los dibujos de los flotantes, detrás de lo dibujado desde b0 (el bloque que les ha pasado por debajo): así se
@@ -5879,7 +5888,7 @@ func maqueta_nodo_en_vista(p: Pagina, x: Int, y: Int, desde: Int) -> Nodo
         elif d.pega != nil
             yy = yy - maqueta_pega_dy(d.pega, desde)
         end
-        if d.nodo != nil and not d.velado and x >= d.x and x < d.x + d.ancho and yy >= d.y and yy < d.y + d.alto
+        if d.nodo != nil and not d.velado and x >= d.x and x < d.x + d.ancho and yy >= d.y and yy < d.y + d.alto and not _en_hueco(d, x, yy)
             return d.nodo
         end
         i = i - 1
@@ -5892,13 +5901,23 @@ func maqueta_nodo_en(p: Pagina, x: Int, y: Int) -> Nodo
     i = p.dibujos.length - 1
     while i >= 0
         d = p.dibujos[i]
-        if d.nodo != nil and x >= d.x and x < d.x + d.ancho and y >= d.y and y < d.y + d.alto
+        if d.nodo != nil and x >= d.x and x < d.x + d.ancho and y >= d.y and y < d.y + d.alto and not _en_hueco(d, x, y)
             return d.nodo
         end
         i = i - 1
     end
     var nada: Nodo = nil
     return nada
+end
+
+# ¿x, y cae en el hueco de un borde redondo (D_REDONDO o D_ELIPSE con estilo, el grosor: un aro, no un relleno)? Va
+# encima de lo de dentro y tapaba los enlaces: un botón de descarga (un <a> dentro de un
+# inline-flex con borde y border-radius) no hacía nada al pulsarlo (lo contó dash-lienzo-2.6)
+func _en_hueco(d: Dibujo, x: Int, y: Int) -> Bool
+    if (d.tipo != D_REDONDO and d.tipo != D_ELIPSE) or d.estilo <= 0
+        return false
+    end
+    return x >= d.x + d.estilo and x < d.x + d.ancho - d.estilo and y >= d.y + d.estilo and y < d.y + d.alto - d.estilo
 end
 
 
@@ -7689,6 +7708,7 @@ func maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
 end
 
 func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
+    _ma_epoca = _ma_epoca + 1
     var nada: [Dibujo] = nil
     maqueta_bloques = 0
     l = _limite_en(p, b)

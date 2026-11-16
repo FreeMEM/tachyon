@@ -194,6 +194,7 @@ func formulario_poner_valor(n: Nodo, v: String)
             h.padre = nadie
         end
         n.hijos.clear()
+        dom_cambio()
         if v != ""
             dom_agregar(n, dom_nodo(DOM_TEXTO, "", v))
         end

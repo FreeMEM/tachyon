@@ -614,6 +614,48 @@ tarea, con el estilo de Dash.
       b. La batería entera por las dos líneas; lo que falle por una sola, arreglarlo (en Dash si es de Dash).
       c. Un builtin nuevo que pida Tachyon se pide para las dos (regla 3).
 
+- [ ] 73. **Tachyon con PROGDIR: de solo lectura (geosian-7d, que lleva DashOS, 2026-11-15; Tachyon ya corre en la
+      caja Amiga de DashOS con AmigaOS 3.2).** (a) Tachyon.cookies, prefs, marcadores, historial y Tachyon.bc van a
+      PROGDIR:; si no se puede escribir ahí (un disco del sistema o un paquete), a ENVARC:Tachyon/ (leer de los dos);
+      (b) el temporal de las imágenes (T:dashweb_img0) falla sin aviso si no hay T:: decirlo. Nada urgente.
+- [ ] 74. **Favicon (idea de Alex Agauser, grupo Dash Amiga, 2026-11-14: si Tachyon muestra el favicon en algún
+      lado).** No lo muestra. Leer <link rel="icon"> (o /favicon.ico) y ponerlo junto a la dirección, en las pestañas o
+      en los marcadores. Nada urgente.
+- [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
+      apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
+      Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
+      ~/.cache/video-comparativa (datos.json, textos.json, tomas/, fotos/; la página de JavaScript, web/bench.html).
+      En el vídeo: "Me llevo deberes". Lo que hay que ganar:
+      [~] (a) DOM lento: "buscar y cambiar clases" (className y nodeValue en 600 <div> y luego offsetHeight) 6480 ms frente
+          a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
+          de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
+          queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
+      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588).
+      (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
+      (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
+      (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
+          sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.
+      (f) Invidious (inv.nadeko.net): se queda atascado en el reto anti-bots en JavaScript (Amelinium lo pasa).
+      (g) jquery.com, un poco más lento.
+      Gana ya: Acid3 100 frente a 22, JavaScript de cálculo, GitHub, memoria (53 MB con GitHub frente a 191), vídeo
+      dentro de la web y HTTPS que verifica certificados. Lo que Amelinium trae y Tachyon no, en la 63.
+- [ ] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
+      sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
+      0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).
+      Javier de las Rivas lo vio en AmigaOS 4 con una versión vieja ("esperando"): primer dato de Tachyon en OS4.
+      (2026-11-15, David: PiStorm 3a+ con Emu68 beta del 01-09, y también en FS-UAE; CaffeineOS arrancando Workbench
+      3.2.3; la versión colgada el 14-11, 0.9.8 o 0.9.9.) Pedido por la sesión telegram: TRAZA=RAM:traza.txt, pila de red
+      (Roadshow u otra) y versión de AmiSSL. Aquí se prueba con la bsdsocket de FS-UAE; sys31roadshow no tiene red.
+      (2026-11-16) Tampoco sale con la 0.9.9 en FS-UAE con OS 3.9 (sys39x + MUI y AmiSSL de sys32rtg38) ni con
+      CaffeineOS 9312 (~/Descargas/caffeine, sus parches de arranque en S/Startup-Extra, su MUI 3.8 y su AmiSSL 5.18,
+      la red de FS-UAE): entera en ~50 s. Ni en el coffin de Amiberry (DashCoffin.hdf), tampoco con una página, 24 s
+      parado y otra por ARexx (el fallo de net_bg que vio freememlang-d5 en otra prueba: la tarea de red que acaba y la
+      siguiente). CaffeineOS arranca de serie con Miami: lo que queda por probar es su pila de red.
+      Traza de David (0.9.9, exec 47.10, WB 47.5, 68040, MUI 19.35, P96 2.488, Miami 4.1, AmiSSL 5.27, 323 MB libres):
+      los 9 recursos llegan en 0,8 s y la última línea es "recursos listos: scripts". Se para en jsdom_preparar
+      (js_nuevo, el preludio con PROGDIR:Tachyon.bc o T:, o su compilación en un motor con pool propio), no en la red.
+      Con 512 MB en el emulador va bien. Pedido: si la ventana responde o hay un requester, borrar Tachyon.bc y si
+      le pasa con cualquier web con JavaScript.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31
@@ -7713,3 +7755,29 @@ Formato:
   siempre y test_jsdom_svg_largo ("out of memory" en tanda, como outerhtml); los seis pasan sueltos. Actualización desde
   la 0.9.8 publicada (idéntico, 9 catálogos, .old) y humo con MUI 3.8: dashos.freemem.space entera y bien en 40,9 s,
   amigaworld en 5,9 s.
+- Publicada la v0.9.9-alfa: PR #29 (main 8db906e), etiqueta y pre-release con 11 ficheros; SHA-256 de lo bajado igual
+  que lo compilado (17ecc4c4…, 7296ead6…). Web: comparativa con la 0.9.9 y Gracias (webs-freemem ea9d63d, subido).
+
+### 2026-11-16 — WPT tablas, tarea 76a, un clic tapado por un borde redondo y la 0.10.0-alfa
+- WPT tablas 95 → 100/150 (separated-border-model-007, 008 y 009, collapsing-border-model-007 y 008): una <table> sin
+  width encoge a su contenido como las tablas de CSS, y con margin: auto (o align=center) se centra. normal-flow 74/100
+  igual. (La traza de tools/traza.py escribe el ancho de fuera de la caja, no el suyo: engaña al mirar anchos.)
+- El usuario recordó la comparativa en vídeo con Amelinium: lo que se perdió no estaba en el plan; ahora es la tarea 76.
+- 76a: children y getElementsByTagName solo se rehacen cuando entra o sale un hijo (dom_version_arbol); dom_indice
+  busca un hijo desde los dos extremos (appendChild, removeChild, insertBefore, previousSibling); las envolturas del
+  preludio de appendChild e insertBefore no miran marcos ni scripts en un texto o un elemento sin elementos dentro.
+  Página de 10 pruebas de la comparativa (~/.cache/video-comparativa/web/bench.html, K=4) en el emulador RTG (FS-UAE con
+  RTG va unas 20 veces más lento que el Amiberry del vídeo; se compara con el bucle de enteros): cambiar clases de 23 a
+  0,79 veces el bucle, crear de 1,36 a 0,40. Lo que queda es la maqueta entera de offsetHeight (siguiente en la 76a).
+- Visto de paso: la maqueta de muchos bloques vacíos era cuadrática (_margen_absorbido miraba los hermanos desde el
+  principio por cada hijo): 300 <div> vacíos 10,5 s, 600 39 s; ahora 1,1 s y 1200 en 4,2 s (_ma_epoca).
+- dash-lienzo-2.6 vio en una web un botón de descarga que no hacía nada al pulsarlo: el borde redondo (D_REDONDO con
+  grosor) se dibuja encima de los enlaces y al buscar qué hay bajo el ratón contaba como relleno (_en_hueco).
+  test_maqueta_clic_borde_redondo.
+- tools/aminet.py (el usuario: "siempre he querido publicar en Aminet"): Tachyon en comm/www y Trasfondo en util/moni,
+  por FTP a main.aminet.net/new, como mucho una vez por semana; Uploader aminet@freemem.space (buzón nuevo en hermes).
+  Trasfondo 2.9.5 subido el 16-11.
+- La 0.10.0-alfa (el usuario: "sí, publica la versión con los arreglos"): batería 186/192, los seis que fallan en tanda
+  (los de la 0.9.9) pasan sueltos; actualización de verdad desde la 0.9.9 publicada (idéntico, 9 catálogos, .old);
+  velocidad igual que la 0.9.9 (GitHub guardado 19,2-19,7 s frente a 19,4-20,2; AmigaWorld 5,9-6,3 frente a 6,3);
+  humo con MUI 3.8, cuatro ventanas 240 s sin colgarse.

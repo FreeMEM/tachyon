@@ -81,6 +81,8 @@ struct Nodo
     sg_pase: Int = 0          # lib/maqueta.dash _sangrias: lo que deja él a izquierda y derecha en la maqueta sg_pase
     sg_izq: Int = 0
     sg_der: Int = 0
+    ma_pase: Int = 0          # lib/maqueta.dash _margen_absorbido: sus hijos ya mirados en la maqueta ma_pase
+    ma_si: Int = 0            # (y este hijo absorbe su margen de arriba en la maqueta ma_si)
     cl_cont: Int = 0
     cl_pct: Bool = false      # (alguno va en %: depende del contenedor)
     pal_clave: String = nil   # un texto: los anchos de sus palabras con esa letra (lib/maqueta.dash _palabras_texto: con sus palabras)
@@ -185,13 +187,22 @@ var dom_reloj: Int = 0
 # Cada cambio de un árbol (un hijo que entra o sale, un atributo, un texto) sube dom_version (tarea 41d): las
 # colecciones vivas de JavaScript (HTMLCollection de src_c/tachyon.c) rehacen su lista solo cuando cambia
 var dom_version: Int = 0
+# Y dom_version_arbol, solo cuando un hijo entra o sale (el nombre de un elemento no cambia): children y
+# getElementsByTagName dependen solo de eso; con cada texto o atributo se rehacían enteras (un bucle que cambiaba
+# className en 600 <div> de un getElementsByTagName rehacía la lista 600 veces: 6,5 s; tarea 76a)
+var dom_version_arbol: Int = 0
 
 @export func dom_version_actual() -> Int
     return dom_version
 end
 
+@export func dom_version_arbol_actual() -> Int
+    return dom_version_arbol
+end
+
 func dom_cambio()
     dom_version = dom_version + 1
+    dom_version_arbol = dom_version_arbol + 1
 end
 
 func dom_tocar(n: Nodo)
@@ -254,16 +265,32 @@ func dom_apuntar_salida(padre: Nodo, hijo: Nodo)
 end
 
 # El elemento hermano de al lado (antes o después); nil si no hay
+# Dónde está n en hs (hs.length si no está). Se busca desde los dos extremos a la vez: el que se acaba de añadir al
+# final, o el primero, a la primera; desde el principio, añadir 2400 <div> a uno daba 2400 vueltas más cada vez, y
+# previousSibling igual (tarea 76a)
+func dom_indice(hs: [Nodo], n: Nodo) -> Int
+    i = 0
+    j = hs.length - 1
+    while i <= j
+        if hs[i] == n
+            return i
+        end
+        if hs[j] == n
+            return j
+        end
+        i = i + 1
+        j = j - 1
+    end
+    return hs.length
+end
+
 func dom_hermano_elemento(n: Nodo, despues: Bool) -> Nodo
     var nadie: Nodo = nil
     if n.padre == nil
         return nadie
     end
     hs = n.padre.hijos
-    i = 0
-    while i < hs.length and hs[i] != n
-        i = i + 1
-    end
+    i = dom_indice(hs, n)
     paso = -1
     if despues
         paso = 1
@@ -328,6 +355,7 @@ end
 
 func dom_agregar(padre: Nodo, hijo: Nodo)
     dom_version = dom_version + 1
+    dom_version_arbol = dom_version_arbol + 1
     hijo.padre = padre
     padre.hijos.push(hijo)
 end

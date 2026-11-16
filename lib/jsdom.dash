@@ -252,7 +252,8 @@ end
 end
 
 @export func jsdom_quitar(padre: Nodo, hijo: Nodo) -> Bool
-    i = 0
+    # (empieza donde está, si está: dom_indice lo busca desde los dos extremos)
+    i = dom_indice(padre.hijos, hijo)
     while i < padre.hijos.length
         if padre.hijos[i] == hijo
             if hijo.tipo == DOM_ELEMENTO
@@ -364,10 +365,7 @@ end
         return nada
     end
     k = p.hijos.length
-    i = 0
-    while i < k and p.hijos[i] != n
-        i = i + 1
-    end
+    i = dom_indice(p.hijos, n)
     paso = -1
     if despues
         paso = 1
@@ -412,7 +410,7 @@ end
         _jsdom_entra(nuevo)
         return true
     end
-    i = 0
+    i = dom_indice(padre.hijos, ref)
     while i < padre.hijos.length
         if padre.hijos[i] == ref
             padre.hijos.insert(i, nuevo)
@@ -608,6 +606,7 @@ end
     t = dom_tipo_doc("html", "", "")
     t.padre = d
     d.hijos.insert(0, t)
+    dom_cambio()
     return d
 end
 

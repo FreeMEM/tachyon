@@ -2005,6 +2005,7 @@ typedef struct {
     char *sel;
     JSValue filtro;
     LONG version;        /* -1: sin lista */
+    int arbol;           /* 1: solo depende de los hijos que entran o salen (dom_version_arbol; tarea 76a) */
     _Dash_Nodo **nodos;
     JSValue *objs;       /* el objeto de JS de cada uno, al pedirlo (JS_UNDEFINED hasta entonces) */
     uint32_t n, cap;
@@ -2058,9 +2059,14 @@ static JSValue _col_obj(JSContext *ctx, _JsCol *c, uint32_t i) {
     return JS_DupValue(ctx, c->objs[i]);
 }
 
+/* la versión de lo que mira la colección: los hijos (children, getElementsByTagName) o cualquier cambio */
+static LONG _col_version(_JsCol *c) {
+    return c->arbol ? dom_version_arbol_actual() : dom_version_actual();
+}
+
 /* la lista al día; -1 si falla (excepción puesta) */
 static int _col_al_dia(JSContext *ctx, _JsCol *c) {
-    LONG v = dom_version_actual();
+    LONG v = _col_version(c);
     DashArray *l;
     uint32_t i, k;
     if (c->version == v) return 0;
@@ -2094,7 +2100,7 @@ static int _col_al_dia(JSContext *ctx, _JsCol *c) {
         if (!_col_meter(c, nd)) { c->version = -1; JS_ThrowOutOfMemory(ctx); return -1; }
     }
     /* (el filtro puede haber cambiado el árbol: entonces se rehará la próxima vez) */
-    c->version = c->tipo == 2 ? v : dom_version_actual();
+    c->version = c->tipo == 2 ? v : _col_version(c);
     return 0;
 }
 
@@ -2339,6 +2345,13 @@ static JSValue _col_nueva(JSContext *ctx, _Dash_Nodo *raiz, int tipo, char *sel,
     c->sel = sel;
     c->filtro = JS_DupValue(ctx, filtro);
     c->version = -1;
+    /* los hijos, o un nombre de etiqueta (o "*"): solo cambian si entra o sale alguno */
+    c->arbol = tipo == 0;
+    if (tipo == 1 && sel && sel[0]) {
+        const char *q = sel;
+        while (*q && ((*q >= 'a' && *q <= 'z') || (*q >= 'A' && *q <= 'Z') || (*q >= '0' && *q <= '9') || *q == '-' || *q == '_' || *q == '*')) q++;
+        c->arbol = *q == 0;
+    }
     JS_SetOpaque(o, c);
     return o;
 }

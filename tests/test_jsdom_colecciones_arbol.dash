@@ -1,0 +1,34 @@
+# Test: children y getElementsByTagName solo se rehacen cuando un hijo entra o sale (tarea 76a: cambiar className y el
+# texto de 600 <div> de un getElementsByTagName rehacía la lista en cada vuelta, 6,5 s en la comparativa con
+# Amelinium). Siguen vivas: ven lo que entra (appendChild, insertBefore, innerHTML), lo que sale (removeChild,
+# textContent) y getElementsByClassName ve el cambio de className.
+# memcheck
+# expect-out: bucle: 600 300 300
+# expect-out: entra: 601 602 | sale: 601 | innerHTML: 603 | quita: 600
+# expect-out: children: 3 4 3 | clases: 300 301 0
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><div id='dom'></div><p id='p'><i></i><b></b><u></u></p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var dom = document.getElementById('dom'), i;"
+    c = c + "for (i = 0; i < 600; i++) { var d = document.createElement('div'); d.appendChild(document.createTextNode('x')); dom.appendChild(d); }"
+    c = c + "var l = dom.getElementsByTagName('div'), pares = document.getElementsByClassName('par'), n = 0;"
+    c = c + "for (i = 0; i < l.length; i++) { if (i % 2 === 0) { l[i].className = 'par'; n++; } l[i].firstChild.nodeValue = 'm' + i; }"
+    c = c + "'bucle: ' + l.length + ' ' + n + ' ' + pares.length"
+    Print js_evaluar(js, c, "t.js")
+    c = "dom.appendChild(document.createElement('div')); var a = l.length; dom.insertBefore(document.createElement('div'), dom.firstChild); var b = l.length;"
+    c = c + "dom.removeChild(dom.firstChild); var s = l.length; var e = document.createElement('section'); dom.appendChild(e); e.innerHTML = '<div></div><div></div>';"
+    c = c + "var h = l.length; dom.removeChild(e); dom.removeChild(dom.lastChild); var t0 = l.length;"
+    c = c + "'entra: ' + a + ' ' + b + ' | sale: ' + s + ' | innerHTML: ' + h + ' | quita: ' + t0"
+    Print js_evaluar(js, c, "t.js")
+    c = "var p = document.getElementById('p'), ch = p.children, c0 = ch.length; p.appendChild(document.createElement('s')); var c1 = ch.length; p.removeChild(p.lastChild);"
+    c = c + "var c2 = ch.length; var k0 = pares.length; l[1].className = 'par'; var k1 = pares.length; dom.textContent = ''; "
+    c = c + "'children: ' + c0 + ' ' + c1 + ' ' + c2 + ' | clases: ' + k0 + ' ' + k1 + ' ' + l.length"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

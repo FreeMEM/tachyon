@@ -498,6 +498,7 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
         _abs_py.pop()
     end
     _maqueta_pase = _maqueta_pase + 1
+    _ma_epoca = _ma_epoca + 1
     if not maqueta_conservar
         _maqueta_epoca = _maqueta_epoca + 1
     end
@@ -3826,21 +3827,25 @@ func _margen_abajo(n: Nodo, contenedor: Int) -> Int
 end
 
 # El margen de arriba de n ya lo pone su padre: n es su primer bloque (o va tras otros vacíos) y se juntan
+# (los hijos de p se miran una vez por maqueta: cada uno, si va antes del primero que no está vacío o es él; mirarlos
+# desde el principio por cada hijo era cuadrático: 600 <div> vacíos, 39 s de maqueta; tarea 76a)
+var _ma_epoca: Int = 0
 func _margen_absorbido(n: Nodo) -> Bool
     p = n.padre
     if p == nil or not _colapsa_arriba(p)
         return false
     end
-    for h in _hijos(p)
-        if h == n
-            return true
-        end
-        t = _hijo_margen(p, h)
-        if t == 2 or (t == 1 and not _vacio(h))
-            return false
+    if p.ma_pase != _ma_epoca
+        p.ma_pase = _ma_epoca
+        for h in _hijos(p)
+            h.ma_si = _ma_epoca
+            t = _hijo_margen(p, h)
+            if t == 2 or (t == 1 and not _vacio(h))
+                break
+            end
         end
     end
-    return false
+    return n.ma_si == _ma_epoca
 end
 
 # Los dibujos de los flotantes, detrás de lo dibujado desde b0 (el bloque que les ha pasado por debajo): así se
@@ -7703,6 +7708,7 @@ func maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
 end
 
 func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
+    _ma_epoca = _ma_epoca + 1
     var nada: [Dibujo] = nil
     maqueta_bloques = 0
     l = _limite_en(p, b)

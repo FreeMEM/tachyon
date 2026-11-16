@@ -626,9 +626,10 @@ tarea, con el estilo de Dash.
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
       ~/.cache/video-comparativa (datos.json, textos.json, tomas/, fotos/; la página de JavaScript, web/bench.html).
       En el vídeo: "Me llevo deberes". Lo que hay que ganar:
-      (a) DOM lento: "buscar y cambiar clases" (className y nodeValue en 600 <div> y luego offsetHeight) 6480 ms frente
+      [~] (a) DOM lento: "buscar y cambiar clases" (className y nodeValue en 600 <div> y luego offsetHeight) 6480 ms frente
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
-          de 2 a 40 veces más rápido. Sospecha: offsetHeight rehace la maqueta entera.
+          de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
+          queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
       (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588).
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
@@ -7756,3 +7757,27 @@ Formato:
   amigaworld en 5,9 s.
 - Publicada la v0.9.9-alfa: PR #29 (main 8db906e), etiqueta y pre-release con 11 ficheros; SHA-256 de lo bajado igual
   que lo compilado (17ecc4c4…, 7296ead6…). Web: comparativa con la 0.9.9 y Gracias (webs-freemem ea9d63d, subido).
+
+### 2026-11-16 — WPT tablas, tarea 76a, un clic tapado por un borde redondo y la 0.10.0-alfa
+- WPT tablas 95 → 100/150 (separated-border-model-007, 008 y 009, collapsing-border-model-007 y 008): una <table> sin
+  width encoge a su contenido como las tablas de CSS, y con margin: auto (o align=center) se centra. normal-flow 74/100
+  igual. (La traza de tools/traza.py escribe el ancho de fuera de la caja, no el suyo: engaña al mirar anchos.)
+- El usuario recordó la comparativa en vídeo con Amelinium: lo que se perdió no estaba en el plan; ahora es la tarea 76.
+- 76a: children y getElementsByTagName solo se rehacen cuando entra o sale un hijo (dom_version_arbol); dom_indice
+  busca un hijo desde los dos extremos (appendChild, removeChild, insertBefore, previousSibling); las envolturas del
+  preludio de appendChild e insertBefore no miran marcos ni scripts en un texto o un elemento sin elementos dentro.
+  Página de 10 pruebas de la comparativa (~/.cache/video-comparativa/web/bench.html, K=4) en el emulador RTG (FS-UAE con
+  RTG va unas 20 veces más lento que el Amiberry del vídeo; se compara con el bucle de enteros): cambiar clases de 23 a
+  0,79 veces el bucle, crear de 1,36 a 0,40. Lo que queda es la maqueta entera de offsetHeight (siguiente en la 76a).
+- Visto de paso: la maqueta de muchos bloques vacíos era cuadrática (_margen_absorbido miraba los hermanos desde el
+  principio por cada hijo): 300 <div> vacíos 10,5 s, 600 39 s; ahora 1,1 s y 1200 en 4,2 s (_ma_epoca).
+- dash-lienzo-2.6 vio en una web un botón de descarga que no hacía nada al pulsarlo: el borde redondo (D_REDONDO con
+  grosor) se dibuja encima de los enlaces y al buscar qué hay bajo el ratón contaba como relleno (_en_hueco).
+  test_maqueta_clic_borde_redondo.
+- tools/aminet.py (el usuario: "siempre he querido publicar en Aminet"): Tachyon en comm/www y Trasfondo en util/moni,
+  por FTP a main.aminet.net/new, como mucho una vez por semana; Uploader aminet@freemem.space (buzón nuevo en hermes).
+  Trasfondo 2.9.5 subido el 16-11.
+- La 0.10.0-alfa (el usuario: "sí, publica la versión con los arreglos"): batería 186/192, los seis que fallan en tanda
+  (los de la 0.9.9) pasan sueltos; actualización de verdad desde la 0.9.9 publicada (idéntico, 9 catálogos, .old);
+  velocidad igual que la 0.9.9 (GitHub guardado 19,2-19,7 s frente a 19,4-20,2; AmigaWorld 5,9-6,3 frente a 6,3);
+  humo con MUI 3.8, cuatro ventanas 240 s sin colgarse.

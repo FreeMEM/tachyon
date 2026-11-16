@@ -11,7 +11,12 @@ Arranque (desde cualquier directorio):
 **Después (usuario, 2026-10-24): "que se vea bien la web de youtube sería un puntazo": la 38 va la siguiente, tras
 publicar la 0.7.2; luego la 53 (las webs de chat).**
 
-**Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
+**Encargo vigente (usuario, 2026-11-17): "ahora tenemos que conseguir que Tachyon sea absurdamente más rápido que
+Amelinium, y que funcione el html5test".** Manda sobre todo lo de abajo: la tarea 76 (cada punto que perdió en la
+comparativa en vídeo, y medir contra los tiempos de Amelinium de ~/.cache/video-comparativa/datos.json) y html5test.co
+dando su puntuación (copia guardada y servida desde el PC, como en la 62). WPT, después.
+
+**Encargo anterior (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
 pendiente del plan. Esto manda sobre los dos encargos de arriba. Al acabar WPT, la 62
 (las demás baterías: compatibilidad, velocidad, red y seguridad).**
@@ -630,7 +635,8 @@ tarea, con el estilo de Dash.
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
           de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
-      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588).
+      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588). (2026-11-17, usuario: "que funcione
+          el html5test": va con el encargo vigente.)
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al

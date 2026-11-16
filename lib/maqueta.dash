@@ -5883,7 +5883,7 @@ func maqueta_nodo_en_vista(p: Pagina, x: Int, y: Int, desde: Int) -> Nodo
         elif d.pega != nil
             yy = yy - maqueta_pega_dy(d.pega, desde)
         end
-        if d.nodo != nil and not d.velado and x >= d.x and x < d.x + d.ancho and yy >= d.y and yy < d.y + d.alto
+        if d.nodo != nil and not d.velado and x >= d.x and x < d.x + d.ancho and yy >= d.y and yy < d.y + d.alto and not _en_hueco(d, x, yy)
             return d.nodo
         end
         i = i - 1
@@ -5896,13 +5896,23 @@ func maqueta_nodo_en(p: Pagina, x: Int, y: Int) -> Nodo
     i = p.dibujos.length - 1
     while i >= 0
         d = p.dibujos[i]
-        if d.nodo != nil and x >= d.x and x < d.x + d.ancho and y >= d.y and y < d.y + d.alto
+        if d.nodo != nil and x >= d.x and x < d.x + d.ancho and y >= d.y and y < d.y + d.alto and not _en_hueco(d, x, y)
             return d.nodo
         end
         i = i - 1
     end
     var nada: Nodo = nil
     return nada
+end
+
+# ¿x, y cae en el hueco de un borde redondo (D_REDONDO o D_ELIPSE con estilo, el grosor: un aro, no un relleno)? Va
+# encima de lo de dentro y tapaba los enlaces: un botón de descarga (un <a> dentro de un
+# inline-flex con borde y border-radius) no hacía nada al pulsarlo (lo contó dash-lienzo-2.6)
+func _en_hueco(d: Dibujo, x: Int, y: Int) -> Bool
+    if (d.tipo != D_REDONDO and d.tipo != D_ELIPSE) or d.estilo <= 0
+        return false
+    end
+    return x >= d.x + d.estilo and x < d.x + d.ancho - d.estilo and y >= d.y + d.estilo and y < d.y + d.alto - d.estilo
 end
 
 

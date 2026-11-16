@@ -1,0 +1,38 @@
+# Test: un enlace dentro de una caja con borde redondeado se puede pulsar. El borde (D_REDONDO, un aro) va encima de lo
+# de dentro y, al buscar qué hay bajo el ratón, contaba como un rectángulo lleno: un botón de
+# descarga (en un inline-flex con borde, border-radius y overflow: hidden) no hacía nada (lo contó
+# dash-lienzo-2.6). Dentro de la caja, el enlace; en el borde, la caja; fuera, nada.
+# memcheck
+# expect-out: dentro: a#uno a#dos | borde: span#caja | fuera: nada
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/maqueta.dash"
+
+func quien(n: Nodo) -> String
+    if n == nil
+        return "nada"
+    end
+    if dom_atributo(n, "id") != ""
+        return n.nombre + "#" + dom_atributo(n, "id")
+    end
+    return n.nombre
+end
+
+Main
+    h = "<html><body style='margin:0'><nav style='display:flex'><span id=caja style='display:inline-flex;border:4px solid #888;border-radius:8px;overflow:hidden'>"
+    h = h + "<a id=uno href='/descargar#amigaos' style='display:block;width:100px;height:30px;background:orange'>A</a>"
+    h = h + "<a id=dos href='/descargar#dashos' style='display:block;width:100px;height:30px;background:navy'>B</a></span></nav></body></html>"
+    doc = dom_desde_html(h)
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    p = maquetar(doc, 400)
+    # (el texto de un enlace es un dibujo suyo o de su texto: se sube hasta el <a>)
+    var d1: Nodo = maqueta_nodo_en(p, 50, 18)
+    var d2: Nodo = maqueta_nodo_en(p, 150, 18)
+    while d1 != nil and d1.nombre != "a"
+        d1 = d1.padre
+    end
+    while d2 != nil and d2.nombre != "a"
+        d2 = d2.padre
+    end
+    Print "dentro: " + quien(d1) + " " + quien(d2) + " | borde: " + quien(maqueta_nodo_en(p, 1, 18)) + " | fuera: " + quien(maqueta_nodo_en(p, 300, 18))
+end

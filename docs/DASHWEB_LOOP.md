@@ -633,6 +633,11 @@ tarea, con el estilo de Dash.
       la red de FS-UAE): entera en ~50 s. Ni en el coffin de Amiberry (DashCoffin.hdf), tampoco con una página, 24 s
       parado y otra por ARexx (el fallo de net_bg que vio freememlang-d5 en otra prueba: la tarea de red que acaba y la
       siguiente). CaffeineOS arranca de serie con Miami: lo que queda por probar es su pila de red.
+      Traza de David (0.9.9, exec 47.10, WB 47.5, 68040, MUI 19.35, P96 2.488, Miami 4.1, AmiSSL 5.27, 323 MB libres):
+      los 9 recursos llegan en 0,8 s y la última línea es "recursos listos: scripts". Se para en jsdom_preparar
+      (js_nuevo, el preludio con PROGDIR:Tachyon.bc o T:, o su compilación en un motor con pool propio), no en la red.
+      Con 512 MB en el emulador va bien. Pedido: si la ventana responde o hay un requester, borrar Tachyon.bc y si
+      le pasa con cualquier web con JavaScript.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31

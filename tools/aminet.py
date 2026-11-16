@@ -74,8 +74,8 @@ Website: https://tachyon.freemem.space
 
 Tachyon includes QuickJS (MIT), fdlibm (Sun), Hubbub and LibParserUtils from
 NetSurf (MIT), libwebp (BSD), nanosvg (zlib), stb_image and stb_truetype
-(public domain), TJpgDec (ChaN), MintVID (MIT), Brotli (MIT), Ryu (Apache
-2.0/Boost) and Lucide icons (ISC). Their licences are in Licencias/.
+(public domain), TJpgDec (ChaN), MintVID (MIT), Brotli (MIT), Ryu (Boost)
+and Lucide icons (ISC). Their licences are in Licencias/.
 """
     },
     "trasfondo": {

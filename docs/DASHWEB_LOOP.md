@@ -628,6 +628,11 @@ tarea, con el estilo de Dash.
       (2026-11-15, David: PiStorm 3a+ con Emu68 beta del 01-09, y también en FS-UAE; CaffeineOS arrancando Workbench
       3.2.3; la versión colgada el 14-11, 0.9.8 o 0.9.9.) Pedido por la sesión telegram: TRAZA=RAM:traza.txt, pila de red
       (Roadshow u otra) y versión de AmiSSL. Aquí se prueba con la bsdsocket de FS-UAE; sys31roadshow no tiene red.
+      (2026-11-16) Tampoco sale con la 0.9.9 en FS-UAE con OS 3.9 (sys39x + MUI y AmiSSL de sys32rtg38) ni con
+      CaffeineOS 9312 (~/Descargas/caffeine, sus parches de arranque en S/Startup-Extra, su MUI 3.8 y su AmiSSL 5.18,
+      la red de FS-UAE): entera en ~50 s. Ni en el coffin de Amiberry (DashCoffin.hdf), tampoco con una página, 24 s
+      parado y otra por ARexx (el fallo de net_bg que vio freememlang-d5 en otra prueba: la tarea de red que acaba y la
+      siguiente). CaffeineOS arranca de serie con Miami: lo que queda por probar es su pila de red.
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31

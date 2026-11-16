@@ -621,6 +621,23 @@ tarea, con el estilo de Dash.
 - [ ] 74. **Favicon (idea de Alex Agauser, grupo Dash Amiga, 2026-11-14: si Tachyon muestra el favicon en algún
       lado).** No lo muestra. Leer <link rel="icon"> (o /favicon.ico) y ponerlo junto a la dirección, en las pestañas o
       en los marcadores. Nada urgente.
+- [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
+      apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
+      Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
+      ~/.cache/video-comparativa (datos.json, textos.json, tomas/, fotos/; la página de JavaScript, web/bench.html).
+      En el vídeo: "Me llevo deberes". Lo que hay que ganar:
+      (a) DOM lento: "buscar y cambiar clases" (className y nodeValue en 600 <div> y luego offsetHeight) 6480 ms frente
+          a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
+          de 2 a 40 veces más rápido. Sospecha: offsetHeight rehace la maqueta entera.
+      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588).
+      (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
+      (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
+      (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
+          sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.
+      (f) Invidious (inv.nadeko.net): se queda atascado en el reto anti-bots en JavaScript (Amelinium lo pasa).
+      (g) jquery.com, un poco más lento.
+      Gana ya: Acid3 100 frente a 22, JavaScript de cálculo, GitHub, memoria (53 MB con GitHub frente a 191), vídeo
+      dentro de la web y HTTPS que verifica certificados. Lo que Amelinium trae y Tachyon no, en la 63.
 - [ ] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
       sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
       0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).

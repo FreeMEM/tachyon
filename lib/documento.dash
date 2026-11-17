@@ -940,6 +940,40 @@ func documento_al_dia(d: Documento) -> Bool
     return hecho
 end
 
+# Si las hojas de ahora son las de antes (las mismas, en el mismo orden) más otras nuevas: los elementos de la página
+# con los que casan las nuevas (quizá ninguno); nil si se quitó o se movió alguna, o si casan con demasiados
+const DOCUMENTO_HOJAS_TOPE = 400
+func _documento_hojas_afectados(d: Documento, viejas: [HojaCSS]) -> [Nodo]
+    var nada: [Nodo] = nil
+    var nuevas: [HojaCSS] = []
+    i = 0
+    for hoja in d.hojas.lista
+        if i < viejas.length and hoja == viejas[i]
+            i = i + 1
+        else
+            nuevas.push(hoja)
+        end
+    end
+    if i < viejas.length
+        if traza_activa
+            traza("hojas: se quitó o se movió una (" + i + " de " + viejas.length + " siguen en su sitio; " + nuevas.length + " nuevas)")
+        end
+        return nada
+    end
+    if nuevas.length == 0
+        var ninguno: [Nodo] = []
+        return ninguno
+    end
+    af = estilo_afectados(d.doc, nuevas, DOCUMENTO_HOJAS_TOPE + 1)
+    if af.length > DOCUMENTO_HOJAS_TOPE
+        if traza_activa
+            traza("hojas: " + nuevas.length + " nuevas que casan con más de " + DOCUMENTO_HOJAS_TOPE + " elementos")
+        end
+        return nada
+    end
+    return af
+end
+
 func _documento_al_dia(d: Documento) -> Bool
     if not d.raton_toques and (d.js == 0 or jsdom_cambios(d.js) == d.cambios)
         return false
@@ -974,12 +1008,26 @@ func _documento_al_dia(d: Documento) -> Bool
     if d.hojas != nil and _documento_toques_hojas(toques)
         firma = estilo_firma(d.doc)
         if firma != d.hojas_firma
+            viejas = d.hojas.lista
             d.hojas = estilo_hojas_otra_vez(d.doc, d.direccion, d.hojas)
             _documento_hojas_al_js(d)
             d.hojas_firma = firma
             imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
             hojas_nuevas = true
-            traza("hojas otra vez: el JavaScript cambió un <style> o <link>")
+            # solo entran hojas: el estilo de lo que casa con sus reglas, como si le hubieran cambiado el style (él y,
+            # si cambia, lo suyo), y no el de toda la página; si no casan con nada, ninguno (MediaWiki mete así el
+            # CSS de cada módulo y cada vez se rehacían estilo y maqueta enteros; tarea 76c)
+            af = _documento_hojas_afectados(d, viejas)
+            if af != nil
+                hojas_nuevas = false
+                estilo_indexar(d.hojas)
+                for n in af
+                    toques.push(Toque(TOQUE_ATRIBUTO, n, "style", "", ""))
+                end
+                traza("hojas otra vez: el JavaScript metió hojas que casan con " + af.length + " elementos")
+            else
+                traza("hojas otra vez: el JavaScript cambió un <style> o <link>")
+            end
         end
     end
     # lo que cambia en el estilo, por si no mueve nada (tarea 37d)

@@ -304,9 +304,10 @@ end
 func _estilo_recoger(h: Hojas, n: Nodo, base: Url)
     if n.tipo == DOM_ELEMENTO and n.nombre == "style"
         texto = dom_texto(n)
-        # (los pequeños se leen otra vez: cuesta poco y su texto como clave ocuparía más que leerlos)
+        # (todos por su texto, también los pequeños: así una hoja que no cambia es la misma de antes y se sabe cuáles
+        # entran nuevas cuando el JavaScript mete un <style>: estilo_afectados; tarea 76c)
         clave = ""
-        if texto.length >= 8192
+        if texto != ""
             clave = "s" + texto
         end
         _estilo_agregar(h, _estilo_leer(h, clave, texto), base, 0)
@@ -943,6 +944,95 @@ func estilo_cumple(n: Nodo, sel: Selector) -> Bool
     return _cumple_desde(n, sel, sel.partes.length - 1)
 end
 
+# Los elementos de doc con los que casa alguna regla de esas hojas (también por su ::before o ::after; los @media no
+# se miran: de más, nunca de menos), hasta tope. Si no hay ninguno, meter esas hojas no cambia ningún estilo de lo que
+# ya está en la página: MediaWiki mete así el CSS de cada módulo (ventanitas, diálogos...) y cada <style> rehacía el
+# estilo y la maqueta enteros (Wikipedia, 3 veces ~7 s en el emulador RTG; tarea 76c)
+func estilo_afectados(doc: Nodo, hojas: [HojaCSS], tope: Int) -> [Nodo]
+    var por_clave: {String: [Selector]} = {}
+    var sueltos: [Selector] = []
+    for hoja in hojas
+        for regla in hoja.reglas
+            if regla.selectores == nil
+                continue
+            end
+            for sel in regla.selectores
+                if sel.partes == nil or sel.partes.length == 0
+                    continue
+                end
+                si = sel.partes[sel.partes.length - 1].simple
+                k = ""
+                if si.id != ""
+                    k = "#" + si.id
+                elif si.clases != nil and si.clases.length > 0
+                    k = "." + si.clases[0]
+                elif si.etiqueta != "" and si.etiqueta != "*"
+                    k = si.etiqueta
+                end
+                if k == ""
+                    sueltos.push(sel)
+                else
+                    if not por_clave.has(k)
+                        var l: [Selector] = []
+                        por_clave[k] = l
+                    end
+                    por_clave[k].push(sel)
+                end
+            end
+        end
+    end
+    var r: [Nodo] = []
+    antes = _con_pseudo_elemento
+    _con_pseudo_elemento = true
+    _estilo_afectados_en(doc, por_clave, sueltos, r, tope)
+    _con_pseudo_elemento = antes
+    return r
+end
+
+func _estilo_afectados_en(n: Nodo, por_clave: {String: [Selector]}, sueltos: [Selector], r: [Nodo], tope: Int)
+    if r.length >= tope
+        return
+    end
+    if n.tipo == DOM_ELEMENTO and _estilo_casa_alguno(n, por_clave, sueltos)
+        r.push(n)
+    end
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO or h.tipo == DOM_DOCUMENTO
+            _estilo_afectados_en(h, por_clave, sueltos, r, tope)
+        end
+    end
+end
+
+func _estilo_casa_alguno(n: Nodo, por_clave: {String: [Selector]}, sueltos: [Selector]) -> Bool
+    for sel in sueltos
+        if estilo_cumple(n, sel)
+            return true
+        end
+    end
+    if por_clave.has(n.nombre) and _estilo_casa_lista(n, por_clave[n.nombre])
+        return true
+    end
+    id = dom_id(n)
+    if id != "" and por_clave.has("#" + id) and _estilo_casa_lista(n, por_clave["#" + id])
+        return true
+    end
+    for c in dom_clases(n)
+        if por_clave.has("." + c) and _estilo_casa_lista(n, por_clave["." + c])
+            return true
+        end
+    end
+    return false
+end
+
+func _estilo_casa_lista(n: Nodo, l: [Selector]) -> Bool
+    for sel in l
+        if estilo_cumple(n, sel)
+            return true
+        end
+    end
+    return false
+end
+
 # === Índice ===
 # Cada elemento solo prueba los selectores que pueden cumplirse con él: los de su etiqueta, su id,
 # sus clases y los universales (como los navegadores). Los que nunca se cumplen (::before, :hover...)
@@ -1271,6 +1361,14 @@ end
 
 func _estilo_letra(c: Int) -> Bool
     return (c >= 48 and c <= 57) or (c >= 65 and c <= 90) or (c >= 97 and c <= 122) or c == 45 or c == 95 or c >= 128
+end
+
+# El índice de las hojas (lo hace estilo_aplicar; lib/documento.dash lo pide cuando entran hojas que no cambian nada,
+# para que el estilo de lo que cambie después siga siendo por partes; tarea 76c)
+func estilo_indexar(h: Hojas)
+    if h.indice == nil or h.indice_ancho != css_vista_ancho()
+        _estilo_indexar(h)
+    end
 end
 
 func _estilo_indexar(h: Hojas)
@@ -2047,11 +2145,17 @@ func estilo_aplicar(doc: Nodo, hojas: Hojas)
     _vars_usadas = hojas.vars_usadas
     var hechas: {String: {String: Candidata}} = {}
     _ganadoras_hechas = hechas
-    var raiz: {String: String} = {"color": "black", "font-family": "sans-serif", "font-size": "" + ESTILO_MEDIUM + "px", "font-weight": "normal", "font-style": "normal", "text-align": "left", "white-space": "normal", "list-style-type": "disc", "visibility": "visible", "display": "block"}
+    raiz = _estilo_raiz()
     var sin_vars: {String: String} = {}
     for h in doc.hijos
         _estilo_nodo(h, hojas, raiz, sin_vars)
     end
+end
+
+# Lo que hereda <html> (el de encima del todo)
+func _estilo_raiz() -> {String: String}
+    var raiz: {String: String} = {"color": "black", "font-family": "sans-serif", "font-size": "" + ESTILO_MEDIUM + "px", "font-weight": "normal", "font-style": "normal", "text-align": "left", "white-space": "normal", "list-style-type": "disc", "visibility": "visible", "display": "block"}
+    return raiz
 end
 
 # Tras los cambios del JavaScript (Toque, apuntados en el documento por lib/jsdom.dash), el estilo solo de lo que
@@ -2508,17 +2612,25 @@ func _estilo_vars_de(n: Nodo) -> {String: String}
     return n.vars
 end
 
-# El estilo de n solo, sin sus hijos; true si cambió (lo calculado o sus --x). <html> cuenta siempre como cambiado.
+# El estilo de n solo, sin sus hijos; true si cambió (lo calculado o sus --x). <html>, con lo que hereda de arriba
+# (_estilo_raiz): antes contaba siempre como cambiado, y una clase en <html> (las de MediaWiki: client-js,
+# vector-feature-...) era el estilo entero aunque <html> se quedara igual; tarea 76c
 func _estilo_solo(n: Nodo, hojas: Hojas) -> Bool
-    if n.padre == nil or n.padre.tipo != DOM_ELEMENTO
+    raiz_html = n.nombre == "html" and n.padre != nil and n.padre.tipo == DOM_DOCUMENTO and n.estilo != nil
+    if n.padre == nil or (n.padre.tipo != DOM_ELEMENTO and not raiz_html)
         return true
     end
     viejo = n.estilo
     viejas = n.vars
     _partes_cuantas = _partes_cuantas + 1
-    _estilo_cadena(n.padre, 1)
-    _estilo_propio(n, hojas, n.padre.estilo, _estilo_vars_de(n.padre))
-    _estilo_cadena(n.padre, -1)
+    if raiz_html
+        var sin_vars: {String: String} = {}
+        _estilo_propio(n, hojas, _estilo_raiz(), sin_vars)
+    else
+        _estilo_cadena(n.padre, 1)
+        _estilo_propio(n, hojas, n.padre.estilo, _estilo_vars_de(n.padre))
+        _estilo_cadena(n.padre, -1)
+    end
     if not _estilo_iguales(viejas, n.vars)
         return true
     end

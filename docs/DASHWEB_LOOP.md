@@ -656,8 +656,10 @@ tarea, con el estilo de Dash.
           sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
           MediaWiki) y con ella una --x de <html> (--color-success, 1 de 104). Cada elemento guarda su copia de las
           --x heredadas: rehacer solo lo que usa esa --x pide que se compartan (o propagar el cambio). Lo siguiente.
-          También: centralNotice (avisos de donaciones) son 4 s de JavaScript; el preludio, 1,7 s por página en el
-          emulador (sin Tachyon.bc guardado).
+          También: el paquete principal de JavaScript de MediaWiki (load.php?modules=ext.centralNotice...|jquery|
+          mediawiki...: empieza por centralNotice pero lleva todo) son 4 s; el preludio, 1,7 s por página en el
+          emulador (sin Tachyon.bc guardado). La medida de la copia de Wikipedia varía mucho (41 y 64 s con el mismo
+          programa): hacen falta varias pasadas.
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

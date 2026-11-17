@@ -665,6 +665,11 @@ tarea, con el estilo de Dash.
           estilos y maquetas 21-23 s frente a 17,5-18,3; final 41-43 s frente a 37-38): las clases de <html> de
           MediaWiki tocan casi toda la página y por partes, solapadas, sale más caro que el estilo entero. Se quedó
           solo el arreglo cuadrático de _estilo_subarbol (ph_pase).
+          (2026-11-17) Una <img> con ancho y alto en el CSS ya no rehace la maqueta al llegar (el logo): el total no
+          cambia (A/B: 37,8-38,3 s; estilos y maquetas 18,1-18,3 s, igual que antes). En Wikipedia el final lo marca
+          cuándo acaba el último módulo de JavaScript de MediaWiki (el perfil: temporizadores 37 %), no el estilo ni
+          la maqueta: lo siguiente para "mucho más rápido" es el JavaScript (qué llamadas del DOM cuestan más desde
+          QuickJS) y que los cambios del JavaScript no esperen a una maqueta entera.
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

@@ -816,6 +816,11 @@ func _imagen_tamano(n: Nodo, img: Int) -> Bool
     if img == 0
         return false
     end
+    # (con ancho y alto en su CSS, su sitio no depende de la imagen: ni atributos ni maqueta otra vez; el logo de
+    # Wikipedia rehacía la maqueta entera al llegar, 2-2,7 s en el emulador RTG; tarea 76)
+    if _imagen_estilo_fija(n)
+        return false
+    end
     w = Int(dom_atributo(n, "width"))
     h = Int(dom_atributo(n, "height"))
     if w > 0 and h > 0

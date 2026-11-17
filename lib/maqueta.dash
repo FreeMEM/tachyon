@@ -3686,7 +3686,20 @@ end
 
 # Un hijo que no cuenta para juntar márgenes (comentario, oculto, fuera del flujo, blancos); 1 si es un bloque, 2 si
 # es otra cosa (texto, algo en línea, un flotante) que los separa
+# (lo mismo durante toda una maqueta: guardado en el hijo, como _colapsa_arriba, _colapsa_abajo y _vacio; en
+# Wikipedia, 156.000 llamadas a _hijo_margen y unas 50.000 a cada una de las otras: entre el 6 y el 8 % de la carga;
+# del padre solo cuenta su white-space, que se hereda; tarea 76)
 func _hijo_margen(n: Nodo, h: Nodo) -> Int
+    if h.hm_pase == _ma_epoca
+        return h.hm_val
+    end
+    r = _hijo_margen_mirar(n, h)
+    h.hm_pase = _ma_epoca
+    h.hm_val = r
+    return r
+end
+
+func _hijo_margen_mirar(n: Nodo, h: Nodo) -> Int
     if h.tipo == DOM_COMENTARIO or _oculto(h) or _fuera_del_flujo(h)
         return 0
     end
@@ -3705,6 +3718,16 @@ end
 
 # Un bloque vacío: sin borde ni relleno arriba o abajo, sin alto, y dentro solo bloques vacíos; sus márgenes se tocan
 func _vacio(n: Nodo) -> Bool
+    if n.va_pase == _ma_epoca
+        return n.va_si
+    end
+    r = _vacio_mirar(n)
+    n.va_pase = _ma_epoca
+    n.va_si = r
+    return r
+end
+
+func _vacio_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end
@@ -3736,6 +3759,16 @@ end
 # El margen de arriba de n se junta con los de sus primeros hijos: sin borde ni relleno arriba y el primero que
 # cuenta es un bloque
 func _colapsa_arriba(n: Nodo) -> Bool
+    if n.ca_pase == _ma_epoca
+        return n.ca_si
+    end
+    r = _colapsa_arriba_mirar(n)
+    n.ca_pase = _ma_epoca
+    n.ca_si = r
+    return r
+end
+
+func _colapsa_arriba_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end
@@ -3756,6 +3789,16 @@ end
 
 # El de abajo, con los de sus últimos hijos: sin borde ni relleno abajo, alto auto y el último que cuenta, un bloque
 func _colapsa_abajo(n: Nodo) -> Bool
+    if n.cb_pase == _ma_epoca
+        return n.cb_si
+    end
+    r = _colapsa_abajo_mirar(n)
+    n.cb_pase = _ma_epoca
+    n.cb_si = r
+    return r
+end
+
+func _colapsa_abajo_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end

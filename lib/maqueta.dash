@@ -271,7 +271,27 @@ func _fuente(m: Maquetador, familia: String, tam: Int) -> Int
 end
 
 # Con font-stretch (ancho en %, _estiramiento): solo en las fuentes de la página (las del Amiga no se estiran)
+# (la última que se pidió: bloque tras bloque se repite la misma, y armar la clave con un font-family largo y buscarla
+# costaba el 2 % de la maqueta de html5test; tarea 76. Las fuentes abiertas no se cierran nunca: el número vale)
+var _fa_familia: String = ""
+var _fa_tam: Int = -1
+var _fa_ancho: Int = -1
+var _fa_version: Int = -1
+var _fa_h: Int = 0
 func _fuente_ancha(m: Maquetador, familia: String, tam: Int, ancho: Int) -> Int
+    if tam == _fa_tam and ancho == _fa_ancho and fuentes_web_version == _fa_version and familia == _fa_familia
+        return _fa_h
+    end
+    h = _fuente_ancha_buscar(m, familia, tam, ancho)
+    _fa_familia = familia
+    _fa_tam = tam
+    _fa_ancho = ancho
+    _fa_version = fuentes_web_version
+    _fa_h = h
+    return h
+end
+
+func _fuente_ancha_buscar(m: Maquetador, familia: String, tam: Int, ancho: Int) -> Int
     # primero por el font-family tal cual (suele ser una lista larga: mirarla entera cuesta)
     cruda = familia + "|" + tam + "|" + fuentes_web_version + "|" + ancho
     if m.fuentes.has(cruda)
@@ -3628,7 +3648,18 @@ end
 # n es un bloque normal cuyos márgenes pueden juntarse con los de sus hijos: no flota, no va fuera del flujo, overflow
 # visible, no es la raíz ni una caja de flex o grid (los que hacen un contexto aparte no juntan los suyos con los de
 # dentro)
+# (lo mismo durante toda una maqueta: guardado en el nodo; 47.513 llamadas para 8970 bloques en html5test; tarea 76)
 func _junta_hijos(n: Nodo) -> Bool
+    if n.jh_pase == _ma_epoca
+        return n.jh_si
+    end
+    r = _junta_hijos_mirar(n)
+    n.jh_pase = _ma_epoca
+    n.jh_si = r
+    return r
+end
+
+func _junta_hijos_mirar(n: Nodo) -> Bool
     if n.tipo != DOM_ELEMENTO or n.padre == nil or n.nombre == "html" or n.padre.tipo != DOM_ELEMENTO
         return false
     end

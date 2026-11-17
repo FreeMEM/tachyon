@@ -93,6 +93,7 @@ struct Nodo
     va_si: Bool = false
     hm_pase: Int = 0
     hm_val: Int = 0
+    ph_pase: Int = 0          # lib/estilo.dash _estilo_subarbol: ya rehecho (él y lo suyo) en la vuelta ph_pase
     cl_cont: Int = 0
     cl_pct: Bool = false      # (alguno va en %: depende del contenedor)
     pal_clave: String = nil   # un texto: los anchos de sus palabras con esa letra (lib/maqueta.dash _palabras_texto: con sus palabras)

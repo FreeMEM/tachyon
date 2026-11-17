@@ -660,6 +660,11 @@ tarea, con el estilo de Dash.
           mediawiki...: empieza por centralNotice pero lleva todo) son 4 s; el preludio, 1,7 s por página en el
           emulador (sin Tachyon.bc guardado). La medida de la copia de Wikipedia varía mucho (41 y 64 s con el mismo
           programa): hacen falta varias pasadas.
+          (2026-11-17, probado y descartado) Llevar el cambio de las --x de <html> solo a lo que las usa (y quitar el
+          estilo entero por lo que no se hereda en <html>): correcto, pero en Wikipedia más lento (A/B, dos pasadas:
+          estilos y maquetas 21-23 s frente a 17,5-18,3; final 41-43 s frente a 37-38): las clases de <html> de
+          MediaWiki tocan casi toda la página y por partes, solapadas, sale más caro que el estilo entero. Se quedó
+          solo el arreglo cuadrático de _estilo_subarbol (ph_pase).
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

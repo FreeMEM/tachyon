@@ -64,6 +64,8 @@ struct Nodo
     pseudo_despues: Nodo = nil
     clases_cache: [String] = nil   # dom_clases y dom_id: el atributo class partido y el id, la primera vez que
     id_cache: String = nil         # se piden (dom_olvidar_atributos al cambiar un atributo)
+    gan_clave: String = nil        # lib/estilo.dash: las reglas que cumple (_ganadoras_hechas) del índice gan_ind
+    gan_ind: Int = 0
     ids: {String: Nodo} = nil      # en el documento: el primer elemento con cada id (dom_por_id; nil: sin hacer)
     ids_sucio: Bool = false        # (hay que rehacerlo: un id repetido que entra, o algo que no se sabe ordenar)
     ids_dobles: Bool = false       # (al hacerlo había ids repetidos)

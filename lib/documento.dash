@@ -1319,8 +1319,9 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         if c.viejo == nil or (c.pseudo and not (_documento_pseudo_ligero(c.p_antes, n.pseudo_antes) and _documento_pseudo_ligero(c.p_despues, n.pseudo_despues)))
             return _lig_no("un estilo nuevo o de ::before/::after", n)
         end
+        # (primero si cambia y luego si es de las que no mueven: 3600 cambios de visibility de html5test, 1,3 s)
         for k in n.estilo.keys()
-            if not _documento_ligera(k) and (not c.viejo.has(k) or c.viejo[k] != n.estilo[k])
+            if (not c.viejo.has(k) or c.viejo[k] != n.estilo[k]) and not _documento_ligera(k)
                 viejo = "(nada)"
                 if c.viejo.has(k)
                     viejo = c.viejo[k]
@@ -1329,9 +1330,14 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             end
         end
         for k in c.viejo.keys()
-            if not _documento_ligera(k) and not n.estilo.has(k)
+            if not n.estilo.has(k) and not _documento_ligera(k)
                 return _lig_no(k + ": " + c.viejo[k] + " -> (nada)", n)
             end
+        end
+        if not _documento_con_transform(c.viejo) and not _documento_con_transform(n.estilo)
+            dxs.push(0)
+            dys.push(0)
+            continue
         end
         a = _documento_traslacion(c.viejo, n)
         b = _documento_traslacion(n.estilo, n)
@@ -1424,6 +1430,10 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         end
     end
     return true
+end
+
+func _documento_con_transform(e: {String: String}) -> Bool
+    return e.has("transform") or e.has("translate") or e.has("-webkit-transform")
 end
 
 # Un ::before o ::after de antes y el de ahora, distintos solo en lo que no mueve nada (y el mismo contenido)

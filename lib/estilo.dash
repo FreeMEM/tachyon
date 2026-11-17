@@ -154,7 +154,13 @@ struct Hojas
     invalida: {String: {String: Int}} = nil
     invalida_hermanos: {String: Int} = nil     # los que salen en un selector con + o ~
     con_hover: Bool = false                     # algún selector nombra :hover (lib/documento.dash lo mira)
+    # lo que declaran las reglas que cumple un elemento (_ganadoras_hechas), de este índice (ind_num): se queda
+    # entre una vuelta y otra (tarea 76: un elemento que solo hereda algo nuevo no busca sus reglas otra vez)
+    gan_hechas: {String: {String: Candidata}} = nil
+    ind_num: Int = 0
 end
+
+var _estilo_ind_num: Int = 0
 
 # La hoja del navegador se lee una vez por programa (en un A1200 leerla son segundos)
 var estilo_ua_leida: HojaCSS = nil
@@ -1372,6 +1378,10 @@ func estilo_indexar(h: Hojas)
 end
 
 func _estilo_indexar(h: Hojas)
+    _estilo_ind_num = _estilo_ind_num + 1
+    h.ind_num = _estilo_ind_num
+    var gh: {String: {String: Candidata}} = {}
+    h.gan_hechas = gh
     var cu: {String: Int} = {}
     h.clases_usadas = cu
     var iu: {String: Int} = {}
@@ -2143,8 +2153,7 @@ func estilo_aplicar(doc: Nodo, hojas: Hojas)
     var limpios: {String: Int} = {}
     _antepasados = limpios
     _vars_usadas = hojas.vars_usadas
-    var hechas: {String: {String: Candidata}} = {}
-    _ganadoras_hechas = hechas
+    _ganadoras_hechas = hojas.gan_hechas
     raiz = _estilo_raiz()
     var sin_vars: {String: String} = {}
     for h in doc.hijos
@@ -2179,12 +2188,12 @@ func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
     var limpios: {String: Int} = {}
     _antepasados = limpios
     _vars_usadas = hojas.vars_usadas
-    var hechas: {String: {String: Candidata}} = {}
-    _ganadoras_hechas = hechas
+    _ganadoras_hechas = hojas.gan_hechas
     var hechos: [Nodo] = []
     _partes_hechas = hechos
     _partes_pase = _partes_pase + 1
     _partes_cuantas = 0
+    _partes_heredados = 0
     # (los de <html> primero: si obligan al estilo entero, se sabe antes de rehacer por partes lo demás, que luego no
     # sirve; en Wikipedia, una clase en <html> tras los estilos de las hojas nuevas costaba 2-3 s de más; tarea 76c)
     var orden: [Toque] = []
@@ -2228,7 +2237,7 @@ func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
         end
     end
     if traza_activa
-        traza("estilo de " + _partes_cuantas + " partes (" + toques.length + " cambios)")
+        traza("estilo de " + _partes_cuantas + " partes (" + toques.length + " cambios; " + _partes_heredados + " solo heredan)")
     end
     return true
 end
@@ -2236,6 +2245,7 @@ end
 var _partes_hechas: [Nodo] = nil
 var _partes_pase: Int = 0
 var _partes_cuantas: Int = 0
+var _partes_heredados: Int = 0
 
 # El estilo de n ahora mismo, sin guardarlo: getComputedStyle de un elemento con cambios del JavaScript que aún no
 # tienen estilo (tarea 38c5: iron-fit-behavior quita el top que puso y pregunta enseguida; con el estilo de antes,
@@ -2278,8 +2288,7 @@ func estilo_calcular_uno(n: Nodo, desde: Nodo, hojas: Hojas) -> {String: String}
     var limpios: {String: Int} = {}
     _antepasados = limpios
     _vars_usadas = hojas.vars_usadas
-    var hechas: {String: {String: Candidata}} = {}
-    _ganadoras_hechas = hechas
+    _ganadoras_hechas = hojas.gan_hechas
     _estilo_cadena(cadena[0].padre, 1)
     for c in cadena
         _estilo_propio(c, hojas, c.padre.estilo, _estilo_vars_de(c.padre))
@@ -2354,9 +2363,7 @@ func _estilo_toque(t: Toque, hojas: Hojas) -> Bool
                 return _estilo_subarbol(n.padre, hojas)
             end
         end
-        if _estilo_solo(n, hojas)
-            return _estilo_subarbol(n, hojas)
-        end
+        solo = _estilo_solo(n, hojas)
         var claves: {String: Int} = {}
         for r in rasgos
             if hojas.invalida.has(r)
@@ -2367,7 +2374,15 @@ func _estilo_toque(t: Toque, hojas: Hojas) -> Bool
             end
         end
         if claves.has("")
+            if traza_activa and solo
+                traza("estilo de " + n.nombre + "." + dom_atributo(n, "class") + " con todo lo suyo: una regla sin clave detrás de " + rasgos[0])
+            end
             return _estilo_subarbol(n, hojas)
+        end
+        if solo
+            # (su estilo cambió: los de dentro heredan otra cosa, pero solo buscan sus reglas otra vez los que tienen
+            # una de las claves; html5test enseña su columna de resultados con un visibility que llega a 3600)
+            return _estilo_subarbol_hereda(n, hojas, claves)
         end
         if claves.length > 0
             _estilo_cadena(n.padre, 1)
@@ -2619,6 +2634,145 @@ func _estilo_subarbol(n: Nodo, hojas: Hojas) -> Bool
     return true
 end
 
+# n con todo lo suyo cuando lo que cambia de n no cambia las reglas que cumplen los de dentro (salvo los que tienen
+# alguna de las claves): n ya está hecho (_estilo_solo); los demás, con lo que declaran sus reglas, guardado, y lo que
+# heredan ahora. Con solo propiedades heredadas sencillas distintas (visibility, color...), una copia de su estilo con
+# ellas; y donde ya no cambia nada de lo que se hereda, abajo solo los que tienen una clave
+func _estilo_subarbol_hereda(n: Nodo, hojas: Hojas, claves: {String: Int}) -> Bool
+    if n == nil or n.tipo != DOM_ELEMENTO or n.nombre == "html" or n.padre == nil or n.padre.tipo != DOM_ELEMENTO
+        return false
+    end
+    p = n
+    while p != nil
+        if p.ph_pase == _partes_pase
+            return true
+        end
+        p = p.padre
+    end
+    # (sin marcarlo como hecho: un cambio de después dentro de él, como un hermano que entra, rehace lo suyo entero)
+    _partes_cuantas = _partes_cuantas + 1
+    var d: {String: Int} = nil
+    if _estilo_iguales(_solo_viejas, n.vars)
+        d = _estilo_dif_heredado(_solo_viejo, n.estilo)
+    end
+    _estilo_cadena(n.padre, 1)
+    if d != nil and d.length == 0
+        if claves.length > 0
+            _estilo_invalidar(n, hojas, claves)
+        end
+    else
+        _antepasados_cambiar(n, 1)
+        for h in n.hijos
+            _estilo_hereda_nodo(h, hojas, n.estilo, _estilo_vars_de(n), claves, d)
+        end
+        _antepasados_cambiar(n, -1)
+    end
+    _estilo_cadena(n.padre, -1)
+    return true
+end
+
+var _solo_viejo: {String: String} = nil
+var _solo_viejas: {String: String} = nil
+
+func _estilo_hereda_nodo(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: {String: String}, claves: {String: Int}, d: {String: Int})
+    if n.tipo != DOM_ELEMENTO
+        return
+    end
+    ceder()
+    if _estilo_tiene_clave(n, claves)
+        _partes_cuantas = _partes_cuantas + 1
+        _estilo_nodo(n, hojas, padre, padre_vars)
+        return
+    end
+    viejo = n.estilo
+    viejas = n.vars
+    if d != nil and _estilo_baja_sencillo(n, hojas, d, padre)
+        _partes_heredados = _partes_heredados + 1
+    elif _estilo_heredar(n, hojas, padre, padre_vars)
+        _partes_heredados = _partes_heredados + 1
+    else
+        _estilo_propio(n, hojas, padre, padre_vars)
+    end
+    var dn: {String: Int} = nil
+    if _estilo_iguales(viejas, n.vars)
+        dn = _estilo_dif_heredado(viejo, n.estilo)
+    end
+    if dn != nil and dn.length == 0
+        if claves.length > 0
+            _estilo_invalidar(n, hojas, claves)
+        end
+        return
+    end
+    _antepasados_cambiar(n, 1)
+    for h in n.hijos
+        _estilo_hereda_nodo(h, hojas, n.estilo, n.vars, claves, dn)
+    end
+    _antepasados_cambiar(n, -1)
+end
+
+# Las propiedades que se heredan y son distintas de a a b
+func _estilo_dif_heredado(a: {String: String}, b: {String: String}) -> {String: Int}
+    var r: {String: Int} = {}
+    if a == nil or b == nil
+        var nada: {String: Int} = nil
+        return nada
+    end
+    for k in a.keys()
+        if _se_hereda(k) and (not b.has(k) or b[k] != a[k])
+            r[k] = 1
+        end
+    end
+    for k in b.keys()
+        if _se_hereda(k) and not a.has(k)
+            r[k] = 1
+        end
+    end
+    return r
+end
+
+# Si lo que cambia de lo heredado (d) son propiedades que se copian tal cual (no font-size, que se pasa a px) y sus
+# reglas no las declaran (ni un atajo que las lleve): su estilo, una copia con lo nuevo del padre. Sin ::before ni
+# ::after (heredan de él y no se saben sus reglas)
+func _estilo_baja_sencillo(n: Nodo, hojas: Hojas, d: {String: Int}, padre: {String: String}) -> Bool
+    if n.gan_clave == nil or n.gan_ind != hojas.ind_num or not _ganadoras_cache or n.pseudo_antes != nil or n.pseudo_despues != nil or n.estilo == nil
+        return false
+    end
+    if not hojas.gan_hechas.has(n.gan_clave)
+        return false
+    end
+    g = hojas.gan_hechas[n.gan_clave]
+    if g.has("all") or g.has("font") or g.has("list-style")
+        return false
+    end
+    for k in d.keys()
+        if k == "font-size" or g.has(k)
+            return false
+        end
+    end
+    viejo = n.estilo
+    var e: {String: String} = {}
+    for k in viejo.keys()
+        e[k] = viejo[k]
+    end
+    for k in d.keys()
+        if padre.has(k)
+            e[k] = padre[k]
+        elif e.has(k)
+            e.remove(k)
+        end
+    end
+    n.estilo = e
+    if (estilo_apuntar or estilo_marcar) and not _estilo_iguales(viejo, e)
+        if estilo_apuntar
+            estilo_cambios.push(EstiloCambio(n, viejo, false))
+        end
+        if estilo_marcar
+            dom_tocar(n)
+        end
+    end
+    return true
+end
+
 func _estilo_vars_de(n: Nodo) -> {String: String}
     if n.vars == nil
         var sin: {String: String} = {}
@@ -2637,6 +2791,8 @@ func _estilo_solo(n: Nodo, hojas: Hojas) -> Bool
     end
     viejo = n.estilo
     viejas = n.vars
+    _solo_viejo = viejo
+    _solo_viejas = viejas
     _partes_cuantas = _partes_cuantas + 1
     if raiz_html
         var sin_vars: {String: String} = {}
@@ -2798,6 +2954,8 @@ func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: 
     # en modo quirks una tabla no hereda la letra, la alineación ni white-space (HTML, 15.3.1: table { font-size:
     # initial; text-align: initial; ... }): el <td align=center> de fuera no centra las tablas de dentro (amigaworld.net)
     tabla_rara = estilo_raro and n.nombre == "table"
+    var sin_clave: String = nil
+    n.gan_clave = sin_clave
     if dom_tiene_atributo(n, "style") or pistas.length > 0 or tabla_rara
         var propias: {String: Candidata} = {}
         ganadoras = propias
@@ -2818,6 +2976,10 @@ func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: 
         clave = ""
         for ce in cumplidas
             clave = clave + ce.num + ","
+        end
+        if _ganadoras_cache
+            n.gan_clave = clave
+            n.gan_ind = hojas.ind_num
         end
         if _ganadoras_cache and _ganadoras_hechas.has(clave)
             ganadoras = _ganadoras_hechas[clave]
@@ -2849,8 +3011,25 @@ func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: 
             end
             debajo = bajo
             ganadoras = con
+            n.gan_clave = sin_clave
         end
     end
+    _estilo_propio_fin(n, hojas, ganadoras, debajo, padre, padre_vars)
+end
+
+# Un elemento que solo tiene que heredar otra vez (las reglas que cumple no cambian): con lo que declaran sus reglas,
+# guardado; false si no lo hay (un atributo style, una animación, otro índice de las hojas)
+func _estilo_heredar(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: {String: String}) -> Bool
+    if n.gan_clave == nil or n.gan_ind != hojas.ind_num or not _ganadoras_cache or not hojas.gan_hechas.has(n.gan_clave)
+        return false
+    end
+    var nada: [Declaracion] = nil
+    _estilo_propio_fin(n, hojas, hojas.gan_hechas[n.gan_clave], nada, padre, padre_vars)
+    return true
+end
+
+# Lo de _estilo_propio tras la cascada: lo heredado, sus ::before y ::after, y si cambió
+func _estilo_propio_fin(n: Nodo, hojas: Hojas, ganadoras: {String: Candidata}, debajo: [Declaracion], padre: {String: String}, padre_vars: {String: String})
     e = _calcular(ganadoras, padre, padre_vars, "inline")
     if debajo != nil
         for d in debajo

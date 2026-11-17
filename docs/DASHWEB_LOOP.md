@@ -640,8 +640,25 @@ tarea, con el estilo de Dash.
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
           de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
+          (2026-11-17) Banco tests/pages/zz_bench_dom2.html (5000 vueltas, emulador RTG), de eb32e1e a hoy:
+          childNodes[i] 2380 -> 100 ms, classList.add/remove 5360 -> 3420, style.x= 3100 -> 2260, setAttribute
+          1020 -> 620, insertBefore 2460 -> 1920. Lo que más queda: classList (el Proxy de lt[0]: dos trampas por
+          llamada), style.x=, insertBefore, addEventListener, createElement.
       (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588). (2026-11-17, usuario: "que funcione
           el html5test": va con el encargo vigente.)
+          (2026-11-17, tarde) Da 228/588 en la copia (tools/espejo.py 40991, con red: whichbrowser lleva un número
+          al azar en la dirección y sin red da 404 y se queda esperando). Arreglado: getElementById con índice de
+          ids en el documento (recorría el árbol entero: 1,4 millones de nodos visitados, el 5 % del tiempo); un
+          ::before que solo cambia de visibility ya no rehace la maqueta; imagenes_fondo no reescribe el
+          background-image (url(x) frente a url("x") salía como cambio). Lo que queda, en el emulador RTG (~85 s):
+          (1) el JavaScript mete los resultados (1001 cambios: estilo entero ~10 s y maqueta ~8,5 s de 9000
+          bloques); (2) al final, visibility: visible en div.column marca 3613 elementos (estilo ~5 s: cada uno
+          busca sus reglas otra vez aunque solo cambia lo heredado; guardar sus ganadoras y rehacer solo la herencia
+          en los que las invalidation sets no nombran) y un div en flujo pasa a display: none (maqueta entera ~6 s:
+          es la c2); (3) Main 60 % propio en el perfil: QuickJS y C. Medido también: en esa maqueta final solo
+          86 ms de 8,8 s caían en bloques sin cambios (la reutilización de bloques no ayuda mientras el estilo
+          marque como tocado lo que solo cambia de visibility o color). Fallos de dibujo vistos: la nota "0/5"
+          tapa la fila de "Parsing rules"; el texto de "Save results" y "Compare to..." pegado a la izquierda.
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
           límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador

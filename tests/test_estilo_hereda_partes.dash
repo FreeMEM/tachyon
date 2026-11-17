@@ -1,0 +1,63 @@
+# Test: una clase que cambia lo que heredan los de dentro (color, visibility) rehace solo la herencia de los que no
+# nombra ningún selector con ella (tarea 76: html5test enseña su columna de resultados con un visibility que llega a
+# 3600 elementos, y cada uno buscaba sus reglas otra vez); los que sí (".w em"), con sus reglas, también bajo uno que
+# declara todo lo que cambia (y donde no se baja más). Da lo mismo que el
+# estilo entero, también con un atributo style, un ::before que hereda y un hermano que entra en el mismo lote.
+# memcheck
+# expect-out: por partes true
+# expect-out: s1 purple hidden | em1 lime | st1 navy | b1 purple | antes purple hidden | s2 teal visible | em2 lime
+# expect-out: iguales true
+# expect-out: otra vez: por partes true, s1 black visible, em1 black, iguales true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+
+func foto(n: Nodo) -> String
+    r = ""
+    if n.tipo == DOM_ELEMENTO
+        r = n.nombre + "#" + dom_id(n) + "=" + n.estilo["color"] + "/" + n.estilo["visibility"] + "/" + n.estilo["display"] + ";"
+        if n.pseudo_antes != nil
+            r = r + "::before=" + n.pseudo_antes.estilo["color"] + "/" + n.pseudo_antes.estilo["visibility"] + ";"
+        end
+    end
+    for h in n.hijos
+        r = r + foto(h)
+    end
+    return r
+end
+
+func estilo(doc: Nodo, id: String, k: String) -> String
+    return dom_por_id(doc, id).estilo[k]
+end
+
+Main
+    css = "<style>.w { color: purple; visibility: hidden } .w em { color: lime } strong { color: navy } li:first-child { color: red }"
+    css = css + " .i::before { content: '*' } .n { color: teal; visibility: visible }</style>"
+    h = css + "<body><div id=d><p><span id=s1>a</span> <em id=em1>b</em> <strong id=st1>c</strong>"
+    h = h + " <b id=b1 style='font-weight:bold'>d</b> <i id=i1 class=i>e</i></p><ul id=u><li id=l1>x</li></ul><div class=n><p><span id=s2>f</span> <em id=em2>g</em></p></div></div></body>"
+    doc = dom_desde_html(h)
+    hojas = estilo_hojas(doc, "file:///x.html")
+    estilo_aplicar(doc, hojas)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var $ = function (i) { return document.getElementById(i) };"
+    c = c + "$('d').className = 'w'; var li = document.createElement('li'); li.id = 'l0'; $('u').insertBefore(li, $('l1'));"
+    js_evaluar(js, c, "x")
+    parte = estilo_aplicar_partes(doc, hojas, doc.toques)
+    Print "por partes " + parte
+    i1 = dom_por_id(doc, "i1")
+    Print "s1 " + estilo(doc, "s1", "color") + " " + estilo(doc, "s1", "visibility") + " | em1 " + estilo(doc, "em1", "color") + " | st1 " + estilo(doc, "st1", "color") + " | b1 " + estilo(doc, "b1", "color") + " | antes " + i1.pseudo_antes.estilo["color"] + " " + i1.pseudo_antes.estilo["visibility"] + " | s2 " + estilo(doc, "s2", "color") + " " + estilo(doc, "s2", "visibility") + " | em2 " + estilo(doc, "em2", "color")
+    antes = foto(doc)
+    estilo_aplicar(doc, hojas)
+    Print "iguales " + (antes == foto(doc))
+    var nada: [Toque] = nil
+    doc.toques = nada
+    js_evaluar(js, "$('d').className = ''", "x")
+    parte = estilo_aplicar_partes(doc, hojas, doc.toques)
+    antes = foto(doc)
+    r = "otra vez: por partes " + parte + ", s1 " + estilo(doc, "s1", "color") + " " + estilo(doc, "s1", "visibility") + ", em1 " + estilo(doc, "em1", "color")
+    estilo_aplicar(doc, hojas)
+    Print r + ", iguales " + (antes == foto(doc))
+    doc.toques = nada
+    js_liberar(js)
+end

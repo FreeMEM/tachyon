@@ -33,11 +33,16 @@
 (set @default-dest (tackon #destino "Tachyon"))
 
 ; --- Copiar ---
+; (lo del cajón donde está este Instalar, no el directorio actual: lanzado desde un Shell en otro sitio copiaba ese
+; otro sitio entero; @icon es el guion con su ruta, desde el Workbench y desde el Shell)
+(set #origen (pathonly @icon))
+(if (not (exists (tackon #origen "Tachyon")))
+    (abort (cat "No encuentro el programa Tachyon junto a este Instalar (" #origen "). Descomprime tachyon.lha y abre el Instalar de su cajón Tachyon.")))
 (makedir @default-dest (infos))
-(foreach "" "#?"
+(foreach #origen "#?"
     (if (and (<> @each-name "Instalar") (<> @each-name "Instalar.info"))
         (if (= @each-type 2)
-            (copyfiles (source @each-name) (dest (tackon @default-dest @each-name)) (all) (infos))
-            (copyfiles (source @each-name) (dest @default-dest)))))
+            (copyfiles (source (tackon #origen @each-name)) (dest (tackon @default-dest @each-name)) (all) (infos))
+            (copyfiles (source (tackon #origen @each-name)) (dest @default-dest)))))
 
 (exit (cat "Tachyon está en " @default-dest ".\n\nPara abrirlo: doble clic en su icono, o desde el Shell: Tachyon http://aminet.net/"))

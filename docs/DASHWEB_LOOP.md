@@ -626,6 +626,11 @@ tarea, con el estilo de Dash.
 - [ ] 74. **Favicon (idea de Alex Agauser, grupo Dash Amiga, 2026-11-14: si Tachyon muestra el favicon en algún
       lado).** No lo muestra. Leer <link rel="icon"> (o /favicon.ico) y ponerlo junto a la dirección, en las pestañas o
       en los marcadores. Nada urgente.
+- [ ] 77. **Antes de la próxima versión: probar paquete/Instalar lanzado desde un Shell en otra carpeta** (lo vio
+      dash-lienzo-2.6: copiaba el directorio actual a SYS:Tachyon; cambiado a pathonly @icon, sin probar). Con
+      Installer 44.10: una copia propia (reflink) del Coffin limpio de la sesión dash-lienzo-2.6 (el suyo no se toca,
+      ni DashCoffin.hdf; su TRASPASO.md dice cómo arrancarlo sin ventana). Y, si vuelve a pasar, la zona
+      negra al cerrar Tachyon con su gadget (Amiberry, AmigaOS 3.2; una vez, el proceso de control del emulador murió).
 - [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
       apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en

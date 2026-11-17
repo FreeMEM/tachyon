@@ -48,4 +48,6 @@ Main
     jsdom_vista(js2, 1000, 600, 0, q2.alto)
     js_evaluar(js2, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
     Print js_evaluar(js2, "'sin tabla: en fila ' + (r('x').top == r('y').top && r('x').right <= r('y').left) + ' | pie abajo ' + (r('f').top > r('z').top) + ' | absoluta sin estirar ' + (r('t').width < 500)", "t.js")
+    js_liberar(js)
+    js_liberar(js2)
 end

@@ -25,4 +25,5 @@ Main
     jsdom_vista(js, 1000, 600, 0, p.alto)
     js_evaluar(js, "var r = function (id) { return document.getElementById(id).getBoundingClientRect(); }", "t.js")
     Print js_evaluar(js, "'con left 700: cabe ' + (r('c').left == 700 && r('c').right <= 1000) + ' | sin left: ancho ' + (r('a').width > 900) + ' | corto ' + Math.round(r('d').width) + ' | entre 200 600: ' + Math.round(r('f').width)", "t.js")
+    js_liberar(js)
 end

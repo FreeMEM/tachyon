@@ -28,4 +28,5 @@ Main
     Print js_evaluar(js, "'a ' + cs('a').height + ' | e ' + cs('e').width + ' | p ' + cs('p').width + ' ' + cs('p').height + ' | bb ' + cs('bb').width + ' | pct ' + cs('pct').width + ' | libre ' + cs('libre').height", "t.js")
     Print js_evaluar(js, "'oculto ' + cs('o').width + ' | span ' + cs('s').width + ' | px ' + cs('x').height", "t.js")
     Print js_evaluar(js, "'parse ' + parseFloat(cs('a').height)", "t.js")
+    js_liberar(js)
 end

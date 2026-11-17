@@ -35,4 +35,5 @@ Main
     Print js_evaluar(js, "['a', 'b', 'd', 'g'].map(r).join(' | ')", "t.js")
     Print js_evaluar(js, "['dis', 'th', 'thumbnail'].map(r).join(' | ')", "t.js")
     Print js_evaluar(js, "r('nada')", "t.js")
+    js_liberar(js)
 end

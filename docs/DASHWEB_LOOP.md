@@ -659,6 +659,12 @@ tarea, con el estilo de Dash.
           86 ms de 8,8 s caían en bloques sin cambios (la reutilización de bloques no ayuda mientras el estilo
           marque como tocado lo que solo cambia de visibility o color). Fallos de dibujo vistos: la nota "0/5"
           tapa la fila de "Parsing rules"; el texto de "Save results" y "Compare to..." pegado a la izquierda.
+          (2026-11-17, noche) Hecho: un cambio que solo se hereda no busca otra vez las reglas de los de dentro
+          (51aff21; html5test, estilo del visibility final de 4,9 a 3,3 s) y sin maqueta por un color, un
+          atributo que solo nombra el CSS o un <script> de paso (dadbe17). Probado y descartado otra vez: <html>
+          por el camino de solo herencia (Wikipedia: 7,1 s frente a 2,0 del estilo entero). En Wikipedia el
+          índice cambia color y font-weight del apartado al bajar: necesita maqueta (~1 s): es la c2. Siguiente:
+          la c2 (rehacer solo el bloque tocado) y el coste por elemento del estilo y la maqueta nuevos de html5test.
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
           límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador

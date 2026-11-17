@@ -1460,7 +1460,10 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
     # estático y los pone el primero de arriba que lo sea (la fila de favicons de xataka.com, absolute y top: 0 en un
     # padre sin posicionar, salía bajo la cabecera; tarea 42g). Al medir y en las maquetas de un momento (flex, grid,
     # celdas, inline-block: luego se mueven), como antes, respecto a esta caja.
-    es_caja = _midiendo > 0 or _abs_temporal > 0 or _caja_de_absolutos(n)
+    # (en una maqueta de un momento, la caja es la del primer posicionado de dentro o, si no lo hay, la raíz de esa
+    # maqueta; antes era cualquier bloque, y la nota de cada apartado de html5test, absolute en un <div> sin posicionar
+    # dentro de un <th> relative, salía corrida el relleno del <th> y debajo; tarea 76)
+    es_caja = _midiendo > 0 or (_abs_temporal > 0 and n == _abs_raiz) or _caja_de_absolutos(n)
     # (la caja: la de relleno de este; en <html> sin posicionar, el bloque contenedor inicial, que empieza en el origen
     # de la página y mide la ventana, CSS 2.1 10.1: el map::after absoluto de Acid3 salía corrido el margen de <html>)
     ox = x + ml + bl
@@ -4146,6 +4149,7 @@ var _abs_pend: [Nodo] = []
 var _abs_px: [Int] = []
 var _abs_py: [Int] = []
 var _abs_temporal: Int = 0
+var _abs_raiz: Nodo = nil   # (la raíz de la maqueta de un momento en curso)
 
 # ¿Es la caja de sus absolutos? Posicionada, con transform, o la raíz
 func _caja_de_absolutos(n: Nodo) -> Bool
@@ -4371,8 +4375,38 @@ func _piezas(m: Maquetador, n: Nodo, e_padre: {String: String}, piezas: [Pieza],
     if n.nombre == "a" and dom_tiene_atributo(n, "href")
         destino = dom_atributo(n, "href")
     end
+    # margen, borde y relleno a los lados de un elemento en línea: un hueco pegado delante de lo suyo y otro detrás
+    # (antes no contaban: el texto de los botones de html5test, <span> con margin-left: 10px, salía pegado al borde;
+    # tarea 76). Su fondo y su borde aún no se pintan
+    izq = 0
+    der = 0
+    if e.has("margin-left") or e.has("padding-left") or e.has("border-left-style") or e.has("margin-right") or e.has("padding-right") or e.has("border-right-style")
+        izq = _px(e, "margin-left", m.ancho_linea) + _borde(e, "left") + _px(e, "padding-left", m.ancho_linea)
+        der = _px(e, "margin-right", m.ancho_linea) + _borde(e, "right") + _px(e, "padding-right", m.ancho_linea)
+    end
+    i0 = piezas.length
+    if izq > 0
+        hi = Pieza("", izq, 0, 0, 0, 0, 0, false, destino, 0, false, false)
+        hi.nodo = n
+        piezas.push(hi)
+    end
     for h in _hijos(n)
         _piezas(m, h, e, piezas, destino)
+    end
+    if izq > 0 and piezas.length > i0 + 1
+        # (el blanco de delante va antes del hueco; lo suyo, pegado a él)
+        sig = piezas[i0 + 1]
+        if not sig.salto
+            piezas[i0].espacio = sig.espacio
+            sig.espacio = 0
+            sig.pegada = true
+        end
+    end
+    if der > 0 and piezas.length > i0
+        hd = Pieza("", der, 0, 0, 0, 0, 0, false, destino, 0, false, false)
+        hd.nodo = n
+        hd.pegada = true
+        piezas.push(hd)
     end
 end
 
@@ -4387,7 +4421,10 @@ func _pieza_caja(m: Maquetador, n: Nodo, piezas: [Pieza], enlace: String)
     end
     antes = m.pagina.dibujos.length
     _abs_temporal = _abs_temporal + 1
+    raiz = _abs_raiz
+    _abs_raiz = n
     h = _bloque_de(m, n, 0, 0, w, m.ancho_linea)
+    _abs_raiz = raiz
     _abs_temporal = _abs_temporal - 1
     base = h
     i = m.pagina.dibujos.length - 1
@@ -6335,7 +6372,10 @@ func _flex_maquetar(m: Maquetador, it: FlexHijo, ancho_ext: Int, contenedor: Int
     _forzado_w = w
     _forzado_h = h
     _abs_temporal = _abs_temporal + 1
+    raiz = _abs_raiz
+    _abs_raiz = it.nodo
     alto = _bloque_de(m, it.nodo, 0, 0, ancho_ext, contenedor)
+    _abs_raiz = raiz
     _abs_temporal = _abs_temporal - 1
     _forzado = forzado
     _forzado_w = forzado_w

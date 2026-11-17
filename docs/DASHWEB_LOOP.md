@@ -643,6 +643,14 @@ tarea, con el estilo de Dash.
       (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588). (2026-11-17, usuario: "que funcione
           el html5test": va con el encargo vigente.)
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
+      (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
+          límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador
+          RTG, 9000 bloques). Plan: rehacer solo el bloque tocado cuando es un bloque en flujo normal con toda su
+          cadena de antepasados también en flujo normal (sin flex, grid, tabla, inline-block, flotante ni absoluto que
+          dependa de su alto) y no vacío arriba ni abajo (sus márgenes no se juntan a través de él); si su alto cambia
+          dy, correr dy lo que va detrás en esa cadena (dibujos y cajas: _documento_mover_cajas), alargar dy los fondos
+          y bordes de los antepasados y el alto de la página. Medir con la copia de html5test (tools/espejo.py) y con
+          zz_bench_k4.html (cambiar clases: offsetHeight).
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

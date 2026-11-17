@@ -130,6 +130,12 @@ struct Nodo
     lig_dx: Int = 0
     lig_dy: Int = 0
     lig_vis: Bool = false
+    # lib/maqueta.dash: display, position y float de su estilo kc_est, en números (_k)
+    kc_est: {String: String} = nil
+    k_disp: Int = 0
+    k_bloque: Bool = false
+    k_pos: Int = 0
+    k_flota: Int = 0
     lim_pag: Int = 0          # lib/maqueta.dash: su caja que se maqueta sola, en la página lim_pag, limites[lim_idx]
     lim_idx: Int = 0
     lig_color: Int = 0        # (la vuelta de _documento_sin_maqueta en que cambió su color)

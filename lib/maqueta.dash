@@ -498,12 +498,72 @@ func _es_bloque(n: Nodo) -> Bool
     if n.tipo != DOM_ELEMENTO
         return false
     end
-    d = n.estilo["display"]
-    return d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-cell" or d == "flex" or d == "grid"
+    _k(n)
+    return n.k_bloque
 end
 
 func _oculto(n: Nodo) -> Bool
-    return n.tipo == DOM_ELEMENTO and n.estilo["display"] == "none"
+    if n.tipo != DOM_ELEMENTO
+        return false
+    end
+    _k(n)
+    return n.k_disp == KD_NONE
+end
+
+# Lo que más mira la maqueta del estilo (display, position, float), en números en el nodo, sacados una vez por cada
+# estilo (si el diccionario del nodo es otro, otra vez): cada consulta buscaba la clave y copiaba el texto, unas 26
+# por bloque, y buscar en diccionarios y copiar textos era un tercio de la maqueta de html5test (tarea 76)
+const KD_INLINE = 0
+const KD_BLOCK = 1
+const KD_NONE = 2
+const KD_OTRO = 3
+const KP_STATIC = 0
+const KP_RELATIVE = 1
+const KP_ABSOLUTE = 2
+const KP_FIXED = 3
+const KP_STICKY = 4
+
+func _k(n: Nodo)
+    e = n.estilo
+    if n.kc_est == e
+        return
+    end
+    n.kc_est = e
+    d = "inline"
+    if e.has("display")
+        d = e["display"]
+    end
+    n.k_disp = KD_OTRO
+    if d == "inline"
+        n.k_disp = KD_INLINE
+    elif d == "block"
+        n.k_disp = KD_BLOCK
+    elif d == "none"
+        n.k_disp = KD_NONE
+    end
+    n.k_bloque = d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-cell" or d == "flex" or d == "grid"
+    n.k_pos = KP_STATIC
+    if e.has("position")
+        p = e["position"]
+        if p == "relative"
+            n.k_pos = KP_RELATIVE
+        elif p == "absolute"
+            n.k_pos = KP_ABSOLUTE
+        elif p == "fixed"
+            n.k_pos = KP_FIXED
+        elif p == "sticky"
+            n.k_pos = KP_STICKY
+        end
+    end
+    n.k_flota = 0
+    if e.has("float")
+        f = e["float"]
+        if f == "left"
+            n.k_flota = 1
+        elif f == "right"
+            n.k_flota = 2
+        end
+    end
 end
 
 # === Página ===
@@ -922,11 +982,12 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # position: relative: se desplaza lo dibujado (left o right, top o bottom) sin mover a los demás (CSS 2.1, 9.4.3)
-    if _midiendo == 0 and _val(n.estilo, "position", "static") == "relative"
+    _k(n)
+    if _midiendo == 0 and n.k_pos == KP_RELATIVE
         _relativo(m, n, antes, contenedor)
     end
     # sticky con top: lo suyo se mueve con el desplazamiento (_cajas_finales pone dónde está y hasta dónde llega)
-    if _midiendo == 0 and _val(n.estilo, "position", "static") == "sticky" and _val(n.estilo, "top", "auto") != "auto"
+    if _midiendo == 0 and n.k_pos == KP_STICKY and _val(n.estilo, "top", "auto") != "auto"
         var pg: Pegajoso = Pegajoso(n, _px(n.estilo, "top", ancho))
         if m.pegajosos == nil
             var lp: [Pegajoso] = []
@@ -945,7 +1006,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # fixed: lo suyo va con la ventana
-    if _val(n.estilo, "position", "static") == "fixed"
+    if n.k_pos == KP_FIXED
         i = antes
         while i < m.pagina.dibujos.length
             m.pagina.dibujos[i].fijo = true
@@ -953,7 +1014,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # posicionado: lo suyo (que no sea de otro posicionado de dentro) va con su orden en el árbol
-    if _val(n.estilo, "position", "static") != "static" and n.orden > 0
+    if n.k_pos != KP_STATIC and n.orden > 0
         i = antes
         while i < m.pagina.dibujos.length
             if m.pagina.dibujos[i].pos == 0
@@ -963,7 +1024,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # z-index en un elemento posicionado: un contexto de apilado con todo lo suyo (el de fuera manda)
-    if n.estilo.has("z-index") and n.estilo["z-index"] != "auto" and _val(n.estilo, "position", "static") != "static"
+    if n.k_pos != KP_STATIC and n.estilo.has("z-index") and n.estilo["z-index"] != "auto"
         z = Int(n.estilo["z-index"])
         i = antes
         while i < m.pagina.dibujos.length
@@ -2275,11 +2336,13 @@ func _flota(n: Nodo) -> String
     if n.tipo != DOM_ELEMENTO or _fuera_del_flujo(n)
         return ""
     end
-    if n.estilo.has("float")
-        f = n.estilo["float"]
-        if f == "left" or f == "right"
-            return f
-        end
+    if n.k_flota == 1
+        return "left"
+    elif n.k_flota == 2
+        return "right"
+    end
+    if n.k_disp == KD_INLINE or n.k_disp == KD_BLOCK or n.k_disp == KD_NONE
+        return ""
     end
     if _caja_en_linea(n) and not _alineado(n)
         return "left"
@@ -2333,11 +2396,11 @@ func maqueta_escondido(n: Nodo) -> Bool
 end
 
 func _fuera_del_flujo(n: Nodo) -> Bool
-    if n.tipo != DOM_ELEMENTO or not n.estilo.has("position")
+    if n.tipo != DOM_ELEMENTO
         return false
     end
-    p = n.estilo["position"]
-    return p == "absolute" or p == "fixed"
+    _k(n)
+    return n.k_pos == KP_ABSOLUTE or n.k_pos == KP_FIXED
 end
 
 # Un elemento con position absolute (o fixed) dentro de la caja (cx, cy, cw, ch): top/left/right/

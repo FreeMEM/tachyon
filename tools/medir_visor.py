@@ -93,6 +93,8 @@ def main():
                     "junto al programa mientras dura (tarea 45g): la interfaz en ese idioma si el sistema lo pide")
     ap.add_argument("--traza", action="store_true", help="dashweb TRAZA: the timeline of the load (lib/traza.dash)")
     ap.add_argument("--perfil", action="store_true", help="build with ./dash --profile (the table goes to the output)")
+    ap.add_argument("--mapa", metavar="FILE", help="with --perfil: the linker map of this build (DASHC_MAPA=1), for "
+                    "FreeMEMLang/dashc/tests/perfil_pc.py FILE output")
     ap.add_argument("--guardar", metavar="DIR", help="keep the emulated disk there (outputs: out0.txt, bg0.txt)")
     ap.add_argument("--segundos", type=int, default=40, help="the visor closes itself after this")
     ap.add_argument("--host", default="127.0.0.1", help="the server name in the addresses (e.g. x.lento with --dns-lento)")
@@ -146,10 +148,14 @@ def main():
         env = dict(os.environ, DASH_TEST_AUTOCLOSE=str(args.segundos))
         if args.perfil:
             env["DASH_PROFILE"] = "1"
+        if args.mapa:
+            env["DASHC_MAPA"] = "1"
         r = subprocess.run([str(DASH / "dash"), "--fpu"] + (["--gcc"] if args.gcc else []) + (["--memcheck"] if args.memcheck else []) + (["--debug"] if args.depurar else []) + [str(ROOT / ("tests/bench/fases.dash" if args.fases else args.programa)), "-o", str(exe)],
                            cwd=ROOT, env=env, capture_output=True, text=True)
         if r.returncode != 0:
             sys.exit("compile failed:\n" + r.stdout + r.stderr)
+        if args.mapa:
+            Path(args.mapa).write_text(r.stderr)
         size = exe.stat().st_size
         if args.depurar and args.guardar:
             Path(args.guardar).mkdir(parents=True, exist_ok=True)

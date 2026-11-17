@@ -1787,9 +1787,27 @@ static JSValue _jsdom_parentNode(JSContext *ctx, JSValueConst this_val) {
 /* children: una HTMLCollection viva (tarea 41d; el preludio da siempre la misma); childNodes: un Array */
 static JSValue _col_nueva(JSContext *ctx, _Dash_Nodo *raiz, int tipo, char *sel, JSValueConst filtro);
 static JSValue _jsdom_hijos(JSContext *ctx, JSValueConst this_val, int magic) {
+    JSValue a, v;
+    int32_t ver = -1;
+    LONG ahora;
     _JSDOM_ESTE;
     if (magic == 0) return _col_nueva(ctx, n, 0, NULL, JS_UNDEFINED);
-    return _jsdom_lista(ctx, jsdom_hijos(n, magic == 0));
+    /* childNodes: el mismo Array mientras no entre ni salga ningún hijo (dom_version_arbol), guardado en el objeto del
+       nodo (__cn, __cnv; no enumerables). Antes se hacía uno nuevo en cada lectura y un bucle
+       for (i < el.childNodes.length) el.childNodes[i] era cuadrático: ~0,43 ms por lectura en la máquina RTG; tarea 76 */
+    ahora = dom_version_arbol_actual();
+    v = JS_GetPropertyStr(ctx, this_val, "__cnv");
+    if (JS_IsNumber(v) && !JS_ToInt32(ctx, &ver, v) && ver == (int32_t)ahora) {
+        a = JS_GetPropertyStr(ctx, this_val, "__cn");
+        if (JS_IsArray(ctx, a) > 0) return a;
+        JS_FreeValue(ctx, a);
+    }
+    JS_FreeValue(ctx, v);
+    a = _jsdom_lista(ctx, jsdom_hijos(n, 0));
+    if (JS_IsException(a)) return a;
+    JS_DefinePropertyValueStr(ctx, this_val, "__cn", JS_DupValue(ctx, a), JS_PROP_CONFIGURABLE | JS_PROP_WRITABLE);
+    JS_DefinePropertyValueStr(ctx, this_val, "__cnv", JS_NewInt32(ctx, (int32_t)ahora), JS_PROP_CONFIGURABLE | JS_PROP_WRITABLE);
+    return a;
 }
 
 /* magic 0: firstChild, 1: lastChild */

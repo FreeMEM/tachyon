@@ -130,6 +130,8 @@ struct Nodo
     lig_dx: Int = 0
     lig_dy: Int = 0
     lig_vis: Bool = false
+    lim_pag: Int = 0          # lib/maqueta.dash: su caja que se maqueta sola, en la página lim_pag, limites[lim_idx]
+    lim_idx: Int = 0
     lig_color: Int = 0        # (la vuelta de _documento_sin_maqueta en que cambió su color)
     lig_fuera: Int = 0       # = la vuelta de lib/documento.dash: sus dibujos se quitan (salió o display: none)
     # lib/imagenes.dash, al volver a escribir un <svg> en un fotograma de sus animaciones: lo que cambia en este

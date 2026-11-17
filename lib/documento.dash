@@ -1080,8 +1080,19 @@ func _documento_al_dia(d: Documento) -> Bool
     end
     if traza_activa and limite == nil and toques != nil
         for t in toques
-            if t.nodo != nil and _dentro_de_nodo(t.nodo, d.doc) and maqueta_limite_de(d.pagina, t.nodo) == nil
-                traza("sin caja que maquetar sola: " + t.nodo.nombre + "." + dom_atributo(t.nodo, "class") + " (toque " + t.tipo + ")")
+            if t.nodo != nil and _dentro_de_nodo(t.nodo, d.doc) and not _documento_sin_caja(t.nodo) and maqueta_limite_de(d.pagina, t.nodo) == nil
+                cad = ""
+                an = t.nodo
+                k = 0
+                while an != nil and an.tipo == DOM_ELEMENTO and k < 12
+                    cad = cad + " < " + an.nombre + "." + str_replace(str_trim(dom_atributo(an, "class")), " ", ".") + "(" + _val_estilo(an.estilo, "display", "?") + ")"
+                    if cad.length > 600
+                        break
+                    end
+                    an = an.padre
+                    k = k + 1
+                end
+                traza("sin caja que maquetar sola: " + t.nodo.nombre + "." + dom_atributo(t.nodo, "class") + " (toque " + t.tipo + ")" + cad)
                 break
             end
         end
@@ -1092,6 +1103,21 @@ func _documento_al_dia(d: Documento) -> Bool
     if limite != nil and parte and d.ancho > 0 and _documento_cambios_dentro(estilo_cambios, limite)
         viejos = maqueta_dibujos_de(d.pagina, limite)
         nuevos = maqueta_rehacer(d.pagina, d.doc, limite)
+        # (un bloque en el flujo que cambió de alto: el de fuera que se maqueta solo, hasta tres; tarea 76)
+        intentos = 1
+        while nuevos == nil and intentos < 3
+            fuera = maqueta_limite_de(d.pagina, limite.padre)
+            if fuera == nil
+                break
+            end
+            if traza_activa
+                traza("la caja no se maqueta sola: " + limite.nombre + "." + dom_atributo(limite, "class") + "; con la de fuera")
+            end
+            limite = fuera
+            viejos = maqueta_dibujos_de(d.pagina, limite)
+            nuevos = maqueta_rehacer(d.pagina, d.doc, limite)
+            intentos = intentos + 1
+        end
         if traza_activa and nuevos == nil
             traza("la caja no se maqueta sola: maqueta_rehacer no puede")
         end
@@ -2166,8 +2192,9 @@ func _documento_limite(d: Documento, toques: [Toque]) -> Nodo
         if t.nodo == nil
             return nada
         end
-        # (lo que ya no está en el documento, como una fila que React tocó y luego quitó, no cuenta)
-        if not _dentro_de_nodo(t.nodo, d.doc)
+        # (lo que ya no está en el documento, como una fila que React tocó y luego quitó, no cuenta; ni lo que no se ve,
+        # como un <script> que entra en <head>: si algo pasó a display: none, su estilo cambiado lo dice)
+        if not _dentro_de_nodo(t.nodo, d.doc) or _documento_sin_caja(t.nodo)
             continue
         end
         if b == nil

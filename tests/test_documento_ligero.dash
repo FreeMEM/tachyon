@@ -3,7 +3,7 @@
 # vela y opacity: 1 los enseña; un rotate en una caja con texto (no se pinta girada), sin maqueta; algo que sí
 # mueve (width), con maqueta. Un elemento con opacity: 0 desde el
 # principio tiene sus dibujos (velados) y su caja. Un texto que cambia sin cambiar de forma (un reloj) se cambia
-# en sus dibujos; si cambia de largo, maqueta otra vez. Una escala casi 1 (GSAP) cuenta como 1. view-transition-name
+# en sus dibujos; si cambia de largo, se maqueta su párrafo solo (no cambia de alto; tarea 76). Una escala casi 1 (GSAP) cuenta como 1. view-transition-name
 # (las transiciones de React) no mueve nada; un <script> que entra tampoco, un <div> sí (tarea 37e3). Un elemento
 # absoluto que sale, o uno fijo que pasa a display: none, se quita de los dibujos sin maqueta; uno normal que sale,
 # con maqueta (tarea 37e5). Un atributo que no mueve nada (name), algo de dentro de un <svg> (su imagen se hace
@@ -16,7 +16,7 @@
 # expect-out: velado: true true | enseñado: false
 # expect-out: rotate: true | width: false
 # expect-out: oculto desde el principio: true 50
-# expect-out: reloj: true 34 | más largo: false | escala 0.98: true
+# expect-out: reloj: true 34 | más largo: true | escala 0.98: true
 # expect-out: view-transition-name: true | script: true | div: false
 # expect-out: sale absoluto: true false | fijo a none: true false | sale normal: false
 # expect-out: name: true | svg: true | rotate: true

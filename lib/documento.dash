@@ -1242,7 +1242,9 @@ func _documento_puede_ligero(d: Documento, toques: [Toque]) -> Bool
         end
         if t.tipo == TOQUE_ATRIBUTO
             k = t.nombre
-            if not (k == "class" or k == "style" or k == "id" or k == ":hover" or str_starts(k, "data-") or str_starts(k, "aria-") or not (_documento_atributo_mueve(k) or (d.hojas != nil and d.hojas.atributos_usados.has(k))))
+            # (uno que nombra el CSS, como title en Wikipedia, solo cambia su estilo, y eso se mira en
+            # _documento_sin_maqueta; tarea 76)
+            if _documento_atributo_mueve(k)
                 return _lig_no("el atributo " + k, t.nodo)
             end
         elif t.tipo != TOQUE_CONTENIDO and t.tipo != TOQUE_ENTRA and t.tipo != TOQUE_VECINO and t.tipo != TOQUE_SALE
@@ -1280,12 +1282,16 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         if t.tipo == TOQUE_CONTENIDO and not _documento_texto_igual(d, t.nodo, false)
             return _lig_no("un texto que cambia de forma", t.nodo)
         end
-        if t.tipo == TOQUE_ENTRA and not _documento_sin_caja(t.nodo)
+        # (uno que entró y ya salió, como el <script> de un JSONP: no llegó a tener estilo ni dibujos; tarea 76)
+        if t.tipo == TOQUE_ENTRA and _dentro_de_nodo(t.nodo, d.doc) and not _documento_sin_caja(t.nodo)
             return _lig_no("un elemento que entra", t.nodo)
         end
         if t.tipo == TOQUE_SALE and not _documento_sin_caja(t.nodo)
             # lo que sale sin ocupar sitio (display: none, position: absolute o fixed): se quitan sus dibujos
             q = t.quitado
+            if q != nil and q.tipo == DOM_ELEMENTO and q.estilo != nil and not q.estilo.has("display")
+                continue
+            end
             if q == nil or (q.tipo == DOM_ELEMENTO and not _documento_fuera_del_flujo(q.estilo))
                 return _lig_no("un elemento que sale", t.nodo)
             end
@@ -1321,7 +1327,7 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         end
         # (primero si cambia y luego si es de las que no mueven: 3600 cambios de visibility de html5test, 1,3 s)
         for k in n.estilo.keys()
-            if (not c.viejo.has(k) or c.viejo[k] != n.estilo[k]) and not _documento_ligera(k)
+            if (not c.viejo.has(k) or c.viejo[k] != n.estilo[k]) and not _documento_ligera(k) and not (k == "color" and _documento_color_ligero(n, c.viejo))
                 viejo = "(nada)"
                 if c.viejo.has(k)
                     viejo = c.viejo[k]
@@ -1386,6 +1392,10 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             continue
         end
         n.lig_marca = marca
+        n.lig_color = 0
+        if c.viejo != nil and _val_estilo(c.viejo, "color", "") != _val_estilo(n.estilo, "color", "")
+            n.lig_color = marca
+        end
         n.lig_dx = dxs[i]
         n.lig_dy = dys[i]
         n.lig_vis = _val_estilo(c.viejo, "opacity", "1") != _val_estilo(n.estilo, "opacity", "1") or _val_estilo(c.viejo, "visibility", "visible") != _val_estilo(n.estilo, "visibility", "visible")
@@ -1395,6 +1405,14 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         i = i + 1
     end
     for dib in d.pagina.dibujos
+        # (un color nuevo: el de sus letras, sus iconos y su subrayado)
+        if dib.nodo != nil and dib.nodo.lig_color == marca and (dib.tipo == D_TEXTO or dib.tipo == D_ICONO or (dib.tipo == D_LINEA and dib.estilo == 7))
+            col = css_color(dib.nodo.estilo["color"])
+            if dib.color != col and col >= 0
+                dib.color = col
+                _documento_zona(d, dib)
+            end
+        end
         dx = 0
         dy = 0
         vis = false
@@ -1427,6 +1445,56 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         end
         if dx != 0 or dy != 0
             _documento_zona(d, dib)
+        end
+    end
+    return true
+end
+
+# ¿Un color nuevo que solo pinta otra cosa en sus dibujos? Sus letras, iconos y subrayado (si es suyo y del color del
+# texto) lo toman; nada más lo usa: ni bordes sin color propio, ni sombras, ni currentColor, ni marcas de lista, ni
+# controles (el índice de Wikipedia cambia el color del apartado en el que se está al bajar: 1 s de maqueta cada vez;
+# tarea 76)
+func _documento_color_ligero(n: Nodo, viejo: {String: String}) -> Bool
+    e = n.estilo
+    if css_color(_val_estilo(e, "color", "")) < 0 or css_color(_val_estilo(viejo, "color", "")) < 0
+        return false
+    end
+    if n.nombre == "input" or n.nombre == "button" or n.nombre == "select" or n.nombre == "textarea" or n.nombre == "svg" or n.nombre == "hr" or n.nombre == "img"
+        return false
+    end
+    if e.has("-webkit-text-fill-color") or _val_estilo(e, "text-shadow", "none") != "none" or _val_estilo(e, "display", "") == "list-item" or _val_estilo(e, "outline-style", "none") != "none" or _val_estilo(e, "outline", "none") != "none"
+        return false
+    end
+    for lado in ["top", "right", "bottom", "left"]
+        st = _val_estilo(e, "border-" + lado + "-style", "none")
+        if st != "none" and st != "hidden" and css_color(_val_estilo(e, "border-" + lado + "-color", "")) < 0
+            return false
+        end
+    end
+    for k in e.keys()
+        if k != "text-decoration-color" and str_find(str_lower(e[k]), "currentcolor") >= 0
+            return false
+        end
+    end
+    # el subrayado: solo si es suyo y va con el color del texto (el de un <a> de fuera lleva el color del <a>)
+    deco = _val_estilo(e, "text-decoration", "")
+    if str_find(deco, "underline") >= 0
+        for w in str_split(str_trim(deco), " ")
+            if w != "underline" and css_color(w) >= 0
+                return false
+            end
+        end
+        dc = str_lower(_val_estilo(e, "text-decoration-color", "currentcolor"))
+        if dc != "currentcolor"
+            return false
+        end
+    else
+        a = n.padre
+        while a != nil and a.tipo == DOM_ELEMENTO and _val_estilo(a.estilo, "display", "inline") == "inline"
+            if str_find(_val_estilo(a.estilo, "text-decoration", ""), "underline") >= 0
+                return false
+            end
+            a = a.padre
         end
     end
     return true

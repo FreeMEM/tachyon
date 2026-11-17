@@ -2639,6 +2639,8 @@ end
 # heredan ahora. Con solo propiedades heredadas sencillas distintas (visibility, color...), una copia de su estilo con
 # ellas; y donde ya no cambia nada de lo que se hereda, abajo solo los que tienen una clave
 func _estilo_subarbol_hereda(n: Nodo, hojas: Hojas, claves: {String: Int}) -> Bool
+    # (no <html>: en Wikipedia, sus clases nombran casi toda la página y por partes, solapadas, costaba 7 s frente a 2
+    # del estilo entero; probado el 2026-11-17)
     if n == nil or n.tipo != DOM_ELEMENTO or n.nombre == "html" or n.padre == nil or n.padre.tipo != DOM_ELEMENTO
         return false
     end

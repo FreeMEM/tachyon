@@ -2184,7 +2184,20 @@ func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
     var hechos: [Nodo] = []
     _partes_hechas = hechos
     _partes_cuantas = 0
+    # (los de <html> primero: si obligan al estilo entero, se sabe antes de rehacer por partes lo demás, que luego no
+    # sirve; en Wikipedia, una clase en <html> tras los estilos de las hojas nuevas costaba 2-3 s de más; tarea 76c)
+    var orden: [Toque] = []
     for t in toques
+        if t.nodo != nil and t.nodo.nombre == "html"
+            orden.push(t)
+        end
+    end
+    for t in toques
+        if t.nodo == nil or t.nodo.nombre != "html"
+            orden.push(t)
+        end
+    end
+    for t in orden
         n = t.nodo
         arriba = n
         while arriba.padre != nil

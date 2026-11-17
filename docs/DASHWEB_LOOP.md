@@ -651,6 +651,13 @@ tarea, con el estilo de Dash.
           dy, correr dy lo que va detrás en esa cadena (dibujos y cajas: _documento_mover_cajas), alargar dy los fondos
           y bordes de los antepasados y el alto de la página. Medir con la copia de html5test (tools/espejo.py) y con
           zz_bench_k4.html (cambiar clases: offsetHeight).
+      (c3, 2026-11-17) Wikipedia en el espejo (tools/espejo.py 40992), comparada con la versión de antes (A/B,
+          $S/ab_wiki.sh): las hojas nuevas por partes bajan estilos y maquetas de 24,5-30 s a 21,4 s, pero el total
+          sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
+          MediaWiki) y con ella una --x de <html> (--color-success, 1 de 104). Cada elemento guarda su copia de las
+          --x heredadas: rehacer solo lo que usa esa --x pide que se compartan (o propagar el cambio). Lo siguiente.
+          También: centralNotice (avisos de donaciones) son 4 s de JavaScript; el preludio, 1,7 s por página en el
+          emulador (sin Tachyon.bc guardado).
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

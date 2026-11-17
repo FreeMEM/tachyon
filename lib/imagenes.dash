@@ -314,6 +314,24 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
                         pedida.maxw = w
                         pedida.maxh = h
                     end
+                elif _imagen_estilo_fija(n)
+                    # (con su ancho y alto en el CSS, igual: se decodifica al tamaño al que se ve. El logo de
+                    # Wikipedia, un SVG sin tamaño propio con width: 7.5em, se rasterizaba a 1280x1024: 7,9 s; tarea 76)
+                    pedida.con_medidas = true
+                    # (y, antes de la primera maqueta, lo que dice el CSS en px o em)
+                    fs = 16
+                    if n.estilo.has("font-size")
+                        fs = estilo_px(n.estilo["font-size"], 0, 0)
+                    end
+                    if fs <= 0
+                        fs = 16
+                    end
+                    pw = estilo_px(n.estilo["width"], fs, 0)
+                    ph = estilo_px(n.estilo["height"], fs, 0)
+                    if pw >= 16 and ph >= 16 and pw < IMAGEN_MAX_ANCHO and ph < IMAGEN_MAX_ALTO
+                        pedida.maxw = pw
+                        pedida.maxh = ph
+                    end
                 end
                 im.cola.push(pedida)
             else
@@ -503,6 +521,17 @@ func imagenes_despertar(im: Imagenes)
         end
     end
     im.hechas.clear()
+end
+
+# ¿Su CSS le da ancho y alto que no dependen de la imagen? (ni auto ni en %)
+func _imagen_estilo_fija(n: Nodo) -> Bool
+    e = n.estilo
+    if e == nil or not e.has("width") or not e.has("height")
+        return false
+    end
+    w = e["width"]
+    h = e["height"]
+    return w != "auto" and h != "auto" and w != "" and h != "" and not str_ends(w, "%") and not str_ends(h, "%")
 end
 
 # Hasta dónde decodificarla: al tamaño al que se ve si el HTML lo fija (una foto de 820x480 en una casilla

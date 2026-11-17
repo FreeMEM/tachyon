@@ -597,6 +597,24 @@ end
     return dom_nodo(DOM_FRAGMENTO, "", "")
 end
 
+# Una <img> con src que el JavaScript no ha metido en el documento (new Image()): se apunta en el documento para
+# que lib/documento.dash la cargue y le dé load o error (tarea 76b)
+@export func jsdom_img_suelta(doc: Nodo, n: Nodo)
+    if doc == nil or n == nil
+        return
+    end
+    if doc.sueltas == nil
+        var l: [Nodo] = []
+        doc.sueltas = l
+    end
+    for x in doc.sueltas
+        if x == n
+            return
+        end
+    end
+    doc.sueltas.push(n)
+end
+
 # document.implementation.createHTMLDocument(): un documento aparte, vacío
 # (con "aparte": su getComputedStyle calcula el estilo con sus propias hojas, _jsdom_estilo_aparte)
 @export func jsdom_documento_nuevo(titulo: String) -> Nodo

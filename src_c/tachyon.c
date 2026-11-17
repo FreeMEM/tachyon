@@ -2813,6 +2813,15 @@ static JSValue _jsdom_version(JSContext *ctx, JSValueConst this_val, int argc, J
     return JS_NewInt32(ctx, dom_version_actual());
 }
 
+/* __dashweb_img_suelta(img): una <img> fuera del documento con src (new Image()); lib/documento.dash la carga y le
+   da load o error (jsdom_img_suelta; tarea 76b) */
+static JSValue _jsdom_img_suelta_js(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsDom *d = _jsdom_de(ctx);
+    _Dash_Nodo *n = argc > 0 ? _jsdom_nodo(ctx, argv[0]) : NULL;
+    if (d && d->doc && n) jsdom_img_suelta(d->doc, n);
+    return JS_UNDEFINED;
+}
+
 /* milliseconds since the program started (Dash's time_ms) */
 static JSValue _jsdom_reloj(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     return JS_NewInt32(ctx, _dash_time_ms());
@@ -3101,6 +3110,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_version", JS_NewCFunction(m->ctx, _jsdom_version, "__dashweb_version", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_galletas", JS_NewCFunction(m->ctx, _jsdom_galletas, "__dashweb_galletas", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_caja", JS_NewCFunction(m->ctx, _jsdom_caja, "__dashweb_caja", 1));
+    JS_SetPropertyStr(m->ctx, global, "__dashweb_img_suelta", JS_NewCFunction(m->ctx, _jsdom_img_suelta_js, "__dashweb_img_suelta", 1));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_vista", JS_NewCFunction(m->ctx, _jsdom_vista, "__dashweb_vista", 0));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_pedir", JS_NewCFunction(m->ctx, _jsdom_pedir, "__dashweb_pedir", 5));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_esperar", JS_NewCFunction(m->ctx, _jsdom_esperar, "__dashweb_esperar", 1));

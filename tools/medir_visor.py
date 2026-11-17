@@ -130,7 +130,13 @@ def main():
     # (build/pegamento-lib, de la línea que toca: dashc, o gcc con --gcc; tarea 58)
     linea = "gcc" if args.gcc else "dashc"
     hecha = ROOT / "build" / "pegamento-lib" / "linea"
-    if not hecha.exists() or hecha.read_text().strip() != linea:
+    # (también si su C o los .dash cuyos structs ve son más nuevos, como tests/run.py: medía con la librería vieja
+    # y una función nueva de src_c/tachyon.c no estaba; tarea 76b)
+    lib = ROOT / "build" / "pegamento-lib" / "libpegamento.a"
+    fuentes = list((ROOT / "src_c").glob("*.c")) + list((ROOT / "lib").glob("*.dash")) + \
+        list((ROOT / "src").glob("*.dash")) + [ROOT / "tools" / "build_pegamento.sh", DASH / "dashc" / "dashc"]
+    vieja = not lib.exists() or lib.stat().st_mtime < max(f.stat().st_mtime for f in fuentes if f.exists())
+    if vieja or not hecha.exists() or hecha.read_text().strip() != linea:
         r = subprocess.run([str(ROOT / "tools" / "build_pegamento.sh")], capture_output=True, text=True,
                            env=dict(os.environ, DASH=str(DASH), DASH_LINEA=linea))
         if r.returncode != 0:

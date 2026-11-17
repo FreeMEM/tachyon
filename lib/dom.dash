@@ -95,6 +95,9 @@ struct Nodo
     # la caja (borde incluido) en la última maqueta del documento, en coordenadas de la página (lib/maqueta.dash;
     # la leen getBoundingClientRect y offset* del JavaScript): vale si caja_pase es el caja_pase del documento
     caja_pase: Int = 0
+    # (un documento) las <img> con src que el JavaScript creó y no metió en él (new Image()): se cargan igual y
+    # reciben load o error, como en los navegadores (html5test esperaba los de webp, avif... sin fin; tarea 76b)
+    sueltas: [Nodo] = nil
     caja_bloque: Int = 0     # = caja_pase si la puso la maqueta de su bloque (si no, la unión de sus dibujos)
     caja_x: Int = 0
     caja_y: Int = 0

@@ -44,6 +44,7 @@ struct Documento
     anim_t0: Int = 0           # time_ms de su principio (la primera maqueta): su reloj
     svgs: [SvgAnimado] = nil   # los <svg> con animaciones dentro (se rasterizan otra vez en cada fotograma; 37d4)
     raton: Nodo = nil          # el elemento bajo el ratón (documento_raton; tarea 37f3)
+    sueltas: [Nodo] = nil      # las <img> sueltas del JavaScript ya pedidas, esperando su load o error (tarea 76b)
     raton_toques: Bool = false # el :hover cambió: documento_al_dia rehace el estilo aunque el JavaScript no tocara nada
     # el último documento_al_dia que dio true solo cambió lo de zx0..zx1, zy0..zy1 (coordenadas de la vista con la
     # página desplazada desde, sin incluir los dos últimos): basta repintar eso (tarea 37e7). false: toda la vista
@@ -1661,6 +1662,18 @@ end
 
 # Las imágenes que siguen llegando (sin esperar); true si llegó alguna y se volvió a maquetar
 func documento_imagenes(d: Documento) -> Bool
+    # las <img> que el JavaScript creó sin meterlas en la página (new Image()): se piden y esperan su aviso
+    if d.doc != nil and d.doc.sueltas != nil and d.doc.sueltas.length > 0
+        if d.sueltas == nil
+            var l: [Nodo] = []
+            d.sueltas = l
+        end
+        for n in d.doc.sueltas
+            imagenes_pedir(d.im, n, d.direccion)
+            d.sueltas.push(n)
+        end
+        d.doc.sueltas.clear()
+    end
     if imagenes_pendientes(d.im) > 0
         d.sin_pintar = d.sin_pintar + imagenes_avanzar(d.im, d.doc)
     else
@@ -1675,6 +1688,19 @@ func documento_imagenes(d: Documento) -> Bool
     avisos = imagenes_avisos(d.im)
     if avisos != nil and d.js != 0 and d.doc != nil
         _documento_avisar_imagenes(d, d.doc, avisos)
+        if d.sueltas != nil
+            i = 0
+            while i < d.sueltas.length
+                n = d.sueltas[i]
+                src = dom_img_src(n)
+                if avisos.has(src)
+                    d.sueltas.remove(i)
+                    jsdom_evento(d.js, n, "imagen:" + avisos[src])
+                else
+                    i = i + 1
+                end
+            end
+        end
     end
     d.sin_maquetar = d.sin_maquetar + d.im.cambiados
     d.im.cambiados = 0

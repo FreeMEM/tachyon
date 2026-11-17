@@ -64,6 +64,9 @@ struct Imagenes
     # src -> "ancho:alto" ("0:0" si no se pudo) de las que acaban de llegar o fallar, también las que ya estaban: lib/
     # documento.dash avisa al JavaScript (load o error en sus <img>, complete y naturalWidth; tarea 64, YouTube)
     avisos: {String: String} = nil
+    # los src que no se pudieron traer o leer: una <img> nueva con uno de ellos recibe su error (antes nada: un
+    # new Image() que pedía un formato que no hay no acababa nunca; html5test, tarea 76b)
+    fallidas: {String: Bool} = nil
 end
 
 # Apunta el aviso de una imagen (img 0: no se pudo) para el JavaScript
@@ -74,6 +77,11 @@ func _imagen_avisar(im: Imagenes, src: String, img: Int)
     end
     if img == 0
         im.avisos[src] = "0:0"
+        if im.fallidas == nil
+            var f: {String: Bool} = {}
+            im.fallidas = f
+        end
+        im.fallidas[src] = true
     else
         im.avisos[src] = "" + image_width(img) + ":" + image_height(img)
     end
@@ -277,6 +285,8 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
                 _imagen_tamano(n, im.por_src[src])
                 # (una <img> nueva con una imagen que ya estaba: su load también; el JavaScript no lo repite)
                 _imagen_avisar(im, src, im.por_src[src])
+            elif im.fallidas != nil and im.fallidas.has(src)
+                _imagen_avisar(im, src, 0)
             end
         elif src != ""
             u = url_resolve(base, src)
@@ -292,6 +302,7 @@ func _imagenes_pedir_en(im: Imagenes, n: Nodo, base: Url)
                 end
                 pedida = Pedida(src, direccion, fichero, sin)
                 if data and not _imagenes_data(im, pedida)
+                    _imagen_avisar(im, src, 0)
                     return
                 end
                 pedida.perezosa = str_lower(dom_atributo(n, "loading")) == "lazy"

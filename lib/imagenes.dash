@@ -155,8 +155,12 @@ func imagenes_fondo(n: Nodo, base: Url) -> String
     if not url_es_data(u)
         completa = url_text(url_resolve(base, u))
     end
-    # la maqueta y el pintor no saben la dirección de la página: el estilo se queda con la completa
-    n.estilo["background-image"] = "url(" + completa + ")"
+    # la maqueta y el pintor no saben la dirección de la página: el estilo se queda con la completa (solo si cambia, y
+    # como la escriben las hojas: si no, el estilo siguiente salía distinto, url(x) frente a url("x"), y html5test
+    # rehacía la maqueta entera por nada; tarea 76)
+    if completa != u
+        n.estilo["background-image"] = "url(\"" + completa + "\")"
+    end
     return completa
 end
 

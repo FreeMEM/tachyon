@@ -172,6 +172,9 @@ end
 func _jsdom_vaciar(n: Nodo)
     var nadie: Nodo = nil
     for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            dom_ids_sale(n, h)
+        end
         h.padre = nadie
     end
     n.hijos.clear()
@@ -193,6 +196,11 @@ end
         if a.nombre == clave
             if a.valor != valor
                 dom_apuntar(n, TOQUE_ATRIBUTO, clave, a.valor, valor)
+                if clave == "id"
+                    viejo = a.valor
+                    a.valor = valor
+                    dom_ids_cambia(n, viejo, valor)
+                end
             end
             a.valor = valor
             return
@@ -200,6 +208,9 @@ end
     end
     n.atributos.push(Atributo(clave, valor))
     dom_apuntar(n, TOQUE_ATRIBUTO, clave, "", valor)
+    if clave == "id"
+        dom_ids_cambia(n, "", valor)
+    end
 end
 
 @export func jsdom_quitar_atributo(n: Nodo, nombre: String)
@@ -210,7 +221,11 @@ end
         a = n.atributos[i]
         if a.nombre == clave
             dom_apuntar(n, TOQUE_ATRIBUTO, clave, a.valor, "")
+            viejo = a.valor
             n.atributos.remove(i)
+            if clave == "id"
+                dom_ids_cambia(n, viejo, "")
+            end
             return
         end
         i = i + 1
@@ -263,6 +278,9 @@ end
             else
                 # (un texto que sale cambia lo de dentro del padre, como uno que entra: :empty; Acid3 38)
                 dom_apuntar(padre, TOQUE_CONTENIDO, "#texto", "", "")
+            end
+            if hijo.tipo == DOM_ELEMENTO
+                dom_ids_sale(padre, hijo)
             end
             var nadie: Nodo = nil
             hijo.padre = nadie
@@ -416,6 +434,9 @@ end
             padre.hijos.insert(i, nuevo)
             dom_cambio()
             nuevo.padre = padre
+            if nuevo.tipo == DOM_ELEMENTO
+                dom_ids_entra(padre, nuevo)
+            end
             _jsdom_entra(nuevo)
             return true
         end

@@ -1314,7 +1314,9 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             dys.push(0)
             continue
         end
-        if c.pseudo or c.viejo == nil
+        # (un ::before o ::after que cambia solo en lo que no mueve nada, como el visibility que hereda: html5test
+        # enseña así su columna de resultados, 3600 elementos, y rehacía la maqueta entera, 9 s; tarea 76)
+        if c.viejo == nil or (c.pseudo and not (_documento_pseudo_ligero(c.p_antes, n.pseudo_antes) and _documento_pseudo_ligero(c.p_despues, n.pseudo_despues)))
             return _lig_no("un estilo nuevo o de ::before/::after", n)
         end
         for k in n.estilo.keys()
@@ -1360,6 +1362,13 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
     end
     if cambios.length == 0
         return true
+    end
+    # (los ::before y ::after de los dibujos se quedan, con el estilo nuevo)
+    for c in cambios
+        if c.pseudo
+            c.nodo.pseudo_antes = _documento_pseudo_pasar(c.p_antes, c.nodo.pseudo_antes)
+            c.nodo.pseudo_despues = _documento_pseudo_pasar(c.p_despues, c.nodo.pseudo_despues)
+        end
     end
     _lig_vuelta = _lig_vuelta + 1
     marca = _lig_vuelta
@@ -1415,6 +1424,38 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         end
     end
     return true
+end
+
+# Un ::before o ::after de antes y el de ahora, distintos solo en lo que no mueve nada (y el mismo contenido)
+func _documento_pseudo_ligero(viejo: Nodo, nuevo: Nodo) -> Bool
+    if viejo == nil or nuevo == nil
+        return viejo == nil and nuevo == nil
+    end
+    for k in nuevo.estilo.keys()
+        if not _documento_ligera(k) and (not viejo.estilo.has(k) or viejo.estilo[k] != nuevo.estilo[k])
+            return false
+        end
+    end
+    for k in viejo.estilo.keys()
+        if not _documento_ligera(k) and not nuevo.estilo.has(k)
+            return false
+        end
+    end
+    return true
+end
+
+# El de antes (el que llevan los dibujos), con el estilo del nuevo (él y sus iconos)
+func _documento_pseudo_pasar(viejo: Nodo, nuevo: Nodo) -> Nodo
+    if viejo == nil or nuevo == nil
+        return nuevo
+    end
+    viejo.estilo = nuevo.estilo
+    for h in viejo.hijos
+        if h.tipo == DOM_ELEMENTO
+            h.estilo = nuevo.estilo
+        end
+    end
+    return viejo
 end
 
 # ¿Un estilo que no ocupa sitio en el flujo (display: none, position: absolute o fixed)?

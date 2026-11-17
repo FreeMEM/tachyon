@@ -2875,7 +2875,12 @@ func _estilo_propio(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars: 
         pseudo = not _pseudo_iguales(antes_a, n.pseudo_antes) or not _pseudo_iguales(antes_d, n.pseudo_despues)
         if pseudo or not _estilo_iguales(viejo, e)
             if estilo_apuntar
-                estilo_cambios.push(EstiloCambio(n, viejo, pseudo))
+                ec = EstiloCambio(n, viejo, pseudo)
+                if pseudo
+                    ec.p_antes = antes_a
+                    ec.p_despues = antes_d
+                end
+                estilo_cambios.push(ec)
             end
             if estilo_marcar
                 dom_tocar(n)
@@ -2890,6 +2895,8 @@ struct EstiloCambio
     nodo: Nodo
     viejo: {String: String}
     pseudo: Bool
+    p_antes: Nodo = nil      # (con pseudo: su ::before y su ::after de antes, los de los dibujos)
+    p_despues: Nodo = nil
 end
 
 var estilo_apuntar: Bool = false

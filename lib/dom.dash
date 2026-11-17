@@ -64,6 +64,9 @@ struct Nodo
     pseudo_despues: Nodo = nil
     clases_cache: [String] = nil   # dom_clases y dom_id: el atributo class partido y el id, la primera vez que
     id_cache: String = nil         # se piden (dom_olvidar_atributos al cambiar un atributo)
+    ids: {String: Nodo} = nil      # en el documento: el primer elemento con cada id (dom_por_id; nil: sin hacer)
+    ids_sucio: Bool = false        # (hay que rehacerlo: un id repetido que entra, o algo que no se sabe ordenar)
+    ids_dobles: Bool = false       # (al hacerlo había ids repetidos)
     vars: {String: String} = nil   # las propiedades --x que le llegan a sus hijos (lib/estilo.dash)
     toques: [Toque] = nil          # en el documento: lo que ha cambiado el JavaScript (lib/jsdom.dash)
     # lib/maqueta.dash: los anchos medidos en la época af_pase con dom_reloj af_reloj (de tres en tres: ancho, alto
@@ -372,6 +375,9 @@ func dom_agregar(padre: Nodo, hijo: Nodo)
     dom_version_arbol = dom_version_arbol + 1
     hijo.padre = padre
     padre.hijos.push(hijo)
+    if hijo.tipo == DOM_ELEMENTO
+        dom_ids_entra(padre, hijo)
+    end
 end
 
 # Valor de un atributo, o "" si no lo tiene
@@ -636,19 +642,164 @@ func dom_buscar(n: Nodo, nombre: String) -> Nodo
     return nada
 end
 
-# El elemento con ese id, o nil
+# El elemento con ese id, o nil. En un documento, con su índice de ids (getElementById recorría el árbol entero en
+# cada llamada: html5test lo pedía cientos de veces con 9000 elementos, el 5 % de su tiempo; tarea 76)
 func dom_por_id(n: Nodo, id: String) -> Nodo
-    if n.tipo == DOM_ELEMENTO and dom_atributo(n, "id") == id
+    var nada: Nodo = nil
+    if n.tipo != DOM_DOCUMENTO or id == ""
+        return _dom_por_id_andar(n, id)
+    end
+    if n.ids == nil or n.ids_sucio
+        _dom_ids_hacer(n)
+    end
+    r = n.ids[id]
+    if r == nil
+        return nada
+    end
+    # (por si algún cambio no pasó por dom_ids_entra o dom_ids_sale: el de siempre, recorriendo)
+    if dom_id(r) != id or _dom_raiz(r) != n
+        _dom_ids_hacer(n)
+        r = n.ids[id]
+        if r == nil
+            return nada
+        end
+    end
+    return r
+end
+
+func _dom_por_id_andar(n: Nodo, id: String) -> Nodo
+    if n.tipo == DOM_ELEMENTO and dom_id(n) == id
         return n
     end
     for h in n.hijos
-        r = dom_por_id(h, id)
-        if r != nil
-            return r
+        if h.tipo == DOM_ELEMENTO
+            r = _dom_por_id_andar(h, id)
+            if r != nil
+                return r
+            end
         end
     end
     var nada: Nodo = nil
     return nada
+end
+
+func _dom_raiz(n: Nodo) -> Nodo
+    r = n
+    while r.padre != nil
+        r = r.padre
+    end
+    return r
+end
+
+func _dom_ids_hacer(doc: Nodo)
+    var m: {String: Nodo} = {}
+    doc.ids = m
+    doc.ids_sucio = false
+    doc.ids_dobles = false
+    for h in doc.hijos
+        if h.tipo == DOM_ELEMENTO
+            _dom_ids_hacer_en(doc, h)
+        end
+    end
+end
+
+func _dom_ids_hacer_en(doc: Nodo, n: Nodo)
+    id = dom_id(n)
+    if id != ""
+        if doc.ids.has(id)
+            doc.ids_dobles = true
+        else
+            doc.ids[id] = n
+        end
+    end
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            _dom_ids_hacer_en(doc, h)
+        end
+    end
+end
+
+# Un elemento (con lo suyo) que entra bajo padre: sus ids, al índice de su documento (si lo tiene hecho)
+func dom_ids_entra(padre: Nodo, n: Nodo)
+    r = _dom_raiz(padre)
+    if r.tipo != DOM_DOCUMENTO or r.ids == nil or r.ids_sucio
+        return
+    end
+    _dom_ids_meter(r, n)
+end
+
+func _dom_ids_meter(r: Nodo, n: Nodo)
+    id = dom_id(n)
+    if id != ""
+        e = r.ids[id]
+        if e == nil
+            r.ids[id] = n
+        elif e != n
+            # (otro con el mismo id: cuál va antes, al rehacerlo)
+            r.ids_sucio = true
+            return
+        end
+    end
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            _dom_ids_meter(r, h)
+            if r.ids_sucio
+                return
+            end
+        end
+    end
+end
+
+# Un elemento (con lo suyo) que sale de padre: sus ids, fuera del índice
+func dom_ids_sale(padre: Nodo, n: Nodo)
+    r = _dom_raiz(padre)
+    if r.tipo != DOM_DOCUMENTO or r.ids == nil or r.ids_sucio
+        return
+    end
+    _dom_ids_sacar(r, n)
+end
+
+func _dom_ids_sacar(r: Nodo, n: Nodo)
+    id = dom_id(n)
+    if id != "" and r.ids[id] == n
+        if r.ids_dobles
+            # (puede quedar otro con el mismo id)
+            r.ids_sucio = true
+            return
+        end
+        r.ids.remove(id)
+    end
+    for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            _dom_ids_sacar(r, h)
+            if r.ids_sucio
+                return
+            end
+        end
+    end
+end
+
+# El id de n cambia de viejo a nuevo (n ya con el nuevo)
+func dom_ids_cambia(n: Nodo, viejo: String, nuevo: String)
+    r = _dom_raiz(n)
+    if r.tipo != DOM_DOCUMENTO or r.ids == nil or r.ids_sucio
+        return
+    end
+    if viejo != "" and r.ids[viejo] == n
+        if r.ids_dobles
+            r.ids_sucio = true
+            return
+        end
+        r.ids.remove(viejo)
+    end
+    if nuevo != ""
+        e = r.ids[nuevo]
+        if e == nil
+            r.ids[nuevo] = n
+        elif e != n
+            r.ids_sucio = true
+        end
+    end
 end
 
 # Todo el texto de dentro, seguido

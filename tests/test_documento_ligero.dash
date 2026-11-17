@@ -8,6 +8,7 @@
 # absoluto que sale, o uno fijo que pasa a display: none, se quita de los dibujos sin maqueta; uno normal que sale,
 # con maqueta (tarea 37e5). Un atributo que no mueve nada (name), algo de dentro de un <svg> (su imagen se hace
 # otra vez; en 3.1 sin RTG no hay imagen que mirar) y un rotate en una caja con hijos (no se pinta girada), sin maqueta (37h2).
+# Un visibility que se hereda hasta un ::before, sin maqueta y con el ::before enseñado (html5test; tarea 76).
 # memcheck
 # expect-out: misma página: true | y +40: true | caja +40: true
 # expect-out: velado: true true | enseñado: false
@@ -17,9 +18,21 @@
 # expect-out: view-transition-name: true | script: true | div: false
 # expect-out: sale absoluto: true false | fijo a none: true false | sale normal: false
 # expect-out: name: true | svg: true | rotate: true
+# expect-out: visibility con ::before: true true | true false false
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/documento.dash"
+
+# (el de un ::before: su texto)
+func dibujo_pseudo(p: Pagina, ps: Nodo) -> Dibujo
+    var nada: Dibujo = nil
+    for d in p.dibujos
+        if d.nodo != nil and (d.nodo == ps or d.nodo.padre == ps)
+            return d
+        end
+    end
+    return nada
+end
 
 func dibujo_de(p: Pagina, n: Nodo) -> Dibujo
     var nada: Dibujo = nil
@@ -32,7 +45,7 @@ func dibujo_de(p: Pagina, n: Nodo) -> Dibujo
 end
 
 Main
-    h = "<body style='margin:0'><div id=a style='background:red;height:30px'><span id=s>hola</span></div><div id=o style='opacity:0;height:50px;background:blue'>x</div><p><span id=r>12</span> horas</p><div id=abs style='position:absolute;top:0;left:200px;background:green;width:20px;height:20px'></div><div id=fij style='position:fixed;top:0;left:250px;background:green;width:20px;height:20px'></div><div id=nor style='height:10px;background:gray'></div><input id=in name=uno><svg id=sv width=20 height=20><rect id=re width=20 height=20 fill=red /></svg><div id=gi><p>x</p></div><script>var a = document.getElementById('a');</script></body>"
+    h = "<body style='margin:0'><div id=a style='background:red;height:30px'><span id=s>hola</span></div><div id=o style='opacity:0;height:50px;background:blue'>x</div><p><span id=r>12</span> horas</p><div id=abs style='position:absolute;top:0;left:200px;background:green;width:20px;height:20px'></div><div id=fij style='position:fixed;top:0;left:250px;background:green;width:20px;height:20px'></div><div id=nor style='height:10px;background:gray'></div><input id=in name=uno><svg id=sv width=20 height=20><rect id=re width=20 height=20 fill=red /></svg><div id=gi><p>x</p></div><style>.ic::before{content:'*'}</style><div id=vis style='visibility:hidden'><span id=ic class=ic>t</span></div><script>var a = document.getElementById('a');</script></body>"
     d = documento_html("http://x/", h)
     documento_maquetar(d, 300)
     # (el primer cambio tras maquetar a otro ancho rehace el índice de las hojas: estilo entero)
@@ -111,5 +124,11 @@ Main
     js_evaluar(d.js, "document.getElementById('gi').style.transform = 'rotate(5deg)'", "t.js")
     documento_al_dia(d)
     Print r8 + " | rotate: " + (d.pagina == p8)
+    p9 = d.pagina
+    ic = dom_por_id(d.doc, "ic")
+    v9 = "visibility con ::before: " + dibujo_de(p9, ic).velado + " " + dibujo_pseudo(p9, ic.pseudo_antes).velado
+    js_evaluar(d.js, "document.getElementById('vis').style.visibility = 'visible'", "t.js")
+    documento_al_dia(d)
+    Print v9 + " | " + (d.pagina == p9) + " " + dibujo_de(d.pagina, ic).velado + " " + dibujo_pseudo(d.pagina, ic.pseudo_antes).velado
     documento_liberar(d)
 end

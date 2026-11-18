@@ -373,7 +373,8 @@ func _act_comprobar(ex: Int, largo: Int, isize: Int, crc_gz: Int) -> Int
     if largo < 64 or buffer_get_byte(ex, 0) != 0 or buffer_get_byte(ex, 1) != 0 or buffer_get_byte(ex, 2) != 3 or buffer_get_byte(ex, 3) != 243
         return 7
     end
-    if str_find(str_from_buffer(ex, 0, largo), "$VER: Tachyon ") < 0
+    # (el "$" aparte: un "$VER: Tachyon " escrito tal cual iba en el ejecutable delante del suyo y Version lo decía vacío)
+    if str_find(str_from_buffer(ex, 0, largo), str_char(36) + "VER: Tachyon ") < 0
         return 8
     end
     return 0

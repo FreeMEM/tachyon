@@ -57,7 +57,9 @@ static inline hubbub_error process_input_in_table(
 		}
 
 		/** \todo parse error */
-		err = insert_element(treebuilder, &token->data.tag, true);
+		/* (dashweb, tarea 76: sin quedarse en la pila; si no, lo de después iba dentro del <input>) */
+		err = insert_element(treebuilder, &token->data.tag, false);
+		break;
 	}
 
 	return err;
@@ -204,6 +206,29 @@ hubbub_error handle_in_table(hubbub_treebuilder *treebuilder,
 		} else if (!tainted && type == INPUT) {
 			err = process_input_in_table(treebuilder, token);
 			handled = (err == HUBBUB_OK);
+		} else if (type == FORM) {
+			/* (dashweb, tarea 76: como dice HTML hoy, un <form> en una tabla es un elemento vacío en ella, que
+			   pasa a ser el formulario; ya habiendo uno, nada. html5test lo mira) */
+			err = HUBBUB_OK;
+			if (treebuilder->context.form_element == NULL) {
+				hubbub_ns ns;
+				element_type otype;
+				void *node;
+
+				err = insert_element(treebuilder, &token->data.tag, true);
+				if (err == HUBBUB_OK) {
+					treebuilder->tree_handler->ref_node(
+						treebuilder->tree_handler->ctx,
+						treebuilder->context.element_stack[
+						treebuilder->context.current_node].node);
+					treebuilder->context.form_element =
+						treebuilder->context.element_stack[
+						treebuilder->context.current_node].node;
+					element_stack_pop(treebuilder, &ns, &otype, &node);
+					treebuilder->tree_handler->unref_node(
+						treebuilder->tree_handler->ctx, node);
+				}
+			}
 		} else {
 			handled = false;
 		}

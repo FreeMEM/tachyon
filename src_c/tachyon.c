@@ -3086,14 +3086,26 @@ static JSValue _jsdom_lienzo(JSContext *ctx, JSValueConst this_val, int argc, JS
     return o;
 }
 
+/* new CanvasRenderingContext2D(): como en los navegadores, no se puede */
+static JSValue _lz_ilegal(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    return JS_ThrowTypeError(ctx, "Illegal constructor");
+}
+
 static void _jsdom_lienzo_clase(JSContext *ctx) {
     JSClassDef clase = { "CanvasRenderingContext2D", _lz_finalizar };
-    JSValue proto;
+    JSValue proto, ctor, global;
     JSRuntime *rt = JS_GetRuntime(ctx);
     JS_NewClassID(&_lz_clase);
     if (!JS_IsRegisteredClass(rt, _lz_clase)) JS_NewClass(rt, _lz_clase, &clase);
     proto = JS_NewObject(ctx);
     JS_SetPropertyFunctionList(ctx, proto, _lz_metodos, sizeof(_lz_metodos) / sizeof(_lz_metodos[0]));
+    /* (el constructor, en la ventana: getContext('2d') instanceof CanvasRenderingContext2D; html5test, 10 puntos;
+       tarea 76) */
+    ctor = JS_NewCFunction2(ctx, _lz_ilegal, "CanvasRenderingContext2D", 0, JS_CFUNC_constructor, 0);
+    JS_SetConstructor(ctx, ctor, proto);
+    global = JS_GetGlobalObject(ctx);
+    JS_DefinePropertyValueStr(ctx, global, "CanvasRenderingContext2D", ctor, JS_PROP_CONFIGURABLE | JS_PROP_WRITABLE);
+    JS_FreeValue(ctx, global);
     JS_SetClassProto(ctx, _lz_clase, proto);
 }
 void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)

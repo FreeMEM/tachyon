@@ -1,0 +1,39 @@
+# Test: lo que mira html5test del analizador (tarea 76). section, nav, header y main cierran un <p> (Hubbub no los
+# tenía en su tabla de nombres); "<!--" dentro de <textarea> o <style> no esconde su cierre; un <form> dentro de una
+# tabla es un elemento vacío en ella y el <input type=hidden> no se queda abierto (lo de después va fuera, delante);
+# innerHTML de una tabla, de una fila, de un select y de <html> con las reglas de HTML5 en su contexto.
+# memcheck
+# expect-out: cierran: 2 2 2 2
+# expect-out: crudo: <!-- | <!--
+# expect-out: tabla: INPUT() DIV() TABLE(FORM,INPUT)
+# expect-out: contexto: COLGROUP | TBODY>TR | TD,TD | OPTION,OPTION | HEAD BODY
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var e = document.createElement('div');"
+    c = c + "function cierra(n) { e.innerHTML = '<p><' + n + '></' + n + '>'; return e.childNodes.length; }"
+    c = c + "'cierran: ' + ['section', 'nav', 'header', 'main'].map(cierra).join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "e.innerHTML = '<textarea><!--</textarea>--></textarea>'; var a = e.firstChild.firstChild.nodeValue;"
+    c = c + "e.innerHTML = '<style><!--</style>--></style>'; 'crudo: ' + a + ' | ' + e.firstChild.firstChild.nodeValue"
+    Print js_evaluar(js, c, "t.js")
+    c = "e.innerHTML = '<table><form><input type=hidden><input></form><div></div></table>'; var r = [];"
+    c = c + "for (var n = e.firstChild; n; n = n.nextSibling) r.push(n.nodeName + '(' + Array.prototype.map.call(n.childNodes, function (x) { return x.nodeName; }).join(',') + ')');"
+    c = c + "'tabla: ' + r.join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "function hijos(n) { return Array.prototype.map.call(n.childNodes, function (x) { return x.nodeName; }).join(','); }"
+    c = c + "var t = document.createElement('table'); t.innerHTML = '<col>'; var r = [hijos(t)];"
+    c = c + "t.innerHTML = '<tr><td>x</td></tr>'; r.push(t.firstChild.nodeName + '>' + t.firstChild.firstChild.nodeName);"
+    c = c + "var tr = document.createElement('tr'); tr.innerHTML = '<td>a</td><td>b</td>'; r.push(hijos(tr));"
+    c = c + "var s = document.createElement('select'); s.innerHTML = '<option>a<option>b'; r.push(hijos(s));"
+    c = c + "var h = document.createElement('html'); h.innerHTML = ''; r.push(h.firstChild.nodeName + ' ' + h.lastChild.nodeName);"
+    c = c + "'contexto: ' + r.join(' | ')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

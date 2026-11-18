@@ -200,6 +200,18 @@ end
 
 # Los hijos de n con su ::before delante y su ::after detrás (lib/estilo.dash)
 func _hijos(n: Nodo) -> [Nodo]
+    # (un <details> cerrado solo enseña su primer <summary>; lo demás, también el texto suelto, no: HTML lo esconde en
+    # su sombra; html5test mira que al abrirlo cambie de alto, tarea 76)
+    if n.nombre == "details" and n.tipo == DOM_ELEMENTO and not dom_tiene_atributo(n, "open")
+        var solo: [Nodo] = []
+        for h in n.hijos
+            if h.tipo == DOM_ELEMENTO and h.nombre == "summary"
+                solo.push(h)
+                break
+            end
+        end
+        return solo
+    end
     if n.pseudo_antes == nil and n.pseudo_despues == nil
         return n.hijos
     end

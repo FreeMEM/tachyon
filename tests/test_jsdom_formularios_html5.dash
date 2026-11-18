@@ -1,0 +1,45 @@
+# Test: los controles de formulario de HTML5 (tarea 76; html5test los mira): el valor saneado según el tipo (date,
+# month, week, time, datetime-local, number, range, color, email), valueAsNumber, valueAsDate, stepUp y stepDown,
+# la validación (validity, checkValidity con el evento invalid, setCustomValidity), la selección, indeterminate y
+# files. Las fechas, también las que pasan de 2^31 ms en su parte baja (el __fixdfdi del runtime, f64_a_i64).
+# expect-out: date: ,,2024-02-29,1709164800000,2024-02-29T00:00:00.000Z
+# expect-out: month: ,2024-06,653 | week: 2026-11-16,2026-W48 | time: ,13:50,49800000 | local: 2024-01-02T03:04
+# expect-out: number: ,false/true,true,42 | range: 50,50,10 | color: #000000,#abcdef
+# expect-out: email: false,true,"foo@bar.org" | url: false,true
+# expect-out: required: false,true,1,true | custom: true,mal,false
+# expect-out: sel: 2,5,backward,true | misc: true,true,true,-1,true,true,0,true
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "function inp(ty) { var i = document.createElement('input'); i.type = ty; return i; }"
+    c = c + "var i = inp('date'); i.value = 'foobar'; var a = i.value; i.value = '2024-02-30'; var b = i.value; i.value = '2024-02-29';"
+    c = c + "'date: ' + [a, b, i.value, i.valueAsNumber, i.valueAsDate.toISOString()].join(',')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var r = []; i = inp('month'); i.value = '2024-13'; a = i.value; i.value = '2024-05'; i.stepUp(); r.push('month: ' + [a, i.value, i.valueAsNumber].join(','));"
+    c = c + "i = inp('week'); i.value = '2026-W47'; var n = i.valueAsNumber; i.stepUp(); r.push('week: ' + [new Date(n).toISOString().slice(0, 10), i.value].join(','));"
+    c = c + "i = inp('time'); i.value = '25:00'; a = i.value; i.value = '13:45'; i.stepUp(5); r.push('time: ' + [a, i.value, i.valueAsNumber].join(','));"
+    c = c + "i = inp('datetime-local'); i.value = '2024-01-02 03:04'; r.push('local: ' + i.value); r.join(' | ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "r = []; i = inp('number'); i.value = 'foobar'; a = i.value; i.min = 40; i.max = 50; i.value = 100; b = i.validity.valid + '/' + i.validity.rangeOverflow; i.value = 42;"
+    c = c + "r.push('number: ' + [a, b, i.validity.valid, i.valueAsNumber].join(','));"
+    c = c + "i = inp('range'); a = i.value; i.value = 'foobar'; b = i.value; i.max = 10; i.value = 99; r.push('range: ' + [a, b, i.value].join(','));"
+    c = c + "i = inp('color'); i.value = 'foobar'; a = i.value; i.value = '#ABCDEF'; r.push('color: ' + [a, i.value].join(',')); r.join(' | ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "r = []; i = inp('email'); i.value = 'foo'; a = i.validity.valid; i.value = ' foo@bar.org '; r.push('email: ' + [a, i.validity.valid, JSON.stringify(i.value)].join(','));"
+    c = c + "i = inp('url'); i.value = 'foo'; a = i.validity.valid; i.value = 'http://foo.org'; r.push('url: ' + [a, i.validity.valid].join(',')); r.join(' | ')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var f = document.createElement('form'); i = inp('text'); i.required = true; f.appendChild(i); var inv = 0; i.addEventListener('invalid', function () { inv++; });"
+    c = c + "a = f.checkValidity(); i.value = 'x'; var q = 'required: ' + [a, f.checkValidity(), inv, i.validationMessage === ''].join(',');"
+    c = c + "i = inp('text'); i.setCustomValidity('mal'); q + ' | custom: ' + [i.validity.customError, i.validationMessage, i.checkValidity()].join(',')"
+    Print js_evaluar(js, c, "t.js")
+    c = "i = inp('text'); i.value = 'hola mundo'; i.setSelectionRange(2, 5, 'backward'); var s = 'sel: ' + [i.selectionStart, i.selectionEnd, i.selectionDirection, 'selectionDirection' in i].join(',');"
+    c = c + "var ch = inp('checkbox'); ch.indeterminate = true; var ta = document.createElement('textarea'); var fi = inp('file');"
+    c = c + "s + ' | misc: ' + [ch.indeterminate, 'minLength' in ta, 'maxLength' in ta, ta.maxLength, 'wrap' in ta, fi.files instanceof FileList, fi.files.length, 'list' in inp('text')].join(',')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

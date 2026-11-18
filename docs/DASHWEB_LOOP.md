@@ -665,6 +665,17 @@ tarea, con el estilo de Dash.
           por el camino de solo herencia (Wikipedia: 7,1 s frente a 2,0 del estilo entero). En Wikipedia el
           índice cambia color y font-weight del apartado al bajar: necesita maqueta (~1 s): es la c2. Siguiente:
           la c2 (rehacer solo el bloque tocado) y el coste por elemento del estilo y la maqueta nuevos de html5test.
+          (2026-11-18) html5test de 228 a 277 en la copia (y más con lo que no se ha medido aún): el analizador HTML5
+          (Hubbub sin header, main, nav ni section en su tabla; "<!--" en textarea/style; <form> e <input
+          type=hidden> en una tabla; innerHTML de tabla, fila, select y <html> con HTML5), CanvasRenderingContext2D,
+          figcaption, mark, details, formularios de HTML5 (saneado, valueAsNumber/Date, stepUp/Down, validación,
+          selección), FileReader, contentEditable y Worker (un contexto de QuickJS aparte, por turnos). Fechas: el
+          __fixdfdi del runtime de dashc daba 49 días de más en la mitad de las fechas (rodeado en QuickJS, avisado a
+          Dash). Lo que queda con puntos y se puede hacer de verdad: WebSocket (15, red en C), EventSource (5, pide
+          que fetch entregue la respuesta a trozos), subtítulos de <track> (8), indexedDB (21). La comprobación de
+          parsing.tree no puede pasar en la copia (el espejo reescribe http://www.w3.org/... en engine.js).
+          El perfil de JavaScript (-DJS_PERFIL) no sirve: 148 muestras en Wikipedia y un assert de QuickJS (atom <
+          rt->atom_size) al volcarlo: por mirar.
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
           límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador

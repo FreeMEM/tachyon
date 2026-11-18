@@ -93,6 +93,8 @@ typedef struct _JsMotorS {
     void *extra;                                  /* other modules' data (lib/jsdom.dash) */
     void (*liberar_extra)(struct _JsMotorS *m);   /* called before the context is freed */
     APTR pool;                                    /* where its memory comes from (_jm_malloc) */
+    JSContext *reinos[8];                         /* los contextos de sus Worker (__dashweb_reino; tarea 76) */
+    int n_reinos;
 } _JsMotor;
 
 /* js_gc_siempre: the cycle collector after every script, call and job (to find reference-count bugs) */
@@ -983,6 +985,7 @@ void js_liberar(LONG js)
 #ifdef JS_PERFIL
     _jp_parar(m->rt);
 #endif
+    while (m->n_reinos > 0) JS_FreeContext(m->reinos[--m->n_reinos]);
     JS_FreeContext(m->ctx);
     JS_FreeRuntime(m->rt);
     if (m->pool) _jm_pool_borrar(m->pool);
@@ -3086,6 +3089,121 @@ static JSValue _jsdom_lienzo(JSContext *ctx, JSValueConst this_val, int argc, JS
     return o;
 }
 
+/* Worker (tarea 76): un contexto aparte en el mismo runtime (los objetos de uno se pueden usar desde el otro), para el
+   script del Worker; el preludio hace el resto (lib/jsdom_preludio.js). Corre por turnos con la página, no a la vez.
+   __dashweb_reino() da un objeto con global, evaluar(código, nombre) ("" o el error), copiarDentro(v) y
+   copiarFuera(v) (como structuredClone, de un contexto al otro) y cerrar(); null si ya hay 8 */
+static JSClassID _reino_clase;
+typedef struct { JSContext *ctx; _JsMotor *m; } _Reino;
+
+static _JsMotor *_reino_motor(JSContext *ctx) {
+    _JsDom *d = _jsdom_de(ctx);
+    return d ? (_JsMotor *)d->motor : NULL;
+}
+static void _reino_quitar(_Reino *r) {
+    int i;
+    if (!r->ctx) return;
+    if (r->m)
+        for (i = 0; i < r->m->n_reinos; i++)
+            if (r->m->reinos[i] == r->ctx) { r->m->reinos[i] = r->m->reinos[--r->m->n_reinos]; break; }
+    JS_FreeContext(r->ctx);
+    r->ctx = NULL;
+}
+static void _reino_finalizar(JSRuntime *rt, JSValue v) {
+    /* (el contexto lo suelta cerrar() o js_liberar: soltarlo aquí, en medio de la recogida de basura, no es seguro) */
+    _Reino *r = (_Reino *)JS_GetOpaque(v, _reino_clase);
+    free(r);
+}
+static JSValue _reino_nuevo(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _JsMotor *m = _reino_motor(ctx);
+    _Reino *r;
+    JSValue o;
+    if (!m || m->n_reinos >= 8) return JS_NULL;
+    r = (_Reino *)calloc(1, sizeof(_Reino));
+    if (!r) return JS_NULL;
+    r->ctx = JS_NewContext(JS_GetRuntime(ctx));
+    if (!r->ctx) { free(r); return JS_NULL; }
+    r->m = m;
+    m->reinos[m->n_reinos++] = r->ctx;
+    o = JS_NewObjectClass(ctx, _reino_clase);
+    if (JS_IsException(o)) { _reino_quitar(r); free(r); return o; }
+    JS_SetOpaque(o, r);
+    JS_SetPropertyStr(ctx, o, "global", JS_GetGlobalObject(r->ctx));
+    return o;
+}
+static _Reino *_reino_de(JSContext *ctx, JSValueConst v) {
+    _Reino *r = (_Reino *)JS_GetOpaque(v, _reino_clase);
+    if (!r || !r->ctx) { JS_ThrowTypeError(ctx, "worker closed"); return NULL; }
+    return r;
+}
+static JSValue _reino_evaluar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _Reino *r = _reino_de(ctx, this_val);
+    const char *codigo, *nombre;
+    size_t largo;
+    JSValue v;
+    if (!r) return JS_EXCEPTION;
+    codigo = argc > 0 ? JS_ToCStringLen(ctx, &largo, argv[0]) : NULL;
+    if (!codigo) return JS_EXCEPTION;
+    nombre = argc > 1 ? JS_ToCString(ctx, argv[1]) : NULL;
+    _js_empieza();
+    v = JS_Eval(r->ctx, codigo, largo, nombre ? nombre : "<worker>", JS_EVAL_TYPE_GLOBAL);
+    JS_FreeCString(ctx, codigo);
+    if (nombre) JS_FreeCString(ctx, nombre);
+    if (JS_IsException(v)) {
+        char *e = _js_excepcion(r->ctx);
+        JSValue t = JS_NewString(ctx, e ? e : "error");
+        free(e);
+        return t;
+    }
+    JS_FreeValue(r->ctx, v);
+    return JS_NewString(ctx, "");
+}
+/* de un contexto al otro: escrito con JS_WriteObject y leído en el de destino (objetos, arrays, ArrayBuffer, arrays
+   con tipo, Date, RegExp; con referencias, como structuredClone; una función da error) */
+static JSValue _reino_clonar(JSContext *de, JSContext *a, JSValueConst v) {
+    size_t largo;
+    uint8_t *b = JS_WriteObject(de, &largo, v, JS_WRITE_OBJ_REFERENCE);
+    JSValue r;
+    if (!b) return JS_EXCEPTION;
+    r = JS_ReadObject(a, b, largo, JS_READ_OBJ_REFERENCE);
+    js_free(de, b);
+    return r;
+}
+static JSValue _reino_dentro(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _Reino *r = _reino_de(ctx, this_val);
+    if (!r) return JS_EXCEPTION;
+    return _reino_clonar(ctx, r->ctx, argc > 0 ? argv[0] : JS_UNDEFINED);
+}
+static JSValue _reino_fuera(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _Reino *r = _reino_de(ctx, this_val);
+    if (!r) return JS_EXCEPTION;
+    return _reino_clonar(r->ctx, ctx, argc > 0 ? argv[0] : JS_UNDEFINED);
+}
+static JSValue _reino_cerrar(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    _Reino *r = (_Reino *)JS_GetOpaque(this_val, _reino_clase);
+    if (r) _reino_quitar(r);
+    return JS_UNDEFINED;
+}
+static const JSCFunctionListEntry _reino_metodos[] = {
+    JS_CFUNC_DEF("evaluar", 2, _reino_evaluar),
+    JS_CFUNC_DEF("copiarDentro", 1, _reino_dentro),
+    JS_CFUNC_DEF("copiarFuera", 1, _reino_fuera),
+    JS_CFUNC_DEF("cerrar", 0, _reino_cerrar),
+};
+static void _jsdom_reino_clase(JSContext *ctx) {
+    JSClassDef clase = { "DashwebReino", _reino_finalizar };
+    JSValue proto, global;
+    JSRuntime *rt = JS_GetRuntime(ctx);
+    JS_NewClassID(&_reino_clase);
+    if (!JS_IsRegisteredClass(rt, _reino_clase)) JS_NewClass(rt, _reino_clase, &clase);
+    proto = JS_NewObject(ctx);
+    JS_SetPropertyFunctionList(ctx, proto, _reino_metodos, sizeof(_reino_metodos) / sizeof(_reino_metodos[0]));
+    JS_SetClassProto(ctx, _reino_clase, proto);
+    global = JS_GetGlobalObject(ctx);
+    JS_SetPropertyStr(ctx, global, "__dashweb_reino", JS_NewCFunction(ctx, _reino_nuevo, "__dashweb_reino", 0));
+    JS_FreeValue(ctx, global);
+}
+
 /* new CanvasRenderingContext2D(): como en los navegadores, no se puede */
 static JSValue _lz_ilegal(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     return JS_ThrowTypeError(ctx, "Illegal constructor");
@@ -3159,6 +3277,7 @@ void jsdom_motor_dom(LONG js, struct _Dash_Nodo * doc)
     JS_SetPropertyStr(m->ctx, global, "__dashweb_tipo_doc", JS_NewCFunction(m->ctx, _jsdom_tipo_doc, "__dashweb_tipo_doc", 3));
     JS_SetPropertyStr(m->ctx, global, "__dashweb_documento_html", JS_NewCFunction(m->ctx, _jsdom_documento_html, "__dashweb_documento_html", 1));
     _jsdom_lienzo_clase(m->ctx);
+    _jsdom_reino_clase(m->ctx);
     JS_SetPropertyStr(m->ctx, global, "__dashweb_lienzo", JS_NewCFunction(m->ctx, _jsdom_lienzo, "__dashweb_lienzo", 4));
     JS_FreeValue(m->ctx, global);
 }

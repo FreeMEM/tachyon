@@ -6,6 +6,7 @@
 #
 #   tools/build_pegamento.sh            (DASH: la carpeta de Dash, por defecto ~/Projects/FreeMEMLang)
 #   DASH_LINEA=gcc tools/build_pegamento.sh
+#   DASH_CFLAGS=-DJS_PERFIL tools/build_pegamento.sh     (con el perfil del JavaScript; tools/build_qjs.sh lib -DJS_PERFIL)
 #
 # Tarea 58: Tachyon también se compila por el camino de C (./dash --gcc). Ahí un Bool ocupa 2 bytes, así que el C va
 # con su cabecera (./dash --gcc --cabecera) y es otra librería. Las dos van a build/pegamento-lib (la ruta del @link
@@ -27,7 +28,7 @@ fi
 H=$R/third_party/hubbub
 CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpz0 -fno-delete-null-pointer-checks -m68020 -m68881
     -ffunction-sections -fdata-sections -I$R/build -I$R/third_party/quickjs -I$R/third_party/quickjs/amiga
-    -I$H/libhubbub/include -I$H/libparserutils/include"
+    -I$H/libhubbub/include -I$H/libparserutils/include $DASH_CFLAGS"
 $GCC $CF -c "$R/src_c/tachyon.c" -o "$B/tachyon.o"
 rm -f "$B/libpegamento.a"
 ${AR:-/opt/amiga/bin/m68k-amigaos-ar} rcs "$B/libpegamento.a" "$B/tachyon.o"

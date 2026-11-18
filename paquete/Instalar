@@ -15,8 +15,10 @@
     (set #avisos (cat #avisos "- Falta MUI (muimaster.library): https://muidev.de\n")))
 (if (not (exists "AmiSSL:" (noreq)))
     (set #avisos (cat #avisos "- Falta AmiSSL 5 (sin él, no hay HTTPS): https://github.com/jens-maus/amissl\n")))
-(if (not (exists "LIBS:bsdsocket.library"))
-    (set #avisos (cat #avisos "- No se ve bsdsocket.library en LIBS: hace falta una pila TCP/IP (Roadshow, AmiTCP, Genesis, Miami) en marcha.\n")))
+; (en LIBS: o ya en memoria: Miami, Genesis o AmiNetXDuo la tienen en su cajón y no en LIBS:, y el aviso salía con
+; la red en marcha; lo contó Ingloriond)
+(if (and (not (exists "LIBS:bsdsocket.library")) (= (getversion "bsdsocket.library" (resident)) 0))
+    (set #avisos (cat #avisos "- No se encuentra bsdsocket.library: hace falta una pila TCP/IP (Roadshow, AmiTCP, Genesis, Miami, AmiNetXDuo) en marcha. Si la arrancas luego, no pasa nada.\n")))
 (if (exists "SYS:Classes/DataTypes/picture.datatype")
     (if (< (/ (getversion "SYS:Classes/DataTypes/picture.datatype") 65536) 43)
         (set #avisos (cat #avisos "- picture.datatype es anterior a la 43 (AmigaOS 3.5): las páginas se verán sin imágenes.\n")))

@@ -55175,6 +55175,20 @@ static const JSCFunctionListEntry js_global_funcs[] = {
 
 /* Date */
 
+/* (dashweb, tarea 76) De double a int64_t sin el __fixdfdi del runtime de Dash, que en el 68k suma 2^32 cuando el
+   bit 31 del resultado está a 1: new Date(1709164800000) daba el 18 de abril de 2024 y no el 29 de febrero, y
+   Date.now() en texto, 49 días de más la mitad de las veces. En trozos de 16 bits, que se convierten bien. */
+static int64_t f64_a_i64(double v) {
+    int neg = v < 0;
+    double a = neg ? -v : v;
+    double a1 = floor(a / 4294967296.0);
+    double a0 = a - a1 * 4294967296.0;
+    double b1 = floor(a0 / 65536.0);
+    double b0 = a0 - b1 * 65536.0;
+    int64_t r = ((int64_t)(int32_t)a1 << 32) | ((int64_t)(int32_t)b1 << 16) | (int64_t)(int32_t)b0;
+    return neg ? -r : r;
+}
+
 static int64_t math_mod(int64_t a, int64_t b) {
     /* return positive modulo */
     int64_t m = a % b;
@@ -55264,7 +55278,7 @@ static __exception int get_date_fields(JSContext *ctx, JSValueConst obj,
             return FALSE; /* NaN */
         d = 0;        /* initialize all fields to 0 */
     } else {
-        d = dval;     /* assuming -8.64e15 <= dval <= -8.64e15 */
+        d = f64_a_i64(dval);     /* assuming -8.64e15 <= dval <= -8.64e15 */
         if (is_local) {
             tz = -getTimezoneOffset(d);
             d += tz * 60000;
@@ -55363,7 +55377,7 @@ static double set_date_fields(double fields[minimum_length(7)], int is_local) {
 
     /* adjust for local time and clip */
     if (is_local) {
-        int64_t ti = tv < INT64_MIN ? INT64_MIN : tv >= 0x1p63 ? INT64_MAX : (int64_t)tv;
+        int64_t ti = tv < INT64_MIN ? INT64_MIN : tv >= 0x1p63 ? INT64_MAX : f64_a_i64(tv);
         tv += getTimezoneOffset(ti) * 60000;
     }
     return time_clip(tv);

@@ -712,10 +712,9 @@ hubbub_error hubbub_tokeniser_handle_data(hubbub_tokeniser *tokeniser)
 
 			assert(error == PARSERUTILS_OK);
 
-			if (strncmp((char *)cptr,
-					"<!--", SLEN("<!--")) == 0) {
-				tokeniser->escape_flag = true;
-			}
+			/* (dashweb, tarea 76: como en el HTML de hoy, un "<!--" dentro de <textarea>, <style> o <script> no
+			   esconde su etiqueta de cierre: "<textarea><!--</textarea>" acaba ahí; html5test lo mira) */
+			(void)cptr;
 
 			tokeniser->context.pending += len;
 		} else if (c == '<' && (tokeniser->content_model ==

@@ -1,0 +1,25 @@
+# Test: un absoluto dentro de un <div> sin posicionar, dentro de un <th> relative (la nota de cada apartado de
+# html5test): su caja es la del <th>, también en la maqueta de un momento de la celda (tarea 76: antes lo era el
+# <div>, y la nota salía corrida el relleno del <th> y debajo del texto). Arriba a la derecha, sobre el relleno.
+# expect-out: esquina: true true | alto: 44
+# expect-out: en flex: true true
+
+import "../lib/documento.dash"
+
+func esquina(d: Documento, caja: String, abs: String) -> String
+    c = dom_por_id(d.doc, caja)
+    a = dom_por_id(d.doc, abs)
+    return "" + (a.caja_x + a.caja_w == c.caja_x + c.caja_w) + " " + (a.caja_y == c.caja_y)
+end
+
+Main
+    h = "<body style='margin:0'><table style='border-spacing:0;position:relative'><thead><tr><th id=th style='position:relative;padding:0 10px;height:44px;font-size:32px;text-align:left;border-bottom:8px solid #ccc'>Parsing rules"
+    h = h + "<div><div id=g style='position:absolute;top:0;right:0'><span id=s style='display:block;height:100%;line-height:44px;padding:0 10px;font-size:0.8em;background:#833'>0/5</span></div></div></th></tr></thead>"
+    h = h + "<tbody><tr><th>fila</th><td>Yes</td></tr></tbody></table>"
+    h = h + "<div style='display:flex'><div id=fi style='position:relative;padding:0 12px;width:200px'>texto<div><b id=fa style='position:absolute;top:0;right:0'>x</b></div></div></div></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 600)
+    Print "esquina: " + esquina(d, "th", "g") + " | alto: " + dom_por_id(d.doc, "s").caja_h
+    Print "en flex: " + esquina(d, "fi", "fa")
+    documento_liberar(d)
+end

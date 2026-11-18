@@ -82,6 +82,12 @@ En `third_party/quickjs/quickjs.c` (segundo commit del repo, para ver el diff):
     de `build_backtrace`). Al pasar a una versión posterior de QuickJS, este cambio sobra.
     Diagnóstico de la misma tarea: `js_amiga_liberados` (los últimos Error que libera `free_object`, con la pila de JS)
     y el volcado de bytes en `js_amiga_forma_compartida`.
+13. `f64_a_i64` (`quickjs.c`, tarea 76): `get_date_fields` y `set_date_fields` pasaban el valor de tiempo de
+    `double` a `int64_t` con el `__fixdfdi` de libgcc que lleva el runtime de dashc, y en el 68k sale 2^32 de más
+    cuando el bit 31 del resultado está a 1: `new Date(1709164800000)` era el 18 de abril de 2024 y no el 29 de
+    febrero, y cerca de la mitad de los días salían con 49 días de más (al convertir `Date.now()` a texto, por
+    ejemplo). `f64_a_i64` lo convierte en trozos de 16 bits. El fallo es del runtime (avisado a Dash el 2026-11-18);
+    cualquier otro `(int64_t)double` del C enlazado con dashc lo tiene.
 
 ## Problemas encontrados
 

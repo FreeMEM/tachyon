@@ -44,6 +44,7 @@ struct Documento
     anim_t0: Int = 0           # time_ms de su principio (la primera maqueta): su reloj
     svgs: [SvgAnimado] = nil   # los <svg> con animaciones dentro (se rasterizan otra vez en cada fotograma; 37d4)
     raton: Nodo = nil          # el elemento bajo el ratón (documento_raton; tarea 37f3)
+    sueltas: [Nodo] = nil      # las <img> sueltas del JavaScript ya pedidas, esperando su load o error (tarea 76b)
     raton_toques: Bool = false # el :hover cambió: documento_al_dia rehace el estilo aunque el JavaScript no tocara nada
     # el último documento_al_dia que dio true solo cambió lo de zx0..zx1, zy0..zy1 (coordenadas de la vista con la
     # página desplazada desde, sin incluir los dos últimos): basta repintar eso (tarea 37e7). false: toda la vista
@@ -939,6 +940,40 @@ func documento_al_dia(d: Documento) -> Bool
     return hecho
 end
 
+# Si las hojas de ahora son las de antes (las mismas, en el mismo orden) más otras nuevas: los elementos de la página
+# con los que casan las nuevas (quizá ninguno); nil si se quitó o se movió alguna, o si casan con demasiados
+const DOCUMENTO_HOJAS_TOPE = 400
+func _documento_hojas_afectados(d: Documento, viejas: [HojaCSS]) -> [Nodo]
+    var nada: [Nodo] = nil
+    var nuevas: [HojaCSS] = []
+    i = 0
+    for hoja in d.hojas.lista
+        if i < viejas.length and hoja == viejas[i]
+            i = i + 1
+        else
+            nuevas.push(hoja)
+        end
+    end
+    if i < viejas.length
+        if traza_activa
+            traza("hojas: se quitó o se movió una (" + i + " de " + viejas.length + " siguen en su sitio; " + nuevas.length + " nuevas)")
+        end
+        return nada
+    end
+    if nuevas.length == 0
+        var ninguno: [Nodo] = []
+        return ninguno
+    end
+    af = estilo_afectados(d.doc, nuevas, DOCUMENTO_HOJAS_TOPE + 1)
+    if af.length > DOCUMENTO_HOJAS_TOPE
+        if traza_activa
+            traza("hojas: " + nuevas.length + " nuevas que casan con más de " + DOCUMENTO_HOJAS_TOPE + " elementos")
+        end
+        return nada
+    end
+    return af
+end
+
 func _documento_al_dia(d: Documento) -> Bool
     if not d.raton_toques and (d.js == 0 or jsdom_cambios(d.js) == d.cambios)
         return false
@@ -973,12 +1008,26 @@ func _documento_al_dia(d: Documento) -> Bool
     if d.hojas != nil and _documento_toques_hojas(toques)
         firma = estilo_firma(d.doc)
         if firma != d.hojas_firma
+            viejas = d.hojas.lista
             d.hojas = estilo_hojas_otra_vez(d.doc, d.direccion, d.hojas)
             _documento_hojas_al_js(d)
             d.hojas_firma = firma
             imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
             hojas_nuevas = true
-            traza("hojas otra vez: el JavaScript cambió un <style> o <link>")
+            # solo entran hojas: el estilo de lo que casa con sus reglas, como si le hubieran cambiado el style (él y,
+            # si cambia, lo suyo), y no el de toda la página; si no casan con nada, ninguno (MediaWiki mete así el
+            # CSS de cada módulo y cada vez se rehacían estilo y maqueta enteros; tarea 76c)
+            af = _documento_hojas_afectados(d, viejas)
+            if af != nil
+                hojas_nuevas = false
+                estilo_indexar(d.hojas)
+                for n in af
+                    toques.push(Toque(TOQUE_ATRIBUTO, n, "style", "", ""))
+                end
+                traza("hojas otra vez: el JavaScript metió hojas que casan con " + af.length + " elementos")
+            else
+                traza("hojas otra vez: el JavaScript cambió un <style> o <link>")
+            end
         end
     end
     # lo que cambia en el estilo, por si no mueve nada (tarea 37d)
@@ -1031,8 +1080,19 @@ func _documento_al_dia(d: Documento) -> Bool
     end
     if traza_activa and limite == nil and toques != nil
         for t in toques
-            if t.nodo != nil and _dentro_de_nodo(t.nodo, d.doc) and maqueta_limite_de(d.pagina, t.nodo) == nil
-                traza("sin caja que maquetar sola: " + t.nodo.nombre + "." + dom_atributo(t.nodo, "class") + " (toque " + t.tipo + ")")
+            if t.nodo != nil and _dentro_de_nodo(t.nodo, d.doc) and not _documento_sin_caja(t.nodo) and maqueta_limite_de(d.pagina, t.nodo) == nil
+                cad = ""
+                an = t.nodo
+                k = 0
+                while an != nil and an.tipo == DOM_ELEMENTO and k < 12
+                    cad = cad + " < " + an.nombre + "." + str_replace(str_trim(dom_atributo(an, "class")), " ", ".") + "(" + _val_estilo(an.estilo, "display", "?") + ")"
+                    if cad.length > 600
+                        break
+                    end
+                    an = an.padre
+                    k = k + 1
+                end
+                traza("sin caja que maquetar sola: " + t.nodo.nombre + "." + dom_atributo(t.nodo, "class") + " (toque " + t.tipo + ")" + cad)
                 break
             end
         end
@@ -1043,6 +1103,21 @@ func _documento_al_dia(d: Documento) -> Bool
     if limite != nil and parte and d.ancho > 0 and _documento_cambios_dentro(estilo_cambios, limite)
         viejos = maqueta_dibujos_de(d.pagina, limite)
         nuevos = maqueta_rehacer(d.pagina, d.doc, limite)
+        # (un bloque en el flujo que cambió de alto: el de fuera que se maqueta solo, hasta tres; tarea 76)
+        intentos = 1
+        while nuevos == nil and intentos < 3
+            fuera = maqueta_limite_de(d.pagina, limite.padre)
+            if fuera == nil
+                break
+            end
+            if traza_activa
+                traza("la caja no se maqueta sola: " + limite.nombre + "." + dom_atributo(limite, "class") + "; con la de fuera")
+            end
+            limite = fuera
+            viejos = maqueta_dibujos_de(d.pagina, limite)
+            nuevos = maqueta_rehacer(d.pagina, d.doc, limite)
+            intentos = intentos + 1
+        end
         if traza_activa and nuevos == nil
             traza("la caja no se maqueta sola: maqueta_rehacer no puede")
         end
@@ -1193,7 +1268,9 @@ func _documento_puede_ligero(d: Documento, toques: [Toque]) -> Bool
         end
         if t.tipo == TOQUE_ATRIBUTO
             k = t.nombre
-            if not (k == "class" or k == "style" or k == "id" or k == ":hover" or str_starts(k, "data-") or str_starts(k, "aria-") or not (_documento_atributo_mueve(k) or (d.hojas != nil and d.hojas.atributos_usados.has(k))))
+            # (uno que nombra el CSS, como title en Wikipedia, solo cambia su estilo, y eso se mira en
+            # _documento_sin_maqueta; tarea 76)
+            if _documento_atributo_mueve(k)
                 return _lig_no("el atributo " + k, t.nodo)
             end
         elif t.tipo != TOQUE_CONTENIDO and t.tipo != TOQUE_ENTRA and t.tipo != TOQUE_VECINO and t.tipo != TOQUE_SALE
@@ -1231,12 +1308,16 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         if t.tipo == TOQUE_CONTENIDO and not _documento_texto_igual(d, t.nodo, false)
             return _lig_no("un texto que cambia de forma", t.nodo)
         end
-        if t.tipo == TOQUE_ENTRA and not _documento_sin_caja(t.nodo)
+        # (uno que entró y ya salió, como el <script> de un JSONP: no llegó a tener estilo ni dibujos; tarea 76)
+        if t.tipo == TOQUE_ENTRA and _dentro_de_nodo(t.nodo, d.doc) and not _documento_sin_caja(t.nodo)
             return _lig_no("un elemento que entra", t.nodo)
         end
         if t.tipo == TOQUE_SALE and not _documento_sin_caja(t.nodo)
             # lo que sale sin ocupar sitio (display: none, position: absolute o fixed): se quitan sus dibujos
             q = t.quitado
+            if q != nil and q.tipo == DOM_ELEMENTO and q.estilo != nil and not q.estilo.has("display")
+                continue
+            end
             if q == nil or (q.tipo == DOM_ELEMENTO and not _documento_fuera_del_flujo(q.estilo))
                 return _lig_no("un elemento que sale", t.nodo)
             end
@@ -1265,11 +1346,14 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             dys.push(0)
             continue
         end
-        if c.pseudo or c.viejo == nil
+        # (un ::before o ::after que cambia solo en lo que no mueve nada, como el visibility que hereda: html5test
+        # enseña así su columna de resultados, 3600 elementos, y rehacía la maqueta entera, 9 s; tarea 76)
+        if c.viejo == nil or (c.pseudo and not (_documento_pseudo_ligero(c.p_antes, n.pseudo_antes) and _documento_pseudo_ligero(c.p_despues, n.pseudo_despues)))
             return _lig_no("un estilo nuevo o de ::before/::after", n)
         end
+        # (primero si cambia y luego si es de las que no mueven: 3600 cambios de visibility de html5test, 1,3 s)
         for k in n.estilo.keys()
-            if not _documento_ligera(k) and (not c.viejo.has(k) or c.viejo[k] != n.estilo[k])
+            if (not c.viejo.has(k) or c.viejo[k] != n.estilo[k]) and not _documento_ligera(k) and not (k == "color" and _documento_color_ligero(n, c.viejo))
                 viejo = "(nada)"
                 if c.viejo.has(k)
                     viejo = c.viejo[k]
@@ -1278,9 +1362,14 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             end
         end
         for k in c.viejo.keys()
-            if not _documento_ligera(k) and not n.estilo.has(k)
+            if not n.estilo.has(k) and not _documento_ligera(k)
                 return _lig_no(k + ": " + c.viejo[k] + " -> (nada)", n)
             end
+        end
+        if not _documento_con_transform(c.viejo) and not _documento_con_transform(n.estilo)
+            dxs.push(0)
+            dys.push(0)
+            continue
         end
         a = _documento_traslacion(c.viejo, n)
         b = _documento_traslacion(n.estilo, n)
@@ -1312,6 +1401,13 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
     if cambios.length == 0
         return true
     end
+    # (los ::before y ::after de los dibujos se quedan, con el estilo nuevo)
+    for c in cambios
+        if c.pseudo
+            c.nodo.pseudo_antes = _documento_pseudo_pasar(c.p_antes, c.nodo.pseudo_antes)
+            c.nodo.pseudo_despues = _documento_pseudo_pasar(c.p_despues, c.nodo.pseudo_despues)
+        end
+    end
     _lig_vuelta = _lig_vuelta + 1
     marca = _lig_vuelta
     i = 0
@@ -1322,6 +1418,10 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
             continue
         end
         n.lig_marca = marca
+        n.lig_color = 0
+        if c.viejo != nil and _val_estilo(c.viejo, "color", "") != _val_estilo(n.estilo, "color", "")
+            n.lig_color = marca
+        end
         n.lig_dx = dxs[i]
         n.lig_dy = dys[i]
         n.lig_vis = _val_estilo(c.viejo, "opacity", "1") != _val_estilo(n.estilo, "opacity", "1") or _val_estilo(c.viejo, "visibility", "visible") != _val_estilo(n.estilo, "visibility", "visible")
@@ -1331,6 +1431,14 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         i = i + 1
     end
     for dib in d.pagina.dibujos
+        # (un color nuevo: el de sus letras, sus iconos y su subrayado)
+        if dib.nodo != nil and dib.nodo.lig_color == marca and (dib.tipo == D_TEXTO or dib.tipo == D_ICONO or (dib.tipo == D_LINEA and dib.estilo == 7))
+            col = css_color(dib.nodo.estilo["color"])
+            if dib.color != col and col >= 0
+                dib.color = col
+                _documento_zona(d, dib)
+            end
+        end
         dx = 0
         dy = 0
         vis = false
@@ -1366,6 +1474,92 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         end
     end
     return true
+end
+
+# ¿Un color nuevo que solo pinta otra cosa en sus dibujos? Sus letras, iconos y subrayado (si es suyo y del color del
+# texto) lo toman; nada más lo usa: ni bordes sin color propio, ni sombras, ni currentColor, ni marcas de lista, ni
+# controles (el índice de Wikipedia cambia el color del apartado en el que se está al bajar: 1 s de maqueta cada vez;
+# tarea 76)
+func _documento_color_ligero(n: Nodo, viejo: {String: String}) -> Bool
+    e = n.estilo
+    if css_color(_val_estilo(e, "color", "")) < 0 or css_color(_val_estilo(viejo, "color", "")) < 0
+        return false
+    end
+    if n.nombre == "input" or n.nombre == "button" or n.nombre == "select" or n.nombre == "textarea" or n.nombre == "svg" or n.nombre == "hr" or n.nombre == "img"
+        return false
+    end
+    if e.has("-webkit-text-fill-color") or _val_estilo(e, "text-shadow", "none") != "none" or _val_estilo(e, "display", "") == "list-item" or _val_estilo(e, "outline-style", "none") != "none" or _val_estilo(e, "outline", "none") != "none"
+        return false
+    end
+    for lado in ["top", "right", "bottom", "left"]
+        st = _val_estilo(e, "border-" + lado + "-style", "none")
+        if st != "none" and st != "hidden" and css_color(_val_estilo(e, "border-" + lado + "-color", "")) < 0
+            return false
+        end
+    end
+    for k in e.keys()
+        if k != "text-decoration-color" and str_find(str_lower(e[k]), "currentcolor") >= 0
+            return false
+        end
+    end
+    # el subrayado: solo si es suyo y va con el color del texto (el de un <a> de fuera lleva el color del <a>)
+    deco = _val_estilo(e, "text-decoration", "")
+    if str_find(deco, "underline") >= 0
+        for w in str_split(str_trim(deco), " ")
+            if w != "underline" and css_color(w) >= 0
+                return false
+            end
+        end
+        dc = str_lower(_val_estilo(e, "text-decoration-color", "currentcolor"))
+        if dc != "currentcolor"
+            return false
+        end
+    else
+        a = n.padre
+        while a != nil and a.tipo == DOM_ELEMENTO and _val_estilo(a.estilo, "display", "inline") == "inline"
+            if str_find(_val_estilo(a.estilo, "text-decoration", ""), "underline") >= 0
+                return false
+            end
+            a = a.padre
+        end
+    end
+    return true
+end
+
+func _documento_con_transform(e: {String: String}) -> Bool
+    return e.has("transform") or e.has("translate") or e.has("-webkit-transform")
+end
+
+# Un ::before o ::after de antes y el de ahora, distintos solo en lo que no mueve nada (y el mismo contenido)
+func _documento_pseudo_ligero(viejo: Nodo, nuevo: Nodo) -> Bool
+    if viejo == nil or nuevo == nil
+        return viejo == nil and nuevo == nil
+    end
+    for k in nuevo.estilo.keys()
+        if not _documento_ligera(k) and (not viejo.estilo.has(k) or viejo.estilo[k] != nuevo.estilo[k])
+            return false
+        end
+    end
+    for k in viejo.estilo.keys()
+        if not _documento_ligera(k) and not nuevo.estilo.has(k)
+            return false
+        end
+    end
+    return true
+end
+
+# El de antes (el que llevan los dibujos), con el estilo del nuevo (él y sus iconos)
+func _documento_pseudo_pasar(viejo: Nodo, nuevo: Nodo) -> Nodo
+    if viejo == nil or nuevo == nil
+        return nuevo
+    end
+    viejo.estilo = nuevo.estilo
+    for h in viejo.hijos
+        if h.tipo == DOM_ELEMENTO
+            h.estilo = nuevo.estilo
+        end
+    end
+    return viejo
 end
 
 # ¿Un estilo que no ocupa sitio en el flujo (display: none, position: absolute o fixed)?
@@ -1661,6 +1855,18 @@ end
 
 # Las imágenes que siguen llegando (sin esperar); true si llegó alguna y se volvió a maquetar
 func documento_imagenes(d: Documento) -> Bool
+    # las <img> que el JavaScript creó sin meterlas en la página (new Image()): se piden y esperan su aviso
+    if d.doc != nil and d.doc.sueltas != nil and d.doc.sueltas.length > 0
+        if d.sueltas == nil
+            var l: [Nodo] = []
+            d.sueltas = l
+        end
+        for n in d.doc.sueltas
+            imagenes_pedir(d.im, n, d.direccion)
+            d.sueltas.push(n)
+        end
+        d.doc.sueltas.clear()
+    end
     if imagenes_pendientes(d.im) > 0
         d.sin_pintar = d.sin_pintar + imagenes_avanzar(d.im, d.doc)
     else
@@ -1675,6 +1881,19 @@ func documento_imagenes(d: Documento) -> Bool
     avisos = imagenes_avisos(d.im)
     if avisos != nil and d.js != 0 and d.doc != nil
         _documento_avisar_imagenes(d, d.doc, avisos)
+        if d.sueltas != nil
+            i = 0
+            while i < d.sueltas.length
+                n = d.sueltas[i]
+                src = dom_img_src(n)
+                if avisos.has(src)
+                    d.sueltas.remove(i)
+                    jsdom_evento(d.js, n, "imagen:" + avisos[src])
+                else
+                    i = i + 1
+                end
+            end
+        end
     end
     d.sin_maquetar = d.sin_maquetar + d.im.cambiados
     d.im.cambiados = 0
@@ -1973,8 +2192,9 @@ func _documento_limite(d: Documento, toques: [Toque]) -> Nodo
         if t.nodo == nil
             return nada
         end
-        # (lo que ya no está en el documento, como una fila que React tocó y luego quitó, no cuenta)
-        if not _dentro_de_nodo(t.nodo, d.doc)
+        # (lo que ya no está en el documento, como una fila que React tocó y luego quitó, no cuenta; ni lo que no se ve,
+        # como un <script> que entra en <head>: si algo pasó a display: none, su estilo cambiado lo dice)
+        if not _dentro_de_nodo(t.nodo, d.doc) or _documento_sin_caja(t.nodo)
             continue
         end
         if b == nil

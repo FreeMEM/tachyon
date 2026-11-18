@@ -1,0 +1,36 @@
+# Test: getElementById con el índice de ids del documento (tarea 76: recorría el árbol entero en cada llamada). Ve lo
+# que entra (appendChild, insertBefore, innerHTML, un subárbol suelto que entra), lo que sale (removeChild,
+# textContent), el id que cambia o se quita, y con ids repetidos da el primero en el orden del árbol.
+# memcheck
+# expect-out: base: a b null
+# expect-out: entra: n1 n2 h1 s2 | sale: null null null
+# expect-out: cambia: null c2 null | repetidos: primero segundo primero
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><div id='a'>a</div><p id='b'>b</p><section id='caja'></section></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "function t(id) { var e = document.getElementById(id); return e ? e.textContent : 'null'; }"
+    c = c + "'base: ' + t('a') + ' ' + t('b') + ' ' + t('x')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var caja = document.getElementById('caja'); var n1 = document.createElement('i'); n1.id = 'n1'; n1.textContent = 'n1'; caja.appendChild(n1);"
+    c = c + "var n2 = document.createElement('i'); n2.id = 'n2'; n2.textContent = 'n2'; caja.insertBefore(n2, n1);"
+    c = c + "caja.insertAdjacentHTML('beforeend', '<b id=\"h1\">h1</b>');"
+    c = c + "var suelto = document.createElement('div'); suelto.innerHTML = '<span><em id=\"s2\">s2</em></span>'; caja.appendChild(suelto);"
+    c = c + "var r = 'entra: ' + t('n1') + ' ' + t('n2') + ' ' + t('h1') + ' ' + t('s2');"
+    c = c + "caja.removeChild(n1); caja.removeChild(suelto); var x1 = t('n1'), x2 = t('s2'); caja.textContent = '';"
+    c = c + "r + ' | sale: ' + x1 + ' ' + x2 + ' ' + t('h1')"
+    Print js_evaluar(js, c, "t.js")
+    c = "var e = document.getElementById('a'); e.id = 'c2'; var y1 = t('a'); e.textContent = 'c2'; var y2 = t('c2'); e.removeAttribute('id');"
+    c = c + "var r = 'cambia: ' + y1 + ' ' + y2 + ' ' + t('c2');"
+    c = c + "var p1 = document.createElement('i'); p1.id = 'd'; p1.textContent = 'segundo'; document.body.appendChild(p1);"
+    c = c + "var p0 = document.createElement('i'); p0.setAttribute('id', 'd'); p0.textContent = 'primero'; document.body.insertBefore(p0, document.body.firstChild);"
+    c = c + "var z1 = t('d'); document.body.removeChild(p0); var z2 = t('d'); document.body.insertBefore(p0, document.body.firstChild);"
+    c = c + "r + ' | repetidos: ' + z1 + ' ' + z2 + ' ' + t('d')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

@@ -1,0 +1,23 @@
+# Test: DOMTokenList.supports() (tarea 76b). classList no tiene palabras admitidas: TypeError, como dice DOM. relList sí:
+# en <link>, las que entiende Tachyon (stylesheet); en <a>, <area> y <form>, noopener y noreferrer (se cumplen
+# siempre). html5test preguntaba link.relList.supports('dns-prefetch') y el TypeError de antes paraba toda su prueba.
+# memcheck
+# expect-out: class: TypeError | link: true false false | a: true true false | area: true | form: true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var r = []; try { document.body.classList.supports('x'); r.push('class: sin error'); } catch (e) { r.push('class: ' + e.name); }"
+    c = c + "var l = document.createElement('link').relList, a = document.createElement('a').relList;"
+    c = c + "r.push('link: ' + l.supports('stylesheet') + ' ' + l.supports('dns-prefetch') + ' ' + l.supports('preload'));"
+    c = c + "r.push('a: ' + a.supports('noopener') + ' ' + a.supports('NoReferrer') + ' ' + a.supports('opener'));"
+    c = c + "r.push('area: ' + document.createElement('area').relList.supports('noopener'));"
+    c = c + "r.push('form: ' + document.createElement('form').relList.supports('noreferrer')); r.join(' | ')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

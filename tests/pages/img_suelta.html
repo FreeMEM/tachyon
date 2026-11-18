@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><title>img suelta</title></head><body><p id="r">...</p>
+<script>
+var r = {}, n = 0;
+function probar(nombre, src) {
+  var i = new Image();
+  i.onload = function () { r[nombre] = 'load ' + i.naturalWidth + 'x' + i.naturalHeight; fin(); };
+  i.onerror = function () { r[nombre] = 'error'; fin(); };
+  i.src = src;
+}
+function fin() {
+  if (++n < 3) return;
+  var t = 'SUELTAS png=' + r.png + ' webp=' + r.webp + ' rota=' + r.rota;
+  console.log(t);
+  document.getElementById('r').textContent = t;
+}
+probar('png', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAADCAIAAAA2iEnWAAAAEUlEQVR4nGP4z8DwnwGMERQARNAF+7BYSawAAAAASUVORK5CYII=');
+probar('webp', 'data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==');
+probar('rota', 'data:image/png;base64,AAAA');
+</script></body></html>

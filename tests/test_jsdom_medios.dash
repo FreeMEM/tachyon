@@ -15,4 +15,5 @@ Main
     Print js_evaluar(js, "var v = document.getElementById('v'), r = ''; v.currentTime = 12.5; v.volume = '0.5'; v.play().catch(function (e) { r = e.name; }); [v.videoWidth, v.videoHeight, v.paused, v.duration, v.readyState, v.buffered.length].join(' ') + ' | ' + [v.currentTime, v.volume, v.muted].join(' ') + \" | '\" + v.canPlayType('video/webm') + \"'\"", "t.js")
     Print js_evaluar(js, "var a = document.getElementById('a'); 'rechaza ' + r + ' | audio ' + a.paused + ' ' + a.currentTime", "t.js")
     Print js_evaluar(js, "var w = 16 / 9, s = function (a, b) { return Math.abs(w * b - a) < 1 || Math.abs(w / a - b) < 1 ? w : a / b; }; 'proporcion ' + s(v.videoWidth, v.videoHeight)", "t.js")
+    js_liberar(js)
 end

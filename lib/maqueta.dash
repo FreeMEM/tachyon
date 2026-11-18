@@ -126,7 +126,21 @@ struct Limite
     ref: Dibujo = nil   # su primer dibujo propio (su fondo, su borde...)
     rx: Int = 0         # dónde estaba al acabar _absoluto (antes de lo de fuera)
     ry: Int = 0
+    # un bloque en el flujo (tarea 76): con qué se maquetó (_bloque_de) y el alto que dio, que no puede cambiar
+    flujo: Bool = false
+    fx: Int = 0
+    fy: Int = 0
+    fancho: Int = 0
+    fcont: Int = 0
+    falto: Int = 0
+    fmt: Int = 0        # (lo que ve su padre, además del alto: sus márgenes con los que se le juntan y si está vacío)
+    fmb: Int = 0
+    fvacio: Bool = false
 end
+
+var _pagina_num: Int = 0
+# Apuntar los bloques en el flujo que aíslan sus márgenes (se puede apagar para medir)
+var maqueta_limites_flujo: Bool = true
 
 struct Pagina
     dibujos: [Dibujo]
@@ -134,6 +148,7 @@ struct Pagina
     alto: Int
     fondo: Int
     limites: [Limite] = nil   # las cajas que se pueden maquetar solas (tarea 48h)
+    num: Int = 0              # (para Nodo.lim_pag)
     # Las cajas anónimas de las tablas (filas y celdas que no están en el DOM): su padre es débil y nada más las
     # sujetaba; al acabar _tabla se liberaban y la celda, que sigue en los dibujos y en las cajas, subía por un padre
     # ya liberado: el Amiga se colgaba con un <col> o con algo suelto en una tabla (WPT tables, 6 reftests)
@@ -185,6 +200,18 @@ end
 
 # Los hijos de n con su ::before delante y su ::after detrás (lib/estilo.dash)
 func _hijos(n: Nodo) -> [Nodo]
+    # (un <details> cerrado solo enseña su primer <summary>; lo demás, también el texto suelto, no: HTML lo esconde en
+    # su sombra; html5test mira que al abrirlo cambie de alto, tarea 76)
+    if n.nombre == "details" and n.tipo == DOM_ELEMENTO and not dom_tiene_atributo(n, "open")
+        var solo: [Nodo] = []
+        for h in n.hijos
+            if h.tipo == DOM_ELEMENTO and h.nombre == "summary"
+                solo.push(h)
+                break
+            end
+        end
+        return solo
+    end
     if n.pseudo_antes == nil and n.pseudo_despues == nil
         return n.hijos
     end
@@ -271,7 +298,27 @@ func _fuente(m: Maquetador, familia: String, tam: Int) -> Int
 end
 
 # Con font-stretch (ancho en %, _estiramiento): solo en las fuentes de la página (las del Amiga no se estiran)
+# (la última que se pidió: bloque tras bloque se repite la misma, y armar la clave con un font-family largo y buscarla
+# costaba el 2 % de la maqueta de html5test; tarea 76. Las fuentes abiertas no se cierran nunca: el número vale)
+var _fa_familia: String = ""
+var _fa_tam: Int = -1
+var _fa_ancho: Int = -1
+var _fa_version: Int = -1
+var _fa_h: Int = 0
 func _fuente_ancha(m: Maquetador, familia: String, tam: Int, ancho: Int) -> Int
+    if tam == _fa_tam and ancho == _fa_ancho and fuentes_web_version == _fa_version and familia == _fa_familia
+        return _fa_h
+    end
+    h = _fuente_ancha_buscar(m, familia, tam, ancho)
+    _fa_familia = familia
+    _fa_tam = tam
+    _fa_ancho = ancho
+    _fa_version = fuentes_web_version
+    _fa_h = h
+    return h
+end
+
+func _fuente_ancha_buscar(m: Maquetador, familia: String, tam: Int, ancho: Int) -> Int
     # primero por el font-family tal cual (suele ser una lista larga: mirarla entera cuesta)
     cruda = familia + "|" + tam + "|" + fuentes_web_version + "|" + ancho
     if m.fuentes.has(cruda)
@@ -463,12 +510,72 @@ func _es_bloque(n: Nodo) -> Bool
     if n.tipo != DOM_ELEMENTO
         return false
     end
-    d = n.estilo["display"]
-    return d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-cell" or d == "flex" or d == "grid"
+    _k(n)
+    return n.k_bloque
 end
 
 func _oculto(n: Nodo) -> Bool
-    return n.tipo == DOM_ELEMENTO and n.estilo["display"] == "none"
+    if n.tipo != DOM_ELEMENTO
+        return false
+    end
+    _k(n)
+    return n.k_disp == KD_NONE
+end
+
+# Lo que más mira la maqueta del estilo (display, position, float), en números en el nodo, sacados una vez por cada
+# estilo (si el diccionario del nodo es otro, otra vez): cada consulta buscaba la clave y copiaba el texto, unas 26
+# por bloque, y buscar en diccionarios y copiar textos era un tercio de la maqueta de html5test (tarea 76)
+const KD_INLINE = 0
+const KD_BLOCK = 1
+const KD_NONE = 2
+const KD_OTRO = 3
+const KP_STATIC = 0
+const KP_RELATIVE = 1
+const KP_ABSOLUTE = 2
+const KP_FIXED = 3
+const KP_STICKY = 4
+
+func _k(n: Nodo)
+    e = n.estilo
+    if n.kc_est == e
+        return
+    end
+    n.kc_est = e
+    d = "inline"
+    if e.has("display")
+        d = e["display"]
+    end
+    n.k_disp = KD_OTRO
+    if d == "inline"
+        n.k_disp = KD_INLINE
+    elif d == "block"
+        n.k_disp = KD_BLOCK
+    elif d == "none"
+        n.k_disp = KD_NONE
+    end
+    n.k_bloque = d == "block" or d == "list-item" or d == "table" or d == "table-row" or d == "table-row-group" or d == "table-header-group" or d == "table-footer-group" or d == "table-cell" or d == "flex" or d == "grid"
+    n.k_pos = KP_STATIC
+    if e.has("position")
+        p = e["position"]
+        if p == "relative"
+            n.k_pos = KP_RELATIVE
+        elif p == "absolute"
+            n.k_pos = KP_ABSOLUTE
+        elif p == "fixed"
+            n.k_pos = KP_FIXED
+        elif p == "sticky"
+            n.k_pos = KP_STICKY
+        end
+    end
+    n.k_flota = 0
+    if e.has("float")
+        f = e["float"]
+        if f == "left"
+            n.k_flota = 1
+        elif f == "right"
+            n.k_flota = 2
+        end
+    end
 end
 
 # === Página ===
@@ -508,6 +615,8 @@ func maquetar(doc: Nodo, ancho: Int) -> Pagina
     maqueta_guardadas = 0
     var dibujos: [Dibujo] = []
     p = Pagina(dibujos, ancho, 0, 16777215)
+    _pagina_num = _pagina_num + 1
+    p.num = _pagina_num
     _anon_pagina = p
     if _topaz == 0
         _topaz = font_open("topaz.font", 8)
@@ -848,6 +957,22 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
     maqueta_bloques = maqueta_bloques + 1
     _maqueta_nivel = _maqueta_nivel + 1
     antes = m.pagina.dibujos.length
+    # un bloque en el flujo que aísla sus márgenes: se apunta con qué se maquetó, para maquetarlo solo si el JavaScript
+    # solo cambia lo de dentro (tarea 76: maqueta_rehacer, si su alto no cambia)
+    var flujo: Limite = nil
+    pend0 = _abs_pend.length
+    peg0 = 0
+    if m.pegajosos != nil
+        peg0 = m.pegajosos.length
+    end
+    if _midiendo == 0 and maqueta_limites_flujo and _flot_fuera == nil and _flujo_candidato(n)
+        flujo = Limite(n, 0, 0, 0, 0, 0, 0, _cat_atomica, _cat_fondo, _alto_definido, m.ancho_linea, m.blanco, _abs_temporal)
+        flujo.flujo = true
+        flujo.fx = x
+        flujo.fy = y
+        flujo.fancho = ancho
+        flujo.fcont = contenedor
+    end
     r = _bloque_en(m, n, x, y, ancho, contenedor)
     # (al medir un ancho, ni transform ni position: relative: no mueven a los demás, y con lo movido la caja que
     # encoge salía 1 px corta y la "e" del logo de Google, con left: -1px, bajaba de línea)
@@ -869,11 +994,12 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # position: relative: se desplaza lo dibujado (left o right, top o bottom) sin mover a los demás (CSS 2.1, 9.4.3)
-    if _midiendo == 0 and _val(n.estilo, "position", "static") == "relative"
+    _k(n)
+    if _midiendo == 0 and n.k_pos == KP_RELATIVE
         _relativo(m, n, antes, contenedor)
     end
     # sticky con top: lo suyo se mueve con el desplazamiento (_cajas_finales pone dónde está y hasta dónde llega)
-    if _midiendo == 0 and _val(n.estilo, "position", "static") == "sticky" and _val(n.estilo, "top", "auto") != "auto"
+    if _midiendo == 0 and n.k_pos == KP_STICKY and _val(n.estilo, "top", "auto") != "auto"
         var pg: Pegajoso = Pegajoso(n, _px(n.estilo, "top", ancho))
         if m.pegajosos == nil
             var lp: [Pegajoso] = []
@@ -892,7 +1018,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # fixed: lo suyo va con la ventana
-    if _val(n.estilo, "position", "static") == "fixed"
+    if n.k_pos == KP_FIXED
         i = antes
         while i < m.pagina.dibujos.length
             m.pagina.dibujos[i].fijo = true
@@ -900,7 +1026,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # posicionado: lo suyo (que no sea de otro posicionado de dentro) va con su orden en el árbol
-    if _val(n.estilo, "position", "static") != "static" and n.orden > 0
+    if n.k_pos != KP_STATIC and n.orden > 0
         i = antes
         while i < m.pagina.dibujos.length
             if m.pagina.dibujos[i].pos == 0
@@ -910,7 +1036,7 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
         end
     end
     # z-index en un elemento posicionado: un contexto de apilado con todo lo suyo (el de fuera manda)
-    if n.estilo.has("z-index") and n.estilo["z-index"] != "auto" and _val(n.estilo, "position", "static") != "static"
+    if n.k_pos != KP_STATIC and n.estilo.has("z-index") and n.estilo["z-index"] != "auto"
         z = Int(n.estilo["z-index"])
         i = antes
         while i < m.pagina.dibujos.length
@@ -931,7 +1057,65 @@ func _bloque_de_ya(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedo
     if maqueta_traza > 0
         _trazar(n, x, y, ancho, r, "")
     end
+    if flujo != nil and _abs_pend.length == pend0 and (m.pegajosos == nil or m.pegajosos.length == peg0)
+        flujo.falto = r
+        _flujo_margenes(flujo, n, contenedor)
+        _limite_apuntar(m, flujo, antes)
+    end
     return r
+end
+
+# Lo que el padre mira de él además de su alto (los márgenes que se juntan a través suyo y si está vacío), sin tocar
+# el acumulador de los márgenes del padre
+func _flujo_margenes(l: Limite, n: Nodo, contenedor: Int)
+    ap = _acum_pos
+    an = _acum_neg
+    l.fmt = _margen_arriba(n, contenedor)
+    l.fmb = _margen_abajo(n, contenedor)
+    l.fvacio = _vacio(n)
+    _acum_pos = ap
+    _acum_neg = an
+end
+
+# Un bloque (no flotante, ni absoluto, ni de lista) cuyo ancho no depende de lo de dentro: su padre es un bloque
+# (lo de más arriba se mira al rehacerlo: _flujo_cadena)
+func _flujo_candidato(n: Nodo) -> Bool
+    if n.tipo != DOM_ELEMENTO or n.nombre == "html" or n.nombre == "body" or n.padre == nil or n.padre.tipo != DOM_ELEMENTO
+        return false
+    end
+    e = n.estilo
+    d = _val(e, "display", "inline")
+    if d != "block" and d != "flow-root"
+        return false
+    end
+    pos = _val(e, "position", "static")
+    if (pos != "static" and pos != "relative") or _val(e, "float", "none") != "none"
+        return false
+    end
+    dp = _val(n.padre.estilo, "display", "inline")
+    return dp == "block" or dp == "flow-root" or dp == "list-item"
+end
+
+# Los de fuera de un bloque en el flujo, hasta <html>: ninguno saca su ancho de lo de dentro (flotante, inline-block,
+# celda, flex, grid, absoluto sin width en px, columnas)
+func _flujo_cadena(b: Nodo) -> Bool
+    a = b.padre
+    while a != nil and a.tipo == DOM_ELEMENTO
+        e = a.estilo
+        d = _val(e, "display", "inline")
+        if d != "block" and d != "flow-root" and d != "list-item"
+            return false
+        end
+        if _val(e, "float", "none") != "none" or e.has("column-count") or e.has("columns")
+            return false
+        end
+        pos = _val(e, "position", "static")
+        if (pos == "absolute" or pos == "fixed") and not _px_fijo(e, "width")
+            return false
+        end
+        a = a.padre
+    end
+    return true
 end
 
 # El alto del contenido de la caja que se está maquetando, si es fijo (height en px, o en % de otro fijo); -1 si
@@ -1288,7 +1472,10 @@ func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: 
     # estático y los pone el primero de arriba que lo sea (la fila de favicons de xataka.com, absolute y top: 0 en un
     # padre sin posicionar, salía bajo la cabecera; tarea 42g). Al medir y en las maquetas de un momento (flex, grid,
     # celdas, inline-block: luego se mueven), como antes, respecto a esta caja.
-    es_caja = _midiendo > 0 or _abs_temporal > 0 or _caja_de_absolutos(n)
+    # (en una maqueta de un momento, la caja es la del primer posicionado de dentro o, si no lo hay, la raíz de esa
+    # maqueta; antes era cualquier bloque, y la nota de cada apartado de html5test, absolute en un <div> sin posicionar
+    # dentro de un <th> relative, salía corrida el relleno del <th> y debajo; tarea 76)
+    es_caja = _midiendo > 0 or (_abs_temporal > 0 and n == _abs_raiz) or _caja_de_absolutos(n)
     # (la caja: la de relleno de este; en <html> sin posicionar, el bloque contenedor inicial, que empieza en el origen
     # de la página y mide la ventana, CSS 2.1 10.1: el map::after absoluto de Acid3 salía corrido el margen de <html>)
     ox = x + ml + bl
@@ -2164,11 +2351,13 @@ func _flota(n: Nodo) -> String
     if n.tipo != DOM_ELEMENTO or _fuera_del_flujo(n)
         return ""
     end
-    if n.estilo.has("float")
-        f = n.estilo["float"]
-        if f == "left" or f == "right"
-            return f
-        end
+    if n.k_flota == 1
+        return "left"
+    elif n.k_flota == 2
+        return "right"
+    end
+    if n.k_disp == KD_INLINE or n.k_disp == KD_BLOCK or n.k_disp == KD_NONE
+        return ""
     end
     if _caja_en_linea(n) and not _alineado(n)
         return "left"
@@ -2222,11 +2411,11 @@ func maqueta_escondido(n: Nodo) -> Bool
 end
 
 func _fuera_del_flujo(n: Nodo) -> Bool
-    if n.tipo != DOM_ELEMENTO or not n.estilo.has("position")
+    if n.tipo != DOM_ELEMENTO
         return false
     end
-    p = n.estilo["position"]
-    return p == "absolute" or p == "fixed"
+    _k(n)
+    return n.k_pos == KP_ABSOLUTE or n.k_pos == KP_FIXED
 end
 
 # Un elemento con position absolute (o fixed) dentro de la caja (cx, cy, cw, ch): top/left/right/
@@ -3628,7 +3817,18 @@ end
 # n es un bloque normal cuyos márgenes pueden juntarse con los de sus hijos: no flota, no va fuera del flujo, overflow
 # visible, no es la raíz ni una caja de flex o grid (los que hacen un contexto aparte no juntan los suyos con los de
 # dentro)
+# (lo mismo durante toda una maqueta: guardado en el nodo; 47.513 llamadas para 8970 bloques en html5test; tarea 76)
 func _junta_hijos(n: Nodo) -> Bool
+    if n.jh_pase == _ma_epoca
+        return n.jh_si
+    end
+    r = _junta_hijos_mirar(n)
+    n.jh_pase = _ma_epoca
+    n.jh_si = r
+    return r
+end
+
+func _junta_hijos_mirar(n: Nodo) -> Bool
     if n.tipo != DOM_ELEMENTO or n.padre == nil or n.nombre == "html" or n.padre.tipo != DOM_ELEMENTO
         return false
     end
@@ -3655,7 +3855,20 @@ end
 
 # Un hijo que no cuenta para juntar márgenes (comentario, oculto, fuera del flujo, blancos); 1 si es un bloque, 2 si
 # es otra cosa (texto, algo en línea, un flotante) que los separa
+# (lo mismo durante toda una maqueta: guardado en el hijo, como _colapsa_arriba, _colapsa_abajo y _vacio; en
+# Wikipedia, 156.000 llamadas a _hijo_margen y unas 50.000 a cada una de las otras: entre el 6 y el 8 % de la carga;
+# del padre solo cuenta su white-space, que se hereda; tarea 76)
 func _hijo_margen(n: Nodo, h: Nodo) -> Int
+    if h.hm_pase == _ma_epoca
+        return h.hm_val
+    end
+    r = _hijo_margen_mirar(n, h)
+    h.hm_pase = _ma_epoca
+    h.hm_val = r
+    return r
+end
+
+func _hijo_margen_mirar(n: Nodo, h: Nodo) -> Int
     if h.tipo == DOM_COMENTARIO or _oculto(h) or _fuera_del_flujo(h)
         return 0
     end
@@ -3674,6 +3887,16 @@ end
 
 # Un bloque vacío: sin borde ni relleno arriba o abajo, sin alto, y dentro solo bloques vacíos; sus márgenes se tocan
 func _vacio(n: Nodo) -> Bool
+    if n.va_pase == _ma_epoca
+        return n.va_si
+    end
+    r = _vacio_mirar(n)
+    n.va_pase = _ma_epoca
+    n.va_si = r
+    return r
+end
+
+func _vacio_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end
@@ -3705,6 +3928,16 @@ end
 # El margen de arriba de n se junta con los de sus primeros hijos: sin borde ni relleno arriba y el primero que
 # cuenta es un bloque
 func _colapsa_arriba(n: Nodo) -> Bool
+    if n.ca_pase == _ma_epoca
+        return n.ca_si
+    end
+    r = _colapsa_arriba_mirar(n)
+    n.ca_pase = _ma_epoca
+    n.ca_si = r
+    return r
+end
+
+func _colapsa_arriba_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end
@@ -3725,6 +3958,16 @@ end
 
 # El de abajo, con los de sus últimos hijos: sin borde ni relleno abajo, alto auto y el último que cuenta, un bloque
 func _colapsa_abajo(n: Nodo) -> Bool
+    if n.cb_pase == _ma_epoca
+        return n.cb_si
+    end
+    r = _colapsa_abajo_mirar(n)
+    n.cb_pase = _ma_epoca
+    n.cb_si = r
+    return r
+end
+
+func _colapsa_abajo_mirar(n: Nodo) -> Bool
     if not _junta_hijos(n)
         return false
     end
@@ -3918,6 +4161,7 @@ var _abs_pend: [Nodo] = []
 var _abs_px: [Int] = []
 var _abs_py: [Int] = []
 var _abs_temporal: Int = 0
+var _abs_raiz: Nodo = nil   # (la raíz de la maqueta de un momento en curso)
 
 # ¿Es la caja de sus absolutos? Posicionada, con transform, o la raíz
 func _caja_de_absolutos(n: Nodo) -> Bool
@@ -4143,8 +4387,38 @@ func _piezas(m: Maquetador, n: Nodo, e_padre: {String: String}, piezas: [Pieza],
     if n.nombre == "a" and dom_tiene_atributo(n, "href")
         destino = dom_atributo(n, "href")
     end
+    # margen, borde y relleno a los lados de un elemento en línea: un hueco pegado delante de lo suyo y otro detrás
+    # (antes no contaban: el texto de los botones de html5test, <span> con margin-left: 10px, salía pegado al borde;
+    # tarea 76). Su fondo y su borde aún no se pintan
+    izq = 0
+    der = 0
+    if e.has("margin-left") or e.has("padding-left") or e.has("border-left-style") or e.has("margin-right") or e.has("padding-right") or e.has("border-right-style")
+        izq = _px(e, "margin-left", m.ancho_linea) + _borde(e, "left") + _px(e, "padding-left", m.ancho_linea)
+        der = _px(e, "margin-right", m.ancho_linea) + _borde(e, "right") + _px(e, "padding-right", m.ancho_linea)
+    end
+    i0 = piezas.length
+    if izq > 0
+        hi = Pieza("", izq, 0, 0, 0, 0, 0, false, destino, 0, false, false)
+        hi.nodo = n
+        piezas.push(hi)
+    end
     for h in _hijos(n)
         _piezas(m, h, e, piezas, destino)
+    end
+    if izq > 0 and piezas.length > i0 + 1
+        # (el blanco de delante va antes del hueco; lo suyo, pegado a él)
+        sig = piezas[i0 + 1]
+        if not sig.salto
+            piezas[i0].espacio = sig.espacio
+            sig.espacio = 0
+            sig.pegada = true
+        end
+    end
+    if der > 0 and piezas.length > i0
+        hd = Pieza("", der, 0, 0, 0, 0, 0, false, destino, 0, false, false)
+        hd.nodo = n
+        hd.pegada = true
+        piezas.push(hd)
     end
 end
 
@@ -4159,7 +4433,10 @@ func _pieza_caja(m: Maquetador, n: Nodo, piezas: [Pieza], enlace: String)
     end
     antes = m.pagina.dibujos.length
     _abs_temporal = _abs_temporal + 1
+    raiz = _abs_raiz
+    _abs_raiz = n
     h = _bloque_de(m, n, 0, 0, w, m.ancho_linea)
+    _abs_raiz = raiz
     _abs_temporal = _abs_temporal - 1
     base = h
     i = m.pagina.dibujos.length - 1
@@ -6107,7 +6384,10 @@ func _flex_maquetar(m: Maquetador, it: FlexHijo, ancho_ext: Int, contenedor: Int
     _forzado_w = w
     _forzado_h = h
     _abs_temporal = _abs_temporal + 1
+    raiz = _abs_raiz
+    _abs_raiz = it.nodo
     alto = _bloque_de(m, it.nodo, 0, 0, ancho_ext, contenedor)
+    _abs_raiz = raiz
     _abs_temporal = _abs_temporal - 1
     _forzado = forzado
     _forzado_w = forzado_w
@@ -7628,25 +7908,29 @@ func _limite_apuntar(m: Maquetador, l: Limite, antes: Int)
         var ls: [Limite] = []
         p.limites = ls
     end
-    # (la última vez que se maquetó en esta maqueta es la que vale: flex y grid maquetan de un momento y mueven)
+    # (la última vez que se maquetó en esta maqueta es la que vale: flex y grid maquetan de un momento y mueven; por
+    # su sitio en la lista, apuntado en el nodo: con los bloques en el flujo son miles)
+    if n.lim_pag == p.num and n.lim_idx < p.limites.length and p.limites[n.lim_idx].nodo == n
+        p.limites[n.lim_idx] = l
+    else
+        n.lim_pag = p.num
+        n.lim_idx = p.limites.length
+        p.limites.push(l)
+    end
+end
+
+func _limites_numerar(p: Pagina)
     k = 0
     while k < p.limites.length
-        if p.limites[k].nodo == n
-            p.limites.remove(k)
-        else
-            k = k + 1
-        end
+        p.limites[k].nodo.lim_pag = p.num
+        p.limites[k].nodo.lim_idx = k
+        k = k + 1
     end
-    p.limites.push(l)
 end
 
 func _limite_en(p: Pagina, n: Nodo) -> Limite
-    if p != nil and p.limites != nil
-        for l in p.limites
-            if l.nodo == n
-                return l
-            end
-        end
+    if p != nil and p.limites != nil and n.lim_pag == p.num and n.lim_idx < p.limites.length and p.limites[n.lim_idx].nodo == n
+        return p.limites[n.lim_idx]
     end
     var nada: Limite = nil
     return nada
@@ -7719,17 +8003,24 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
     if ref.anim != nil or ref.fijo or ref.pega != nil
         return nada
     end
+    if l.flujo and not _flujo_cadena(b)
+        return nada
+    end
     for d in p.dibujos
-        if d.anim != nil and _de_limite(d, b)
+        if (d.anim != nil or (l.flujo and (d.fijo or d.pega != nil))) and _de_limite(d, b)
             return nada
         end
     end
-    # lo de fuera: su capa (la de fuera manda) y si la vela; con un transform, nada
+    # lo de fuera: su capa (la de fuera manda), si la vela y su orden de posicionado; con un transform, nada
     capa = 0
     con_capa = false
     velada = false
+    pos_fuera = 0
     a = b.padre
     while a != nil and a.tipo == DOM_ELEMENTO
+        if pos_fuera == 0 and a.orden > 0 and _val(a.estilo, "position", "static") != "static"
+            pos_fuera = a.orden
+        end
         if _transformacion(a.estilo) != ""
             return nada
         end
@@ -7744,6 +8035,8 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
     end
     var dibs: [Dibujo] = []
     p2 = Pagina(dibs, p.ancho, 0, p.fondo)
+    _pagina_num = _pagina_num + 1
+    p2.num = _pagina_num
     m2 = Maquetador(p2, _fuentes_abiertas, _topaz)
     var cajas: [CajaNodo] = []
     m2.cajas = cajas
@@ -7759,7 +8052,22 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
     _cat_fondo = l.fondo
     _alto_definido = l.alto_def
     _abs_temporal = l.temporal
-    _absoluto(m2, b, l.cx, l.cy, l.cw, l.ch, l.pl, l.pt)
+    alto_ok = true
+    if l.flujo
+        ff = _flot_fuera
+        var sin_flot: [Flotante] = nil
+        _flot_fuera = sin_flot
+        r2 = _bloque_de(m2, b, l.fx, l.fy, l.fancho, l.fcont)
+        _flot_fuera = ff
+        alto_ok = r2 == l.falto and _abs_pend.length == pend
+        if alto_ok
+            var otra: Limite = Limite(b, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, 0, 0)
+            _flujo_margenes(otra, b, l.fcont)
+            alto_ok = otra.fmt == l.fmt and otra.fmb == l.fmb and otra.fvacio == l.fvacio
+        end
+    else
+        _absoluto(m2, b, l.cx, l.cy, l.cw, l.ch, l.pl, l.pt)
+    end
     _cat_atomica = cat
     _cat_fondo = fondo
     _alto_definido = ad
@@ -7770,7 +8078,7 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
         _abs_py.pop()
     end
     l2 = _limite_en(p2, b)
-    if l2 == nil or l2.ref == nil or m2.pegajosos != nil
+    if not alto_ok or l2 == nil or l2.ref == nil or m2.pegajosos != nil
         return nada
     end
     for d in p2.dibujos
@@ -7793,6 +8101,9 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
         end
         if velada
             d.velado = true
+        end
+        if d.pos == 0 and pos_fuera > 0
+            d.pos = pos_fuera
         end
     end
     for c in m2.cajas
@@ -7828,9 +8139,12 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
             k = k + 1
         end
     end
-    for nl in p2.limites
-        p.limites.push(nl)
+    if p2.limites != nil
+        for nl in p2.limites
+            p.limites.push(nl)
+        end
     end
+    _limites_numerar(p)
     # (lo de fuera la movió: la próxima vez, desde lo nuevo, igual)
     return p2.dibujos
 end

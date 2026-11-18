@@ -1,0 +1,29 @@
+# Test: Worker (tarea 76): el script en un contexto aparte; los mensajes de ida y vuelta copiados (objetos, arrays,
+# Date) y entregados después; sus temporizadores; un error en él llega a onerror de la página; tras terminate no llega
+# nada; a lo más 8 por página (el noveno, NotSupportedError). El script, de una dirección blob: (sin red).
+# expect-out: mensajes: {"doble":42,"arr":[2,3],"anyo":2020,"otro":true,"global":"object"} | temporizador
+# expect-out: error: boom | tras terminate: 0 | noveno: NotSupportedError
+
+import "../lib/documento.dash"
+
+Main
+    h = "<body><script>var r = [];</script></body>"
+    d = documento_html("http://x.com/a", h)
+    c = "var src = 'self.onmessage = function (e) { var d = e.data; postMessage({doble: d.n * 2, arr: d.arr.map(function (x) { return x + 1; }), anyo: d.f.getUTCFullYear(), otro: d.f !== e.data.f || true, global: typeof self}); };"
+    c = c + " setTimeout(function () { postMessage(\"temporizador\"); }, 50);';"
+    c = c + "var w = new Worker(URL.createObjectURL(new Blob([src]))); w.onmessage = function (e) { r.push(typeof e.data == 'string' ? e.data : JSON.stringify(e.data)); };"
+    c = c + "w.postMessage({n: 21, arr: [1, 2], f: new Date(Date.UTC(2020, 0, 1))});"
+    c = c + "var err = ''; var w2 = new Worker(URL.createObjectURL(new Blob(['self.onmessage = function () { throw new Error(\"boom\"); };'])));"
+    c = c + "w2.onerror = function (e) { err = e.message; }; w2.postMessage(1);"
+    c = c + "var tras = 0; var w3 = new Worker(URL.createObjectURL(new Blob(['self.onmessage = function () { postMessage(1); };']))); w3.onmessage = function () { tras++; }; w3.terminate(); w3.postMessage(1);"
+    js_evaluar(d.js, c, "t.js")
+    for k in (1..30)
+        jsdom_temporizadores(d.js)
+        time_delay(2)
+    end
+    Print js_evaluar(d.js, "'mensajes: ' + r.join(' | ')", "t.js")
+    c = "var nov = ''; try { for (var i = 0; i < 8; i++) new Worker(URL.createObjectURL(new Blob(['']))); } catch (e) { nov = e.name; }"
+    c = c + "'error: ' + err.replace(/^.*?(boom).*$/, '$1') + ' | tras terminate: ' + tras + ' | noveno: ' + nov"
+    Print js_evaluar(d.js, c, "t.js")
+    documento_liberar(d)
+end

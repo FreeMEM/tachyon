@@ -1,0 +1,38 @@
+# Test: FileReader (tarea 76): lee un Blob como texto, ArrayBuffer, data: y cadena binaria, después y con sus eventos
+# (loadstart, progress, load, loadend y onload), y abort lo corta. contentEditable, isContentEditable (heredado) y
+# document.designMode.
+# expect-out: eventos: loadstart,progress,load,loadend | 2 | hola ñ
+# expect-out: buffer: 3 1,2,255 | url: data:text/plain;base64,aG9sYQ== | binario: 3 255
+# expect-out: abort: abort,loadend 2 null
+# expect-out: editable: inherit true true false | designMode: off on true
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+Main
+    doc = dom_desde_html5("<html><head></head><body><div id=d contenteditable><p id=p>x</p><p id=q contenteditable=false>y</p></div><i id=i>z</i></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    c = "var ev = [], r = [], fr = new FileReader(); ['loadstart', 'progress', 'load', 'loadend'].forEach(function (t) { fr.addEventListener(t, function () { ev.push(t); }); });"
+    c = c + "fr.onload = function () { r.push(fr.readyState, fr.result); }; fr.readAsText(new Blob(['hola ', '\\u00f1']));"
+    js_evaluar(js, c, "t.js")
+    for k in (1..3)
+        jsdom_temporizadores(js)
+    end
+    Print js_evaluar(js, "'eventos: ' + ev.join(',') + ' | ' + r.join(' | ')", "t.js")
+    c = "var out = []; var a = new FileReader(); a.onload = function () { var u = new Uint8Array(a.result); out.push('buffer: ' + a.result.byteLength + ' ' + Array.prototype.join.call(u, ',')); }; a.readAsArrayBuffer(new Blob([new Uint8Array([1, 2, 255])]));"
+    c = c + "var b = new FileReader(); b.onload = function () { out.push('url: ' + b.result); }; b.readAsDataURL(new Blob(['hola'], {type: 'text/plain'}));"
+    c = c + "var cc = new FileReader(); cc.onload = function () { out.push('binario: ' + cc.result.length + ' ' + cc.result.charCodeAt(2)); }; cc.readAsBinaryString(new Blob([new Uint8Array([1, 2, 255])]));"
+    c = c + "var ab = [], d = new FileReader(); d.onabort = function () { ab.push('abort'); }; d.onloadend = function () { ab.push('loadend'); }; d.onload = function () { ab.push('load'); }; d.readAsText(new Blob(['x'])); d.abort();"
+    js_evaluar(js, c, "t.js")
+    for k in (1..3)
+        jsdom_temporizadores(js)
+    end
+    Print js_evaluar(js, "out.join(' | ')", "t.js")
+    Print js_evaluar(js, "'abort: ' + ab.join(',') + ' ' + d.readyState + ' ' + d.result", "t.js")
+    c = "var $ = function (i) { return document.getElementById(i); };"
+    c = c + "var e = 'editable: ' + [$('i').contentEditable, $('d').isContentEditable, $('p').isContentEditable, $('q').isContentEditable].join(' ');"
+    c = c + "var m = document.designMode; document.designMode = 'on'; e + ' | designMode: ' + [m, document.designMode, $('i').isContentEditable].join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    js_liberar(js)
+end

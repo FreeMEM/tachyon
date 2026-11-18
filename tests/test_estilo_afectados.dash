@@ -1,0 +1,30 @@
+# Test: estilo_afectados (tarea 76c): los elementos de la página con los que casa alguna regla de unas hojas nuevas
+# (por id, clase, etiqueta o sin nada de eso; también por su ::before), hasta un tope; ninguno si no casan con nada
+# (MediaWiki mete así el CSS de cada módulo: entonces no se rehace ni el estilo ni la maqueta).
+# memcheck
+# expect-out: casan: p#a span#b div#c li#d
+# expect-out: ninguno: 0 | tope 2: 2
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/estilo.dash"
+
+func nombres(l: [Nodo]) -> String
+    r = ""
+    for n in l
+        if r != ""
+            r = r + " "
+        end
+        r = r + n.nombre + "#" + dom_id(n)
+    end
+    return r
+end
+
+Main
+    doc = dom_desde_html("<body><div class=x><p id=a>a</p></div><span id=b>b</span><div id=c class='y z'>c</div><ul><li id=d>d</li></ul></body>")
+    hoja = css_leer(".x p { color: red } #b::before { content: 'x' } .z { margin: 1px } [data-q] { color: blue } ul > :first-child { color: green }", 0)
+    var l: [HojaCSS] = [hoja]
+    Print "casan: " + nombres(estilo_afectados(doc, l, 100))
+    nada = css_leer(".dialogo .boton { color: red } #ventana { display: none } video { width: 1px }", 0)
+    var l2: [HojaCSS] = [nada]
+    Print "ninguno: " + estilo_afectados(doc, l2, 100).length + " | tope 2: " + estilo_afectados(doc, l, 2).length
+end

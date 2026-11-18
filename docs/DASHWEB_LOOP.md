@@ -11,7 +11,12 @@ Arranque (desde cualquier directorio):
 **Después (usuario, 2026-10-24): "que se vea bien la web de youtube sería un puntazo": la 38 va la siguiente, tras
 publicar la 0.7.2; luego la 53 (las webs de chat).**
 
-**Encargo vigente (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
+**Encargo vigente (usuario, 2026-11-17): "ahora tenemos que conseguir que Tachyon sea absurdamente más rápido que
+Amelinium, y que funcione el html5test".** Manda sobre todo lo de abajo: la tarea 76 (cada punto que perdió en la
+comparativa en vídeo, y medir contra los tiempos de Amelinium de ~/.cache/video-comparativa/datos.json) y html5test.co
+dando su puntuación (copia guardada y servida desde el PC, como en la 62). WPT, después.
+
+**Encargo anterior (usuario, 2026-11-07): las baterías de estándares primero: la 41d (Web Platform Tests, por
 carpetas, las de más fallos antes; resúmenes en docs/wpt/) y lo que quede del dibujo de Acid3 (41c). Después, lo
 pendiente del plan. Esto manda sobre los dos encargos de arriba. Al acabar WPT, la 62
 (las demás baterías: compatibilidad, velocidad, red y seguridad).**
@@ -621,6 +626,16 @@ tarea, con el estilo de Dash.
 - [ ] 74. **Favicon (idea de Alex Agauser, grupo Dash Amiga, 2026-11-14: si Tachyon muestra el favicon en algún
       lado).** No lo muestra. Leer <link rel="icon"> (o /favicon.ico) y ponerlo junto a la dirección, en las pestañas o
       en los marcadores. Nada urgente.
+- [ ] 77. **Antes de la próxima versión: probar paquete/Instalar lanzado desde un Shell en otra carpeta** (lo vio
+      dash-lienzo-2.6: copiaba el directorio actual a SYS:Tachyon; cambiado a pathonly @icon, sin probar). Con
+      Installer 44.10: una copia propia (reflink) del Coffin limpio de la sesión dash-lienzo-2.6 (el suyo no se toca,
+      ni DashCoffin.hdf; su TRASPASO.md dice cómo arrancarlo sin ventana). Y, si vuelve a pasar, la zona
+      negra al cerrar Tachyon con su gadget (Amiberry, AmigaOS 3.2; una vez, el proceso de control del emulador murió).
+- [ ] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
+      contestó "for a coming version").** (a) #18: agrandar o reducir el texto (zoom), o elegir la fuente y el tamaño
+      por omisión: en un escritorio de 1440x900 se lee mal. (b) #19: iconificar Tachyon (Amiga+I). Va con su nombre
+      (regla de reconocimiento). Contestados también por dashos-97: #15 (Daniel, el control antispam de itch.io: queda
+      lejos) y #16 (BordanBordan, congelado en A500 + CM4 con Emu68: se le pidió probar la 0.10.0-alfa y datos).
 - [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
       apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
@@ -630,8 +645,70 @@ tarea, con el estilo de Dash.
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
           de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
-      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588).
+          (2026-11-17) Banco tests/pages/zz_bench_dom2.html (5000 vueltas, emulador RTG), de eb32e1e a hoy:
+          childNodes[i] 2380 -> 100 ms, classList.add/remove 5360 -> 3420, style.x= 3100 -> 2260, setAttribute
+          1020 -> 620, insertBefore 2460 -> 1920. Lo que más queda: classList (el Proxy de lt[0]: dos trampas por
+          llamada), style.x=, insertBefore, addEventListener, createElement.
+      (b) html5test.co: carga, pero no enseña la puntuación (Amelinium 334/588). (2026-11-17, usuario: "que funcione
+          el html5test": va con el encargo vigente.)
+          (2026-11-17, tarde) Da 228/588 en la copia (tools/espejo.py 40991, con red: whichbrowser lleva un número
+          al azar en la dirección y sin red da 404 y se queda esperando). Arreglado: getElementById con índice de
+          ids en el documento (recorría el árbol entero: 1,4 millones de nodos visitados, el 5 % del tiempo); un
+          ::before que solo cambia de visibility ya no rehace la maqueta; imagenes_fondo no reescribe el
+          background-image (url(x) frente a url("x") salía como cambio). Lo que queda, en el emulador RTG (~85 s):
+          (1) el JavaScript mete los resultados (1001 cambios: estilo entero ~10 s y maqueta ~8,5 s de 9000
+          bloques); (2) al final, visibility: visible en div.column marca 3613 elementos (estilo ~5 s: cada uno
+          busca sus reglas otra vez aunque solo cambia lo heredado; guardar sus ganadoras y rehacer solo la herencia
+          en los que las invalidation sets no nombran) y un div en flujo pasa a display: none (maqueta entera ~6 s:
+          es la c2); (3) Main 60 % propio en el perfil: QuickJS y C. Medido también: en esa maqueta final solo
+          86 ms de 8,8 s caían en bloques sin cambios (la reutilización de bloques no ayuda mientras el estilo
+          marque como tocado lo que solo cambia de visibility o color). Fallos de dibujo vistos: la nota "0/5"
+          tapa la fila de "Parsing rules"; el texto de "Save results" y "Compare to..." pegado a la izquierda.
+          (2026-11-17, noche) Hecho: un cambio que solo se hereda no busca otra vez las reglas de los de dentro
+          (51aff21; html5test, estilo del visibility final de 4,9 a 3,3 s) y sin maqueta por un color, un
+          atributo que solo nombra el CSS o un <script> de paso (dadbe17). Probado y descartado otra vez: <html>
+          por el camino de solo herencia (Wikipedia: 7,1 s frente a 2,0 del estilo entero). En Wikipedia el
+          índice cambia color y font-weight del apartado al bajar: necesita maqueta (~1 s): es la c2. Siguiente:
+          la c2 (rehacer solo el bloque tocado) y el coste por elemento del estilo y la maqueta nuevos de html5test.
+          (2026-11-18) html5test de 228 a 277 en la copia (y más con lo que no se ha medido aún): el analizador HTML5
+          (Hubbub sin header, main, nav ni section en su tabla; "<!--" en textarea/style; <form> e <input
+          type=hidden> en una tabla; innerHTML de tabla, fila, select y <html> con HTML5), CanvasRenderingContext2D,
+          figcaption, mark, details, formularios de HTML5 (saneado, valueAsNumber/Date, stepUp/Down, validación,
+          selección), FileReader, contentEditable y Worker (un contexto de QuickJS aparte, por turnos). Fechas: el
+          __fixdfdi del runtime de dashc daba 49 días de más en la mitad de las fechas (rodeado en QuickJS, avisado a
+          Dash). Lo que queda con puntos y se puede hacer de verdad: WebSocket (15, red en C), EventSource (5, pide
+          que fetch entregue la respuesta a trozos), subtítulos de <track> (8), indexedDB (21). La comprobación de
+          parsing.tree no puede pasar en la copia (el espejo reescribe http://www.w3.org/... en engine.js).
+          El perfil de JavaScript (-DJS_PERFIL) no sirve: 148 muestras en Wikipedia y un assert de QuickJS (atom <
+          rt->atom_size) al volcarlo: por mirar.
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
+      (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
+          límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador
+          RTG, 9000 bloques). Plan: rehacer solo el bloque tocado cuando es un bloque en flujo normal con toda su
+          cadena de antepasados también en flujo normal (sin flex, grid, tabla, inline-block, flotante ni absoluto que
+          dependa de su alto) y no vacío arriba ni abajo (sus márgenes no se juntan a través de él); si su alto cambia
+          dy, correr dy lo que va detrás en esa cadena (dibujos y cajas: _documento_mover_cajas), alargar dy los fondos
+          y bordes de los antepasados y el alto de la página. Medir con la copia de html5test (tools/espejo.py) y con
+          zz_bench_k4.html (cambiar clases: offsetHeight).
+      (c3, 2026-11-17) Wikipedia en el espejo (tools/espejo.py 40992), comparada con la versión de antes (A/B,
+          $S/ab_wiki.sh): las hojas nuevas por partes bajan estilos y maquetas de 24,5-30 s a 21,4 s, pero el total
+          sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
+          MediaWiki) y con ella una --x de <html> (--color-success, 1 de 104). Cada elemento guarda su copia de las
+          --x heredadas: rehacer solo lo que usa esa --x pide que se compartan (o propagar el cambio). Lo siguiente.
+          También: el paquete principal de JavaScript de MediaWiki (load.php?modules=ext.centralNotice...|jquery|
+          mediawiki...: empieza por centralNotice pero lleva todo) son 4 s; el preludio, 1,7 s por página en el
+          emulador (sin Tachyon.bc guardado). La medida de la copia de Wikipedia varía mucho (41 y 64 s con el mismo
+          programa): hacen falta varias pasadas.
+          (2026-11-17, probado y descartado) Llevar el cambio de las --x de <html> solo a lo que las usa (y quitar el
+          estilo entero por lo que no se hereda en <html>): correcto, pero en Wikipedia más lento (A/B, dos pasadas:
+          estilos y maquetas 21-23 s frente a 17,5-18,3; final 41-43 s frente a 37-38): las clases de <html> de
+          MediaWiki tocan casi toda la página y por partes, solapadas, sale más caro que el estilo entero. Se quedó
+          solo el arreglo cuadrático de _estilo_subarbol (ph_pase).
+          (2026-11-17) Una <img> con ancho y alto en el CSS ya no rehace la maqueta al llegar (el logo): el total no
+          cambia (A/B: 37,8-38,3 s; estilos y maquetas 18,1-18,3 s, igual que antes). En Wikipedia el final lo marca
+          cuándo acaba el último módulo de JavaScript de MediaWiki (el perfil: temporizadores 37 %), no el estilo ni
+          la maqueta: lo siguiente para "mucho más rápido" es el JavaScript (qué llamadas del DOM cuestan más desde
+          QuickJS) y que los cambios del JavaScript no esperen a una maqueta entera.
       (d) GitHub (github.com/torvalds/linux): más rápido (16,2 s frente a 29,7) pero quedan bloques grises sin rellenar.
       (e) YouTube: el aviso de cookies no se cierra (en el vídeo se le dio la cookie); la página, 58,8 s; del clic al
           sonido, 22,7 s frente a 1,9; 201 MB reproduciendo frente a 36.

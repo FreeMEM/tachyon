@@ -20,4 +20,5 @@ Main
     Print js_evaluar(js, "l.join(' ') + ' | ' + d", "t.js") + " | seguir " + s
     js_evaluar(js, "document.getElementById('a').addEventListener('click', function (e) { e.preventDefault(); });", "t.js")
     Print "con click cancelado: seguir " + jsdom_clic(js, a)
+    js_liberar(js)
 end

@@ -63,6 +63,12 @@ In `third_party/quickjs/quickjs.c` (second commit of the repo, to see the diff):
 9. `js_deq` (`quickjs.c`, task 41d): for the same reason as 7, `Infinity === Infinity` was false in the emulator;
    equality and `<=`/`>=` of two doubles compare the bits when both are infinite. WPT's testharness.js tells 0 from
    -0 with `1/x === 1/y`, and every comparison with 0 failed ("expected 0 but got 0").
+10. `f64_a_i64` (`quickjs.c`, task 76): `get_date_fields` and `set_date_fields` converted the time value from
+   `double` to `int64_t` with libgcc's `__fixdfdi` as linked by dashc's runtime, which on the 68k comes out 2^32 too
+   high when bit 31 of the result is set: `new Date(1709164800000)` was 18 April 2024 instead of 29 February, and
+   about half of all days came out 49 days late (when turning `Date.now()` into text, for instance). `f64_a_i64`
+   converts in 16-bit pieces. The bug is in the runtime (reported to Dash on 2026-11-18); any other
+   `(int64_t)double` in C linked by dashc has it too.
 
 ## Problems found
 

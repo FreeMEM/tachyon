@@ -15,8 +15,10 @@
     (set #avisos (cat #avisos "- Falta MUI (muimaster.library): https://muidev.de\n")))
 (if (not (exists "AmiSSL:" (noreq)))
     (set #avisos (cat #avisos "- Falta AmiSSL 5 (sin él, no hay HTTPS): https://github.com/jens-maus/amissl\n")))
-(if (not (exists "LIBS:bsdsocket.library"))
-    (set #avisos (cat #avisos "- No se ve bsdsocket.library en LIBS: hace falta una pila TCP/IP (Roadshow, AmiTCP, Genesis, Miami) en marcha.\n")))
+; (en LIBS: o ya en memoria: Miami, Genesis o AmiNetXDuo la tienen en su cajón y no en LIBS:, y el aviso salía con
+; la red en marcha; lo contó Ingloriond)
+(if (and (not (exists "LIBS:bsdsocket.library")) (= (getversion "bsdsocket.library" (resident)) 0))
+    (set #avisos (cat #avisos "- No se encuentra bsdsocket.library: hace falta una pila TCP/IP (Roadshow, AmiTCP, Genesis, Miami, AmiNetXDuo) en marcha. Si la arrancas luego, no pasa nada.\n")))
 (if (exists "SYS:Classes/DataTypes/picture.datatype")
     (if (< (/ (getversion "SYS:Classes/DataTypes/picture.datatype") 65536) 43)
         (set #avisos (cat #avisos "- picture.datatype es anterior a la 43 (AmigaOS 3.5): las páginas se verán sin imágenes.\n")))
@@ -33,11 +35,16 @@
 (set @default-dest (tackon #destino "Tachyon"))
 
 ; --- Copiar ---
+; (lo del cajón donde está este Instalar, no el directorio actual: lanzado desde un Shell en otro sitio copiaba ese
+; otro sitio entero; @icon es el guion con su ruta, desde el Workbench y desde el Shell)
+(set #origen (pathonly @icon))
+(if (not (exists (tackon #origen "Tachyon")))
+    (abort (cat "No encuentro el programa Tachyon junto a este Instalar (" #origen "). Descomprime tachyon.lha y abre el Instalar de su cajón Tachyon.")))
 (makedir @default-dest (infos))
-(foreach "" "#?"
+(foreach #origen "#?"
     (if (and (<> @each-name "Instalar") (<> @each-name "Instalar.info"))
         (if (= @each-type 2)
-            (copyfiles (source @each-name) (dest (tackon @default-dest @each-name)) (all) (infos))
-            (copyfiles (source @each-name) (dest @default-dest)))))
+            (copyfiles (source (tackon #origen @each-name)) (dest (tackon @default-dest @each-name)) (all) (infos))
+            (copyfiles (source (tackon #origen @each-name)) (dest @default-dest)))))
 
 (exit (cat "Tachyon está en " @default-dest ".\n\nPara abrirlo: doble clic en su icono, o desde el Shell: Tachyon http://aminet.net/"))

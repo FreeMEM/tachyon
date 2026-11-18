@@ -172,6 +172,9 @@ end
 func _jsdom_vaciar(n: Nodo)
     var nadie: Nodo = nil
     for h in n.hijos
+        if h.tipo == DOM_ELEMENTO
+            dom_ids_sale(n, h)
+        end
         h.padre = nadie
     end
     n.hijos.clear()
@@ -193,6 +196,11 @@ end
         if a.nombre == clave
             if a.valor != valor
                 dom_apuntar(n, TOQUE_ATRIBUTO, clave, a.valor, valor)
+                if clave == "id"
+                    viejo = a.valor
+                    a.valor = valor
+                    dom_ids_cambia(n, viejo, valor)
+                end
             end
             a.valor = valor
             return
@@ -200,6 +208,9 @@ end
     end
     n.atributos.push(Atributo(clave, valor))
     dom_apuntar(n, TOQUE_ATRIBUTO, clave, "", valor)
+    if clave == "id"
+        dom_ids_cambia(n, "", valor)
+    end
 end
 
 @export func jsdom_quitar_atributo(n: Nodo, nombre: String)
@@ -210,7 +221,11 @@ end
         a = n.atributos[i]
         if a.nombre == clave
             dom_apuntar(n, TOQUE_ATRIBUTO, clave, a.valor, "")
+            viejo = a.valor
             n.atributos.remove(i)
+            if clave == "id"
+                dom_ids_cambia(n, viejo, "")
+            end
             return
         end
         i = i + 1
@@ -263,6 +278,9 @@ end
             else
                 # (un texto que sale cambia lo de dentro del padre, como uno que entra: :empty; Acid3 38)
                 dom_apuntar(padre, TOQUE_CONTENIDO, "#texto", "", "")
+            end
+            if hijo.tipo == DOM_ELEMENTO
+                dom_ids_sale(padre, hijo)
             end
             var nadie: Nodo = nil
             hijo.padre = nadie
@@ -340,13 +358,34 @@ end
     dom_apuntar(n, TOQUE_CONTENIDO, _jsdom_marca_texto(solo_texto), "", "")
     # (con las reglas de HTML5, como una página: <table><tr> lleva su <tbody>, Acid3 29; dentro de una tabla o un
     # select, donde el contexto cambia las reglas, con el lector sencillo)
+    # (dentro de una tabla, una fila, un select o <html>, también con HTML5, con el fragmento metido en su contexto:
+    # <table>.innerHTML = "<col>" da su <colgroup>; <html>.innerHTML = "" da <head> y <body>; html5test, tarea 76)
     var trozo: Nodo = nil
-    if n.nombre == "table" or n.nombre == "thead" or n.nombre == "tbody" or n.nombre == "tfoot" or n.nombre == "tr" or n.nombre == "colgroup" or n.nombre == "select" or n.nombre == "optgroup" or n.nombre == "html" or n.nombre == "head" or n.nombre == "template"
+    contexto = "body"
+    if n.nombre == "table"
+        trozo = dom_desde_html5("<body><table>" + html + "</table>")
+        contexto = "table"
+    elif n.nombre == "thead" or n.nombre == "tbody" or n.nombre == "tfoot"
+        trozo = dom_desde_html5("<body><table><" + n.nombre + ">" + html + "</" + n.nombre + "></table>")
+        contexto = n.nombre
+    elif n.nombre == "tr"
+        trozo = dom_desde_html5("<body><table><tbody><tr>" + html + "</tr></tbody></table>")
+        contexto = "tr"
+    elif n.nombre == "colgroup"
+        trozo = dom_desde_html5("<body><table><colgroup>" + html + "</colgroup></table>")
+        contexto = "colgroup"
+    elif n.nombre == "select"
+        trozo = dom_desde_html5("<body><select>" + html + "</select>")
+        contexto = "select"
+    elif n.nombre == "html"
+        trozo = dom_desde_html5(html)
+        contexto = "html"
+    elif n.nombre == "optgroup" or n.nombre == "head" or n.nombre == "template"
         trozo = dom_desde_html("<body>" + html)
     else
         trozo = dom_desde_html5("<body>" + html)
     end
-    cuerpo = dom_buscar(trozo, "body")
+    cuerpo = dom_buscar(trozo, contexto)
     if cuerpo == nil
         return
     end
@@ -416,6 +455,9 @@ end
             padre.hijos.insert(i, nuevo)
             dom_cambio()
             nuevo.padre = padre
+            if nuevo.tipo == DOM_ELEMENTO
+                dom_ids_entra(padre, nuevo)
+            end
             _jsdom_entra(nuevo)
             return true
         end
@@ -595,6 +637,24 @@ end
 
 @export func jsdom_crear_fragmento() -> Nodo
     return dom_nodo(DOM_FRAGMENTO, "", "")
+end
+
+# Una <img> con src que el JavaScript no ha metido en el documento (new Image()): se apunta en el documento para
+# que lib/documento.dash la cargue y le dé load o error (tarea 76b)
+@export func jsdom_img_suelta(doc: Nodo, n: Nodo)
+    if doc == nil or n == nil
+        return
+    end
+    if doc.sueltas == nil
+        var l: [Nodo] = []
+        doc.sueltas = l
+    end
+    for x in doc.sueltas
+        if x == n
+            return
+        end
+    end
+    doc.sueltas.push(n)
 end
 
 # document.implementation.createHTMLDocument(): un documento aparte, vacío

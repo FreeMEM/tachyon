@@ -631,6 +631,11 @@ tarea, con el estilo de Dash.
       Installer 44.10: una copia propia (reflink) del Coffin limpio de la sesión dash-lienzo-2.6 (el suyo no se toca,
       ni DashCoffin.hdf; su TRASPASO.md dice cómo arrancarlo sin ventana). Y, si vuelve a pasar, la zona
       negra al cerrar Tachyon con su gadget (Amiberry, AmigaOS 3.2; una vez, el proceso de control del emulador murió).
+- [ ] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
+      contestó "for a coming version").** (a) #18: agrandar o reducir el texto (zoom), o elegir la fuente y el tamaño
+      por omisión: en un escritorio de 1440x900 se lee mal. (b) #19: iconificar Tachyon (Amiga+I). Va con su nombre
+      (regla de reconocimiento). Contestados también por dashos-97: #15 (Daniel, el control antispam de itch.io: queda
+      lejos) y #16 (BordanBordan, congelado en A500 + CM4 con Emu68: se le pidió probar la 0.10.0-alfa y datos).
 - [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
       apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en

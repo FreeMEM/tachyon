@@ -15,10 +15,15 @@ var actualizar_api: String = "https://api.github.com/repos/FreeMEM/tachyon/relea
 # los ficheros de cada versión publicada: + "v0.7.0-alfa/Tachyon-espanol.catalog"
 var actualizar_descargas: String = "https://github.com/FreeMEM/tachyon/releases/download/"
 const ACTUALIZAR_GZ = "T:Tachyon.gz"
+# La clave pública con la que se firma cada Tachyon.gz publicado (tools/firmar.py: Tachyon.gz.sig). Sin una firma
+# buena no se instala: con la cuenta de GitHub robada se podía repartir un ejecutable falso (aviso de seguridad del 31/10/2026)
+var actualizar_clave: String = "869ce6fb3521b5e4e23de43ad0d48502c42009d2844ec0961f0853baa2241e33"
+var _act_firma: String = ""
 
 struct Novedad
     version: String   # "0.5.0-alfa"
     url: String       # la de su Tachyon.gz
+    firma: String = ""          # la de su Tachyon.gz.sig
     catalogos: [String] = nil   # las de sus Tachyon-<idioma>.catalog (tarea 45g): se bajan tras instalar
 end
 
@@ -109,6 +114,7 @@ func actualizar_leer(json: String, actual: String) -> Novedad
     # los ficheros de esa versión van entre su tag_name y el de la siguiente: su Tachyon.gz y sus catálogos
     fin = str_find_from(json, "\"tag_name\"", p + 10)
     gz = ""
+    firma = ""
     var catalogos: [String] = []
     q = p
     while true
@@ -118,12 +124,15 @@ func actualizar_leer(json: String, actual: String) -> Novedad
         end
         if str_ends(url, "/Tachyon.gz")
             gz = url
+        elif str_ends(url, "/Tachyon.gz.sig")
+            firma = url
         elif actualizar_catalogo_idioma(url) != ""
             catalogos.push(url)
         end
         q = str_find_from(json, "\"browser_download_url\"", q) + 22
     end
-    if gz == ""
+    # (sin firma no se ofrece: las publicadas antes de la 0.11.1 no la llevan)
+    if gz == "" or firma == ""
         return nada
     end
     version = etiqueta
@@ -131,6 +140,7 @@ func actualizar_leer(json: String, actual: String) -> Novedad
         version = version[1:]
     end
     n = Novedad(version, gz)
+    n.firma = firma
     n.catalogos = catalogos
     return n
 end
@@ -298,6 +308,14 @@ end
 # Baja su Tachyon.gz a T: sin esperar
 func actualizar_bajar(n: Novedad) -> Carga
     file_delete(ACTUALIZAR_GZ)
+    # (la firma, antes: es una línea)
+    _act_firma = ""
+    if n.firma != ""
+        f = http_get(n.firma, 15000)
+        if f.error == "" and f.estado == 200
+            _act_firma = str_trim(http_texto(f))
+        end
+    end
     return http_volcar(http_empezar_a_fichero(n.url, ACTUALIZAR_GZ, 30000))
 end
 
@@ -332,6 +350,10 @@ func _actualizar_instalar(programa: String) -> Int
     if file_load(ACTUALIZAR_GZ, gz, n) != n
         buffer_free(gz)
         return 3
+    end
+    if _act_firma.length != 128 or not ed25519_verify(actualizar_clave, _act_firma, gz, n)
+        buffer_free(gz)
+        return 13
     end
     if buffer_get_byte(gz, 0) != 31 or buffer_get_byte(gz, 1) != 139 or buffer_get_byte(gz, 2) != 8
         buffer_free(gz)
@@ -410,7 +432,7 @@ end
 
 # Lo mismo con el porqué en texto ("" si quedó instalado)
 func actualizar_instalar(programa: String) -> String
-    porque = [tr(450, "can't tell where Tachyon is"), tr(451, "the download is missing"), tr(452, "can't read the download"), tr(453, "the download isn't a gzip"), tr(454, "can't decompress the download"), tr(455, "the download arrived damaged (CRC)"), tr(456, "the download isn't a program"), tr(457, "the download isn't Tachyon"), tr(458, "can't write in Tachyon's drawer"), tr(459, "the disk is full"), tr(460, "can't move the current Tachyon aside"), tr(461, "can't put the new one in place")]
+    porque = [tr(450, "can't tell where Tachyon is"), tr(451, "the download is missing"), tr(452, "can't read the download"), tr(453, "the download isn't a gzip"), tr(454, "can't decompress the download"), tr(455, "the download arrived damaged (CRC)"), tr(456, "the download isn't a program"), tr(457, "the download isn't Tachyon"), tr(458, "can't write in Tachyon's drawer"), tr(459, "the disk is full"), tr(460, "can't move the current Tachyon aside"), tr(461, "can't put the new one in place"), tr(462, "the download isn't signed by FreeMEM")]
     e = _actualizar_instalar(programa)
     if e == 0
         return ""

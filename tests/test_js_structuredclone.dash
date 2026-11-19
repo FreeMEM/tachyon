@@ -26,7 +26,7 @@ Main
     c = c + "try { structuredClone(document.body); } catch (e) { r += ' | nodo: ' + e.name; }"
     c = c + "try { structuredClone(new URL('about:blank')); } catch (e) { r += ' | url: ' + e.name; } r"
     Print js_evaluar(js, c, "t.js")
-    js_evaluar(js, "__dashweb_lugar('http://a.example/p.html')", "t.js")
+    jsdom_lugar(js, "http://a.example/p.html")
     c = "var got = [], enviado = {n: 1}; addEventListener('message', function (e) { got.push(e.data.n + ' ' + (e.data !== enviado) + ' ' + e.origin + ' ' + (e.source === window)); });"
     c = c + "postMessage(enviado, '*'); postMessage({n: 2}, 'http://otro.example'); postMessage({n: 3}); var sinc = got.length, err = '';"
     c = c + "try { postMessage(function () {}, '*'); } catch (e) { err = e.name; } ''"

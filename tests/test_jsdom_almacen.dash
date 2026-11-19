@@ -20,7 +20,7 @@ func abrir(direccion: String) -> Int
     doc = dom_desde_html5("<html><head></head><body></body></html>")
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('" + direccion + "')", "t.js")
+    jsdom_lugar(js, direccion)
     return js
 end
 

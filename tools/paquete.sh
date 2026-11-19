@@ -4,7 +4,8 @@
 # paquete/LEEME y las licencias de Tachyon y de lo que lleva dentro (LHA comprimido con -lh5-: tools/lha.py; sin
 # comprimir, IBrowse cortaba la descarga de 6,9 MB hacia los 3,3 MB; el visor, solo para pruebas, no va); y
 # build/Tachyon.gz, el ejecutable solo con gzip, que va también en cada versión publicada: con él se actualiza Tachyon
-# desde sí mismo (lib/actualizar.dash, tarea 44; no sabe abrir .lha). Necesita el toolchain y Dash (DASH, por
+# desde sí mismo (lib/actualizar.dash, tarea 44; no sabe abrir .lha), con build/Tachyon.gz.sig, su firma
+# (tools/firmar.py): el actualizador no instala nada sin ella. Necesita el toolchain y Dash (DASH, por
 # defecto ~/Projects/FreeMEMLang) y el SDK de MUI de Dash; `lha` (Lhasa) para comprobarlo.
 #
 #   tools/paquete.sh
@@ -51,6 +52,7 @@ ls -l "$R/build/tachyon.lha"
 lha -l "$R/build/tachyon.lha" | tail -12
 lha -t "$R/build/tachyon.lha" >/dev/null   # (el CRC de cada fichero: que lh5 descomprime bien)
 gzip -9 -n -c "$B/Tachyon/Tachyon" > "$R/build/Tachyon.gz"
+python3 "$R/tools/firmar.py" "$R/build/Tachyon.gz"
 ls -l "$R/build/Tachyon.gz"
 # y los catálogos sueltos, para la actualización automática (lib/actualizar.dash: Tachyon-<idioma>.catalog), con el
 # idioma sin acentos ("espanol"), que GitHub los cambia: el de verdad va dentro del catálogo

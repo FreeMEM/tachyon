@@ -476,3 +476,48 @@ func url_fichero_nombre(n: String) -> String
     end
     return t
 end
+
+# El origen de una URL (esquema, host y puerto: "https://ejemplo.org:443"), para la regla del mismo origen de las
+# cookies, el localStorage y las peticiones del JavaScript (aviso de seguridad del 31/10/2026)
+func url_origen(u: Url) -> String
+    return u.esquema + "://" + u.host + ":" + url_port(u)
+end
+
+func _url_numero(t: String) -> Bool
+    if t == "" or t.length > 3
+        return false
+    end
+    i = 0
+    while i < t.length
+        if str_find("0123456789", t[i:i + 1]) < 0
+            return false
+        end
+        i = i + 1
+    end
+    return true
+end
+
+# Si el host es del propio equipo o de la red de casa (localhost, *.local, 127.x, 10.x, 172.16-31.x, 192.168.x,
+# 169.254.x, 0.0.0.0, [::1], [fc..], [fd..], [fe80..]): una página de internet no puede pedirle nada desde el
+# JavaScript (el router, un NAS; aviso de seguridad del 31/10/2026)
+func url_red_local(u: Url) -> Bool
+    h = str_lower(u.host)
+    if h == "localhost" or str_ends(h, ".localhost") or str_ends(h, ".local") or h == "0.0.0.0"
+        return true
+    end
+    if str_starts(h, "[")
+        return h == "[::1]" or str_starts(h, "[fc") or str_starts(h, "[fd") or str_starts(h, "[fe80")
+    end
+    p = str_split(h, ".")
+    if p.length != 4
+        return false
+    end
+    for t in p
+        if not _url_numero(t)
+            return false
+        end
+    end
+    a = str_to_int(p[0])
+    b = str_to_int(p[1])
+    return a == 10 or a == 127 or a == 0 or (a == 172 and b >= 16 and b <= 31) or (a == 192 and b == 168) or (a == 169 and b == 254)
+end

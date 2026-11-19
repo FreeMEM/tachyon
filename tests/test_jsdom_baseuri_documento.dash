@@ -11,7 +11,7 @@ Main
     doc = dom_desde_html5("<html><head><base href='/fake/base'></head><body></body></html>")
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('http://a.b/c/d.html')", "t.js")
+    jsdom_lugar(js, "http://a.b/c/d.html")
     Print js_evaluar(js, "var d = new DOMParser().parseFromString('<html></html>', 'text/html'); var x = new DOMParser().parseFromString('<a/>', 'text/xml'); 'página ' + document.baseURI + ' | html ' + d.baseURI + ' | elemento ' + d.documentElement.baseURI + ' | xml ' + x.baseURI", "t.js")
     Print js_evaluar(js, "var e = new DOMParser().parseFromString('<html><head><base href=\\'/otra/\\'></head></html>', 'text/html'); 'con su base ' + e.baseURI", "t.js")
     js_liberar(js)

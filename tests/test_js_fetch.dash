@@ -28,7 +28,7 @@ Main
     doc = dom_desde_html5("<html><body><p>x</p></body></html>")
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40862/pages/x.html')", "t.js")
+    jsdom_lugar(js, "http://127.0.0.1:40862/pages/x.html")
     js_evaluar(js, "var r1 = ''; fetch('/eco_js', {method: 'POST', headers: {'X-Prueba': 'hola', 'Content-Type': 'application/json'}, body: JSON.stringify({a: 1})}).then(function (r) { r1 = 'fetch ' + r.status + ' ' + r.ok + ' '; return r.json().then(function (j) { r1 += j.metodo + ' ' + j.prueba + ' ' + j.tipo + ' ' + j.cuerpo + ' ' + j.letra.charCodeAt(0) + ' ' + r.headers.get('X-Respuesta'); }); });", "t.js")
     esperar(js)
     Print js_evaluar(js, "r1", "t.js")

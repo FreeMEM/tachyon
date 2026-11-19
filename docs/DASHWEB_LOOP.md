@@ -7858,3 +7858,10 @@ Formato:
   (los de la 0.9.9) pasan sueltos; actualización de verdad desde la 0.9.9 publicada (idéntico, 9 catálogos, .old);
   velocidad igual que la 0.9.9 (GitHub guardado 19,2-19,7 s frente a 19,4-20,2; AmigaWorld 5,9-6,3 frente a 6,3);
   humo con MUI 3.8, cuatro ventanas 240 s sin colgarse.
+- La 0.11.1-alfa (el usuario, 19-11: arreglar los cinco puntos del aviso de seguridad del 31/10/2026 y publicar): las
+  cookies y el localStorage solo del origen de la página (jsdom_lugar apunta el origen de cada motor; antes las
+  funciones nativas aceptaban cualquier dirección); fetch/XHR a otro origen sin cookies y solo con
+  Access-Control-Allow-Origin; desde una página de internet, nada a la red de casa ni al propio equipo; ni
+  <script src> ni hojas con rutas del Amiga; el actualizador solo instala un Tachyon.gz con firma Ed25519 buena
+  (tools/firmar.py, Tachyon.gz.sig; clave en ~/.config/freemem, fuera del repo). tests/test_seguridad.dash nuevo;
+  batería 203/203.

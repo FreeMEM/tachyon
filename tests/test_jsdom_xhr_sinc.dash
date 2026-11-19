@@ -18,7 +18,7 @@ Main
     doc = dom_desde_html5("<html><head></head><body></body></html>")
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40879/x.html')", "t.js")
+    jsdom_lugar(js, "http://127.0.0.1:40879/x.html")
     c = "var x = new XMLHttpRequest(), estados = [], ls = false; x.onreadystatechange = function () { estados.push(x.readyState); };"
     c = c + "x.addEventListener('loadstart', function () { ls = true; }); x.open('GET', '/hola', false); x.send();"
     c = c + "'sinc: ' + x.status + ' [' + x.responseText + '] estados ' + estados.join(',') + ' sin loadstart ' + !ls"

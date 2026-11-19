@@ -1,0 +1,82 @@
+# Test: el aviso de seguridad del 31/10/2026. Una página solo ve las cookies y el localStorage de su origen (antes
+# las funciones nativas aceptaban cualquier dirección); fetch a otro origen va sin cookies y solo da la respuesta si
+# el servidor pone Access-Control-Allow-Origin; una página de internet no llega a la red de casa ni al propio equipo;
+# y no carga como script un fichero del Amiga (una página local, sí).
+# emu-server: http.py 40893
+# memcheck
+# expect-out: galletas: s=1 [] [] []
+# expect-out: almacen: [] true
+# expect-out: mismo origen: galletas=g=1
+# expect-out: otro origen con permiso: galletas=
+# expect-out: otro origen sin permiso: TypeError
+# expect-out: red local: TypeError
+# expect-out: script local: undefined 1
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func esperar(js: Int)
+    vueltas = 0
+    while jsdom_peticiones_pendientes(js) > 0 and vueltas < 3000
+        jsdom_peticiones_avanzar(js)
+        time_delay(1)
+        vueltas = vueltas + 1
+    end
+end
+
+func motor(direccion: String) -> Int
+    doc = dom_desde_html5("<html><body><p>x</p></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    jsdom_lugar(js, direccion)
+    return js
+end
+
+Main
+    # cookies: la página de a.example pone la suya; las de b.example ni se leen ni se ponen
+    cookies_poner(url_parse("http://b.example/"), "secreta=1", false)
+    js = motor("http://a.example/p.html")
+    js_evaluar(js, "document.cookie = 's=1'; __dashweb_galleta('http://b.example/', 'falsa=2');", "t.js")
+    Print "galletas: " + js_evaluar(js, "document.cookie + ' [' + __dashweb_galletas('http://b.example/') + '] [' + __dashweb_galletas('https://www.google.com/url?q=http://b.example/') + ']'", "t.js") + " [" + str_replace(cookies_js(url_parse("http://b.example/")), "secreta=1", "") + "]"
+    # localStorage de otro origen: ni leer ni escribir
+    almacen_poner("http://b.example", "[\"k\",\"v\"]")
+    js_evaluar(js, "__dashweb_almacen_poner('http://b.example', '[\"k\",\"cambiado\"]', true)", "t.js")
+    Print "almacen: [" + js_evaluar(js, "__dashweb_almacen('http://b.example')", "t.js") + "] " + (almacen_leer("http://b.example") == "[\"k\",\"v\"]")
+    js_liberar(js)
+    # fetch: con las cookies solo a su origen; a otro, sin ellas y solo con Access-Control-Allow-Origin
+    cookies_poner(url_parse("http://127.0.0.1:40893/"), "g=1", false)
+    js = motor("http://127.0.0.1:40893/p.html")
+    js_evaluar(js, "var r1 = ''; fetch('/cors_eco').then(function (r) { return r.text(); }).then(function (t) { r1 = t; });", "t.js")
+    esperar(js)
+    Print "mismo origen: " + js_evaluar(js, "r1", "t.js")
+    js_liberar(js)
+    js = motor("http://localhost:40893/p.html")
+    js_evaluar(js, "var r2 = '', r3 = ''; fetch('http://127.0.0.1:40893/cors_eco').then(function (r) { return r.text(); }).then(function (t) { r2 = t; }); fetch('http://127.0.0.1:40893/sin_cors_eco').then(function (r) { return r.text(); }).then(function (t) { r3 = t; }, function (e) { r3 = e.name; });", "t.js")
+    esperar(js)
+    Print "otro origen con permiso: " + js_evaluar(js, "r2", "t.js")
+    Print "otro origen sin permiso: " + js_evaluar(js, "r3", "t.js")
+    js_liberar(js)
+    # una página de internet no pide nada a la red de casa (aquí, el propio equipo)
+    js = motor("http://a.example/p.html")
+    js_evaluar(js, "var r4 = ''; fetch('http://127.0.0.1:40893/cors_eco').then(function () { r4 = 'llegó'; }, function (e) { r4 = e.name; });", "t.js")
+    esperar(js)
+    Print "red local: " + js_evaluar(js, "r4", "t.js")
+    js_liberar(js)
+    # <script src> con una ruta del Amiga: desde una página de internet no; desde una del disco, sí
+    file_write_text("T:seguridad.js", "var leido = 1;")
+    doc = dom_desde_html5("<html><body><script src=\"T:seguridad.js\"></script></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    jsdom_ejecutar_scripts(js, doc, "http://a.example/p.html")
+    l = "script local: " + js_evaluar(js, "typeof leido", "t.js")
+    js_liberar(js)
+    doc2 = dom_desde_html5("<html><body><script src=\"T:seguridad.js\"></script></body></html>")
+    js = js_nuevo()
+    jsdom_preparar(js, doc2)
+    jsdom_ejecutar_scripts(js, doc2, url_de_ruta("T:pagina.html"))
+    Print l + " " + js_evaluar(js, "leido", "t.js")
+    js_liberar(js)
+    file_delete("T:seguridad.js")
+    red_terminar()
+end

@@ -194,7 +194,10 @@ func _http_peticion_con(u: Url, metodo: String, cuerpo: String, largo: Int, tipo
     if http_idiomas != ""
         peticion = peticion + "\r\nAccept-Language: " + http_idiomas
     end
-    galletas = cookies_para(u)
+    galletas = ""
+    if not _http_sin_galletas
+        galletas = cookies_para(u)
+    end
     if galletas != ""
         peticion = peticion + "\r\nCookie: " + galletas
     end
@@ -251,8 +254,28 @@ func http_binario_bufer(t: String) -> Int
     return b
 end
 
+# Si una carga lleva y guarda cookies: las del JavaScript, solo con el origen de su página (aviso de seguridad del 31/10/2026)
+func _carga_galletas(c: Carga) -> Bool
+    return c.galletas_de == "" or url_origen(c.actual) == c.galletas_de
+end
+
+# La misma carga con cookies solo para ese origen (antes de su primer http_avanzar)
+func http_con_galletas_de(c: Carga, origen: String) -> Carga
+    c.galletas_de = origen
+    return c
+end
+
+var _http_sin_galletas: Bool = false
+
 # La petición entera de una carga: con un cuerpo binario, la cabecera como texto y el cuerpo desde un búfer
 func _carga_enviar(c: Carga) -> Bool
+    _http_sin_galletas = not _carga_galletas(c)
+    ok = _carga_enviar_ya(c)
+    _http_sin_galletas = false
+    return ok
+end
+
+func _carga_enviar_ya(c: Carga) -> Bool
     if not c.binario or c.cuerpo == ""
         return red_enviar(c.conexion, _http_peticion(c.actual, c.metodo, c.cuerpo, c.tipo, c.agente, http_seguir, c.fichero == "", c.extra))
     end
@@ -572,6 +595,8 @@ struct Carga
     tipo: String = ""      # su Content-Type
     agente: String = ""    # el User-Agent, si no es el de dashweb (http_con_agente)
     binario: Bool = false  # cuerpo con bytes cualesquiera, escapado (http_binario_escapar): sale de un búfer
+    # cookies solo con este origen (url_origen; las peticiones del JavaScript: el de su página). "" = siempre
+    galletas_de: String = ""
     cabecera: Int = -1     # bytes de la línea de estado y las cabeceras, cuando ya llegaron (http_parcial)
     enviada: Bool = false  # la petición ya salió por la conexión
     reusada: Bool = false  # la conexión venía de otra respuesta (si resulta cerrada, se abre otra)
@@ -974,7 +999,9 @@ func http_avanzar(c: Carga) -> Bool
         return false
     end
     _http_leer_respuesta(c.conexion, c.respuesta, c.fichero, c.metodo == "HEAD")
-    _http_cookies(c.actual, c.respuesta)
+    if _carga_galletas(c)
+        _http_cookies(c.actual, c.respuesta)
+    end
     r = c.respuesta
     _http_soltar(c.conexion, r, n < 0)
     redireccion = r.estado == 301 or r.estado == 302 or r.estado == 303 or r.estado == 307 or r.estado == 308
@@ -1087,7 +1114,9 @@ func _carga_volcar(c: Carga, cerrada: Bool) -> Bool
     if r.error == "" and c.restan > 0
         r.error = tr(405, "cut body")
     end
-    _http_cookies(c.actual, r)
+    if _carga_galletas(c)
+        _http_cookies(c.actual, r)
+    end
     if r.error == "" and c.restan == 0
         _http_soltar(c.conexion, r, cerrada)
     else

@@ -2,7 +2,9 @@
 # más nueva, la de la lista con su Tachyon.gz, bajarlo e instalarlo en lugar de otro (el de antes como .old), y uno
 # que llega mal (CRC) no cambia nada. Sus catálogos (tarea 45g): el idioma de cada uno, adónde van (junto al programa,
 # en Catalogs/<idioma>/, también en la raíz de un disco) y bajarlo y ponerlo, con el idioma de dentro (el nombre
-# publicado va sin acentos: GitHub los cambia); y el de una versión en un idioma, que no está si no se publicó.
+# publicado va sin acentos: GitHub los cambia); y el de una versión en un idioma, que no está si no se publicó. La
+# firma (Tachyon.gz.sig, con la clave de prueba): una falsa no se instala y una versión sin firma no se ofrece (aviso
+# de seguridad del 31/10/2026).
 # emu-server: http.py 40892
 # memcheck
 # expect-out: versiones: true false false true false
@@ -14,6 +16,8 @@
 # expect-out: sin novedad: true
 # expect-out: instalada: [] true true
 # expect-out: rota: [the download arrived damaged (CRC)] true false
+# expect-out: firma falsa: [the download isn't signed by FreeMEM] true false
+# expect-out: sin firma: true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/actualizar.dash"
@@ -26,6 +30,8 @@ end
 
 Main
     Print "versiones: " + actualizar_mas_nueva("v0.5.0-alfa", "0.4.0-alfa") + " " + actualizar_mas_nueva("0.4.0", "0.4.0-alfa") + " " + actualizar_mas_nueva("v0.3.9", "0.4.0-alfa") + " " + actualizar_mas_nueva("1.0", "0.10.2") + " " + actualizar_mas_nueva("0.9", "0.10")
+    # (la clave pública de prueba: semilla 11...11, tests/servers/http.py)
+    actualizar_clave = "d04ab232742bb4ab3a1368bd4615e4e6d0224ab71a016baf8520a332c9778737"
     actualizar_api = "http://127.0.0.1:40892/act/releases"
     c = actualizar_empezar()
     esperar(c)
@@ -69,5 +75,18 @@ Main
     file_write_text("T:prueba_tachyon2", "el de antes")
     error = actualizar_instalar("T:prueba_tachyon2")
     Print "rota: [" + error + "] " + (file_read_text("T:prueba_tachyon2") == "el de antes") + " " + file_exists("T:prueba_tachyon2.old")
+    # la firma no es de ese fichero: todo como estaba
+    actualizar_api = "http://127.0.0.1:40892/act/falsa/releases"
+    c3 = actualizar_empezar()
+    esperar(c3)
+    n3 = actualizar_leer(http_texto(c3.respuesta), "0.4.0-alfa")
+    d3 = actualizar_bajar(n3)
+    esperar(d3)
+    file_write_text("T:prueba_tachyon3", "el de antes")
+    error = actualizar_instalar("T:prueba_tachyon3")
+    Print "firma falsa: [" + error + "] " + (file_read_text("T:prueba_tachyon3") == "el de antes") + " " + file_exists("T:prueba_tachyon3.old")
+    # una versión publicada sin Tachyon.gz.sig no se ofrece
+    sin = str_replace(lista, "Tachyon.gz.sig", "Otra.txt")
+    Print "sin firma: " + (actualizar_leer(sin, "0.4.0-alfa") == nil)
     red_terminar()
 end

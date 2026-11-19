@@ -39,6 +39,8 @@ struct Recursos
     # pasarlo a ASCII, que con el de YouTube (10,8 MB) pedía otro hueco así y con 128 MB no lo había (tarea 38c8)
     scripts: {String: Respuesta}
     cola: [Pedido]
+    # la página es de internet (http o https): no lee ficheros del Amiga como hojas ni scripts (aviso de seguridad del 31/10/2026)
+    remota: Bool = false
 end
 
 func recursos_nuevos() -> Recursos
@@ -72,6 +74,10 @@ func recursos_pedir(r: Recursos, direccion: String, es_css: Bool, nivel: Int)
         r.cola.push(Pedido(direccion, es_css, nivel, sin))
         return
     end
+    if r.remota
+        r.traidos[direccion] = ""
+        return
+    end
     ruta = url_fichero(direccion)
     t = file_read_text(ruta)
     if t == nil
@@ -88,7 +94,9 @@ func recursos_pedir(r: Recursos, direccion: String, es_css: Bool, nivel: Int)
 end
 
 func recursos_del_documento(r: Recursos, doc: Nodo, base: String)
-    _recursos_en(r, doc, url_parse(base))
+    b = url_parse(base)
+    r.remota = b.esquema == "http" or b.esquema == "https"
+    _recursos_en(r, doc, b)
 end
 
 func _recursos_en(r: Recursos, n: Nodo, base: Url)

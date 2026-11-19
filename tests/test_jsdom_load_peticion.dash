@@ -30,7 +30,8 @@ Main
     doc = dom_desde_html5(h)
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('http://127.0.0.1:40862/pages/x.html'); __dashweb_imgs = 1", "t.js")
+    jsdom_lugar(js, "http://127.0.0.1:40862/pages/x.html")
+    js_evaluar(js, "__dashweb_imgs = 1", "t.js")
     jsdom_ejecutar_scripts(js, doc, "http://127.0.0.1:40862/pages/x.html")
     vueltas = 0
     while vueltas < 3000 and jsdom_peticiones_pendientes(js) > 0

@@ -16,7 +16,8 @@ Main
     doc = dom_desde_html5("<html><head></head><body><label><input type=checkbox id=c><form id=f><input type=submit id=s><input id=t value=x></form></label><label id=l2><input type=checkbox id=c2><span id=sp>texto</span></label><details id=d><summary id=su>s</summary>dentro</details></body></html>")
     js = js_nuevo()
     jsdom_preparar(js, doc)
-    js_evaluar(js, "__dashweb_lugar('http://x.test/p.html'); var envios = 0, toggles = 0, cambios = []; document.getElementById('f').onsubmit = function () { envios++; return false; }; document.getElementById('d').ontoggle = function () { toggles++; }; window.onhashchange = function (e) { cambios.push(e.newURL); };", "t.js")
+    jsdom_lugar(js, "http://x.test/p.html")
+    js_evaluar(js, "var envios = 0, toggles = 0, cambios = []; document.getElementById('f').onsubmit = function () { envios++; return false; }; document.getElementById('d').ontoggle = function () { toggles++; }; window.onhashchange = function (e) { cambios.push(e.newURL); };", "t.js")
     c = "document.getElementById('s').click(); var r = 'submit: ' + envios + ' ' + document.getElementById('c').checked;"
     c = c + "document.getElementById('sp').click(); r += ' | label: ' + document.getElementById('c2').checked;"
     c = c + "var c2 = document.getElementById('c2'); c2.addEventListener('click', function (e) { e.preventDefault(); }); c2.click(); r + ' | cancelado: ' + !c2.checked"

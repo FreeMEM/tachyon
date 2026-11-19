@@ -891,6 +891,31 @@ struct PeticionJS
     extra: String = ""
     agente: String = ""    # el User-Agent que puso la página ("" el de Tachyon)
     binario: Bool = false  # el cuerpo son bytes (escapados: lib/http.dash http_binario_largo)
+    pagina: String = ""    # el origen de la página que la pide (url_origen); "" si no se sabe
+    motivo: String = "bloqueado (rastreo)"   # sin carga: por qué no se pidió
+end
+
+# La respuesta de una petición del JavaScript, como la ve la página: de otro origen, solo si el servidor lo permite
+# con Access-Control-Allow-Origin (ese origen o *; nunca van cookies). Antes cualquier página leía cualquier sitio
+# con las cookies del usuario (aviso de seguridad del 31/10/2026)
+func _jsdom_entregar(js: Int, p: PeticionJS)
+    r = p.carga.respuesta
+    cab = ""
+    for k in r.cabeceras.keys()
+        cab = cab + k + ": " + r.cabeceras[k] + "\r\n"
+    end
+    u = url_parse(r.url)
+    if r.error == "" and p.pagina != "" and (u.esquema == "http" or u.esquema == "https") and url_origen(u) != p.pagina
+        permite = ""
+        if r.cabeceras.has("access-control-allow-origin")
+            permite = str_trim(r.cabeceras["access-control-allow-origin"])
+        end
+        if permite != "*" and (permite == "" or url_origen(url_parse(permite)) != p.pagina)
+            _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (CORS)")
+            return
+        end
+    end
+    _jsdom_responder(js, p.id, r.estado, r.razon, cab, r.url, r.cuerpo, r.error)
 end
 
 # Las que van a la vez por motor; las demás esperan en cola (YouTube lanza decenas y llenaba la tabla de 48
@@ -916,7 +941,7 @@ func _jsdom_peticiones_empezar(js: Int)
         end
         if p.js == js and p.en_cola
             p.en_cola = false
-            p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
+            p.carga = http_con_galletas_de(http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario), _jsdom_galletas_de(p))
             activas = activas + 1
         end
     end
@@ -954,6 +979,20 @@ var jsdom_peticiones: [PeticionJS] = []
             extra = extra + str_trim(linea[:p]) + ": " + valor
         end
     end
+    pagina = ""
+    if _jsdom_origenes.has("" + js)
+        pagina = _jsdom_origenes["" + js]
+    end
+    destino = url_parse(url)
+    pu = url_parse(pagina)
+    if (pu.esquema == "http" or pu.esquema == "https") and not url_red_local(pu) and (destino.esquema == "http" or destino.esquema == "https") and url_red_local(destino)
+        # (una página de internet no llega al router, a un NAS ni al propio Amiga; aviso de seguridad del 31/10/2026)
+        var no: Carga = nil
+        b = PeticionJS(js, id, no)
+        b.motivo = "bloqueado (red local)"
+        jsdom_peticiones.push(b)
+        return
+    end
     if URL_RASTREO_BLOQUEAR and url_rastreador(url)
         # (un rastreador: no se pide; en el siguiente avance, un error de red; también los <script> que mete el
         # JavaScript, que van por aquí)
@@ -971,6 +1010,7 @@ var jsdom_peticiones: [PeticionJS] = []
     p.extra = extra
     p.agente = agente
     p.binario = binario
+    p.pagina = pagina
     jsdom_peticiones.push(p)
     _jsdom_peticiones_empezar(js)
 end
@@ -985,23 +1025,18 @@ end
         if p.js == js and p.id == id
             if p.en_cola
                 p.en_cola = false
-                p.carga = http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario)
+                p.carga = http_con_galletas_de(http_con_binario(http_con_agente(http_empezar_metodo(p.url, p.metodo, p.cuerpo, p.tipo, p.extra, 20000), p.agente), p.binario), _jsdom_galletas_de(p))
             end
             if p.carga == nil
                 jsdom_peticiones.remove(i)
-                _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
+                _jsdom_responder(js, p.id, 0, "", "", "", "", p.motivo)
                 return
             end
             while not http_avanzar(p.carga)
                 time_delay(1)
             end
-            r = p.carga.respuesta
-            cab = ""
-            for k in r.cabeceras.keys()
-                cab = cab + k + ": " + r.cabeceras[k] + "\r\n"
-            end
             jsdom_peticiones.remove(i)
-            _jsdom_responder(js, p.id, r.estado, r.razon, cab, r.url, r.cuerpo, r.error)
+            _jsdom_entregar(js, p)
             return
         end
         i = i + 1
@@ -1026,6 +1061,14 @@ end
     end
 end
 
+# El origen con el que una petición del JavaScript lleva cookies: el de su página ("x" si no se sabe: ninguna)
+func _jsdom_galletas_de(p: PeticionJS) -> String
+    if p.pagina == ""
+        return "x"
+    end
+    return p.pagina
+end
+
 # Avanza las peticiones de ese motor; cuántas acabaron (ya entregadas al JavaScript)
 func jsdom_peticiones_avanzar(js: Int) -> Int
     hechas = 0
@@ -1038,18 +1081,13 @@ func jsdom_peticiones_avanzar(js: Int) -> Int
         end
         if p.js == js and p.carga == nil
             jsdom_peticiones.remove(i)
-            _jsdom_responder(js, p.id, 0, "", "", "", "", "bloqueado (rastreo)")
+            _jsdom_responder(js, p.id, 0, "", "", "", "", p.motivo)
             hechas = hechas + 1
             continue
         end
         if p.js == js and http_avanzar(p.carga)
-            r = p.carga.respuesta
-            cab = ""
-            for k in r.cabeceras.keys()
-                cab = cab + k + ": " + r.cabeceras[k] + "\r\n"
-            end
             jsdom_peticiones.remove(i)
-            _jsdom_responder(js, p.id, r.estado, r.razon, cab, r.url, r.cuerpo, r.error)
+            _jsdom_entregar(js, p)
             hechas = hechas + 1
             continue
         end
@@ -1196,7 +1234,8 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
     _jsdom_scripts(doc, scripts)
     hechos = 0
     u = url_parse(base)
-    js_evaluar(js, "__dashweb_lugar('" + str_replace(str_replace(base, "\\", "\\\\"), "'", "\\'") + "')", "dashweb")
+    jsdom_lugar(js, base)
+    remota = u.esquema == "http" or u.esquema == "https"
     for s in scripts
         tipo = str_lower(str_trim(dom_atributo(s, "type")))
         if tipo == "" or tipo == "text/javascript" or tipo == "application/javascript"
@@ -1230,7 +1269,7 @@ func jsdom_ejecutar_scripts_con(js: Int, doc: Nodo, base: String, traidos: {Stri
             else
                 codigo = dom_texto(s)
                 if nombre != base
-                    codigo = _jsdom_traer(nombre)
+                    codigo = _jsdom_traer(nombre, remota)
                 end
                 largo = codigo.length
                 js_evaluar(js, codigo, nombre)
@@ -1268,7 +1307,7 @@ func _jsdom_scripts(n: Nodo, r: [Nodo])
     end
 end
 
-func _jsdom_traer(direccion: String) -> String
+func _jsdom_traer(direccion: String, remota: Bool) -> String
     if url_es_data(direccion)
         return _jsdom_data(direccion)
     end
@@ -1282,6 +1321,11 @@ func _jsdom_traer(direccion: String) -> String
             return ""
         end
         return texto_decodificar_js(r.cuerpo, r.juego)
+    end
+    if remota
+        # (una página de internet no carga como script un fichero del Amiga: <script src="S:Startup-Sequence">;
+        # aviso de seguridad del 31/10/2026)
+        return ""
     end
     ruta = url_fichero(direccion)
     t = file_read_text(ruta)
@@ -1367,22 +1411,54 @@ func jsdom_preparar(js: Int, doc: Nodo)
     traza("JavaScript preparado en " + (time_ms() - t0) + " ms (el preludio, " + (time_ms() - t1) + " ms)")
 end
 
-# document.cookie (lib/cookies.dash, sin las HttpOnly)
-@export func jsdom_galletas(direccion: String) -> String
+# El origen de la página de cada motor (url_origen), puesto por jsdom_lugar antes de sus scripts
+var _jsdom_origenes: {String: String} = {}
+
+# La dirección de la página de ese motor: su location y su origen (lo apunta Tachyon, no la página: las cookies, el
+# localStorage y las peticiones del JavaScript se miden contra él; aviso de seguridad del 31/10/2026)
+func jsdom_lugar(js: Int, direccion: String)
+    _jsdom_origenes["" + js] = url_origen(url_parse(direccion))
+    js_evaluar(js, "__dashweb_lugar('" + str_replace(str_replace(direccion, "\\", "\\\\"), "'", "\\'") + "')", "dashweb")
+end
+
+# Si la dirección es del mismo origen que la página de ese motor (sin origen apuntado, no)
+func jsdom_mismo_origen(js: Int, direccion: String) -> Bool
+    k = "" + js
+    if not _jsdom_origenes.has(k)
+        return false
+    end
+    return url_origen(url_parse(direccion)) == _jsdom_origenes[k]
+end
+
+# document.cookie (lib/cookies.dash, sin las HttpOnly): solo las del origen de la página. Antes la dirección la daba
+# la página y una podía leer y poner las cookies de cualquier otro sitio (aviso de seguridad del 31/10/2026)
+@export func jsdom_galletas(js: Int, direccion: String) -> String
+    if not jsdom_mismo_origen(js, direccion)
+        return ""
+    end
     return cookies_js(url_parse(direccion))
 end
 
-@export func jsdom_galleta(direccion: String, v: String)
-    cookies_poner(url_parse(direccion), v, false)
+@export func jsdom_galleta(js: Int, direccion: String, v: String)
+    if jsdom_mismo_origen(js, direccion)
+        cookies_poner(url_parse(direccion), v, false)
+    end
 end
 
 # localStorage que dura (lib/almacen.dash): los cambios de un origen, como los da el preludio; todo: en lugar de lo
 # de antes (la página que los junta), si no, se añaden
-@export func jsdom_almacen(origen: String) -> String
+# (solo el del origen de la página, como las cookies)
+@export func jsdom_almacen(js: Int, origen: String) -> String
+    if not jsdom_mismo_origen(js, origen)
+        return ""
+    end
     return almacen_leer(origen)
 end
 
-@export func jsdom_almacen_poner(origen: String, cambios: String, todo: Bool)
+@export func jsdom_almacen_poner(js: Int, origen: String, cambios: String, todo: Bool)
+    if not jsdom_mismo_origen(js, origen)
+        return
+    end
     if todo
         almacen_poner(origen, cambios)
     else

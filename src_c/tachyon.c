@@ -2775,32 +2775,33 @@ static JSValue _jsdom_galletas(JSContext *ctx, JSValueConst this_val, int argc, 
     char *u = _jsdom_arg(ctx, argc, argv, 0);
     JSValue v;
     if (!u) return JS_EXCEPTION;
-    v = _jsdom_cadena(ctx, jsdom_galletas((STRPTR)u));
+    v = _jsdom_cadena(ctx, jsdom_galletas(_jsdom_de(ctx) ? _jsdom_de(ctx)->motor : -1, (STRPTR)u));
     _jsdom_soltar(u);
     return v;
 }
 
 static JSValue _jsdom_galleta(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char *u = _jsdom_arg(ctx, argc, argv, 0), *t = _jsdom_arg(ctx, argc, argv, 1);
-    if (u && t) jsdom_galleta((STRPTR)u, (STRPTR)t);
+    if (u && t && _jsdom_de(ctx)) jsdom_galleta(_jsdom_de(ctx)->motor, (STRPTR)u, (STRPTR)t);
     _jsdom_soltar(u);
     _jsdom_soltar(t);
     return JS_UNDEFINED;
 }
 
-/* __dashweb_almacen(origen) y __dashweb_almacen_poner(origen, cambios, todo): localStorage que dura (lib/almacen.dash) */
+/* __dashweb_almacen(origen) y __dashweb_almacen_poner(origen, cambios, todo): localStorage que dura (lib/almacen.dash).
+   Las cookies y el almacén van con el motor: Dash solo da los del origen de su página (aviso de seguridad del 31/10/2026) */
 static JSValue _jsdom_almacen(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char *o = _jsdom_arg(ctx, argc, argv, 0);
     JSValue v;
     if (!o) return JS_EXCEPTION;
-    v = _jsdom_cadena(ctx, jsdom_almacen((STRPTR)o));
+    v = _jsdom_cadena(ctx, jsdom_almacen(_jsdom_de(ctx) ? _jsdom_de(ctx)->motor : -1, (STRPTR)o));
     _jsdom_soltar(o);
     return v;
 }
 
 static JSValue _jsdom_almacen_poner(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     char *o = _jsdom_arg(ctx, argc, argv, 0), *t = _jsdom_arg(ctx, argc, argv, 1);
-    if (o && t) jsdom_almacen_poner((STRPTR)o, (STRPTR)t, argc > 2 && JS_ToBool(ctx, argv[2]));
+    if (o && t && _jsdom_de(ctx)) jsdom_almacen_poner(_jsdom_de(ctx)->motor, (STRPTR)o, (STRPTR)t, argc > 2 && JS_ToBool(ctx, argv[2]));
     _jsdom_soltar(o);
     _jsdom_soltar(t);
     return JS_UNDEFINED;

@@ -925,6 +925,18 @@ func http_avanzar(c: Carga) -> Bool
         end
     end
     if not c.enviada
+        # DNS rebinding: un nombre de internet que al buscarlo da una dirección de la red de casa. Para el JavaScript
+        # de una página de internet se mira la dirección a la que se conectó de verdad (net_bg_peer, Dash 2.19)
+        # antes de mandar nada (Rodrigo Sáez)
+        if c.galletas_de != "" and not url_red_local(url_parse(c.galletas_de))
+            ip = net_bg_peer(c.conexion.sock)
+            if ip != "" and url_red_local(url_parse("http://" + ip + "/"))
+                c.respuesta.error = "blocked (local network)"
+                red_cerrar(c.conexion)
+                c.hecha = true
+                return true
+            end
+        end
         if not _carga_enviar(c)
             if c.reusada
                 _carga_otra_conexion(c)

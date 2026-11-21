@@ -1011,6 +1011,13 @@ func http_avanzar(c: Carga) -> Bool
         else
             c.redirecciones = c.redirecciones + 1
             c.actual = url_resolve(c.actual, r.cabeceras["location"])
+            # una petición del JavaScript de una página de internet tampoco llega a la red de casa saltando (un 302 de
+            # su servidor hacia 192.168.1.1; Rodrigo Sáez): se mira en cada salto
+            if c.galletas_de != "" and not url_red_local(url_parse(c.galletas_de)) and url_red_local(c.actual)
+                r.error = "blocked (local network)"
+                c.hecha = true
+                return true
+            end
             # (con GET y sin cuerpo: un POST tras 301 o 302, y tras 303 todo lo que no es GET ni HEAD; lo demás sigue
             # con su método, también HEAD; Fetch, WPT xhr/send-redirect)
             if (c.metodo == "POST" and (r.estado == 301 or r.estado == 302)) or (r.estado == 303 and c.metodo != "GET" and c.metodo != "HEAD")

@@ -1,0 +1,29 @@
+# Test: qué es la red de casa o el propio equipo para el bloqueo de Tachyon (lib/url.dash, url_red_local). Las formas
+# de IPv4 que acepta la pila (127.1, 2130706433, 0x7f.0.0.1, octal), 100.64/10 (CGNAT y Tailscale) y la IPv4 dentro
+# de IPv6; lo contó Rodrigo Sáez tras revisar la 0.11.1.
+# expect-out: 127.0.0.1 si
+# expect-out: 127.1 si
+# expect-out: 2130706433 si
+# expect-out: 0x7f.0.0.1 si
+# expect-out: 017700000001 si
+# expect-out: 3232235777 si
+# expect-out: 100.64.1.2 si
+# expect-out: 100.128.0.1 no
+# expect-out: [::ffff:192.168.1.1] si
+# expect-out: [::ffff:c0a8:101] si
+# expect-out: [::1] si
+# expect-out: 8.8.8.8 no
+# expect-out: 134744072 no
+# expect-out: example.com no
+# expect-out: 256.1.1.1 no
+import "../lib/url.dash"
+
+Main
+    for h in ["127.0.0.1", "127.1", "2130706433", "0x7f.0.0.1", "017700000001", "3232235777", "100.64.1.2", "100.128.0.1", "[::ffff:192.168.1.1]", "[::ffff:c0a8:101]", "[::1]", "8.8.8.8", "134744072", "example.com", "256.1.1.1"]
+        r = "no"
+        if url_red_local(url_parse("http://" + h + "/"))
+            r = "si"
+        end
+        Print h + " " + r
+    end
+end

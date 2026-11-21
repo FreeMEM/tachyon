@@ -502,22 +502,114 @@ end
 # JavaScript (el router, un NAS; aviso de seguridad del 31/10/2026)
 func url_red_local(u: Url) -> Bool
     h = str_lower(u.host)
-    if h == "localhost" or str_ends(h, ".localhost") or str_ends(h, ".local") or h == "0.0.0.0"
+    if h == "localhost" or str_ends(h, ".localhost") or str_ends(h, ".local")
         return true
     end
     if str_starts(h, "[")
-        return h == "[::1]" or str_starts(h, "[fc") or str_starts(h, "[fd") or str_starts(h, "[fe80")
-    end
-    p = str_split(h, ".")
-    if p.length != 4
+        if h == "[::1]" or h == "[::]" or str_starts(h, "[fc") or str_starts(h, "[fd") or str_starts(h, "[fe80")
+            return true
+        end
+        # IPv4 dentro de IPv6 ([::ffff:192.168.1.1], [::ffff:c0a8:101]): la IPv4 de dentro (Rodrigo Sáez)
+        if str_starts(h, "[::ffff:") and str_ends(h, "]")
+            resto = h[8:h.length - 1]
+            if str_find(resto, ".") >= 0
+                return _url_ipv4_local(_url_ipv4(resto))
+            end
+            g = str_split(resto, ":")
+            if g.length == 2
+                alto = _url_parte("0x" + g[0], 2)
+                bajo = _url_parte("0x" + g[1], 2)
+                if alto.length == 2 and bajo.length == 2
+                    return _url_ipv4_local([alto[0], alto[1], bajo[0], bajo[1]])
+                end
+            end
+        end
         return false
     end
-    for t in p
-        if not _url_numero(t)
-            return false
+    return _url_ipv4_local(_url_ipv4(h))
+end
+
+# Si los 4 bytes de una IPv4 son de la red de casa o del propio equipo (vacío: no es una IPv4): 0/8, 10/8, 127/8,
+# 100.64/10 (CGNAT y Tailscale), 169.254/16, 172.16/12 y 192.168/16
+func _url_ipv4_local(b: [Int]) -> Bool
+    if b.length != 4
+        return false
+    end
+    a = b[0]
+    c = b[1]
+    return a == 10 or a == 127 or a == 0 or (a == 172 and c >= 16 and c <= 31) or (a == 192 and c == 168) or (a == 169 and c == 254) or (a == 100 and c >= 64 and c <= 127)
+end
+
+# Una IPv4 como la entiende la pila (inet_aton): de 1 a 4 partes en decimal, octal (0...) o hexadecimal (0x...), y
+# la última llena los bytes que faltan: "127.1", "2130706433" y "0x7f.0.0.1" son 127.0.0.1 (Rodrigo Sáez). Da los 4
+# bytes, o vacío si no es una IPv4
+func _url_ipv4(h: String) -> [Int]
+    var nada: [Int] = []
+    if h == "" or str_ends(h, ".")
+        return nada
+    end
+    p = str_split(h, ".")
+    if p.length > 4
+        return nada
+    end
+    var r: [Int] = []
+    i = 0
+    while i < p.length
+        quedan = 1
+        if i == p.length - 1
+            quedan = 4 - i
+        end
+        bs = _url_parte(p[i], quedan)
+        if bs.length == 0
+            return nada
+        end
+        for x in bs
+            r.push(x)
+        end
+        i = i + 1
+    end
+    return r
+end
+
+# Una parte de la dirección en n bytes (de mayor a menor); vacío si no es un número o no cabe
+func _url_parte(t: String, n: Int) -> [Int]
+    var nada: [Int] = []
+    base = 10
+    s = t
+    if str_starts(s, "0x")
+        base = 16
+        s = s[2:]
+        if s == ""
+            return nada
+        end
+    elif s.length > 1 and str_starts(s, "0")
+        base = 8
+        s = s[1:]
+    end
+    if s == ""
+        return nada
+    end
+    var b: [Int] = []
+    for k in (1..n)
+        b.push(0)
+    end
+    for q in (0..s.length - 1)
+        d = str_find("0123456789abcdef", s[q])
+        if d < 0 or d >= base
+            return nada
+        end
+        # b = b * base + d, con el acarreo de byte en byte
+        acarreo = d
+        j = n - 1
+        while j >= 0
+            v = b[j] * base + acarreo
+            b[j] = v % 256
+            acarreo = v / 256
+            j = j - 1
+        end
+        if acarreo > 0
+            return nada
         end
     end
-    a = str_to_int(p[0])
-    b = str_to_int(p[1])
-    return a == 10 or a == 127 or a == 0 or (a == 172 and b >= 16 and b <= 31) or (a == 192 and b == 168) or (a == 169 and b == 254)
+    return b
 end

@@ -29,6 +29,7 @@ H=$R/third_party/hubbub
 CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpz0 -fno-delete-null-pointer-checks -m68020 -m68881
     -ffunction-sections -fdata-sections -I$R/build -I$R/third_party/quickjs -I$R/third_party/quickjs/amiga
     -I$H/libhubbub/include -I$H/libparserutils/include $DASH_CFLAGS"
+. "$R/tools/emu68_cf.sh"
 $GCC $CF -c "$R/src_c/tachyon.c" -o "$B/tachyon.o"
 rm -f "$B/libpegamento.a"
 ${AR:-/opt/amiga/bin/m68k-amigaos-ar} rcs "$B/libpegamento.a" "$B/tachyon.o"

@@ -28,6 +28,7 @@ Q=$R/third_party/quickjs
 B=$R/build/qjs-$V; mkdir -p "$B"
 CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpsz0 -fno-isolate-erroneous-paths-dereference
     -fno-delete-null-pointer-checks -fwrapv -D_GNU_SOURCE -DCONFIG_VERSION=\"2026-06-04\" -I$Q/amiga -I$Q $*"
+. "$R/tools/emu68_cf.sh"
 for f in quickjs libregexp libunicode cutils dtoa; do
   $GCC $CF -c "$Q/$f.c" -o "$B/$f.o"
 done

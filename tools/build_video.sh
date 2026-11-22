@@ -20,6 +20,7 @@ CF="-noixemul -O2 -fno-branch-count-reg -std=c99 -m68020-60 -m68881 -fomit-frame
     -DAMIGA_M68K -DMR_HAVE_H264 -DMR_M68K_ASM=1 -DMR_PL_MPEG_SKIP_AUDIO_TIME=1
     -I$M/libavc_port -I$M/libavc/common -I$M/libavc/decoder -include $M/libavc_port/compat.h -I$M/core -I$M/audio -I$M/amiga
     -w"
+. "$R/tools/emu68_cf.sh"
 # los ficheros del núcleo que MintVID enlaza en su mr_decode (player/Makefile.amiga), sin MPEG-2, DV ni su red
 NUCLEO="mr_codec.c mr_source.c mr_demux.c mr_latm.c mr_mkv.c mr_avi.c mr_mov.c mr_ts.c mr_ps.c mr_raw_mjpeg.c
     mr_raw_mpeg4.c mr_cinepak.c mr_dither.c mr_dither_m68k.S mr_ham.c mr_ham_m68k.S mr_scale.c mr_c2p.c

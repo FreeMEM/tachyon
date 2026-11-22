@@ -18,6 +18,7 @@ mkdir -p "$B"
 # de 0x0. IMG_CPU="" para un dashweb sin FPU (sin SVG fiable).
 CPU=${IMG_CPU--m68020 -m68881}
 CF="-noixemul -O2 -fno-branch-count-reg -fomit-frame-pointer -fbbb=abcfhilmnpz0 -fno-delete-null-pointer-checks $CPU"
+. "$R/tools/emu68_cf.sh"
 $GCC $CF -I"$R/third_party/tjpgd" -c "$R/third_party/tjpgd/tjpgd.c" -o "$B/tjpgd.o"
 $GCC $CF -I"$R/third_party/stb" -c "$R/third_party/stb/stb_image_impl.c" -o "$B/stb_image.o"
 # libwebp: solo el decodificador (las partes en C de makefile.unix, sin las de SSE/NEON/MIPS)

@@ -720,7 +720,7 @@ tarea, con el estilo de Dash.
       (g) jquery.com, un poco más lento.
       Gana ya: Acid3 100 frente a 22, JavaScript de cálculo, GitHub, memoria (53 MB con GitHub frente a 191), vídeo
       dentro de la web y HTTPS que verifica certificados. Lo que Amelinium trae y Tachyon no, en la 63.
-- [ ] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
+- [x] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
       sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
       0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).
       Javier de las Rivas lo vio en AmigaOS 4 con una versión vieja ("esperando"): primer dato de Tachyon en OS4.
@@ -737,6 +737,9 @@ tarea, con el estilo de Dash.
       (js_nuevo, el preludio con PROGDIR:Tachyon.bc o T:, o su compilación en un motor con pool propio), no en la red.
       Con 512 MB en el emulador va bien. Pedido: si la ventana responde o hay un requester, borrar Tachyon.bc y si
       le pasa con cualquier web con JavaScript.
+      (2026-11-22) Causa: el JIT de Emu68 1.1.0-beta.1 (muls.l/mulu.l de 32 bits y luego lsr.l por registro dan mal:
+      QuickJS escribía fuera de su tabla de formas al crear el contexto). Rodeo en Dash (move.l tras cada mul de 32
+      bits) y en los scripts del C de Tachyon. Ver la bitácora del 2026-11-22. También el issue #16 (BordanBordan).
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31
@@ -7889,4 +7892,27 @@ Formato:
   0.11.1), que no estaba en Tachyon.cd ni en los .ct.
 - tools/medir_visor.py --arexx-puerto (TACHYON.1: el puerto de MUI, con HIDE, SHOW, QUIT...).
 - Batería: 205/205 (con Dash de la rama iconificar, ya en main de Dash: PR #214, c37a6bf).
+
+### 2026-11-22 — Tarea 75 y el issue #16: el JIT de Emu68 1.1.0-beta.1 (lo contaron David Martínez y BordanBordan)
+- Emu68 de verdad sin PiStorm: su release trae Emu68-raspi.zip, que arranca en QEMU (qemu-system-aarch64 -M raspi3b
+  -kernel Emu68.img -dtb bcm2710-rpi-3-b.dtb) y carga como initramfs un ejecutable HUNK del Amiga, que corre sin
+  AmigaOS y escribe por la UART (0xf2201000). Banco: tools/emu68/probar.sh (caso_mul y qjs: el libqjs.a de Tachyon con
+  la libc del runtime de Dash creando el contexto como js_nuevo). Con la beta.1 (la de David) se cuelga en
+  JS_NewContext, como en sus trazas; con ICNT=1 (una instrucción por bloque del JIT), no.
+- Partiendo con marcas: [Symbol.iterator] del prototipo de Array (alias de values) -> la primera propiedad perezosa
+  -> JS_NewCFunction3 -> JS_NewObjectProtoClass -> js_new_shape2 -> js_shape_hash_link, con una tabla de excepciones
+  propia (vectores.s) sin excepción: un bucle. Aislado: muls.l #k,d0; moveq #28,d1; lsr.l d1,d0 da 0xe4437d66 en vez
+  de 6 (el producto de 64 bits desplazado). Emu68 hace muls.l con smull de 64 bits sin limpiar la mitad alta y, desde
+  la 1.1.0-beta.1, lsr.l por registro con lsrv64 sin truncar (la alpha.1 copiaba antes con un mov de 32 bits). La
+  1.0.7 y la 1.1.0-alpha.1 dan bien; asr, ror, muls.w y los desplazamientos inmediatos también. Ya estaba avisado en
+  Emu68 (issue #347, arreglado en su PR #349, para la 1.1.0-beta.2, aún sin publicar).
+- Rodeo, mientras: un move.l dN,dN tras cada muls.l/mulu.l de 32 bits (Emu68 lo traduce con una escritura de 32 bits,
+  que limpia la mitad alta). En Dash (PR #217, ya en main): dashc lo emite tras sus tres muls.l
+  y, por C, gcc -B compiler/emu68/ (un as que filtra el .s, sin tocar el asm en línea); el runtime (dashrt_fpu.o) se
+  compila así. En Tachyon, tools/emu68_cf.sh en build_qjs, build_img, build_video y build_pegamento. Buscados en el
+  ejecutable (objdump y un script): 38 sitios mul -> lsr por registro o campo de bits antes, 0 después. Con el rodeo,
+  QuickJS bajo la beta.1 crea el contexto y evalúa "[3,1,2].sort().join('-') + ' ' + (0.1+0.2)" bien.
+- Batería: 205/205 (con las librerías del C rehechas con el rodeo y Dash de main). Mensajes para David (Telegram,
+  con el sí del usuario) y el issue #16: el fallo es de la beta.1, lo arregla su beta.2, Tachyon lo esquiva y la
+  1.0.7 va bien.
 

@@ -649,6 +649,8 @@ tarea, con el estilo de Dash.
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
           de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
+          (2026-11-22) offsetHeight en el bucle de tests/pages/zz_bench_k4b.html (2400 <div>): de 4180 ms a 0 (ver la
+          bitácora). Queda la maqueta del final, ya fuera del JavaScript: 2,8 s de 2400 inline-block en el RTG.
           (2026-11-17) Banco tests/pages/zz_bench_dom2.html (5000 vueltas, emulador RTG), de eb32e1e a hoy:
           childNodes[i] 2380 -> 100 ms, classList.add/remove 5360 -> 3420, style.x= 3100 -> 2260, setAttribute
           1020 -> 620, insertBefore 2460 -> 1920. Lo que más queda: classList (el Proxy de lt[0]: dos trampas por
@@ -7916,3 +7918,17 @@ Formato:
   con el sí del usuario) y el issue #16: el fallo es de la beta.1, lo arregla su beta.2, Tachyon lo esquiva y la
   1.0.7 va bien.
 
+### 2026-11-22 — Tarea 76a: offsetHeight tras cambiar 2400 clases
+- Banco tests/pages/zz_bench_k4b.html (no está en el repo: la de la comparativa con el tiempo del bucle y el de
+  offsetHeight aparte), emulador RTG: bucle 280 ms, offsetHeight 4180 ms (estilo entero 1,9 s y maqueta entera 2 s).
+- Los toques del JavaScript pasaban de 1000 (DOM_TOQUES_MAX) y eso pedía estilo y maqueta enteros: ahora 10000.
+- Estilo: hermanos con la misma clave de ganadoras (gan_clave), el mismo padre y sus mismas variables reusan el
+  estilo calculado del anterior (lib/estilo.dash, _memo_*; se olvida al empezar cada estilo_aplicar): 1359 -> 767 ms.
+- offsetHeight y compañía con algo de dentro cambiado: antes solo miraba si estaba tocado él o algo de fuera, y daba
+  el alto de la maqueta anterior (un <div> con cinco párrafos más seguía midiendo uno; también en dev). Ahora maqueta
+  si hay toques dentro (marcados por tandas hacia arriba, toq_sub en Nodo), salvo si su tamaño no depende de lo de
+  dentro (maqueta_tamano_fijo: height en px en el flujo), como el #dom del banco. tests/test_documento_medir_hijos.
+- Resultado: OFFSET 0 ms (antes 4180). Lo que queda, la maqueta de después (2,8 s, 2411 bloques): cada inline-block
+  cuesta ~1 ms; siguiente paso de la 76a.
+- tools/medir_visor.py: --arg (argumentos de más para el programa, p. ej. TRAZA=DH0:traza.txt) y --local ya no
+  pierde los argumentos de las opciones.

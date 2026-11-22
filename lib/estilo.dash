@@ -2146,6 +2146,7 @@ end
 # Calcula el estilo de todo el árbol
 func estilo_aplicar(doc: Nodo, hojas: Hojas)
     estilo_raro = dom_atributo(doc, "modo") == "quirks"
+    _memo_olvidar()
     if hojas.indice == nil or hojas.indice_ancho != css_vista_ancho()
         _estilo_indexar(hojas)
     end
@@ -2181,6 +2182,7 @@ end
 # false si no se puede (:has() en las hojas, demasiados cambios, o hay que rehacer <html> entero): estilo_aplicar.
 func estilo_aplicar_partes(doc: Nodo, hojas: Hojas, toques: [Toque]) -> Bool
     estilo_raro = dom_atributo(doc, "modo") == "quirks"
+    _memo_olvidar()
     if hojas.indice == nil or hojas.indice_ancho != css_vista_ancho() or hojas.invalida == nil or hojas.has_anclas == nil
         if traza_activa
             traza("estilo entero: hojas sin índice")
@@ -3033,16 +3035,60 @@ func _estilo_heredar(n: Nodo, hojas: Hojas, padre: {String: String}, padre_vars:
 end
 
 # Lo de _estilo_propio tras la cascada: lo heredado, sus ::before y ::after, y si cambió
+# Hermanos con las mismas reglas (gan_clave) y el mismo estilo del padre comparten el estilo calculado: _calcular es lo
+# más caro del estilo y 2400 <div> de una lista daban 2400 veces lo mismo (tarea 76a, la comparativa: cambiar clases y
+# offsetHeight). Solo dentro de una pasada (lo de fuera, como rem, vw o el zoom del texto, no cambia en ella) y con el
+# padre y sus --x por identidad. Nadie cambia el estilo calculado de un elemento en su sitio (el fondo resuelto de
+# lib/imagenes.dash sale igual para los que lo comparten).
+var _memo_padre: {String: String} = nil
+var _memo_padre_vars: {String: String} = nil
+var _memo_estilos: {String: {String: String}} = {}
+var _memo_vars: {String: {String: String}} = {}
+var _memo_ganadoras: {String: {String: Candidata}} = {}
+
+func _memo_olvidar()
+    var nada: {String: String} = nil
+    _memo_padre = nada
+    _memo_padre_vars = nada
+    var e: {String: {String: String}} = {}
+    _memo_estilos = e
+    var v: {String: {String: String}} = {}
+    _memo_vars = v
+    var g: {String: {String: Candidata}} = {}
+    _memo_ganadoras = g
+end
+
 func _estilo_propio_fin(n: Nodo, hojas: Hojas, ganadoras: {String: Candidata}, debajo: [Declaracion], padre: {String: String}, padre_vars: {String: String})
-    e = _calcular(ganadoras, padre, padre_vars, "inline")
-    if debajo != nil
-        for d in debajo
-            e["~" + d.propiedad] = d.valor
+    clave = n.gan_clave
+    var e: {String: String} = nil
+    var vars: {String: String} = nil
+    if clave != nil and debajo == nil
+        if padre != _memo_padre or padre_vars != _memo_padre_vars
+            _memo_olvidar()
+            _memo_padre = padre
+            _memo_padre_vars = padre_vars
+        elif _memo_estilos.has(clave) and _memo_ganadoras[clave] == ganadoras
+            e = _memo_estilos[clave]
+            vars = _memo_vars[clave]
+            _calc_vars = vars
         end
     end
-    vars = _calc_vars
-    if _oculto_a_la_vista(e)
-        e["display"] = "none"
+    if e == nil
+        e = _calcular(ganadoras, padre, padre_vars, "inline")
+        if debajo != nil
+            for d in debajo
+                e["~" + d.propiedad] = d.valor
+            end
+        end
+        vars = _calc_vars
+        if _oculto_a_la_vista(e)
+            e["display"] = "none"
+        end
+        if clave != nil and debajo == nil
+            _memo_estilos[clave] = e
+            _memo_vars[clave] = vars
+            _memo_ganadoras[clave] = ganadoras
+        end
     end
     viejo = n.estilo
     antes_a = n.pseudo_antes

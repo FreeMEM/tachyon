@@ -1,0 +1,22 @@
+# Test: el JavaScript mide un elemento al que acaba de cambiar lo de dentro y recibe el tamaño nuevo (se maqueta en ese
+# momento); antes daba el de la maqueta anterior (un <div> con cinco párrafos más seguía midiendo uno; tarea 76a). Uno
+# cuyo tamaño no depende de lo de dentro (height en px, en el flujo) no maqueta por eso: el #dom de la comparativa,
+# con 2400 <div> que cambian de clase.
+# memcheck
+# expect-out: uno 20 | cinco 120 | largo true | fijo 100 sin maquetar true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/documento.dash"
+
+Main
+    h = "<head><style>p { margin: 0; height: 20px } #f { height: 100px; overflow: hidden }</style></head><body style='margin:0'><div id=c><p>uno</p></div><div id=f><p>x</p></div><script>var c = document.getElementById('c'), f = document.getElementById('f');</script></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 300)
+    s = "uno " + js_evaluar(d.js, "c.offsetHeight", "t.js")
+    s = s + " | cinco " + js_evaluar(d.js, "for (var i = 0; i < 5; i++) { var p = document.createElement('p'); p.appendChild(document.createTextNode('p' + i)); c.appendChild(p); } c.offsetHeight", "t.js")
+    s = s + " | largo " + js_evaluar(d.js, "var a = c.offsetWidth; c.firstChild.style.height = '50px'; c.offsetHeight == 150 && a == 300", "t.js")
+    s = s + " | fijo " + js_evaluar(d.js, "f.firstChild.firstChild.nodeValue = 'otro'; f.firstChild.className = 'b'; f.offsetHeight", "t.js")
+    # (sin maquetar: sus cambios siguen pendientes para documento_al_dia)
+    Print s + " sin maquetar " + (jsdom_cambios(d.js) != d.cambios)
+    documento_liberar(d)
+end

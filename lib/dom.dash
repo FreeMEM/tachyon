@@ -153,6 +153,13 @@ struct Nodo
     # comparaba el suyo con el cambiado y daba el error #418 y rehacía la página entera (tarea 68). Vale mientras
     # texto siga siendo lo que sale de él
     unicode: String = nil
+    # (tarea 76a) toq_sub: igual a toq_gen de su documento si él o algo de dentro tiene un cambio del JavaScript sin
+    # maquetar; en el documento, la generación de su lista de toques y cuántos se han marcado ya (lib/documento.dash)
+    toq_sub: Int = 0
+    toq_gen: Int = 0
+    toq_hechos: Int = 0
+    toq_lista: [Toque] = nil
+    toq_todo: Bool = false
 end
 
 # ¿Algún texto de algún documento tiene unicode? (si no, el JavaScript no mira nada más)
@@ -197,7 +204,7 @@ const TOQUE_CONTENIDO = 2      # nodo: el elemento al que le han cambiado todos 
 const TOQUE_ENTRA = 3          # nodo: el que acaba de entrar en el árbol
 const TOQUE_SALE = 4           # nodo: el padre del que ha salido
 const TOQUE_VECINO = 5         # nodo: un hermano del que ha entrado o salido
-const DOM_TOQUES_MAX = 1000
+const DOM_TOQUES_MAX = 10000
 
 struct Toque
     tipo: Int

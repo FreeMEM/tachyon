@@ -142,6 +142,38 @@ func _documento_cadena_tocada(doc: Nodo, n: Nodo) -> Bool
     return false
 end
 
+# ¿Tiene n algo de dentro (o él) con cambios del JavaScript aún sin maquetar? Cada nodo con algo tocado dentro lleva
+# toq_sub igual a la generación de la lista de toques de su documento; se marcan por tandas, solo los toques nuevos
+# desde la última pregunta (un bucle que cambia y mide no recorre la lista entera cada vez; tarea 76a)
+var _toq_reloj: Int = 0
+
+func _documento_sub_tocado(doc: Nodo, n: Nodo) -> Bool
+    if doc.toques == nil or doc.toques.length == 0
+        return false
+    end
+    if doc.toq_lista != doc.toques or doc.toq_hechos > doc.toques.length
+        _toq_reloj = _toq_reloj + 1
+        doc.toq_gen = _toq_reloj
+        doc.toq_hechos = 0
+        doc.toq_lista = doc.toques
+        doc.toq_todo = false
+    end
+    g = doc.toq_gen
+    while doc.toq_hechos < doc.toques.length
+        t = doc.toques[doc.toq_hechos]
+        doc.toq_hechos = doc.toq_hechos + 1
+        if t.tipo == TOQUE_TODO
+            doc.toq_todo = true
+        end
+        p = t.nodo
+        while p != nil and p.toq_sub != g
+            p.toq_sub = g
+            p = p.padre
+        end
+    end
+    return doc.toq_todo or n.toq_sub == g
+end
+
 # Las hojas, para el getComputedStyle del JavaScript (lib/jsdom.dash)
 func _documento_hojas_al_js(d: Documento)
     if d.js != 0
@@ -183,7 +215,9 @@ end
                 _documento_por_js_seguidas = 0
             end
             if jsdom_caja_valida(n, doc)
-                if not _documento_cadena_tocada(doc, n)
+                # (con algo de dentro cambiado también, salvo si su tamaño no depende de lo de dentro: antes daba el
+                # alto de la maqueta anterior a un <div> al que se le acababan de añadir párrafos; tarea 76a)
+                if not _documento_cadena_tocada(doc, n) and not (_documento_sub_tocado(doc, n) and not maqueta_tamano_fijo(n))
                     return false
                 end
                 if pronto and _documento_por_js_seguidas >= 4

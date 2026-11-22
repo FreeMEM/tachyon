@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (22.11.2026)
 ## language português
 ## codeset 0
 ;
@@ -170,6 +170,18 @@ Registo de depuração da rede
 MSG_56
 Colar
 ; Paste
+MSG_57
+Iconificar
+; Iconify
+MSG_58
+Texto maior
+; Bigger text
+MSG_59
+Texto menor
+; Smaller text
+MSG_60
+Texto de tamanho normal
+; Normal text size
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -383,6 +395,9 @@ Abra uma página e escolha Modo de leitura no menu Navegar.
 MSG_172
 Esta página não tem nenhum artigo para ler.
 ; There is no article to read on this page.
+MSG_173
+Tamanho do texto: %1%
+; Text size: %1%
 MSG_300
 A sua versão sem JavaScript: leve, a que funciona melhor num Amiga. Privado.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -668,6 +683,9 @@ não é possível pôr de lado o Tachyon atual
 MSG_461
 não é possível pôr o novo no lugar
 ; can't put the new one in place
+MSG_462
+a transferência não está assinada pela FreeMEM
+; the download isn't signed by FreeMEM
 MSG_471
 Relatório de depuração
 ; Debug report

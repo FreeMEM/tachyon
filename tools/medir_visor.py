@@ -63,6 +63,8 @@ def main():
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
     ap.add_argument("--arexx", metavar="'ORDEN|ORDEN|...'", help="tools/amiga/arexx.dash in the background: these ARexx "
                     "commands to the TACHYON port, one every 4 s, once it exists; its answers in bg0.txt (with --guardar)")
+    ap.add_argument("--arexx-puerto", default="TACHYON", help="the port for --arexx (TACHYON.1: MUI's own, with "
+                    "HIDE, SHOW, QUIT...)")
     ap.add_argument("--memoria-alta", action="store_true", help="1 GB + 512 MB of Zorro III memory and tools/amiga/comer.dash "
                     "first keeps the low 1 GB, so the program gets memory above 0x80000000 (negative as a 32-bit Int; tarea 69)")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
@@ -217,7 +219,7 @@ def main():
             if args.acciones:
                 fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
             if args.arexx:
-                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), 'TACHYON "' + args.arexx + '"'))
+                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), args.arexx_puerto + ' "' + args.arexx + '"'))
             if args.latido:
                 fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,

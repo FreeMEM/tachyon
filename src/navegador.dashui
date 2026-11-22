@@ -64,6 +64,15 @@
               "separator": true
             },
             {
+              "label": "Iconify",
+              "key": "I",
+              "event": 38,
+              "tr": 57
+            },
+            {
+              "separator": true
+            },
+            {
               "label": "About...",
               "key": "?",
               "event": 8,
@@ -130,6 +139,27 @@
               "key": "E",
               "event": 34,
               "tr": 53
+            },
+            {
+              "separator": true
+            },
+            {
+              "label": "Bigger text",
+              "key": "+",
+              "event": 39,
+              "tr": 58
+            },
+            {
+              "label": "Smaller text",
+              "key": "-",
+              "event": 52,
+              "tr": 59
+            },
+            {
+              "label": "Normal text size",
+              "key": "0",
+              "event": 53,
+              "tr": 60
             }
           ],
           "tr": 7
@@ -181,7 +211,7 @@
             },
             {
               "label": "Inspect",
-              "key": "I",
+              "key": "U",
               "event": 35,
               "tr": 54
             },

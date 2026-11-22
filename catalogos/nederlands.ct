@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (22.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -170,6 +170,18 @@ Netwerk-foutopsporingslog
 MSG_56
 Plakken
 ; Paste
+MSG_57
+Iconificeren
+; Iconify
+MSG_58
+Grotere tekst
+; Bigger text
+MSG_59
+Kleinere tekst
+; Smaller text
+MSG_60
+Normale tekstgrootte
+; Normal text size
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -383,6 +395,9 @@ Open een pagina en kies Leesweergave in het menu Navigeren.
 MSG_172
 Op deze pagina staat geen artikel om te lezen.
 ; There is no article to read on this page.
+MSG_173
+Tekstgrootte: %1%
+; Text size: %1%
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -668,6 +683,9 @@ kan de huidige Tachyon niet opzijzetten
 MSG_461
 kan de nieuwe niet op zijn plaats zetten
 ; can't put the new one in place
+MSG_462
+de download is niet door FreeMEM ondertekend
+; the download isn't signed by FreeMEM
 MSG_471
 Foutrapport
 ; Debug report

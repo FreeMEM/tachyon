@@ -631,11 +631,15 @@ tarea, con el estilo de Dash.
       Installer 44.10: una copia propia (reflink) del Coffin limpio de la sesión dash-lienzo-2.6 (el suyo no se toca,
       ni DashCoffin.hdf; su TRASPASO.md dice cómo arrancarlo sin ventana). Y, si vuelve a pasar, la zona
       negra al cerrar Tachyon con su gadget (Amiberry, AmigaOS 3.2; una vez, el proceso de control del emulador murió).
-- [ ] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
+- [x] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
       contestó "for a coming version").** (a) #18: agrandar o reducir el texto (zoom), o elegir la fuente y el tamaño
       por omisión: en un escritorio de 1440x900 se lee mal. (b) #19: iconificar Tachyon (Amiga+I). Va con su nombre
       (regla de reconocimiento). Contestados también por dashos-97: #15 (Daniel, el control antispam de itch.io: queda
       lejos) y #16 (BordanBordan, congelado en A500 + CM4 con Emu68: se le pidió probar la 0.10.0-alfa y datos).
+      (2026-11-22) Hechas: (b) Proyecto > Iconificar, Amiga-I (Inspeccionar pasa a Amiga-U), con el icono de
+      PROGDIR:Tachyon (Dash 2.20: mui_app_iconify, mui_app_iconified, mui_app_icon); (a) Navegar > Texto más grande,
+      más pequeño y normal (Amiga +, - y 0), del 50 al 300 % con los pasos de Firefox, guardado en Tachyon.prefs
+      (zoom_texto). La fuente por omisión queda para más adelante.
 - [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
       apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
@@ -7865,3 +7869,24 @@ Formato:
   <script src> ni hojas con rutas del Amiga; el actualizador solo instala un Tachyon.gz con firma Ed25519 buena
   (tools/firmar.py, Tachyon.gz.sig; clave en ~/.config/freemem, fuera del repo). tests/test_seguridad.dash nuevo;
   batería 203/203.
+
+### 2026-11-22 — Tarea 78: iconificar y el tamaño del texto (issues #19 y #18 de PerspexSphinx)
+- Sesión de trabajo del área dash (jefe-dash), worktree .worktrees/s1122 (rama s1122 desde dev 1ae3cad; se sube a dev).
+- #19, iconificar: MUI 3.8 no pone el botón de iconificar en la ventana (ni con el Workbench cargado), pero su orden
+  ARexx HIDE sí iconifica Tachyon y SHOW lo devuelve bien. Lo que faltaba en Dash va en Dash 2.20 (worktree
+  FreeMEMLang/.worktrees/iconificar, los dos caminos): mui_app_iconify(on), mui_app_iconified() y mui_app_icon(ruta)
+  (MUIA_Application_DiskObject; se libera con la aplicación). Tachyon: Proyecto > Iconificar con Amiga-I (lo que pidió),
+  así que Inspeccionar pasa a Amiga-U; también por la página (atajo_de_menu). El icono es el de PROGDIR:Tachyon.
+  Probado en FS-UAE (RTG, MUI 3.8, Workbench): Amiga-I deja el planeta de Tachyon en el escritorio y SHOW devuelve la
+  ventana con la página bien pintada (el dibujo de la página va por MUI_Redraw, que no pinta con la ventana cerrada).
+- #18, el tamaño del texto: estilo_zoom_texto (lib/estilo.dash) multiplica el font-size al resolverlo (_tamano_con_zoom:
+  lo que daría sin zoom, por el zoom; así px, pt, medium e initial crecen una vez y em, %, smaller y rem siguen a lo de
+  fuera) y el line-height en px; las cajas en px se quedan, como el "solo el texto" de Firefox. Cada documento
+  recuerda con qué zoom se hizo su estilo y documento_maquetar lo rehace si cambió (vale para todas las ventanas y
+  pestañas al verse). Menú Navegar: Texto más grande, más pequeño y normal (Amiga +, - y 0), pasos de Firefox del 50
+  al 300 %, guardado en Tachyon.prefs (zoom_texto) y leído al arrancar. test_estilo_zoom; capturas al 100 y al 150 %.
+- Los catálogos: 57-60 y 173 nuevos, traducidos en los nueve; y el 462 ("the download isn't signed by FreeMEM", de la
+  0.11.1), que no estaba en Tachyon.cd ni en los .ct.
+- tools/medir_visor.py --arexx-puerto (TACHYON.1: el puerto de MUI, con HIDE, SHOW, QUIT...).
+- Batería: 205/205 (con Dash de la rama iconificar, ya en main de Dash: PR #214, c37a6bf).
+

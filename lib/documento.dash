@@ -35,6 +35,7 @@ struct Documento
     recursos: Recursos = nil   # documento_empezar: las hojas y scripts que están llegando
     hojas_firma: String = ""   # estilo_firma de cuando se hicieron las hojas: si cambia, el JS metió o tocó un <style>
     vh: Int = 0                # el alto de la vista con que se maquetó (vh, position: fixed con top y bottom)
+    zoom_texto: Int = 100      # el estilo_zoom_texto con que se calculó su estilo (issue #18)
     videos: Videos = nil       # los reproductores de sus <video> (lib/videos.dash)
     sin_maquetar: Int = 0      # imágenes llegadas que cambian la maqueta (su <img> no tenía tamaño)
     sin_pintar: Int = 0        # imágenes llegadas que aún no se han pintado
@@ -537,6 +538,7 @@ func documento_avanzar(d: Documento) -> Bool
     _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)
+    d.zoom_texto = estilo_zoom_texto
     d.t_estilo = time_ms() - t1
     traza("estilo hecho")
     imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
@@ -622,6 +624,7 @@ func documento_desde_html(d: Documento, texto: String, t0: Int) -> Documento
     _documento_hojas_al_js(d)
     d.hojas_firma = estilo_firma(d.doc)
     estilo_aplicar(d.doc, d.hojas)
+    d.zoom_texto = estilo_zoom_texto
     imagenes_pedir_fuentes(d.im, estilo_caras(d.hojas))
     imagenes_pedir(d.im, d.doc, d.direccion)
     d.ms = time_ms() - t0
@@ -633,6 +636,12 @@ const DOC_BARRA = 16
 
 func documento_maquetar(d: Documento, ancho: Int)
     t0 = time_ms()
+    # (con otro zoom del texto que el de su estilo, el estilo otra vez: el menú lo cambió con la página ya hecha, o en
+    # otra pestaña)
+    if d.hojas != nil and d.zoom_texto != estilo_zoom_texto
+        d.zoom_texto = estilo_zoom_texto
+        estilo_aplicar(d.doc, d.hojas)
+    end
     # los @media miran el ancho de la página: si alguno cambia de lado, el estilo otra vez
     if d.hojas != nil and css_vista_ancho() != ancho + DOC_BARRA
         cambia = estilo_cambia_con(d.hojas, ancho + DOC_BARRA)

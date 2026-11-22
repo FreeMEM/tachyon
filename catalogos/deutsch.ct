@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (22.11.2026)
 ## language deutsch
 ## codeset 0
 ;
@@ -170,6 +170,18 @@ Netzwerk-Debugprotokoll
 MSG_56
 Einfügen
 ; Paste
+MSG_57
+Ikonifizieren
+; Iconify
+MSG_58
+Text größer
+; Bigger text
+MSG_59
+Text kleiner
+; Smaller text
+MSG_60
+Normale Textgröße
+; Normal text size
 MSG_100
 Diese Seite kann nicht als Lesezeichen gespeichert werden
 ; This page can't be bookmarked
@@ -383,6 +395,9 @@ MSG_171
 MSG_172
 Auf dieser Seite gibt es keinen Artikel zum Lesen.
 ; There is no article to read on this page.
+MSG_173
+Textgröße: %1%
+; Text size: %1%
 MSG_300
 Die Version ohne JavaScript: leicht, läuft am besten auf einem Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -668,6 +683,9 @@ das aktuelle Tachyon lässt sich nicht beiseitelegen
 MSG_461
 das neue lässt sich nicht einsetzen
 ; can't put the new one in place
+MSG_462
+der Download ist nicht von FreeMEM signiert
+; the download isn't signed by FreeMEM
 MSG_471
 Fehlerbericht
 ; Debug report

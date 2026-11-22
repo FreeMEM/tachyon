@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (22.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -170,6 +170,18 @@ Felsökningslogg för nätverket
 MSG_56
 Klistra in
 ; Paste
+MSG_57
+Ikonifiera
+; Iconify
+MSG_58
+Större text
+; Bigger text
+MSG_59
+Mindre text
+; Smaller text
+MSG_60
+Normal textstorlek
+; Normal text size
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -383,6 +395,9 @@ MSG_171
 MSG_172
 Det finns ingen artikel att läsa på den här sidan.
 ; There is no article to read on this page.
+MSG_173
+Textstorlek: %1%
+; Text size: %1%
 MSG_300
 Dess version utan JavaScript: lätt, den som fungerar bäst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -668,6 +683,9 @@ kan inte flytta undan nuvarande Tachyon
 MSG_461
 kan inte sätta den nya på plats
 ; can't put the new one in place
+MSG_462
+nedladdningen är inte signerad av FreeMEM
+; the download isn't signed by FreeMEM
 MSG_471
 Felsökningsrapport
 ; Debug report

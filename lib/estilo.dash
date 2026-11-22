@@ -2165,7 +2165,7 @@ end
 
 # Lo que hereda <html> (el de encima del todo)
 func _estilo_raiz() -> {String: String}
-    var raiz: {String: String} = {"color": "black", "font-family": "sans-serif", "font-size": "" + ESTILO_MEDIUM + "px", "font-weight": "normal", "font-style": "normal", "text-align": "left", "white-space": "normal", "list-style-type": "disc", "visibility": "visible", "display": "block"}
+    var raiz: {String: String} = {"color": "black", "font-family": "sans-serif", "font-size": "" + ESTILO_MEDIUM * estilo_zoom_texto / 100 + "px", "font-weight": "normal", "font-style": "normal", "text-align": "left", "white-space": "normal", "list-style-type": "disc", "visibility": "visible", "display": "block"}
     return raiz
 end
 
@@ -3337,9 +3337,9 @@ func _calcular(ganadoras: {String: Candidata}, padre: {String: String}, padre_va
                 e["font-size"] = padre["font-size"]
             end
         elif tl == "initial"
-            e["font-size"] = "" + ESTILO_MEDIUM + "px"
+            e["font-size"] = "" + ESTILO_MEDIUM * estilo_zoom_texto / 100 + "px"
         elif tl != ""
-            e["font-size"] = "" + estilo_tamano(tam, estilo_px(padre["font-size"], 0, 0)) + "px"
+            e["font-size"] = "" + _tamano_con_zoom(tam, estilo_px(padre["font-size"], 0, 0)) + "px"
         end
     end
     _calc_vars = vars
@@ -3663,6 +3663,20 @@ func _px_diminuto(e: {String: String}, p: String) -> Bool
 end
 
 # font-size en píxeles, según el del padre
+# El font-size con el zoom del texto: lo que daría sin zoom (el del padre y el rem, sin él), por el zoom. Así un px,
+# un pt o medium crecen una vez, y un em o un % siguen al padre sin crecer dos veces
+func _tamano_con_zoom(v: String, padre: Int) -> Int
+    z = estilo_zoom_texto
+    if z == 100 or z <= 0
+        return estilo_tamano(v, padre)
+    end
+    rem = estilo_rem
+    estilo_rem = (estilo_rem * 100 + z / 2) / z
+    r = estilo_tamano(v, (padre * 100 + z / 2) / z)
+    estilo_rem = rem
+    return (r * z + 50) / 100
+end
+
 func estilo_tamano(v: String, padre: Int) -> Int
     x = str_lower(str_trim(v))
     if x == "xx-small"
@@ -3709,6 +3723,10 @@ func estilo_alto_linea(v: String, em_px: Int) -> Int
     end
     r = _calc_suma(Calc(t, 0, em_px, em_px))
     if r.unidad
+        # (en px o pt, con el zoom del texto: si no, las líneas se montan; en em o % ya va en em_px)
+        if estilo_zoom_texto != 100 and str_find(t, "em") < 0 and str_find(t, "%") < 0 and str_find(t, "v") < 0
+            return r.v * estilo_zoom_texto / 10000
+        end
         return r.v / 100
     end
     return r.v * em_px / 100
@@ -3819,6 +3837,9 @@ end
 var estilo_vw: Int = 940
 var estilo_vh: Int = 614
 var estilo_rem: Int = ESTILO_MEDIUM
+# El zoom del texto, en %: el font-size de cada elemento (y el line-height en px) por ese tanto, como el "solo el
+# texto" de Firefox; las cajas en px se quedan. Lo pone el navegador (menú Navegar; issue #18, PerspexSphinx)
+var estilo_zoom_texto: Int = 100
 
 struct Calc
     expr: String

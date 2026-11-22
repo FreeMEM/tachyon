@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (22.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -170,6 +170,18 @@ Feilsøkingslogg for nettverket
 MSG_56
 Lim inn
 ; Paste
+MSG_57
+Ikonifiser
+; Iconify
+MSG_58
+Større tekst
+; Bigger text
+MSG_59
+Mindre tekst
+; Smaller text
+MSG_60
+Normal tekststørrelse
+; Normal text size
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -383,6 +395,9 @@ MSG_171
 MSG_172
 Det finnes ingen artikkel å lese på denne siden.
 ; There is no article to read on this page.
+MSG_173
+Tekststørrelse: %1%
+; Text size: %1%
 MSG_300
 Versjonen uten JavaScript: lett, den som går best på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -668,6 +683,9 @@ kan ikke flytte nåværende Tachyon til side
 MSG_461
 kan ikke sette den nye på plass
 ; can't put the new one in place
+MSG_462
+nedlastingen er ikke signert av FreeMEM
+; the download isn't signed by FreeMEM
 MSG_471
 Feilrapport
 ; Debug report

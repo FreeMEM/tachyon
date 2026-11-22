@@ -112,6 +112,14 @@ MSG_55 (55//)
 Network debug log
 MSG_56 (56//)
 Paste
+MSG_57 (57//)
+Iconify
+MSG_58 (58//)
+Bigger text
+MSG_59 (59//)
+Smaller text
+MSG_60 (60//)
+Normal text size
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -254,6 +262,8 @@ MSG_171 (171//)
 Open a page and choose Reader view in the Navigate menu.
 MSG_172 (172//)
 There is no article to read on this page.
+MSG_173 (173//)
+Text size: %1%
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)
@@ -444,6 +454,8 @@ MSG_460 (460//)
 can't move the current Tachyon aside
 MSG_461 (461//)
 can't put the new one in place
+MSG_462 (462//)
+the download isn't signed by FreeMEM
 MSG_471 (471//)
 Debug report
 MSG_472 (472//)

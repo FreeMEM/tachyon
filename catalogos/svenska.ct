@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (24.11.2026)
 ## language svenska
 ## codeset 0
 ;
@@ -170,6 +170,21 @@ Felsökningslogg för nätverket
 MSG_56
 Klistra in
 ; Paste
+MSG_57
+Ikonifiera
+; Iconify
+MSG_58
+Större text
+; Bigger text
+MSG_59
+Mindre text
+; Smaller text
+MSG_60
+Normal textstorlek
+; Normal text size
+MSG_61
+Certifikat
+; Certificates
 MSG_100
 Denna sida kan inte bokmärkas
 ; This page can't be bookmarked
@@ -383,6 +398,15 @@ MSG_171
 MSG_172
 Det finns ingen artikel att läsa på den här sidan.
 ; There is no article to read on this page.
+MSG_173
+Textstorlek: %1%
+; Text size: %1%
+MSG_174
+Certifikatet kunde inte godkännas
+; Couldn't accept the certificate
+MSG_175
+Certifikat ej kontrollerat för %1: %2
+; Certificate not verified for %1: %2
 MSG_300
 Dess version utan JavaScript: lätt, den som fungerar bäst på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -524,6 +548,72 @@ vid avslut
 MSG_358
 ta bort de från denna domän
 ; delete the ones from this domain
+MSG_360
+Varning: okontrollerat certifikat
+; Warning: unverified certificate
+MSG_361
+Serverns identitet kan inte kontrolleras
+; The server's identity can't be verified
+MSG_362
+Det går inte att kontrollera att servern %1 är den den utger sig för att vara: %2. Om du godkänner det och någon utger sig för att vara den, kan de se eller ändra det som skickas.
+; Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363
+Adress: %1
+; Address: %1
+MSG_364
+Certifikat
+; Certificate
+MSG_365
+Server
+; Server
+MSG_366
+Utfärdat till
+; Issued to
+MSG_367
+Utfärdat av
+; Issued by
+MSG_368
+Giltigt från
+; Valid from
+MSG_369
+Giltigt till
+; Valid until
+MSG_370
+SHA-256-fingeravtryck
+; SHA-256 fingerprint
+MSG_371
+Orsak
+; Reason
+MSG_372
+Tillbaka
+; Go back
+MSG_373
+Godkänn detta certifikat och fortsätt
+; Accept this certificate and continue
+MSG_374
+Godkända certifikat sparas; för att glömma dem: menyn Verktyg, Certifikat.
+; The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375
+Godkända certifikat
+; Accepted certificates
+MSG_376
+Certifikat som inte kunde kontrolleras och som du godkände efter varningen: Tachyon ansluter till deras servrar utan att fråga igen.
+; Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377
+Inga.
+; None.
+MSG_378
+%1 godkända.
+; %1 accepted.
+MSG_379
+Glöm alla
+; Forget them all
+MSG_380
+Godkänt den
+; Accepted on
+MSG_381
+glöm
+; forget
 MSG_400
 för många omdirigeringar
 ; too many redirects
@@ -668,6 +758,9 @@ kan inte flytta undan nuvarande Tachyon
 MSG_461
 kan inte sätta den nya på plats
 ; can't put the new one in place
+MSG_462
+nedladdningen är inte signerad av FreeMEM
+; the download isn't signed by FreeMEM
 MSG_471
 Felsökningsrapport
 ; Debug report

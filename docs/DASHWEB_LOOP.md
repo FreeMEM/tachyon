@@ -631,11 +631,15 @@ tarea, con el estilo de Dash.
       Installer 44.10: una copia propia (reflink) del Coffin limpio de la sesión dash-lienzo-2.6 (el suyo no se toca,
       ni DashCoffin.hdf; su TRASPASO.md dice cómo arrancarlo sin ventana). Y, si vuelve a pasar, la zona
       negra al cerrar Tachyon con su gadget (Amiberry, AmigaOS 3.2; una vez, el proceso de control del emulador murió).
-- [ ] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
+- [x] 78. **Peticiones de PerspexSphinx en GitHub (issues #18 y #19; las pasó dashos-97 el 2026-11-18, que ya les
       contestó "for a coming version").** (a) #18: agrandar o reducir el texto (zoom), o elegir la fuente y el tamaño
       por omisión: en un escritorio de 1440x900 se lee mal. (b) #19: iconificar Tachyon (Amiga+I). Va con su nombre
       (regla de reconocimiento). Contestados también por dashos-97: #15 (Daniel, el control antispam de itch.io: queda
       lejos) y #16 (BordanBordan, congelado en A500 + CM4 con Emu68: se le pidió probar la 0.10.0-alfa y datos).
+      (2026-11-22) Hechas: (b) Proyecto > Iconificar, Amiga-I (Inspeccionar pasa a Amiga-U), con el icono de
+      PROGDIR:Tachyon (Dash 2.20: mui_app_iconify, mui_app_iconified, mui_app_icon); (a) Navegar > Texto más grande,
+      más pequeño y normal (Amiga +, - y 0), del 50 al 300 % con los pasos de Firefox, guardado en Tachyon.prefs
+      (zoom_texto). La fuente por omisión queda para más adelante.
 - [ ] 76. **Lo que perdió Tachyon 0.9.8 frente a Amelinium 1.7.1 en la comparativa en vídeo (usuario, 2026-11-14; se
       apunta el 2026-11-16: "encontramos todo lo que había que mejorar para adelantar por la derecha a Amelinium").**
       Medido en Coffin (Amiberry, 68040 con JIT, RTG), cada uno grabado por separado; datos, tomas y fotos en
@@ -645,6 +649,8 @@ tarea, con el estilo de Dash.
           a 93; "crear 600 elementos" 380 frente a 175. Por eso pierde el total (8,4 s frente a 7,6) aunque en cálculo va
           de 2 a 40 veces más rápido. (2026-11-16, en la 0.10.0: cambiar clases ~30 veces más rápido y crear ~3 veces;
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
+          (2026-11-22) offsetHeight en el bucle de tests/pages/zz_bench_k4b.html (2400 <div>): de 4180 ms a 0 (ver la
+          bitácora). Queda la maqueta del final, ya fuera del JavaScript: 2,8 s de 2400 inline-block en el RTG.
           (2026-11-17) Banco tests/pages/zz_bench_dom2.html (5000 vueltas, emulador RTG), de eb32e1e a hoy:
           childNodes[i] 2380 -> 100 ms, classList.add/remove 5360 -> 3420, style.x= 3100 -> 2260, setAttribute
           1020 -> 620, insertBefore 2460 -> 1920. Lo que más queda: classList (el Proxy de lt[0]: dos trampas por
@@ -716,7 +722,7 @@ tarea, con el estilo de Dash.
       (g) jquery.com, un poco más lento.
       Gana ya: Acid3 100 frente a 22, JavaScript de cálculo, GitHub, memoria (53 MB con GitHub frente a 191), vídeo
       dentro de la web y HTTPS que verifica certificados. Lo que Amelinium trae y Tachyon no, en la 63.
-- [ ] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
+- [x] 75. **"Se queda con 1 script pendiente" en dash.freemem.space (David Martínez, grupo Dash Amiga, 2026-11-14;
       sin versión ni sistema).** No se reproduce con la 0.9.9 en el emulador (OS 3.2, MUI 3.8, 256 MB): 9 recursos en
       0,7 s, scripts en 12,7 s y entera en 49 s. Esperar a que diga versión y sistema (lo lleva la sesión telegram).
       Javier de las Rivas lo vio en AmigaOS 4 con una versión vieja ("esperando"): primer dato de Tachyon en OS4.
@@ -733,6 +739,9 @@ tarea, con el estilo de Dash.
       (js_nuevo, el preludio con PROGDIR:Tachyon.bc o T:, o su compilación en un motor con pool propio), no en la red.
       Con 512 MB en el emulador va bien. Pedido: si la ventana responde o hay un requester, borrar Tachyon.bc y si
       le pasa con cualquier web con JavaScript.
+      (2026-11-22) Causa: el JIT de Emu68 1.1.0-beta.1 (muls.l/mulu.l de 32 bits y luego lsr.l por registro dan mal:
+      QuickJS escribía fuera de su tabla de formas al crear el contexto). Rodeo en Dash (move.l tras cada mul de 32
+      bits) y en los scripts del C de Tachyon. Ver la bitácora del 2026-11-22. También el issue #16 (BordanBordan).
 - [ ] 71. **Las webs de Amiga más visitadas, bien (usuario, 2026-11-12: en amigaworld.net ya criticaron Tachyon porque
       esa web no se veía bien).** (a) amigaworld.net: la columna de la derecha descuadrada (tablas con width en %; en
       marcha). (b) Revisar con tools/comparar_chrome.py (a mano: son webs de terceros) las de Amiga de la lista de la 31
@@ -7865,3 +7874,89 @@ Formato:
   <script src> ni hojas con rutas del Amiga; el actualizador solo instala un Tachyon.gz con firma Ed25519 buena
   (tools/firmar.py, Tachyon.gz.sig; clave en ~/.config/freemem, fuera del repo). tests/test_seguridad.dash nuevo;
   batería 203/203.
+
+### 2026-11-22 — Tarea 78: iconificar y el tamaño del texto (issues #19 y #18 de PerspexSphinx)
+- Sesión de trabajo del área dash (jefe-dash), worktree .worktrees/s1122 (rama s1122 desde dev 1ae3cad; se sube a dev).
+- #19, iconificar: MUI 3.8 no pone el botón de iconificar en la ventana (ni con el Workbench cargado), pero su orden
+  ARexx HIDE sí iconifica Tachyon y SHOW lo devuelve bien. Lo que faltaba en Dash va en Dash 2.20 (worktree
+  FreeMEMLang/.worktrees/iconificar, los dos caminos): mui_app_iconify(on), mui_app_iconified() y mui_app_icon(ruta)
+  (MUIA_Application_DiskObject; se libera con la aplicación). Tachyon: Proyecto > Iconificar con Amiga-I (lo que pidió),
+  así que Inspeccionar pasa a Amiga-U; también por la página (atajo_de_menu). El icono es el de PROGDIR:Tachyon.
+  Probado en FS-UAE (RTG, MUI 3.8, Workbench): Amiga-I deja el planeta de Tachyon en el escritorio y SHOW devuelve la
+  ventana con la página bien pintada (el dibujo de la página va por MUI_Redraw, que no pinta con la ventana cerrada).
+- #18, el tamaño del texto: estilo_zoom_texto (lib/estilo.dash) multiplica el font-size al resolverlo (_tamano_con_zoom:
+  lo que daría sin zoom, por el zoom; así px, pt, medium e initial crecen una vez y em, %, smaller y rem siguen a lo de
+  fuera) y el line-height en px; las cajas en px se quedan, como el "solo el texto" de Firefox. Cada documento
+  recuerda con qué zoom se hizo su estilo y documento_maquetar lo rehace si cambió (vale para todas las ventanas y
+  pestañas al verse). Menú Navegar: Texto más grande, más pequeño y normal (Amiga +, - y 0), pasos de Firefox del 50
+  al 300 %, guardado en Tachyon.prefs (zoom_texto) y leído al arrancar. test_estilo_zoom; capturas al 100 y al 150 %.
+- Los catálogos: 57-60 y 173 nuevos, traducidos en los nueve; y el 462 ("the download isn't signed by FreeMEM", de la
+  0.11.1), que no estaba en Tachyon.cd ni en los .ct.
+- tools/medir_visor.py --arexx-puerto (TACHYON.1: el puerto de MUI, con HIDE, SHOW, QUIT...).
+- Batería: 205/205 (con Dash de la rama iconificar, ya en main de Dash: PR #214, c37a6bf).
+
+### 2026-11-22 — Tarea 75 y el issue #16: el JIT de Emu68 1.1.0-beta.1 (lo contaron David Martínez y BordanBordan)
+- Emu68 de verdad sin PiStorm: su release trae Emu68-raspi.zip, que arranca en QEMU (qemu-system-aarch64 -M raspi3b
+  -kernel Emu68.img -dtb bcm2710-rpi-3-b.dtb) y carga como initramfs un ejecutable HUNK del Amiga, que corre sin
+  AmigaOS y escribe por la UART (0xf2201000). Banco: tools/emu68/probar.sh (caso_mul y qjs: el libqjs.a de Tachyon con
+  la libc del runtime de Dash creando el contexto como js_nuevo). Con la beta.1 (la de David) se cuelga en
+  JS_NewContext, como en sus trazas; con ICNT=1 (una instrucción por bloque del JIT), no.
+- Partiendo con marcas: [Symbol.iterator] del prototipo de Array (alias de values) -> la primera propiedad perezosa
+  -> JS_NewCFunction3 -> JS_NewObjectProtoClass -> js_new_shape2 -> js_shape_hash_link, con una tabla de excepciones
+  propia (vectores.s) sin excepción: un bucle. Aislado: muls.l #k,d0; moveq #28,d1; lsr.l d1,d0 da 0xe4437d66 en vez
+  de 6 (el producto de 64 bits desplazado). Emu68 hace muls.l con smull de 64 bits sin limpiar la mitad alta y, desde
+  la 1.1.0-beta.1, lsr.l por registro con lsrv64 sin truncar (la alpha.1 copiaba antes con un mov de 32 bits). La
+  1.0.7 y la 1.1.0-alpha.1 dan bien; asr, ror, muls.w y los desplazamientos inmediatos también. Ya estaba avisado en
+  Emu68 (issue #347, arreglado en su PR #349, para la 1.1.0-beta.2, aún sin publicar).
+- Rodeo, mientras: un move.l dN,dN tras cada muls.l/mulu.l de 32 bits (Emu68 lo traduce con una escritura de 32 bits,
+  que limpia la mitad alta). En Dash (PR #217, ya en main): dashc lo emite tras sus tres muls.l
+  y, por C, gcc -B compiler/emu68/ (un as que filtra el .s, sin tocar el asm en línea); el runtime (dashrt_fpu.o) se
+  compila así. En Tachyon, tools/emu68_cf.sh en build_qjs, build_img, build_video y build_pegamento. Buscados en el
+  ejecutable (objdump y un script): 38 sitios mul -> lsr por registro o campo de bits antes, 0 después. Con el rodeo,
+  QuickJS bajo la beta.1 crea el contexto y evalúa "[3,1,2].sort().join('-') + ' ' + (0.1+0.2)" bien.
+- Batería: 205/205 (con las librerías del C rehechas con el rodeo y Dash de main). Mensajes para David (Telegram,
+  con el sí del usuario) y el issue #16: el fallo es de la beta.1, lo arregla su beta.2, Tachyon lo esquiva y la
+  1.0.7 va bien.
+
+### 2026-11-22 — Tarea 76a: offsetHeight tras cambiar 2400 clases
+- Banco tests/pages/zz_bench_k4b.html (no está en el repo: la de la comparativa con el tiempo del bucle y el de
+  offsetHeight aparte), emulador RTG: bucle 280 ms, offsetHeight 4180 ms (estilo entero 1,9 s y maqueta entera 2 s).
+- Los toques del JavaScript pasaban de 1000 (DOM_TOQUES_MAX) y eso pedía estilo y maqueta enteros: ahora 10000.
+- Estilo: hermanos con la misma clave de ganadoras (gan_clave), el mismo padre y sus mismas variables reusan el
+  estilo calculado del anterior (lib/estilo.dash, _memo_*; se olvida al empezar cada estilo_aplicar): 1359 -> 767 ms.
+- offsetHeight y compañía con algo de dentro cambiado: antes solo miraba si estaba tocado él o algo de fuera, y daba
+  el alto de la maqueta anterior (un <div> con cinco párrafos más seguía midiendo uno; también en dev). Ahora maqueta
+  si hay toques dentro (marcados por tandas hacia arriba, toq_sub en Nodo), salvo si su tamaño no depende de lo de
+  dentro (maqueta_tamano_fijo: height en px en el flujo), como el #dom del banco. tests/test_documento_medir_hijos.
+- Resultado: OFFSET 0 ms (antes 4180). Lo que queda, la maqueta de después (2,8 s, 2411 bloques): cada inline-block
+  cuesta ~1 ms; siguiente paso de la 76a.
+- tools/medir_visor.py: --arg (argumentos de más para el programa, p. ej. TRAZA=DH0:traza.txt) y --local ya no
+  pierde los argumentos de las opciones.
+
+### 2026-11-25 — Certificados que no se pueden comprobar: avisar y aceptar (lo pidió el usuario)
+- Con Dash de main (d051a30, PR #221: tls_last_cert, tls_last_fingerprint, tls_trust, tls_untrust, tls_trust_clear).
+- lib/http.dash: cuando una conexión TLS no se abre porque no se pudo comprobar el certificado (el motivo de
+  net_bg_error es el de tls_last_cert del servidor), Respuesta.cert_host dice de qué servidor, y la carga se apunta en
+  una lista que el programa vacía con http_fallos_certificado ("dirección, servidor, motivo"). El error sigue siendo
+  el motivo real ("self-signed certificate", "certificate has expired", "hostname mismatch"...).
+- La página principal: en vez de la página de error, una de aviso (lib/certificados.dash, certificado_aviso_html):
+  el aviso con el servidor y el motivo, "Volver" (por defecto, el botón destacado) y "Aceptar este certificado y
+  seguir" arriba, y debajo los datos del certificado con las etiquetas en el idioma del programa. El candado sale
+  abierto. Sus enlaces (tachyon:certificados?aceptar=HUELLA y ?volver) solo valen desde esa página y con su huella
+  (Documento.cert_huella; accion_certificado en navegar): una web no puede aceptar un certificado con un enlace.
+  Aceptado: tls_trust, al fichero y se carga otra vez la misma dirección (la redirección también).
+- Lo demás (hojas, scripts, imágenes, fuentes, fetch/XHR, vídeo) no avisa: certificados_al_registro, en cada tic,
+  lo escribe a la salida y al registro de depuración: "Certificate not verified for HOST: MOTIVO (dirección)".
+  lib/recursos.dash ya no reintenta una hoja o un script que falló por el certificado.
+- PROGDIR:Tachyon.certificados, una línea por certificado: "huella servidor fecha"; al arrancar, tls_trust de cada
+  uno. Herramientas, Certificados (tachyon:certificados): la lista, olvidar uno u olvidarlos todos (tls_untrust o
+  tls_trust_clear, y se cierran las conexiones libres para que la siguiente vuelva a comprobarlo).
+- Catálogos: 61, 174-175 y 360-381 en los nueve idiomas. tests/servers/http.py PORT autofirmado (el certificado
+  autofirmado de las pruebas de Dash) y tests/test_certificados.dash; tests/pages/certificado_recursos.html (a mano,
+  con el servidor autofirmado en 40886).
+- Probado en el emulador (rtg, sys32rtg, y A1200 con sys31muisslweb), servidor autofirmado en 40886: la página de
+  aviso con el motivo y los datos; "Aceptar" la carga (candado cerrado) y escribe Tachyon.certificados; al arrancar
+  otra vez con ese fichero, la página sale sin aviso; Herramientas, Certificados, "forget": la lista vacía y, al
+  volver a la página, el aviso otra vez; "Go back" vuelve a la de antes; una página http con hoja, script e imagen
+  del servidor autofirmado sale sin ellos y sin aviso, con una línea por cada uno en la salida.
+- Batería: 207/207.

@@ -1,0 +1,45 @@
+# Test: el zoom del texto (estilo_zoom_texto, menú Navegar; issue #18 de PerspexSphinx). Al 150 %, lo que va en px, pt,
+# medium o initial crece una vez; un em, un %, smaller y rem siguen a lo de fuera sin crecer dos veces; el line-height
+# en px también crece (si no, las líneas se montan) y en em no otra vez. Al 100 %, como siempre.
+# memcheck
+# expect-out: 150: html=24px p=30px e=45px r=48px i=24px s=30px c=15px
+# expect-out: 150: lh 30px=45 1.5em=45 2=60 normal=-1
+# expect-out: 100: html=16px p=20px e=30px r=32px i=16px s=20px c=10px
+# expect-out: 100: lh 30px=30
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+import "../lib/documento.dash"
+
+func busca(n: Nodo, id: String) -> Nodo
+    var nada: Nodo = nil
+    if n.tipo == DOM_ELEMENTO and dom_atributo(n, "id") == id
+        return n
+    end
+    for h in n.hijos
+        r = busca(h, id)
+        if r != nil
+            return r
+        end
+    end
+    return nada
+end
+
+func tamanos(doc: Nodo) -> String
+    t = "html=" + busca(doc, "h").estilo["font-size"]
+    for id in ["p", "e", "r", "i", "s", "c"]
+        t = t + " " + id + "=" + busca(doc, id).estilo["font-size"]
+    end
+    return t
+end
+
+Main
+    doc = dom_desde_html5("<!DOCTYPE html><html id=h><body><p id=p style='font-size:20px'><span id=e style='font-size:1.5em'>e</span><span id=r style='font-size:2rem'>r</span><span id=i style='font-size:initial'>i</span><span id=s style='font-size:15pt'>s</span><span id=c style='font-size:50%'>c</span></p></body></html>")
+    hojas = estilo_hojas(doc, "http://x/")
+    estilo_zoom_texto = 150
+    estilo_aplicar(doc, hojas)
+    Print "150: " + tamanos(doc)
+    Print "150: lh 30px=" + estilo_alto_linea("30px", 45) + " 1.5em=" + estilo_alto_linea("1.5em", 30) + " 2=" + estilo_alto_linea("2", 30) + " normal=" + estilo_alto_linea("normal", 30)
+    estilo_zoom_texto = 100
+    estilo_aplicar(doc, hojas)
+    Print "100: " + tamanos(doc)
+    Print "100: lh 30px=" + estilo_alto_linea("30px", 30)
+end

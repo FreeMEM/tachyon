@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (24.11.2026)
 ## language nederlands
 ## codeset 0
 ;
@@ -170,6 +170,21 @@ Netwerk-foutopsporingslog
 MSG_56
 Plakken
 ; Paste
+MSG_57
+Iconificeren
+; Iconify
+MSG_58
+Grotere tekst
+; Bigger text
+MSG_59
+Kleinere tekst
+; Smaller text
+MSG_60
+Normale tekstgrootte
+; Normal text size
+MSG_61
+Certificaten
+; Certificates
 MSG_100
 Deze pagina kan geen bladwijzer worden
 ; This page can't be bookmarked
@@ -383,6 +398,15 @@ Open een pagina en kies Leesweergave in het menu Navigeren.
 MSG_172
 Op deze pagina staat geen artikel om te lezen.
 ; There is no article to read on this page.
+MSG_173
+Tekstgrootte: %1%
+; Text size: %1%
+MSG_174
+Het certificaat kon niet worden geaccepteerd
+; Couldn't accept the certificate
+MSG_175
+Certificaat niet gecontroleerd voor %1: %2
+; Certificate not verified for %1: %2
 MSG_300
 De versie zonder JavaScript: licht, werkt het best op een Amiga. Privé.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -524,6 +548,72 @@ bij afsluiten
 MSG_358
 die van dit domein wissen
 ; delete the ones from this domain
+MSG_360
+Waarschuwing: ongecontroleerd certificaat
+; Warning: unverified certificate
+MSG_361
+De identiteit van de server kan niet worden gecontroleerd
+; The server's identity can't be verified
+MSG_362
+Er kan niet worden gecontroleerd dat de server %1 is wie hij zegt te zijn: %2. Als je het accepteert en iemand zich voor hem uitgeeft, kan die zien of wijzigen wat er wordt verzonden.
+; Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363
+Adres: %1
+; Address: %1
+MSG_364
+Certificaat
+; Certificate
+MSG_365
+Server
+; Server
+MSG_366
+Uitgegeven aan
+; Issued to
+MSG_367
+Uitgegeven door
+; Issued by
+MSG_368
+Geldig vanaf
+; Valid from
+MSG_369
+Geldig tot
+; Valid until
+MSG_370
+SHA-256-vingerafdruk
+; SHA-256 fingerprint
+MSG_371
+Reden
+; Reason
+MSG_372
+Terug
+; Go back
+MSG_373
+Dit certificaat accepteren en doorgaan
+; Accept this certificate and continue
+MSG_374
+Geaccepteerde certificaten worden bewaard; om ze te vergeten: menu Gereedschap, Certificaten.
+; The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375
+Geaccepteerde certificaten
+; Accepted certificates
+MSG_376
+Certificaten die niet konden worden gecontroleerd en die je na de waarschuwing hebt geaccepteerd: Tachyon maakt verbinding met hun servers zonder opnieuw te vragen.
+; Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377
+Geen.
+; None.
+MSG_378
+%1 geaccepteerd.
+; %1 accepted.
+MSG_379
+Alle vergeten
+; Forget them all
+MSG_380
+Geaccepteerd op
+; Accepted on
+MSG_381
+vergeten
+; forget
 MSG_400
 te veel omleidingen
 ; too many redirects
@@ -668,6 +758,9 @@ kan de huidige Tachyon niet opzijzetten
 MSG_461
 kan de nieuwe niet op zijn plaats zetten
 ; can't put the new one in place
+MSG_462
+de download is niet door FreeMEM ondertekend
+; the download isn't signed by FreeMEM
 MSG_471
 Foutrapport
 ; Debug report

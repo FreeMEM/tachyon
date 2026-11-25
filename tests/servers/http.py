@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Test HTTP server for test_http: one route per case (length, chunked, close, UTF-8,
-redirects, loop, 404). Usage: http.py PORT [tls|tls-lento]  (tls: HTTPS with a certificate
+redirects, loop, 404). Usage: http.py PORT [tls|tls-lento|autofirmado]  (tls: HTTPS with a certificate
 for 127.0.0.1 signed by the test CA of Dash's tools/emu_sys_amissl.sh; tls-lento: the same, waiting 4 s (or
-$TLS_LENTO_S) before the handshake)"""
+$TLS_LENTO_S) before the handshake; autofirmado: HTTPS with the self-signed certificate of Dash's
+tests/certs/autofirmado_a.pem, which nobody can verify: the accept-after-warning pages)"""
 import socketserver
 import sys
 
@@ -325,6 +326,17 @@ def tls_context():
     return context
 
 
+def tls_autofirmado():
+    """the self-signed certificate (and key) of Dash's tests: always the same fingerprint, 92:86:4C:..."""
+    import os
+    import ssl
+    from pathlib import Path
+    pem = Path(os.environ.get("DASH", Path.home() / "Projects" / "FreeMEMLang")) / "tests" / "certs" / "autofirmado_a.pem"
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(pem)
+    return context
+
+
 class TLSServer(socketserver.ThreadingTCPServer):
     # the handshake goes in the connection's thread: with "tls-lento" it waits TLS_LENTO seconds first
     def get_request(self):
@@ -344,11 +356,11 @@ class TLSHandler(Handler):
 
 
 socketserver.ThreadingTCPServer.allow_reuse_address = True
-if len(sys.argv) > 2 and sys.argv[2] in ("tls", "tls-lento"):
+if len(sys.argv) > 2 and sys.argv[2] in ("tls", "tls-lento", "autofirmado"):
     import time
     import os
     TLS_LENTO = float(os.environ.get("TLS_LENTO_S", "4")) if sys.argv[2] == "tls-lento" else 0
-    CONTEXT = tls_context()
+    CONTEXT = tls_autofirmado() if sys.argv[2] == "autofirmado" else tls_context()
     TLSServer(("127.0.0.1", PORT), TLSHandler).serve_forever()
 else:
     socketserver.ThreadingTCPServer(("127.0.0.1", PORT), Handler).serve_forever()

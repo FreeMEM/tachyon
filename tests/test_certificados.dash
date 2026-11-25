@@ -1,0 +1,84 @@
+# Test: aceptar un certificado que no se puede comprobar tras avisar (lib/certificados.dash; lo pidió el usuario).
+# El servidor de 40885 tiene el certificado autofirmado de las pruebas de Dash: la carga falla con el motivo real y
+# r.cert_host; la página de aviso trae los datos y el enlace para aceptarlo; aceptado, se guarda en el fichero y
+# conecta; tras borrar los de Dash, certificados_cargar los vuelve a aceptar (como al arrancar); olvidado, falla otra vez.
+# emu-server: http.py 40885 autofirmado
+# emu-needs: amisslmaster.library
+# expect-out: fallo: self-signed certificate | 127.0.0.1
+# expect-out: huella: 92:86:4C:8E:ED:2C:AC:97:A7:7B:D4:F5:3C:9E:52:3E:36:3B:8F:D1:26:E2:DA:13:71:05:40:69:CF:C4:BB:77
+# expect-out: al registro: 1 https://127.0.0.1:40885/hola 127.0.0.1 self-signed certificate
+# expect-out: otra vez al registro: 0
+# expect-out: aviso: motivo true, emisor true, enlace true
+# expect-out: sin carga: self-signed certificate | 127.0.0.1
+# expect-out: http sin certificado: []
+# expect-out: limpia: 92864C8EED2CAC97A77BD4F53C9E523E363B8FD126E2DA1371054069CFC4BB77 64 / mala: []
+# expect-out: aceptado: true, en el fichero: true
+# expect-out: con el: 200 [hola] []
+# expect-out: cargados: 1
+# expect-out: tras arrancar: 200 [hola]
+# expect-out: lista: true true
+# expect-out: olvidado: true, quedan 0
+# expect-out: olvidado, sin carga: self-signed certificate | 127.0.0.1
+# expect-out: vacia: true
+
+import "../lib/http.dash"
+import "../lib/certificados.dash"
+
+const F = "T:Tachyon.certificados"
+const URL = "https://127.0.0.1:40885/hola"
+
+# Sin esperar, como la página principal en Tachyon
+func cargar(u: String) -> Respuesta
+    c = http_empezar_nueva(u, 10000)
+    vueltas = 0
+    while not http_avanzar(c) and vueltas < 500
+        time_delay(2)
+        vueltas = vueltas + 1
+    end
+    return c.respuesta
+end
+
+Main
+    file_delete(F)
+    r = http_get(URL, 10000)
+    Print "fallo: " + r.error + " | " + r.cert_host
+    huella = tls_last_fingerprint(r.cert_host)
+    Print "huella: " + huella
+    fallos = http_fallos_certificado()
+    Print "al registro: " + fallos.length + " " + str_replace(fallos[0], "\t", " ")
+    Print "otra vez al registro: " + http_fallos_certificado().length
+    aviso = certificado_aviso_html(URL, r.cert_host, r.error)
+    motivo = str_find(aviso, "self-signed certificate") >= 0
+    emisor = str_find(aviso, "Dash pruebas a") >= 0
+    enlace = str_find(aviso, "tachyon:certificados?aceptar=" + certificado_huella_limpia(huella)) >= 0
+    Print "aviso: motivo #{motivo}, emisor #{emisor}, enlace #{enlace}"
+    r = cargar(URL)
+    Print "sin carga: " + r.error + " | " + r.cert_host
+    http_fallos_certificado()
+    r = http_get("http://127.0.0.1:1/", 3000)
+    Print "http sin certificado: [" + r.cert_host + "]"
+    limpia = certificado_huella_limpia(huella)
+    Print "limpia: " + limpia + " " + limpia.length + " / mala: [" + certificado_huella_limpia("12:34") + "]"
+    aceptado = certificados_aceptar(F, huella, "127.0.0.1")
+    Print "aceptado: #{aceptado}, en el fichero: #{certificados_tiene(F, limpia)}"
+    r = cargar(URL)
+    Print "con el: " + r.estado + " [" + r.cuerpo + "] [" + r.error + "]"
+    http_cerrar_libres()
+    tls_trust_clear()
+    Print "cargados: " + certificados_cargar(F)
+    r = cargar(URL)
+    Print "tras arrancar: " + r.estado + " [" + r.cuerpo + "]"
+    http_cerrar_libres()
+    lista = certificados_html(F)
+    con_host = str_find(lista, "127.0.0.1") >= 0
+    con_enlace = str_find(lista, "tachyon:certificados?olvidar=" + limpia) >= 0
+    Print "lista: #{con_host} #{con_enlace}"
+    olvidado = certificados_olvidar(F, huella)
+    Print "olvidado: #{olvidado}, quedan " + certificados_leer(F).length
+    r = cargar(URL)
+    Print "olvidado, sin carga: " + r.error + " | " + r.cert_host
+    vacia = str_find(certificados_html(F), "None.") >= 0
+    Print "vacia: #{vacia}"
+    file_delete(F)
+    red_terminar()
+end

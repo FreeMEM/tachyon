@@ -63,6 +63,8 @@ def main():
                     "YouTube's portada needs more than 128 MB to leave room for a screen picture of 1680x1050")
     ap.add_argument("--arexx", metavar="'ORDEN|ORDEN|...'", help="tools/amiga/arexx.dash in the background: these ARexx "
                     "commands to the TACHYON port, one every 4 s, once it exists; its answers in bg0.txt (with --guardar)")
+    ap.add_argument("--arexx-puerto", default="TACHYON", help="the port for --arexx (TACHYON.1: MUI's own, with "
+                    "HIDE, SHOW, QUIT...)")
     ap.add_argument("--memoria-alta", action="store_true", help="1 GB + 512 MB of Zorro III memory and tools/amiga/comer.dash "
                     "first keeps the low 1 GB, so the program gets memory above 0x80000000 (negative as a 32-bit Int; tarea 69)")
     ap.add_argument("--latido", type=int, metavar="S", help="tools/amiga/latido.dash in the background: every S s the free "
@@ -92,6 +94,8 @@ def main():
     ap.add_argument("--catalogo", metavar="IDIOMA", help="Catalogs/IDIOMA/Tachyon.catalog (de catalogos/IDIOMA.ct, tools/catalogo.py) "
                     "junto al programa mientras dura (tarea 45g): la interfaz en ese idioma si el sistema lo pide")
     ap.add_argument("--traza", action="store_true", help="dashweb TRAZA: the timeline of the load (lib/traza.dash)")
+    ap.add_argument("--arg", action="append", default=[], help="one more argument for the program (repeatable), "
+                    "like TRAZA=DH0:traza.txt (written as it goes; with --guardar it stays in that folder)")
     ap.add_argument("--perfil", action="store_true", help="build with ./dash --profile (the table goes to the output)")
     ap.add_argument("--mapa", metavar="FILE", help="with --perfil: the linker map of this build (DASHC_MAPA=1), for "
                     "FreeMEMLang/dashc/tests/perfil_pc.py FILE output")
@@ -186,8 +190,11 @@ def main():
             programs = [str(exe)]
             prog_args = [" ".join(p if "://" in p or p.startswith("tachyon:") else f"{esquema}://{args.host}:{PORT}{p}" if p.startswith("/")
                                   else f"{esquema}://{args.host}:{PORT}/pages/{p}" for p in args.pagina.split(","))]
+            base = len(prog_args[0])
             if args.traza:
                 prog_args[0] += " TRAZA"
+            for a in args.arg:
+                prog_args[0] += " " + a
             if args.dibujos:
                 prog_args[0] += " DIBUJOS=" + args.dibujos
             if args.cajas:
@@ -209,7 +216,8 @@ def main():
             if args.local:
                 # the page goes to the disk as a second "program" (DH0:p1; running it just fails)
                 programs.append(str(ROOT / "tests" / "pages" / args.pagina))
-                prog_args = [args.direccion or "DH0:p1", ""]
+                # (con los argumentos de las opciones: antes se perdían, también TRAZA)
+                prog_args = [(args.direccion or "DH0:p1") + prog_args[0][base:], ""]
                 red = ""
             fondo = []
             if args.memoria_alta:
@@ -217,7 +225,7 @@ def main():
             if args.acciones:
                 fondo.append((str(ROOT / "tools" / "amiga" / "clicar.dash"), args.acciones))
             if args.arexx:
-                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), 'TACHYON "' + args.arexx + '"'))
+                fondo.append((str(ROOT / "tools" / "amiga" / "arexx.dash"), args.arexx_puerto + ' "' + args.arexx + '"'))
             if args.latido:
                 fondo.append((str(ROOT / "tools" / "amiga" / "latido.dash"), f'"Tachyon" {args.latido * 50}'))
             out = run_programs(programs, timeout=args.segundos + 60,

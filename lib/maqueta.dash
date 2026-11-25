@@ -1118,6 +1118,22 @@ func _flujo_cadena(b: Nodo) -> Bool
     return true
 end
 
+# ¿Su caja tiene el mismo tamaño cambie lo que cambie dentro? Un bloque en el flujo con height en px (y min- y
+# max-height sin poner o en px), cuyo ancho sale del de fuera (los de fuera no encogen a su contenido). Como el #dom
+# de la página de pruebas de la comparativa: 120px de alto con 2400 <div> dentro que cambian de clase
+func maqueta_tamano_fijo(n: Nodo) -> Bool
+    e = n.estilo
+    if e == nil or n.tipo != DOM_ELEMENTO or not _px_fijo(e, "height")
+        return false
+    end
+    for k in ["min-height", "max-height"]
+        if e.has(k) and e[k] != "none" and e[k] != "auto" and not _px_fijo(e, k)
+            return false
+        end
+    end
+    return _flujo_candidato(n) and _flujo_cadena(n)
+end
+
 # El alto del contenido de la caja que se está maquetando, si es fijo (height en px, o en % de otro fijo); -1 si
 # no. Con él se resuelve un height en % (CSS 2.1, 10.5); el de html y body no se fija (como antes)
 var _alto_definido: Int = -1

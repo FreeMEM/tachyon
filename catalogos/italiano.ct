@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (10.11.2026)
+## version $VER: Tachyon.catalog 1.0 (24.11.2026)
 ## language italiano
 ## codeset 0
 ;
@@ -170,6 +170,21 @@ Registro di debug della rete
 MSG_56
 Incolla
 ; Paste
+MSG_57
+Iconizza
+; Iconify
+MSG_58
+Testo più grande
+; Bigger text
+MSG_59
+Testo più piccolo
+; Smaller text
+MSG_60
+Testo a dimensione normale
+; Normal text size
+MSG_61
+Certificati
+; Certificates
 MSG_100
 Questa pagina non può andare nei segnalibri
 ; This page can't be bookmarked
@@ -383,6 +398,15 @@ Apri una pagina e scegli Modalità lettura nel menu Naviga.
 MSG_172
 In questa pagina non c'è nessun articolo da leggere.
 ; There is no article to read on this page.
+MSG_173
+Dimensione del testo: %1%
+; Text size: %1%
+MSG_174
+Impossibile accettare il certificato
+; Couldn't accept the certificate
+MSG_175
+Certificato non verificato per %1: %2
+; Certificate not verified for %1: %2
 MSG_300
 La sua versione senza JavaScript: leggera, quella che va meglio su un Amiga. Privato.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -524,6 +548,72 @@ all'uscita
 MSG_358
 cancella quelli di questo dominio
 ; delete the ones from this domain
+MSG_360
+Avviso: certificato non verificato
+; Warning: unverified certificate
+MSG_361
+Impossibile verificare l'identità del server
+; The server's identity can't be verified
+MSG_362
+Impossibile verificare che il server %1 sia chi dice di essere: %2. Se lo accetti e qualcuno si sta spacciando per lui, potrebbe vedere o modificare ciò che viene inviato.
+; Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363
+Indirizzo: %1
+; Address: %1
+MSG_364
+Certificato
+; Certificate
+MSG_365
+Server
+; Server
+MSG_366
+Rilasciato a
+; Issued to
+MSG_367
+Rilasciato da
+; Issued by
+MSG_368
+Valido dal
+; Valid from
+MSG_369
+Valido fino al
+; Valid until
+MSG_370
+Impronta SHA-256
+; SHA-256 fingerprint
+MSG_371
+Motivo
+; Reason
+MSG_372
+Indietro
+; Go back
+MSG_373
+Accetta questo certificato e continua
+; Accept this certificate and continue
+MSG_374
+I certificati accettati vengono conservati; per dimenticarli: menu Strumenti, Certificati.
+; The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375
+Certificati accettati
+; Accepted certificates
+MSG_376
+Certificati che non è stato possibile verificare e che hai accettato dopo l'avviso: Tachyon si collega ai loro server senza chiedere di nuovo.
+; Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377
+Nessuno.
+; None.
+MSG_378
+%1 accettati.
+; %1 accepted.
+MSG_379
+Dimenticali tutti
+; Forget them all
+MSG_380
+Accettato il
+; Accepted on
+MSG_381
+dimentica
+; forget
 MSG_400
 troppi reindirizzamenti
 ; too many redirects
@@ -668,6 +758,9 @@ impossibile mettere da parte il Tachyon attuale
 MSG_461
 impossibile mettere al suo posto il nuovo
 ; can't put the new one in place
+MSG_462
+lo scaricamento non è firmato da FreeMEM
+; the download isn't signed by FreeMEM
 MSG_471
 Rapporto di debug
 ; Debug report

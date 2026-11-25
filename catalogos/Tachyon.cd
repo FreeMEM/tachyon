@@ -112,6 +112,16 @@ MSG_55 (55//)
 Network debug log
 MSG_56 (56//)
 Paste
+MSG_57 (57//)
+Iconify
+MSG_58 (58//)
+Bigger text
+MSG_59 (59//)
+Smaller text
+MSG_60 (60//)
+Normal text size
+MSG_61 (61//)
+Certificates
 MSG_100 (100//)
 This page can't be bookmarked
 MSG_101 (101//)
@@ -254,6 +264,12 @@ MSG_171 (171//)
 Open a page and choose Reader view in the Navigate menu.
 MSG_172 (172//)
 There is no article to read on this page.
+MSG_173 (173//)
+Text size: %1%
+MSG_174 (174//)
+Couldn't accept the certificate
+MSG_175 (175//)
+Certificate not verified for %1: %2
 MSG_300 (300//)
 Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
 MSG_301 (301//)
@@ -348,6 +364,50 @@ MSG_357 (357//)
 on quit
 MSG_358 (358//)
 delete the ones from this domain
+MSG_360 (360//)
+Warning: unverified certificate
+MSG_361 (361//)
+The server's identity can't be verified
+MSG_362 (362//)
+Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363 (363//)
+Address: %1
+MSG_364 (364//)
+Certificate
+MSG_365 (365//)
+Server
+MSG_366 (366//)
+Issued to
+MSG_367 (367//)
+Issued by
+MSG_368 (368//)
+Valid from
+MSG_369 (369//)
+Valid until
+MSG_370 (370//)
+SHA-256 fingerprint
+MSG_371 (371//)
+Reason
+MSG_372 (372//)
+Go back
+MSG_373 (373//)
+Accept this certificate and continue
+MSG_374 (374//)
+The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375 (375//)
+Accepted certificates
+MSG_376 (376//)
+Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377 (377//)
+None.
+MSG_378 (378//)
+%1 accepted.
+MSG_379 (379//)
+Forget them all
+MSG_380 (380//)
+Accepted on
+MSG_381 (381//)
+forget
 MSG_400 (400//)
 too many redirects
 MSG_401 (401//)
@@ -444,6 +504,8 @@ MSG_460 (460//)
 can't move the current Tachyon aside
 MSG_461 (461//)
 can't put the new one in place
+MSG_462 (462//)
+the download isn't signed by FreeMEM
 MSG_471 (471//)
 Debug report
 MSG_472 (472//)

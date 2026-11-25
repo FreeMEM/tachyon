@@ -32,6 +32,10 @@ struct Documento
     ancho: Int
     error: String
     ms: Int              # lo que tardó en abrirse y maquetarse
+    # la página de aviso de un certificado que no se pudo comprobar (lib/certificados.dash): su servidor y su huella,
+    # la única que se puede aceptar desde ella (tachyon:certificados?aceptar=; lo pidió el usuario)
+    cert_host: String = ""
+    cert_huella: String = ""
     recursos: Recursos = nil   # documento_empezar: las hojas y scripts que están llegando
     hojas_firma: String = ""   # estilo_firma de cuando se hicieron las hojas: si cambia, el JS metió o tocó un <style>
     vh: Int = 0                # el alto de la vista con que se maquetó (vh, position: fixed con top y bottom)

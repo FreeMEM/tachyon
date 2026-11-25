@@ -54,6 +54,9 @@ struct Respuesta
     bytes: Int        # bytes escritos en el fichero (http_a_fichero)
     version_11: Bool = false   # HTTP/1.1 (la conexión puede seguir abierta tras la respuesta)
     set_cookies: [String] = nil  # cada Set-Cookie (no se pueden juntar con comas: Expires lleva una)
+    # falló porque no se pudo comprobar el certificado de este servidor (autofirmado, caducado, de otro nombre...):
+    # tls_last_cert(cert_host) lo cuenta y tls_trust lo acepta (lo pidió el usuario). "" si no fue eso
+    cert_host: String = ""
 end
 
 func _respuesta_vacia(url: String) -> Respuesta
@@ -125,6 +128,57 @@ func _http_error_red(e: String) -> String
     return e
 end
 
+# Las cargas que fallaron por el certificado del servidor, para el registro del programa: "dirección\tservidor\tmotivo"
+# (http_fallos_certificado las da y vacía la lista). La página principal, además, avisa con su página (Tachyon)
+var _http_fallos_cert: [String] = nil
+
+# ¿Ese error de la conexión con host es que no se pudo comprobar su certificado? Dash guarda el último que falló de
+# cada servidor (tls_last_cert) con su motivo, el mismo texto que da net_bg_error
+func http_es_certificado(host: String, error: String) -> Bool
+    if error == "" or tls_last_fingerprint(host) == ""
+        return false
+    end
+    cert = tls_last_cert(host)
+    p = str_find(cert, "\nMotivo: ")
+    if p < 0
+        return false
+    end
+    motivo = str_trim(cert[p + 9:])
+    f = str_find(motivo, "\n")
+    if f >= 0
+        motivo = motivo[:f]
+    end
+    return motivo != "" and (motivo == error or str_starts(error, motivo) or str_starts(motivo, error))
+end
+
+# El error de la conexión c, que no se pudo abrir, en r; si fue el certificado, también r.cert_host y a la lista
+func _http_error_de(r: Respuesta, c: Conexion, direccion: String)
+    r.error = _http_error_red(c.error)
+    if c.con_tls and http_es_certificado(c.host, c.error)
+        r.cert_host = c.host
+        if _http_fallos_cert == nil
+            var lista: [String] = []
+            _http_fallos_cert = lista
+        end
+        linea = direccion + "\t" + c.host + "\t" + c.error
+        if not _http_fallos_cert.has(linea) and _http_fallos_cert.length < 64
+            _http_fallos_cert.push(linea)
+        end
+    end
+end
+
+# Las cargas que fallaron por el certificado desde la última vez ("dirección\tservidor\tmotivo"), y la lista vacía
+func http_fallos_certificado() -> [String]
+    var r: [String] = []
+    if _http_fallos_cert != nil
+        for l in _http_fallos_cert
+            r.push(l)
+        end
+        _http_fallos_cert.clear()
+    end
+    return r
+end
+
 # Conecta y manda la petición; nil (con r.error) si no se pudo
 func _http_conectar(u: Url, espera_ms: Int, r: Respuesta, comprimir: Bool) -> Conexion
     return _http_conectar_con(u, espera_ms, r, "GET", "", "", comprimir)
@@ -143,7 +197,7 @@ func _http_conectar_con(u: Url, espera_ms: Int, r: Respuesta, metodo: String, cu
         c = red_abrir(u.host, url_port(u), espera_ms)
     end
     if c.error != ""
-        r.error = _http_error_red(c.error)
+        _http_error_de(r, c, url_text(u))
         var nada: Conexion = nil
         return nada
     end
@@ -875,7 +929,7 @@ func _carga_conectar(c: Carga)
     end
     c.conexion = red_abrir_empezar(u.host, url_port(u), u.esquema == "https", c.espera)
     if c.conexion.cerrada
-        c.respuesta.error = _http_error_red(c.conexion.error)
+        _http_error_de(c.respuesta, c.conexion, url_text(u))
         c.hecha = true
     end
 end
@@ -918,7 +972,7 @@ func http_avanzar(c: Carga) -> Bool
             return false
         end
         if abierta < 0
-            c.respuesta.error = _http_error_red(c.conexion.error)
+            _http_error_de(c.respuesta, c.conexion, url_text(c.actual))
             red_cerrar(c.conexion)
             c.hecha = true
             return true
@@ -1412,7 +1466,7 @@ func _carga_otra_conexion(c: Carga)
     c.enviada = false
     c.ultimo = time_ms()
     if c.conexion.cerrada
-        c.respuesta.error = _http_error_red(c.conexion.error)
+        _http_error_de(c.respuesta, c.conexion, url_text(u))
         c.hecha = true
     end
 end

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (22.11.2026)
+## version $VER: Tachyon.catalog 1.0 (24.11.2026)
 ## language norsk
 ## codeset 0
 ;
@@ -182,6 +182,9 @@ Mindre tekst
 MSG_60
 Normal tekststørrelse
 ; Normal text size
+MSG_61
+Sertifikater
+; Certificates
 MSG_100
 Denne siden kan ikke legges i bokmerker
 ; This page can't be bookmarked
@@ -398,6 +401,12 @@ Det finnes ingen artikkel å lese på denne siden.
 MSG_173
 Tekststørrelse: %1%
 ; Text size: %1%
+MSG_174
+Sertifikatet kunne ikke godtas
+; Couldn't accept the certificate
+MSG_175
+Sertifikat ikke kontrollert for %1: %2
+; Certificate not verified for %1: %2
 MSG_300
 Versjonen uten JavaScript: lett, den som går best på en Amiga. Privat.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -539,6 +548,72 @@ ved avslutning
 MSG_358
 slett dem fra dette domenet
 ; delete the ones from this domain
+MSG_360
+Advarsel: ukontrollert sertifikat
+; Warning: unverified certificate
+MSG_361
+Serverens identitet kan ikke kontrolleres
+; The server's identity can't be verified
+MSG_362
+Det kan ikke kontrolleres at serveren %1 er den den utgir seg for å være: %2. Hvis du godtar det og noen utgir seg for å være den, kan de se eller endre det som sendes.
+; Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363
+Adresse: %1
+; Address: %1
+MSG_364
+Sertifikat
+; Certificate
+MSG_365
+Server
+; Server
+MSG_366
+Utstedt til
+; Issued to
+MSG_367
+Utstedt av
+; Issued by
+MSG_368
+Gyldig fra
+; Valid from
+MSG_369
+Gyldig til
+; Valid until
+MSG_370
+SHA-256-fingeravtrykk
+; SHA-256 fingerprint
+MSG_371
+Årsak
+; Reason
+MSG_372
+Tilbake
+; Go back
+MSG_373
+Godta dette sertifikatet og fortsett
+; Accept this certificate and continue
+MSG_374
+Godtatte sertifikater lagres; for å glemme dem: menyen Verktøy, Sertifikater.
+; The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375
+Godtatte sertifikater
+; Accepted certificates
+MSG_376
+Sertifikater som ikke kunne kontrolleres og som du godtok etter advarselen: Tachyon kobler til serverne deres uten å spørre igjen.
+; Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377
+Ingen.
+; None.
+MSG_378
+%1 godtatt.
+; %1 accepted.
+MSG_379
+Glem alle
+; Forget them all
+MSG_380
+Godtatt
+; Accepted on
+MSG_381
+glem
+; forget
 MSG_400
 for mange omdirigeringer
 ; too many redirects

@@ -1,4 +1,4 @@
-## version $VER: Tachyon.catalog 1.0 (22.11.2026)
+## version $VER: Tachyon.catalog 1.0 (24.11.2026)
 ## language português
 ## codeset 0
 ;
@@ -182,6 +182,9 @@ Texto menor
 MSG_60
 Texto de tamanho normal
 ; Normal text size
+MSG_61
+Certificados
+; Certificates
 MSG_100
 Esta página não pode ir para os marcadores
 ; This page can't be bookmarked
@@ -398,6 +401,12 @@ Esta página não tem nenhum artigo para ler.
 MSG_173
 Tamanho do texto: %1%
 ; Text size: %1%
+MSG_174
+Não foi possível aceitar o certificado
+; Couldn't accept the certificate
+MSG_175
+Certificado não verificado de %1: %2
+; Certificate not verified for %1: %2
 MSG_300
 A sua versão sem JavaScript: leve, a que funciona melhor num Amiga. Privado.
 ; Its JavaScript-free version: light, the one that runs best on an Amiga. Private.
@@ -539,6 +548,72 @@ ao sair
 MSG_358
 apagar os deste domínio
 ; delete the ones from this domain
+MSG_360
+Aviso: certificado não verificado
+; Warning: unverified certificate
+MSG_361
+Não é possível verificar a identidade do servidor
+; The server's identity can't be verified
+MSG_362
+Não é possível verificar que o servidor %1 é quem diz ser: %2. Se o aceitar e alguém se estiver a fazer passar por ele, poderá ver ou alterar o que é enviado.
+; Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent.
+MSG_363
+Endereço: %1
+; Address: %1
+MSG_364
+Certificado
+; Certificate
+MSG_365
+Servidor
+; Server
+MSG_366
+Emitido para
+; Issued to
+MSG_367
+Emitido por
+; Issued by
+MSG_368
+Válido desde
+; Valid from
+MSG_369
+Válido até
+; Valid until
+MSG_370
+Impressão digital SHA-256
+; SHA-256 fingerprint
+MSG_371
+Motivo
+; Reason
+MSG_372
+Voltar
+; Go back
+MSG_373
+Aceitar este certificado e continuar
+; Accept this certificate and continue
+MSG_374
+Os certificados aceites são guardados; para os esquecer: menu Ferramentas, Certificados.
+; The certificates you accept are kept; to forget them: menu Tools, Certificates.
+MSG_375
+Certificados aceites
+; Accepted certificates
+MSG_376
+Certificados que não foi possível verificar e que aceitou depois do aviso: o Tachyon liga-se aos seus servidores sem voltar a perguntar.
+; Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.
+MSG_377
+Nenhum.
+; None.
+MSG_378
+%1 aceites.
+; %1 accepted.
+MSG_379
+Esquecê-los todos
+; Forget them all
+MSG_380
+Aceite em
+; Accepted on
+MSG_381
+esquecer
+; forget
 MSG_400
 demasiados redirecionamentos
 ; too many redirects

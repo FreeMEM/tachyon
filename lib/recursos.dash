@@ -154,7 +154,8 @@ func recursos_avanzar(r: Recursos) -> Int
                 p.carga.respuesta.error = tr(407, "timed out")
                 hecha = true
             end
-            if hecha and p.carga.respuesta.error != "" and p.intentos < RECURSO_INTENTOS
+            # (un certificado que no se pudo comprobar no cambia por intentarlo otra vez)
+            if hecha and p.carga.respuesta.error != "" and p.carga.respuesta.cert_host == "" and p.intentos < RECURSO_INTENTOS
                 traza("otra vez (" + p.carga.respuesta.error + "): " + p.direccion)
                 var otra: Carga = nil
                 p.carga = otra

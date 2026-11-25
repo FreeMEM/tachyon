@@ -1,0 +1,230 @@
+# Certificados que no se pueden comprobar (autofirmados, caducados, de otro nombre...), aceptados tras avisar, como
+# en los navegadores (lo pidió el usuario). Dash los acepta con tls_trust mientras dura el programa; aquí se guardan
+# para siempre, uno por línea: "huella servidor fecha" (la huella SHA-256 con dos puntos, la fecha AAAA-MM-DD).
+#
+#   certificados_cargar("PROGDIR:Tachyon.certificados")     # al arrancar: tls_trust de cada uno
+#   html = certificado_aviso_html(url, host, motivo)        # la página de aviso (tls_last_cert(host))
+#   certificados_aceptar(fichero, huella, host)             # tls_trust y al fichero
+#   certificados_olvidar(fichero, huella)                   # tls_untrust y fuera ("": todos)
+#   html = certificados_html(fichero)                       # tachyon:certificados: los aceptados
+
+import "idioma.dash"
+import "cookies.dash"
+
+struct CertAceptado
+    huella: String
+    host: String
+    fecha: String
+end
+
+# La huella como la guarda Dash: 64 cifras hexadecimales en mayúsculas, sin dos puntos ("" si no es una huella)
+func certificado_huella_limpia(h: String) -> String
+    t = str_upper(str_replace(str_replace(str_trim(h), ":", ""), " ", ""))
+    if t.length != 64
+        return ""
+    end
+    for i in (0..63)
+        if str_find("0123456789ABCDEF", t[i:i + 1]) < 0
+            return ""
+        end
+    end
+    return t
+end
+
+# Con dos puntos entre cada byte ("92:86:4C:..."), como la enseñan los navegadores
+func certificado_huella_bonita(h: String) -> String
+    t = certificado_huella_limpia(h)
+    if t == ""
+        return h
+    end
+    r = ""
+    i = 0
+    while i < 64
+        if i > 0
+            r = r + ":"
+        end
+        r = r + t[i:i + 2]
+        i = i + 2
+    end
+    return r
+end
+
+func certificados_leer(fichero: String) -> [CertAceptado]
+    var r: [CertAceptado] = []
+    t = file_read_text(fichero)
+    if t == nil
+        return r
+    end
+    for crudo in str_split(str_replace(t, "\r", ""), "\n")
+        l = str_trim(crudo)
+        if l == "" or str_starts(l, "#")
+            continue
+        end
+        huella = l
+        host = ""
+        fecha = ""
+        p = str_find(l, " ")
+        if p > 0
+            huella = l[:p]
+            resto = str_trim(l[p + 1:])
+            q = str_find(resto, " ")
+            if q > 0
+                host = resto[:q]
+                fecha = str_trim(resto[q + 1:])
+            else
+                host = resto
+            end
+        end
+        if certificado_huella_limpia(huella) != ""
+            r.push(CertAceptado(certificado_huella_bonita(huella), host, fecha))
+        end
+    end
+    return r
+end
+
+func _cert_escribir(fichero: String, lista: [CertAceptado]) -> Bool
+    t = ""
+    for c in lista
+        t = t + c.huella + " " + c.host + " " + c.fecha + "\n"
+    end
+    return file_write_text(fichero, t)
+end
+
+# Al arrancar: Dash acepta cada uno de los guardados; cuántos
+func certificados_cargar(fichero: String) -> Int
+    n = 0
+    for c in certificados_leer(fichero)
+        if tls_trust(c.huella)
+            n = n + 1
+        end
+    end
+    return n
+end
+
+# ¿Está aceptado (en el fichero) el certificado con esa huella?
+func certificados_tiene(fichero: String, huella: String) -> Bool
+    h = certificado_huella_limpia(huella)
+    for c in certificados_leer(fichero)
+        if certificado_huella_limpia(c.huella) == h
+            return true
+        end
+    end
+    return false
+end
+
+# Acepta el certificado (tls_trust) y lo guarda con su servidor y la fecha de hoy; false si no es una huella, si ya
+# hay demasiados (64, los de Dash) o si no se pudo escribir
+func certificados_aceptar(fichero: String, huella: String, host: String) -> Bool
+    h = certificado_huella_limpia(huella)
+    if h == "" or not tls_trust(h)
+        return false
+    end
+    lista = certificados_leer(fichero)
+    for c in lista
+        if certificado_huella_limpia(c.huella) == h
+            return true
+        end
+    end
+    servidor = str_replace(str_replace(host, " ", ""), "\n", "")
+    if servidor == ""
+        servidor = "?"
+    end
+    lista.push(CertAceptado(certificado_huella_bonita(h), servidor, cookies_dia(time_unix())))
+    return _cert_escribir(fichero, lista)
+end
+
+# Deja de aceptarlo (tls_untrust) y lo quita del fichero; huella "": todos
+func certificados_olvidar(fichero: String, huella: String) -> Bool
+    if huella == ""
+        tls_trust_clear()
+        var nada: [CertAceptado] = []
+        return _cert_escribir(fichero, nada)
+    end
+    h = certificado_huella_limpia(huella)
+    if h == ""
+        return false
+    end
+    tls_untrust(h)
+    var quedan: [CertAceptado] = []
+    for c in certificados_leer(fichero)
+        if certificado_huella_limpia(c.huella) != h
+            quedan.push(c)
+        end
+    end
+    return _cert_escribir(fichero, quedan)
+end
+
+func _cert_escapar(t: String) -> String
+    return str_replace(str_replace(str_replace(t, "&", "&amp;"), "<", "&lt;"), "\"", "&quot;")
+end
+
+# La huella en dos líneas de 16 bytes (entera no cabe en una ventana estrecha y no se parte sola)
+func _cert_huella_html(h: String) -> String
+    b = certificado_huella_bonita(h)
+    if b.length == 95
+        return "<tt>" + b[:47] + "<br>" + b[48:] + "</tt>"
+    end
+    return "<tt>" + _cert_escapar(h) + "</tt>"
+end
+
+const _CERT_ESTILO = "body { font-family: sans-serif; margin: 6px 14px; color: #222 } h1 { color: #8a3b00; font-size: 18px; margin: 2px 0 6px 0 } h2 { color: #1d3557; font-size: 15px } td { padding: 3px 10px 3px 0; vertical-align: top } th { text-align: left; padding: 3px 10px 3px 0 } .gris { color: #666 } a { color: #1a4fa0 } .botones { margin: 8px 0 } .volver { display: inline-block; padding: 2px 10px; border: 2px solid #000; background: #fff; color: #000; font-weight: bold; text-decoration: none } .aceptar { margin-left: 16px } .olvidar { color: #a33 } .aviso { margin: 4px 0; padding: 4px 8px; font-size: 13px; background: #fff4e5; border-left: 4px solid #e8a33d }"
+
+# La página de aviso de la página principal cuyo certificado no se pudo comprobar: el motivo, los datos del
+# certificado (tls_last_cert de Dash, con sus etiquetas en el idioma del programa) y dos enlaces, arriba para que
+# se vean en una ventana pequeña: volver (tachyon:certificados?volver) o aceptarlo y seguir
+# (tachyon:certificados?aceptar=HUELLA, que Tachyon solo hace desde esta página)
+func certificado_aviso_html(direccion: String, host: String, motivo: String) -> String
+    cert = tls_last_cert(host)
+    huella = certificado_huella_limpia(tls_last_fingerprint(host))
+    h = "<html><head><title>" + tr(360, "Warning: unverified certificate") + "</title><style>" + _CERT_ESTILO + "</style></head><body>"
+    h = h + "<h1>" + tr(361, "The server's identity can't be verified") + "</h1>"
+    h = h + "<p class=aviso>" + hueco2(tr(362, "Can't verify that the server %1 is who it claims to be: %2. If you accept it and someone is impersonating it, they could see or change what is sent."), "<b>" + _cert_escapar(host) + "</b>", _cert_escapar(motivo)) + "</p>"
+    h = h + "<p class=botones><a class=volver href=\"tachyon:certificados?volver\">" + tr(372, "Go back") + "</a>"
+    if huella != ""
+        h = h + "<a class=aceptar href=\"tachyon:certificados?aceptar=" + huella + "\">" + tr(373, "Accept this certificate and continue") + "</a>"
+    end
+    h = h + "</p><p class=gris>" + hueco(tr(363, "Address: %1"), _cert_escapar(direccion)) + "</p>"
+    h = h + "<h2>" + tr(364, "Certificate") + "</h2><table>"
+    claves = ["Servidor", "Para", "Emitido por", "Desde", "Hasta", "Huella SHA-256", "Motivo"]
+    textos = [tr(365, "Server"), tr(366, "Issued to"), tr(367, "Issued by"), tr(368, "Valid from"), tr(369, "Valid until"), tr(370, "SHA-256 fingerprint"), tr(371, "Reason")]
+    for l in str_split(cert, "\n")
+        p = str_find(l, ": ")
+        if p <= 0
+            continue
+        end
+        clave = l[:p]
+        valor = l[p + 2:]
+        for i in (0..claves.length - 1)
+            if claves[i] == clave
+                clave = textos[i]
+            end
+        end
+        if l[:p] == "Huella SHA-256"
+            valor = _cert_huella_html(valor)
+        else
+            valor = _cert_escapar(valor)
+        end
+        h = h + "<tr><th>" + _cert_escapar(clave) + "</th><td>" + valor + "</td></tr>"
+    end
+    h = h + "</table><p class=gris>" + tr(374, "The certificates you accept are kept; to forget them: menu Tools, Certificates.") + "</p></body></html>"
+    return h
+end
+
+# tachyon:certificados: los aceptados, con su servidor, cuándo y su huella, y enlaces para olvidarlos
+# (tachyon:certificados?olvidar=HUELLA, ?olvidar=todos)
+func certificados_html(fichero: String) -> String
+    lista = certificados_leer(fichero)
+    h = "<html><head><title>" + tr(375, "Accepted certificates") + "</title><style>" + _CERT_ESTILO + " h1 { color: #1d3557 }</style></head><body>"
+    h = h + "<h1>" + tr(375, "Accepted certificates") + "</h1>"
+    h = h + "<p class=gris>" + tr(376, "Certificates that couldn't be verified and that you accepted after the warning: Tachyon connects to their servers without asking again.") + "</p>"
+    if lista.length == 0
+        return h + "<p>" + tr(377, "None.") + "</p></body></html>"
+    end
+    h = h + "<p>" + hueco(tr(378, "%1 accepted."), "" + lista.length) + " <a class=olvidar href=\"tachyon:certificados?olvidar=todos\">" + tr(379, "Forget them all") + "</a></p>"
+    h = h + "<table><tr><th>" + tr(365, "Server") + "</th><th>" + tr(380, "Accepted on") + "</th><th>" + tr(370, "SHA-256 fingerprint") + "</th><th></th></tr>"
+    for c in lista
+        h = h + "<tr><td>" + _cert_escapar(c.host) + "</td><td>" + _cert_escapar(c.fecha) + "</td><td>" + _cert_huella_html(c.huella) + "</td>"
+        h = h + "<td><a class=olvidar href=\"tachyon:certificados?olvidar=" + certificado_huella_limpia(c.huella) + "\">" + tr(381, "forget") + "</a></td></tr>"
+    end
+    return h + "</table></body></html>"
+end

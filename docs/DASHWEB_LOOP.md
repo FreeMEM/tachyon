@@ -7932,3 +7932,31 @@ Formato:
   cuesta ~1 ms; siguiente paso de la 76a.
 - tools/medir_visor.py: --arg (argumentos de más para el programa, p. ej. TRAZA=DH0:traza.txt) y --local ya no
   pierde los argumentos de las opciones.
+
+### 2026-11-25 — Certificados que no se pueden comprobar: avisar y aceptar (lo pidió el usuario)
+- Con Dash de main (d051a30, PR #221: tls_last_cert, tls_last_fingerprint, tls_trust, tls_untrust, tls_trust_clear).
+- lib/http.dash: cuando una conexión TLS no se abre porque no se pudo comprobar el certificado (el motivo de
+  net_bg_error es el de tls_last_cert del servidor), Respuesta.cert_host dice de qué servidor, y la carga se apunta en
+  una lista que el programa vacía con http_fallos_certificado ("dirección, servidor, motivo"). El error sigue siendo
+  el motivo real ("self-signed certificate", "certificate has expired", "hostname mismatch"...).
+- La página principal: en vez de la página de error, una de aviso (lib/certificados.dash, certificado_aviso_html):
+  el aviso con el servidor y el motivo, "Volver" (por defecto, el botón destacado) y "Aceptar este certificado y
+  seguir" arriba, y debajo los datos del certificado con las etiquetas en el idioma del programa. El candado sale
+  abierto. Sus enlaces (tachyon:certificados?aceptar=HUELLA y ?volver) solo valen desde esa página y con su huella
+  (Documento.cert_huella; accion_certificado en navegar): una web no puede aceptar un certificado con un enlace.
+  Aceptado: tls_trust, al fichero y se carga otra vez la misma dirección (la redirección también).
+- Lo demás (hojas, scripts, imágenes, fuentes, fetch/XHR, vídeo) no avisa: certificados_al_registro, en cada tic,
+  lo escribe a la salida y al registro de depuración: "Certificate not verified for HOST: MOTIVO (dirección)".
+  lib/recursos.dash ya no reintenta una hoja o un script que falló por el certificado.
+- PROGDIR:Tachyon.certificados, una línea por certificado: "huella servidor fecha"; al arrancar, tls_trust de cada
+  uno. Herramientas, Certificados (tachyon:certificados): la lista, olvidar uno u olvidarlos todos (tls_untrust o
+  tls_trust_clear, y se cierran las conexiones libres para que la siguiente vuelva a comprobarlo).
+- Catálogos: 61, 174-175 y 360-381 en los nueve idiomas. tests/servers/http.py PORT autofirmado (el certificado
+  autofirmado de las pruebas de Dash) y tests/test_certificados.dash; tests/pages/certificado_recursos.html (a mano,
+  con el servidor autofirmado en 40886).
+- Probado en el emulador (rtg, sys32rtg, y A1200 con sys31muisslweb), servidor autofirmado en 40886: la página de
+  aviso con el motivo y los datos; "Aceptar" la carga (candado cerrado) y escribe Tachyon.certificados; al arrancar
+  otra vez con ese fichero, la página sale sin aviso; Herramientas, Certificados, "forget": la lista vacía y, al
+  volver a la página, el aviso otra vez; "Go back" vuelve a la de antes; una página http con hoja, script e imagen
+  del servidor autofirmado sale sin ellos y sin aviso, con una línea por cada uno en la salida.
+- Batería: 207/207.

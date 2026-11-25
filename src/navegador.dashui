@@ -199,6 +199,11 @@
               "tr": 19
             },
             {
+              "label": "Certificates",
+              "event": 54,
+              "tr": 61
+            },
+            {
               "label": "Downloads",
               "key": "J",
               "event": 29,

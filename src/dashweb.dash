@@ -22,6 +22,7 @@ import "../lib/idioma.dash"
 import "../lib/informe.dash"
 import "../lib/lectura.dash"
 import "../lib/inspeccionar.dash"
+import "../lib/certificados.dash"
 
 # desde el icono del Workbench, lo que escribe (console.log de las páginas, «entera en») no abre una consola
 @workbench_output "NIL:"
@@ -79,6 +80,7 @@ const ID_TEXTO_NORMAL = 53     # (Amiga-0)
 const ID_ICONIFICAR = 38       # menú Proyecto (Amiga-I): las ventanas fuera y el icono en el Workbench (issue #19, PerspexSphinx)
 const ID_DEPURACION = 36       # menú Herramientas: el registro de depuración de red, a un fichero (tarea 67)
 const ID_PEGAR = 37            # menú Proyecto (Amiga-V): pegar en la barra de direcciones o en el campo de la página (tarea 70)
+const ID_CERTIFICADOS = 54     # menú Herramientas: los certificados aceptados tras avisar (tachyon:certificados)
 # (al lado del programa: lo que se escribe ahí sigue aunque haya que reiniciar el Amiga, como no lo haría en RAM:)
 const DEPURACION_FICHERO = "PROGDIR:Tachyon-debug.txt"
 const MAX_PESTANAS = 8
@@ -101,6 +103,8 @@ const FICHERO_ALMACEN = "PROGDIR:Tachyon.almacen"     # localStorage de cada sit
 const FICHERO_HISTORIAL = "PROGDIR:Tachyon.historial"
 # Las descargas acabadas (lib/descargas.dash, tachyon:descargas)
 const FICHERO_DESCARGAS = "PROGDIR:Tachyon.descargas"
+# los certificados que no se pudieron comprobar y el usuario aceptó tras avisarle (lib/certificados.dash)
+const FICHERO_CERTIFICADOS = "PROGDIR:Tachyon.certificados"
 
 # Una ventana del navegador y lo que tiene
 struct Ventana
@@ -430,7 +434,9 @@ func indicadores(w: Ventana)
         dir = w.actual.direccion
     end
     candado = 0
-    if str_starts(dir, "https:")
+    if w.actual != nil and w.actual.cert_host != ""
+        candado = 2      # (la página de aviso de un certificado que no se pudo comprobar: abierto)
+    elif str_starts(dir, "https:")
         candado = 1
     elif str_starts(dir, "http:")
         candado = 2
@@ -898,6 +904,19 @@ func abrir(w: Ventana, direccion: String)
             almacen_guardar(FICHERO_ALMACEN)
         end
         d = documento_html("tachyon:cookies", cookies_html())
+    elif str_starts(direccion, "tachyon:certificados")
+        # ?olvidar=HUELLA (o todos): los enlaces de la página; las conexiones abiertas se cierran, que la siguiente
+        # vuelva a comprobarlo
+        p = str_find(direccion, "?olvidar=")
+        if p >= 0
+            h = direccion[p + 9:]
+            if h == "todos"
+                h = ""
+            end
+            certificados_olvidar(FICHERO_CERTIFICADOS, h)
+            http_cerrar_libres()
+        end
+        d = documento_html("tachyon:certificados", certificados_html(FICHERO_CERTIFICADOS))
     elif str_starts(direccion, "tachyon:inspeccionar")
         d = documento_html("tachyon:inspeccionar", inspeccionar_pedido(direccion))
     elif str_starts(direccion, "tachyon:informe")
@@ -972,6 +991,10 @@ func avanzar_carga(w: Ventana)
         c = w.carga
         var nada: Carga = nil
         w.carga = nada
+        if c.respuesta.cert_host != ""
+            aviso_certificado(w, c.respuesta)
+            return
+        end
         if documento_es_descarga(c.respuesta)
             empezar_descarga(w, c.respuesta)
             return
@@ -1015,6 +1038,62 @@ func avanzar_carga(w: Ventana)
     w.preparando = ninguno
     modo_carga(w, false)
     mostrar(w, d, w.carga_dir)
+end
+
+# La página falló porque no se pudo comprobar el certificado de su servidor (autofirmado, caducado, de otro
+# nombre...): en vez de la página de error, una de aviso, como en los navegadores, con el motivo, los datos del
+# certificado y dos enlaces, volver o aceptarlo y seguir (lib/certificados.dash; lo pidió el usuario). Lo que la
+# página trae de otros servidores (imágenes, hojas, scripts) no avisa: va al registro (certificados_al_registro)
+func aviso_certificado(w: Ventana, r: Respuesta)
+    vista(w)
+    d = documento_html(w.carga_dir, certificado_aviso_html(r.url, r.cert_host, r.error))
+    d.error = r.error
+    d.cert_host = r.cert_host
+    d.cert_huella = certificado_huella_limpia(tls_last_fingerprint(r.cert_host))
+    modo_carga(w, false)
+    mostrar(w, d, w.carga_dir)
+end
+
+# Los enlaces de la página de aviso: tachyon:certificados?aceptar=HUELLA lo acepta (tls_trust y al fichero de los
+# aceptados) y carga otra vez la página; ?volver, a la de antes. Solo valen desde esa página y con su huella: una web
+# no puede aceptar un certificado con un enlace. false si no es uno de ellos
+func accion_certificado(w: Ventana, destino: String) -> Bool
+    if w.actual == nil or w.actual.cert_huella == "" or not str_starts(destino, "tachyon:certificados?")
+        return false
+    end
+    if destino == "tachyon:certificados?volver"
+        if w.visto > 0
+            paso_historial(w, -1, false)
+        else
+            ir_a(w, "tachyon:inicio", true)
+        end
+        return true
+    end
+    p = str_find(destino, "?aceptar=")
+    if p < 0 or certificado_huella_limpia(destino[p + 9:]) != w.actual.cert_huella
+        return false
+    end
+    direccion = w.actual.direccion
+    if certificados_aceptar(FICHERO_CERTIFICADOS, w.actual.cert_huella, w.actual.cert_host)
+        registro_decir("certificate accepted for " + w.actual.cert_host + ": " + certificado_huella_bonita(w.actual.cert_huella))
+    else
+        dw_estado(w, tr(174, "Couldn't accept the certificate"))
+        return true
+    end
+    mui_set_text(w.v.url, direccion)
+    abrir(w, direccion)
+    return true
+end
+
+# Las cargas que fallaron por el certificado (imágenes, hojas, scripts y lo que pide el JavaScript de otro servidor;
+# también la página principal, que además avisa), con su motivo, a la salida y al registro de depuración
+func certificados_al_registro()
+    for l in http_fallos_certificado()
+        partes = str_split(l, "\t")
+        if partes.length == 3
+            registro_decir(hueco2(tr(175, "Certificate not verified for %1: %2"), partes[1], partes[2]) + " (" + informe_sin_parametros(partes[0]) + ")")
+        end
+    end
 end
 
 # Lo que no es una página se guarda: el selector de ficheros y luego se baja tal cual a ese fichero (la primera
@@ -2042,6 +2121,9 @@ end
 # Ir a una dirección nueva: lo que había delante en el historial se descarta. Un enlace a otra parte
 # de la misma página solo desplaza.
 func navegar(w: Ventana, destino: String)
+    if accion_certificado(w, destino)
+        return
+    end
     if w.actual != nil and documento_sin_fragmento(destino) == documento_sin_fragmento(w.actual.direccion) and documento_fragmento(destino) != ""
         y = documento_y_de(w.actual, documento_fragmento(destino))
         if y >= 0
@@ -2886,6 +2968,7 @@ Main
     # las maquetas caras por el JavaScript, como mucho un tercio del tiempo (lib/documento.dash)
     documento_aplazar = true
     cookies_cargar(FICHERO_COOKIES)
+    certificados_cargar(FICHERO_CERTIFICADOS)
     almacen_cargar(FICHERO_ALMACEN)
     descargas_cargar(FICHERO_DESCARGAS)
     # el idioma de Locale para las webs: Accept-Language y navigator.language
@@ -3029,6 +3112,7 @@ Main
                 end
                 versiones_avanzar()
                 descargas_tic()
+                certificados_al_registro()
                 vaciar_salida()
                 programar()
                 continue
@@ -3140,6 +3224,9 @@ Main
             end
             if ev == ID_COOKIES
                 navegar(w, "tachyon:cookies")
+            end
+            if ev == ID_CERTIFICADOS
+                navegar(w, "tachyon:certificados")
             end
             if ev == ID_INFORME
                 navegar(w, "tachyon:informe")

@@ -89,5 +89,12 @@
   "ahora": 2.4,
   "unidad": "s",
   "nota": "Se rehace solo ese bloque y lo de después baja, sin la maqueta entera; tests/bench/c2.dash, emulador RTG (76c2)"
+ },
+ {
+  "medida": "30 cambios del JavaScript con html y body al 100 %, min-height: 100vh y overflow-x: hidden",
+  "antes": 52.8,
+  "ahora": 2.6,
+  "unidad": "s",
+  "nota": "html y body ya no piden la maqueta entera: un % sin alto fijo fuera no cuenta, un min-height ya pasado tampoco, y el recorte del overflow se alarga; zz_bench_c2b.html, emulador RTG (76c2)"
  }
 ]

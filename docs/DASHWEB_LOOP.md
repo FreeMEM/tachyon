@@ -705,6 +705,11 @@ tarea, con el estilo de Dash.
           100vh: muy común), overflow en html o body (html5test: overflow-x: hidden), fondos con imagen, degradado o
           esquinas redondas en los de fuera, flotantes de antes que la rodean, y bloques dentro de celdas de tabla
           (html5test pone los resultados en tablas).
+          (2026-11-27) Segunda parte hecha: html y body (y cualquiera de fuera) con height en % sin un alto fijo fuera
+          (no cuenta), con un min-height que lo de dentro ya pasaba, con overflow (su recorte se alarga) o con alto
+          fijo (lo de dentro baja, él se queda). zz_bench_c2b.html: 52,8 s -> 2,6 s. Queda: fondos con imagen,
+          degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean y bloques dentro de celdas de
+          tabla (html5test).
       (c3, 2026-11-17) Wikipedia en el espejo (tools/espejo.py 40992), comparada con la versión de antes (A/B,
           $S/ab_wiki.sh): las hojas nuevas por partes bajan estilos y maquetas de 24,5-30 s a 21,4 s, pero el total
           sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
@@ -8011,4 +8016,26 @@ Formato:
   degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean y bloques dentro de celdas de tabla.
 - Emulador con el cerrojo; la sesión "dash" no estaba viva para avisarle de la batería (solo dashos-x86 y
   dashos-aarch64).
+- Batería: 209/209.
+
+### 2026-11-27 — Tarea 76, c2 (segunda parte): html y body con alto, min-height y overflow
+- Banco: tests/pages/zz_bench_c2b.html, la de la primera parte con `html { overflow-x: hidden; height: 100% }` y
+  `body { min-height: 100vh; height: 100% }` (lo que llevan muchas páginas; html5test, el overflow-x). Antes, los 30
+  cambios pedían la maqueta entera: 52,8 s, ninguno solo.
+- lib/maqueta.dash, _correr_puede: el alto de cada uno de fuera se mira de fuera a dentro, como _bloque_en. Un height
+  en % sin un alto fijo fuera no cuenta (el de html y body, siempre). Un min-height en px, em o vh vale si lo de dentro
+  ya pasaba de él y sigue sin bajar de él (su caja y sus bordes y rellenos de la última maqueta); en % no cuenta. El
+  max-height en % tampoco. Un overflow de fuera alarga su recorte: lo que se queda con el borde de abajo de ese recorte
+  baja ese borde dy; lo que baja conserva el de arriba. Si ella misma recorta, su dibujo de referencia también (antes,
+  lo nuevo de un bloque con overflow que crecía se cortaba en su alto viejo). Un alto fijo fuera (height en px o vh,
+  o un % que sí cuenta) es el tope: lo de dentro de él baja; él, lo de fuera y la página se quedan; si recorta, o lleva
+  algo suyo debajo del bloque (su borde de abajo), no se puede.
+- maqueta_rehacer llama a _correr antes de poner a lo nuevo el recorte de su dibujo de referencia (ya alargado).
+- Medido (RTG): zz_bench_c2b 52,8 s -> 2,6 s (30 solos, igual que la maqueta entera); zz_bench_c2 igual (2,4 y 2,5 s).
+- tests/test_maqueta_correr.dash: la firma lleva también el recorte; casos nuevos (html y body al 100 %, min-height
+  100vh pasado y que manda, overflow en html, body y un div, overflow del propio bloque, body de alto fijo al crecer y
+  al encoger, y el borde de abajo del tope); "overflow fuera" y "min-height fuera" ya se hacen solos.
+- Queda (76, c2): fondos con imagen, degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean y
+  bloques dentro de celdas de tabla (html5test).
+- Emulador con el cerrojo (lo compartían dashos-aarch64 y otra cola).
 - Batería: 209/209.

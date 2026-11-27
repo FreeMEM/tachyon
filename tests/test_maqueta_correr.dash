@@ -9,9 +9,17 @@
 # expect-out: absoluto de después: true | igual: true
 # expect-out: absoluto de antes: true | igual: true
 # expect-out: absoluto de abajo: false | igual: true
-# expect-out: overflow fuera: false | igual: true
-# expect-out: min-height fuera: false | igual: true
+# expect-out: overflow fuera: true | igual: true
+# expect-out: min-height fuera: true | igual: true
 # expect-out: flotante después: true | igual: true
+# expect-out: min-height que manda: false | igual: true
+# expect-out: html y body al 100 %: true | igual: true
+# expect-out: body con min-height 100vh: true | igual: true
+# expect-out: overflow en html y body: true | igual: true
+# expect-out: overflow suyo: true | igual: true
+# expect-out: body de alto fijo: true | igual: true
+# expect-out: body de alto fijo, encoge: true | igual: true
+# expect-out: borde del tope debajo: false | igual: true
 
 import "../lib/documento.dash"
 
@@ -19,7 +27,11 @@ func firma(d: Documento) -> String
     p = d.pagina
     r = "alto " + p.alto + ";"
     for b in p.dibujos
-        r = r + b.tipo + ":" + b.x + "," + b.y + " " + b.ancho + "x" + b.alto + " " + b.texto + " c" + b.capa + ";"
+        r = r + b.tipo + ":" + b.x + "," + b.y + " " + b.ancho + "x" + b.alto + " " + b.texto + " c" + b.capa
+        if b.recorte
+            r = r + " r" + b.rx0 + "," + b.ry0 + "-" + b.rx1 + "," + b.ry1
+        end
+        r = r + ";"
     end
     return r + _cajas(d.doc, d.doc)
 end
@@ -36,7 +48,11 @@ func _cajas(doc: Nodo, n: Nodo) -> String
 end
 
 func caso(nombre: String, cuerpo: String, js: String)
-    h = "<style>body{margin:4px} .s{border:1px solid #888;background:#eee;padding:2px} p{margin:6px 0}</style><body>" + cuerpo
+    caso_css(nombre, "", cuerpo, js)
+end
+
+func caso_css(nombre: String, css: String, cuerpo: String, js: String)
+    h = "<style>body{margin:4px} .s{border:1px solid #888;background:#eee;padding:2px} p{margin:6px 0} " + css + "</style><body>" + cuerpo
     h = h + "<script>var t = document.getElementById('t');</script></body>"
     d = documento_html("http://x/", h)
     documento_maquetar(d, 300)
@@ -70,4 +86,12 @@ Main
     caso("overflow fuera", "<div style='overflow:hidden'><div><div>" + sec + "</div></div></div>", crecer)
     caso("min-height fuera", "<div style='min-height:40px'><div><div>" + sec + "</div></div></div>", crecer)
     caso("flotante después", sec + "<div><div style='float:left;width:50px;height:30px;background:blue'></div>al lado</div><p>debajo</p>", crecer)
+    caso("min-height que manda", "<div style='min-height:400px'><div><div>" + sec + "</div></div></div>", crecer)
+    caso_css("html y body al 100 %", "html,body{height:100%}", sec, crecer)
+    caso_css("body con min-height 100vh", "body{min-height:100vh}", sec + "<div style='height:700px'>alto</div>", crecer)
+    caso_css("overflow en html y body", "html{overflow-x:hidden} body{overflow:hidden;background:#ffe}", "<div style='overflow:hidden;border:2px solid red'>" + sec + "</div><p>fin</p>", crecer)
+    caso_css("overflow suyo", "#t{overflow:hidden;background:#cfc}", "<div style='overflow:hidden'>" + sec + "</div>", crecer)
+    caso_css("body de alto fijo", "body{height:150px;background:#ffe} html{background:#eef}", sec + "<div style='position:absolute;top:20px;left:200px'>abs</div>", crecer)
+    caso_css("body de alto fijo, encoge", "body{height:150px}", "<div class=s><div id=t>uno<br>dos<br>tres</div><p>después</p></div><p>pie</p>", "t.innerHTML = 'uno'")
+    caso_css("borde del tope debajo", "body{height:400px;border-bottom:3px solid blue}", sec, crecer)
 end

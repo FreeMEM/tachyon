@@ -8109,7 +8109,7 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
         # otro alto: lo de después baja (o sube) lo mismo, si se puede (tarea 76, c2)
         if alto_ok and r2 != l.falto
             dy_flujo = r2 - l.falto
-            alto_ok = caja_ok and not l.fvacio and _correr_puede(p, b, ytop, yb)
+            alto_ok = caja_ok and not l.fvacio and _correr_puede(p, b, ytop, yb, dy_flujo, doc.caja_pase)
         end
     else
         _absoluto(m2, b, l.cx, l.cy, l.cw, l.ch, l.pl, l.pt)
@@ -8131,6 +8131,12 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
         if d.anim != nil
             return nada
         end
+    end
+    # (antes que lo de fuera a la nueva: un overflow de fuera que crece alarga el recorte de su dibujo de referencia)
+    if dy_flujo != 0
+        _correr(p, doc, b, dy_flujo)
+        maqueta_corrido_y = yb
+        maqueta_corrido_dy = dy_flujo
     end
     # lo que le hicieron los de fuera a la de antes, a la nueva
     dx = ref.x - l.rx
@@ -8157,11 +8163,6 @@ func _maqueta_rehacer(p: Pagina, doc: Nodo, b: Nodo) -> [Dibujo]
             c.x = c.x + dx
             c.y = c.y + dy
         end
-    end
-    if dy_flujo != 0
-        _correr(p, doc, b, dy_flujo)
-        maqueta_corrido_y = yb
-        maqueta_corrido_dy = dy_flujo
     end
     _cajas_finales(m2, doc)
     # en la lista, las de cada paso (cat: fondos, flotantes, líneas) donde estaba la primera de antes de ese paso, y las
@@ -8225,17 +8226,23 @@ end
 # Si al rehacerlo solo (maqueta_rehacer) un bloque en el flujo cambia de alto dy y lo que ve su padre de él es lo mismo
 # (sus márgenes y que no está vacío), lo de después en su cadena de bloques baja dy, los de fuera crecen dy (sus fondos
 # y bordes de los lados se alargan, el de abajo baja) y la página también: sin maquetar otra vez los de fuera, que con
-# miles de bloques eran segundos por cada cambio del JavaScript. Solo si todos los de fuera tienen el alto de lo de
-# dentro (sin height, min-height ni max-height), no recortan (overflow) ni son absolutos, y nada que no sea suyo o de
-# después cruza su caja (un flotante de antes que la rodea, algo que se sale...); lo absoluto de después baja si va
-# donde le toca en el flujo o en algo de después; lo de antes se queda si cuelga de arriba (top en px). Si no, nil, y
-# el que llama prueba con el de fuera o la maqueta entera, como antes.
+# miles de bloques eran segundos por cada cambio del JavaScript. Los de fuera que crecen tienen el alto de lo de dentro:
+# sin height (un % sin un alto fijo fuera no cuenta: el 100 % de html y body), sin max-height, y con min-height solo si
+# lo de dentro pasa de él antes y después (el min-height: 100vh de body en una página larga); un overflow de fuera
+# alarga su recorte. Si uno de fuera tiene alto fijo (height en px, vh...), lo de dentro de él baja y él y lo de fuera
+# se quedan (el tope). Nada que no sea suyo o de después cruza su caja (un flotante de antes que la rodea, algo que se
+# sale...); lo absoluto de después baja si va donde le toca en el flujo o en algo de después; lo de antes se queda si
+# cuelga de arriba (top en px). Si no, nil, y el que llama prueba con el de fuera o la maqueta entera, como antes.
 
 var maqueta_corrido_y: Int = 0    # (lo último que hizo maqueta_rehacer: desde dónde se movió lo de después, y cuánto)
 var maqueta_corrido_dy: Int = 0
 var _corr_mover: [Dibujo] = nil
 var _corr_estirar: [Dibujo] = nil
-var _corr_cadena: [Nodo] = nil
+var _corr_cadena: [Nodo] = nil    # los de fuera que crecen (hasta el tope, sin él)
+var _corr_tope: Nodo = nil        # el primero de fuera con alto fijo (nil: ninguno; crece hasta la página)
+var _corr_fijar: [Dibujo] = nil   # los que se quedan con el recorte de un overflow que crece: su borde de abajo, dy más
+var _corr_rec_y0: [Int] = nil     # (los recortes de los overflow que crecen: arriba y abajo, en la página)
+var _corr_rec_y1: [Int] = nil
 
 func _correr_en_cadena(x: Nodo) -> Bool
     for a in _corr_cadena
@@ -8246,18 +8253,26 @@ func _correr_en_cadena(x: Nodo) -> Bool
     return false
 end
 
-# ¿Un alto que no es el de lo de dentro?
-func _correr_alto_fijo(e: {String: String}) -> Bool
-    v = _val(e, "height", "auto")
-    if v != "auto" and v != ""
-        return true
+func _correr_en(v: Int, l: [Int]) -> Bool
+    for k in l
+        if k == v
+            return true
+        end
     end
-    v = _val(e, "min-height", "auto")
-    if v != "auto" and v != "" and v != "0" and v != "0px"
-        return true
+    return false
+end
+
+# Lo mueve (y, si lo había apuntado para alargarle el recorte, ya no: al moverlo, su recorte baja entero)
+func _correr_mueve(d: Dibujo)
+    _corr_mover.push(d)
+    if _corr_fijar.length > 0 and _corr_fijar[_corr_fijar.length - 1] == d
+        _corr_fijar.pop()
     end
-    v = _val(e, "max-height", "none")
-    return v != "none" and v != ""
+end
+
+# ¿Fuera del tope (él, lo de fuera de él o lo de después)? Eso no cambia
+func _correr_fuera_tope(x: Nodo) -> Bool
+    return _corr_tope != nil and (x == _corr_tope or not _dentro_de(x, _corr_tope))
 end
 
 # ¿Un absoluto cuyo sitio o alto sale del alto de su contenedor (bottom, top o height en %)?
@@ -8283,17 +8298,18 @@ end
 
 # Qué pasa con lo de un absoluto: 0 se queda, 1 baja con lo de después, -1 no se sabe. Cuelga de arriba de su
 # contenedor (top) o, con top y bottom en auto, de arriba de su padre (_abs_px/_abs_py: no del sitio que le tocaría en
-# el flujo); con bottom o un % de alto, de su contenedor entero. Baja si eso de lo que cuelga es de después
+# el flujo); con bottom o un % de alto, de su contenedor entero. Baja si eso de lo que cuelga es de después (dentro del
+# tope, si lo hay)
 func _correr_que_absoluto(ab: Nodo, b: Nodo) -> Int
     cb = _correr_contenedor(ab)
     if _correr_de_abajo(ab)
-        if cb == nil or _correr_en_cadena(cb)
+        if (cb == nil and _corr_tope == nil) or (cb != nil and _correr_en_cadena(cb))
             return -1
         end
     elif _val(ab.estilo, "top", "auto") == "auto"
         cb = ab.padre
     end
-    if cb == nil or cb.tipo != DOM_ELEMENTO or _correr_en_cadena(cb)
+    if cb == nil or cb.tipo != DOM_ELEMENTO or _correr_en_cadena(cb) or _correr_fuera_tope(cb)
         return 0
     end
     if cb.orden == 0
@@ -8321,34 +8337,116 @@ func _correr_contenedor(x: Nodo) -> Nodo
     return nada
 end
 
-# ¿Se puede? Apunta lo que hay que mover y lo que hay que alargar (ytop..yb: su caja de antes, en la página)
-func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int) -> Bool
+# ¿Uno de fuera que crece dy sigue teniendo el alto de lo de dentro? Sin max-height (en % no cuenta: _bloque_en) y con
+# min-height (en px, em, vh...) solo si lo de dentro pasaba de él y sigue sin bajar de él (su caja de la última maqueta)
+func _correr_crece(a: Nodo, dy: Int, pase: Int) -> Bool
+    e = a.estilo
+    v = _val(e, "max-height", "none")
+    if v != "none" and v != "" and not str_ends(v, "%")
+        return false
+    end
+    v = _val(e, "min-height", "auto")
+    if v == "auto" or v == "" or v == "0" or v == "0px" or str_ends(v, "%")
+        return true
+    end
+    if a.cl_pase != _maqueta_pase or a.caja_pase != pase
+        return false
+    end
+    c = a.cl
+    extras = c[4] + c[5] + c[8] + c[9]
+    minimo = _px(e, "min-height", 0)
+    if _val(e, "box-sizing", "content-box") == "border-box"
+        minimo = minimo - extras
+    end
+    alto = a.caja_h - extras
+    return alto > minimo and alto + dy >= minimo
+end
+
+# ¿Se puede? Apunta lo que hay que mover y lo que hay que alargar (ytop..yb: su caja de antes, en la página; dy: lo que
+# cambia su alto; pase: el de las cajas de la última maqueta)
+func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -> Bool
     if p.alto_flujo <= 0 or yb <= ytop or b.orden == 0
         return false
     end
-    var cadena: [Nodo] = []
+    var todos: [Nodo] = []
     a = b.padre
     while a != nil and a.tipo == DOM_ELEMENTO
         if a.estilo == nil
             return false
         end
         _k(a)
-        if (a.k_pos != KP_STATIC and a.k_pos != KP_RELATIVE) or _correr_alto_fijo(a.estilo) or _recorta(a.estilo)
-            return false
-        end
-        cadena.push(a)
+        todos.push(a)
         a = a.padre
     end
+    # el alto de cada uno, de fuera a dentro (como _bloque_en: un height en % solo si el de fuera tiene alto fijo, y el
+    # de <html> nunca); el tope, el de más dentro con alto fijo
+    var tope: Nodo = nil
+    definido = false
+    i = todos.length - 1
+    while i >= 0
+        a = todos[i]
+        e = a.estilo
+        if _val(e, "aspect-ratio", "auto") != "auto"
+            return false
+        end
+        h = _val(e, "height", "auto")
+        if h == "auto" or h == ""
+            definido = false
+        elif str_ends(h, "%")
+            if definido
+                tope = a
+            end
+        else
+            definido = true
+            tope = a
+        end
+        i = i - 1
+    end
+    var cadena: [Nodo] = []
+    var y0s: [Int] = []
+    var y1s: [Int] = []
+    for a in todos
+        if a == tope
+            break
+        end
+        if (a.k_pos != KP_STATIC and a.k_pos != KP_RELATIVE) or not _correr_crece(a, dy, pase)
+            return false
+        end
+        if _recorta(a.estilo)
+            if a.k_pos != KP_STATIC or a.caja_pase != pase
+                return false
+            end
+            y0s.push(a.caja_y)
+            y1s.push(a.caja_y + a.caja_h - 1)
+        end
+        cadena.push(a)
+    end
+    if tope != nil and _recorta(tope.estilo)
+        return false
+    end
+    # (si ella recorta, su dibujo de referencia también: lo nuevo, con su recorte de ahora)
+    if _recorta(b.estilo)
+        y0s.push(ytop)
+        y1s.push(yb - 1)
+    end
     _corr_cadena = cadena
+    _corr_tope = tope
+    _corr_rec_y0 = y0s
+    _corr_rec_y1 = y1s
     var mover: [Dibujo] = []
     var estirar: [Dibujo] = []
+    var fijar: [Dibujo] = []
     _corr_mover = mover
     _corr_estirar = estirar
+    _corr_fijar = fijar
     var ult: Nodo = nil
     ult_que = 0
     for d in p.dibujos
         if d.pega != nil
             return false
+        end
+        if d.recorte and y1s.length > 0 and _correr_en(d.ry1, y1s)
+            fijar.push(d)
         end
         if d.fijo
             continue
@@ -8367,7 +8465,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int) -> Bool
                 if ult_que < 0
                     return false
                 elif ult_que > 0 and not _de_limite(d, b)
-                    mover.push(d)
+                    _correr_mueve(d)
                 end
             end
             continue
@@ -8388,10 +8486,17 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int) -> Bool
         if _correr_en_cadena(x)
             # lo de uno de fuera: lo de debajo (su borde de abajo, su texto de después), abajo; lo que la cruza, más largo
             if d.y >= yb
-                mover.push(d)
+                _correr_mueve(d)
             elif d.nodo == x and d.y + d.alto >= yb and (d.tipo == D_RECT or d.tipo == D_LINEA) and not d.sombra and d.difuso == 0
                 estirar.push(d)
             else
+                return false
+            end
+            continue
+        end
+        if tope != nil and (x == tope or _dentro_de(tope, x))
+            # lo del tope y lo de fuera de él se queda; de lo del tope que va debajo no se sabe si es su borde o su texto
+            if x == tope and d.y >= yb
                 return false
             end
             continue
@@ -8401,9 +8506,11 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int) -> Bool
             ab = _correr_absoluto(x)
         end
         if ab == nil
-            # en el flujo: lo de después, debajo de ella; lo de antes no la cruza
-            if x.orden > b.orden and d.y >= yb
-                mover.push(d)
+            # en el flujo: lo de después, debajo de ella (lo de después del tope se queda); lo de antes no la cruza
+            if x.orden > b.orden and tope != nil and not _dentro_de(x, tope)
+                continue
+            elif x.orden > b.orden and d.y >= yb
+                _correr_mueve(d)
             else
                 return false
             end
@@ -8412,7 +8519,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int) -> Bool
             if que < 0
                 return false
             elif que > 0
-                mover.push(d)
+                _correr_mueve(d)
             end
         end
     end
@@ -8441,11 +8548,19 @@ func _correr_cajas(doc: Nodo, b: Nodo, n: Nodo, dy: Int)
     end
 end
 
-# Hecho lo que apuntó _correr_puede: dibujos, cajas, los altos de los de fuera (los suyos en la lista de cajas que se
-# maquetan solas) y el de la página
+# Hecho lo que apuntó _correr_puede: dibujos (y recortes), cajas, los altos de los de fuera (los suyos en la lista de
+# cajas que se maquetan solas) y el de la página
 func _correr(p: Pagina, doc: Nodo, b: Nodo, dy: Int)
+    for d in _corr_fijar
+        d.ry1 = d.ry1 + dy
+    end
     for d in _corr_mover
         _mover(d, 0, dy)
+        # (el recorte de un overflow de fuera que crece no baja por arriba: lo de después empieza debajo de ella, y su
+        # recorte propio, más abajo que el de fuera)
+        if d.recorte and _corr_rec_y0.length > 0 and _correr_en(d.ry0 - dy, _corr_rec_y0)
+            d.ry0 = d.ry0 - dy
+        end
     end
     for d in _corr_estirar
         d.alto = d.alto + dy
@@ -8464,6 +8579,9 @@ func _correr(p: Pagina, doc: Nodo, b: Nodo, dy: Int)
         if a.pseudo_despues != nil
             _correr_cajas(doc, b, a.pseudo_despues, dy)
         end
+        if a == _corr_tope
+            break
+        end
         if a.caja_pase == doc.caja_pase
             a.caja_h = a.caja_h + dy
         end
@@ -8473,12 +8591,20 @@ func _correr(p: Pagina, doc: Nodo, b: Nodo, dy: Int)
         end
         x = a
     end
-    p.alto_flujo = p.alto_flujo + dy
+    if _corr_tope == nil
+        p.alto_flujo = p.alto_flujo + dy
+    end
     p.alto = p.alto_flujo
     _alto_con_absolutos(p, doc)
     var nada: [Dibujo] = nil
     _corr_mover = nada
     _corr_estirar = nada
+    _corr_fijar = nada
     var ninguna: [Nodo] = nil
     _corr_cadena = ninguna
+    var ninguno: Nodo = nil
+    _corr_tope = ninguno
+    var sin: [Int] = nil
+    _corr_rec_y0 = sin
+    _corr_rec_y1 = sin
 end

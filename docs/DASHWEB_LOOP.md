@@ -710,6 +710,13 @@ tarea, con el estilo de Dash.
           fijo (lo de dentro baja, él se queda). zz_bench_c2b.html: 52,8 s -> 2,6 s. Queda: fondos con imagen,
           degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean y bloques dentro de celdas de
           tabla (html5test).
+          (2026-11-27) Tercera parte: medido con traza en la copia de html5test, sus cambios del JavaScript no tocan
+          bloques de celdas por separado (meten los resultados de una vez: maqueta entera, inevitable) y lo caro del
+          final era el #loading que pasa a display: none (7,0 s, 4,3 de maqueta entera). Un bloque en el flujo que pasa
+          a display: none ya se quita sin maquetar si sus márgenes no se juntan con nada (lib/maqueta.dash,
+          maqueta_quitar_puede): ese cambio, 7,0 s -> 3,1 s (queda el estilo, 2,6 s). Queda: fondos con imagen,
+          degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean, bloques en celdas, un
+          bloque que sale del árbol (removeChild) y uno que pasa de display: none a verse.
       (c3, 2026-11-17) Wikipedia en el espejo (tools/espejo.py 40992), comparada con la versión de antes (A/B,
           $S/ab_wiki.sh): las hojas nuevas por partes bajan estilos y maquetas de 24,5-30 s a 21,4 s, pero el total
           sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
@@ -8039,3 +8046,32 @@ Formato:
   bloques dentro de celdas de tabla (html5test).
 - Emulador con el cerrojo (lo compartían dashos-aarch64 y otra cola).
 - Batería: 209/209.
+
+### 2026-11-27 — Tarea 76, c2 (tercera parte): un bloque que pasa a display: none, sin la maqueta entera
+- Medido primero con traza en la copia de html5test (tools/espejo.py 40991 --sin-red; emulador RTG, MUI 3.8). Lo
+  pendiente de la c2 que el plan atribuía a html5test (bloques en celdas de tabla) no sale: los resultados entran de una
+  vez (5057 cambios, estilo 6,8 s y maqueta entera 6,2 s, inevitable). Lo caro del final: el #loading (min-height:
+  500px, relativo, con un absoluto animado dentro) pasa a display: none y la columna de resultados (8900 bloques)
+  sube: 7,0 s, 4,3 de maqueta entera ("maqueta_rehacer no puede": .page lleva la animación dentro).
+- Ahora (lib/maqueta.dash, maqueta_quitar_puede y maqueta_quitar; lib/documento.dash, _documento_sin_maqueta): un
+  bloque en el flujo (block o flow-root, static o relative sin top/bottom, sin float ni clear, con todos los de fuera
+  bloques) que pasa a display: none sin cambiar nada más que mueva se quita como si encogiera hasta 0: fuera sus
+  dibujos y sus límites, lo de después sube su alto (_correr_puede y _correr) y sus cajas se olvidan. Solo si sus
+  márgenes no se juntan con nada (0 a través de él, no vacío) y quitarlo no junta los de sus vecinos: el de abajo del
+  de antes o el de arriba del de después es 0 (los vacíos sin márgenes no cuentan; sin vecino, el borde del padre
+  cuenta si se junta con lo de dentro), y el padre no se queda vacío. Lo suyo tiene que caber en su caja. Uno por vez.
+  Después, las animaciones y las imágenes otra vez (_documento_vistas): la del #loading deja de repintar.
+- _correr_puede: lo de después en el flujo baja aunque asome por encima de su sitio (el 227 de html5test, un
+  inline-block de line-height: 145px en una línea de 40, salía como "algo de antes cruza su caja").
+- Con TRAZA, por qué no se quita (maqueta_quitar_no; también las salidas de _correr_puede, con el elemento).
+- tools/espejo.py --sin-red: lo que lleva un número al azar en la consulta (detect.js de whichbrowser, detect.html)
+  se sirve con lo guardado de la misma ruta: html5test se mide sin red.
+- Medido (RTG, html5test): ese último cambio 7,0 s (cuatro pasadas: 6989, 7022, 7046 y 6993 ms) -> 3,1 s (3095 ms; lo
+  que queda es el estilo del visibility, 2,6 s). Captura igual píxel a píxel que la de antes (305/588).
+- tests/test_documento_quitar.dash (15 casos: sin márgenes, como html5test, márgenes a los dos lados, del padre, el
+  único, un flotante de antes, en una celda, otro cambio a la vez...; cada uno igual que la maqueta entera y si va
+  por este camino). test_maqueta_correr y test_documento_flujo_solo siguen pasando.
+- Queda (76, c2): fondos con imagen, degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean,
+  bloques en celdas, un bloque que sale del árbol (removeChild) y uno que pasa de display: none a verse.
+- Emulador con el cerrojo.
+- Batería: 210/210.

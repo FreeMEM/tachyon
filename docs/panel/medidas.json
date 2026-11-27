@@ -96,5 +96,12 @@
   "ahora": 2.6,
   "unidad": "s",
   "nota": "html y body ya no piden la maqueta entera: un % sin alto fijo fuera no cuenta, un min-height ya pasado tampoco, y el recorte del overflow se alarga; zz_bench_c2b.html, emulador RTG (76c2)"
+ },
+ {
+  "medida": "html5test: esconder el #loading al acabar (8900 bloques suben)",
+  "antes": 7.0,
+  "ahora": 3.1,
+  "unidad": "s",
+  "nota": "Un bloque que pasa a display: none se quita sin la maqueta entera y lo de después sube; queda el estilo (2,6 s); copia de html5test, emulador RTG (76c2)"
  }
 ]

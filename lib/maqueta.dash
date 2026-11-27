@@ -8234,6 +8234,24 @@ end
 # sale...); lo absoluto de después baja si va donde le toca en el flujo o en algo de después; lo de antes se queda si
 # cuelga de arriba (top en px). Si no, nil, y el que llama prueba con el de fuera o la maqueta entera, como antes.
 
+var maqueta_quitar_no: String = ""  # (por qué no, la última vez, de _correr_puede o maqueta_quitar_puede: para la traza)
+
+func _quit_quien(d: Dibujo) -> String
+    if d.nodo == nil
+        return "?"
+    end
+    n = d.nodo
+    while n.tipo != DOM_ELEMENTO and n.padre != nil
+        n = n.padre
+    end
+    return n.nombre + "#" + dom_atributo(n, "id") + "." + dom_atributo(n, "class") + " (dibujo " + d.tipo + " en " + d.y + ")"
+end
+
+func _quit_no(por: String) -> Bool
+    maqueta_quitar_no = por
+    return false
+end
+
 var maqueta_corrido_y: Int = 0    # (lo último que hizo maqueta_rehacer: desde dónde se movió lo de después, y cuánto)
 var maqueta_corrido_dy: Int = 0
 var _corr_mover: [Dibujo] = nil
@@ -8366,13 +8384,13 @@ end
 # cambia su alto; pase: el de las cajas de la última maqueta)
 func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -> Bool
     if p.alto_flujo <= 0 or yb <= ytop or b.orden == 0
-        return false
+        return _quit_no("sin flujo")
     end
     var todos: [Nodo] = []
     a = b.padre
     while a != nil and a.tipo == DOM_ELEMENTO
         if a.estilo == nil
-            return false
+            return _quit_no("uno de fuera sin estilo")
         end
         _k(a)
         todos.push(a)
@@ -8387,7 +8405,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
         a = todos[i]
         e = a.estilo
         if _val(e, "aspect-ratio", "auto") != "auto"
-            return false
+            return _quit_no("aspect-ratio fuera")
         end
         h = _val(e, "height", "auto")
         if h == "auto" or h == ""
@@ -8410,11 +8428,11 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
             break
         end
         if (a.k_pos != KP_STATIC and a.k_pos != KP_RELATIVE) or not _correr_crece(a, dy, pase)
-            return false
+            return _quit_no("uno de fuera no crece con lo de dentro")
         end
         if _recorta(a.estilo)
             if a.k_pos != KP_STATIC or a.caja_pase != pase
-                return false
+                return _quit_no("un overflow de fuera posicionado")
             end
             y0s.push(a.caja_y)
             y1s.push(a.caja_y + a.caja_h - 1)
@@ -8422,7 +8440,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
         cadena.push(a)
     end
     if tope != nil and _recorta(tope.estilo)
-        return false
+        return _quit_no("el tope recorta")
     end
     # (si ella recorta, su dibujo de referencia también: lo nuevo, con su recorte de ahora)
     if _recorta(b.estilo)
@@ -8443,7 +8461,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
     ult_que = 0
     for d in p.dibujos
         if d.pega != nil
-            return false
+            return _quit_no("algo pegajoso")
         end
         if d.recorte and y1s.length > 0 and _correr_en(d.ry1, y1s)
             fijar.push(d)
@@ -8463,7 +8481,7 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
                     end
                 end
                 if ult_que < 0
-                    return false
+                    return _quit_no("un absoluto colgado de abajo: " + _quit_quien(d))
                 elif ult_que > 0 and not _de_limite(d, b)
                     _correr_mueve(d)
                 end
@@ -8474,14 +8492,14 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
             continue
         end
         if d.anim != nil
-            return false
+            return _quit_no("algo animado después: " + _quit_quien(d))
         end
         x = d.nodo
         while x != nil and x.orden == 0
             x = x.padre
         end
         if x == nil
-            return false
+            return _quit_no("un dibujo sin elemento")
         end
         if _correr_en_cadena(x)
             # lo de uno de fuera: lo de debajo (su borde de abajo, su texto de después), abajo; lo que la cruza, más largo
@@ -8490,14 +8508,14 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
             elif d.nodo == x and d.y + d.alto >= yb and (d.tipo == D_RECT or d.tipo == D_LINEA) and not d.sombra and d.difuso == 0
                 estirar.push(d)
             else
-                return false
+                return _quit_no("algo de fuera cruza su caja: " + _quit_quien(d))
             end
             continue
         end
         if tope != nil and (x == tope or _dentro_de(tope, x))
             # lo del tope y lo de fuera de él se queda; de lo del tope que va debajo no se sabe si es su borde o su texto
             if x == tope and d.y >= yb
-                return false
+                return _quit_no("lo del tope va debajo")
             end
             continue
         end
@@ -8506,18 +8524,20 @@ func _correr_puede(p: Pagina, b: Nodo, ytop: Int, yb: Int, dy: Int, pase: Int) -
             ab = _correr_absoluto(x)
         end
         if ab == nil
-            # en el flujo: lo de después, debajo de ella (lo de después del tope se queda); lo de antes no la cruza
+            # en el flujo: lo de después baja (lo de después del tope se queda), también lo que asoma por encima de
+            # su sitio (el 227 de html5test: un inline-block de line-height: 145px en una línea de 40); lo de antes
+            # no la cruza
             if x.orden > b.orden and tope != nil and not _dentro_de(x, tope)
                 continue
-            elif x.orden > b.orden and d.y >= yb
+            elif x.orden > b.orden
                 _correr_mueve(d)
             else
-                return false
+                return _quit_no("algo de antes cruza su caja: " + _quit_quien(d))
             end
         else
             que = _correr_que_absoluto(ab, b)
             if que < 0
-                return false
+                return _quit_no("un absoluto que no se sabe: " + _quit_quien(d))
             elif que > 0
                 _correr_mueve(d)
             end
@@ -8607,4 +8627,179 @@ func _correr(p: Pagina, doc: Nodo, b: Nodo, dy: Int)
     var sin: [Int] = nil
     _corr_rec_y0 = sin
     _corr_rec_y1 = sin
+end
+
+# === Un bloque en el flujo que pasa a display: none (tarea 76, c2) ===
+# html5test, al acabar, esconde su #loading (min-height: 500px) y la columna de resultados (8900 bloques) sube: era la
+# maqueta entera, 4,3 s en el emulador RTG. Si el bloque no juntaba sus márgenes con nada (los suyos, 0 a través de él)
+# y quitarlo no junta los de sus vecinos (el de antes o el de después es 0, o el borde del padre no se junta), quitarlo
+# es como si encogiera hasta 0: sus dibujos fuera y lo de después sube su alto (_correr_puede y _correr). Lo que no
+# encaja, la maqueta entera, como antes.
+
+var _quit_dy: Int = 0
+var maqueta_quitados: Int = 0     # (cuántos se han quitado así: para los tests)
+
+# ¿Se puede quitar b (ya con display: none; viejo, su estilo de antes) sin maquetar? Deja apuntado lo que hay que mover
+func maqueta_quitar_puede(p: Pagina, doc: Nodo, b: Nodo, viejo: {String: String}) -> Bool
+    a = b.padre
+    if a == nil or a.tipo != DOM_ELEMENTO or b.orden == 0 or doc.caja_pase == 0 or b.caja_bloque != doc.caja_pase or b.caja_pase != doc.caja_pase
+        return _quit_no("sin padre o sin caja de esta maqueta")
+    end
+    if b.caja_fija or b.caja_h <= 0 or b.nombre == "html" or b.nombre == "body"
+        return _quit_no("fijo, sin alto, html o body")
+    end
+    d0 = _val(viejo, "display", "inline")
+    if d0 != "block" and d0 != "flow-root"
+        return _quit_no("display de antes no es block")
+    end
+    pos = _val(viejo, "position", "static")
+    if pos != "static" and pos != "relative"
+        return _quit_no("ni static ni relative")
+    end
+    if pos == "relative"
+        for k in ["top", "bottom"]
+            v = _val(viejo, k, "auto")
+            if v != "auto" and v != "0" and v != "0px"
+                return _quit_no("relative con top o bottom")
+            end
+        end
+    end
+    if _val(viejo, "float", "none") != "none" or _val(viejo, "clear", "none") != "none" or not _flujo_cadena(b)
+        return _quit_no("flota, clear o algo de fuera no es un bloque")
+    end
+    cont = a.caja_w
+    if cont <= 0
+        cont = p.ancho
+    end
+    ap = _acum_pos
+    an = _acum_neg
+    # sus márgenes de antes, con su estilo de antes
+    ahora = b.estilo
+    b.estilo = viejo
+    _ma_epoca = _ma_epoca + 1
+    mt = _margen_arriba(b, cont)
+    mb = _margen_abajo(b, cont)
+    vacio = _vacio(b)
+    b.estilo = ahora
+    _ma_epoca = _ma_epoca + 1
+    if mt != 0 or mb != 0 or vacio
+        _acum_pos = ap
+        _acum_neg = an
+        return _quit_no("sus márgenes se juntan o estaba vacío")
+    end
+    # los vecinos, ya sin él: el margen de abajo del de antes y el de arriba del de después (los vacíos sin márgenes no
+    # cuentan); sin vecino, el borde del padre: cuenta si su margen se junta con los de dentro
+    hs = _hijos(a)
+    idx = -1
+    i = 0
+    while i < hs.length
+        if hs[i] == b
+            idx = i
+        end
+        i = i + 1
+    end
+    ok = idx >= 0
+    cero_p = false
+    borde_p = false
+    i = idx - 1
+    while ok
+        if i < 0
+            borde_p = true
+            cero_p = not _colapsa_arriba(a)
+            break
+        end
+        h = hs[i]
+        t = _hijo_margen(a, h)
+        if t == 2
+            cero_p = true
+            break
+        elif t == 1
+            if _vacio(h)
+                if _margen_arriba(h, cont) != 0 or _margen_abajo(h, cont) != 0
+                    ok = false
+                end
+            else
+                cero_p = _margen_abajo(h, cont) == 0
+                break
+            end
+        end
+        i = i - 1
+    end
+    cero_n = false
+    borde_n = false
+    i = idx + 1
+    while ok
+        if i >= hs.length
+            borde_n = true
+            cero_n = not _colapsa_abajo(a)
+            break
+        end
+        h = hs[i]
+        t = _hijo_margen(a, h)
+        if t == 2
+            cero_n = true
+            break
+        elif t == 1
+            if _vacio(h)
+                if _margen_arriba(h, cont) != 0 or _margen_abajo(h, cont) != 0
+                    ok = false
+                end
+            else
+                cero_n = _margen_arriba(h, cont) == 0
+                break
+            end
+        end
+        i = i + 1
+    end
+    _acum_pos = ap
+    _acum_neg = an
+    if not ok or not (cero_p or cero_n)
+        return _quit_no("quitarlo junta los márgenes de los vecinos")
+    end
+    # (solo él dentro: el padre no debe quedarse vacío, que juntaría sus márgenes a través)
+    if borde_p and borde_n and (not cero_p or not cero_n or _vacio(a))
+        return _quit_no("era el único: el padre se queda vacío")
+    end
+    ytop = b.caja_y
+    yb = b.caja_y + b.caja_h
+    # (lo suyo, dentro de su caja: un flotante suyo que asoma por debajo apartaba lo de después)
+    for d in p.dibujos
+        if not d.sombra and d.difuso == 0 and (d.y < ytop or d.y + d.alto > yb) and _de_limite(d, b)
+            return _quit_no("algo suyo se sale de su caja: " + _quit_quien(d))
+        end
+    end
+    if not _correr_puede(p, b, ytop, yb, -b.caja_h, doc.caja_pase)
+        return false
+    end
+    _quit_dy = -b.caja_h
+    return true
+end
+
+# Lo hace (tras maqueta_quitar_puede con b): fuera sus dibujos y sus límites, lo de después sube y sus cajas, olvidadas
+func maqueta_quitar(p: Pagina, doc: Nodo, b: Nodo)
+    dy = _quit_dy
+    yb = b.caja_y + b.caja_h
+    var quedan: [Dibujo] = []
+    for d in p.dibujos
+        if not _de_limite(d, b)
+            quedan.push(d)
+        end
+    end
+    p.dibujos = quedan
+    if p.limites != nil
+        k = 0
+        while k < p.limites.length
+            if _dentro_de(p.limites[k].nodo, b)
+                p.limites.remove(k)
+            else
+                k = k + 1
+            end
+        end
+        _limites_numerar(p)
+    end
+    _correr(p, doc, b, dy)
+    _limite_olvidar(b)
+    maqueta_corrido_y = yb
+    maqueta_corrido_dy = dy
+    maqueta_quitados = maqueta_quitados + 1
 end

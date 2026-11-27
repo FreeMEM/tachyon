@@ -37,7 +37,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("origen", help="https://servidor (lo que se sirve en la raíz)")
     ap.add_argument("puerto", type=int)
-    ap.add_argument("--sin-red", action="store_true", help="solo lo guardado; lo demás, 404")
+    ap.add_argument("--sin-red", action="store_true", help="solo lo guardado (con otra consulta si no está la misma); lo demás, 404")
     a = ap.parse_args()
     o = urllib.parse.urlsplit(a.origen)
     principal = o.netloc
@@ -63,6 +63,13 @@ def main():
             m = json.loads((dir_ / (f.name + ".json")).read_text())
             return m["estado"], m["tipo"], f.read_bytes()
         if a.sin_red:
+            # (lo que lleva un número al azar en la consulta, como detect.js de whichbrowser en html5test: lo guardado
+            # con la misma ruta y otra consulta)
+            sin_q = f"{esquema}://{servidor}{ruta.partition('?')[0]}?"
+            for mj in sorted(dir_.glob("*.json")):
+                m = json.loads(mj.read_text())
+                if m["url"].startswith(sin_q) and m["estado"] == 200:
+                    return m["estado"], m["tipo"], (dir_ / mj.stem).read_bytes()
             return 404, "text/plain", b"no guardado"
         url = f"{esquema}://{servidor}{ruta}"
         pet = urllib.request.Request(url, headers={"User-Agent": AGENTE, "Accept-Encoding": "gzip"})

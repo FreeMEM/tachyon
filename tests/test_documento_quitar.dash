@@ -1,0 +1,95 @@
+# Test: un bloque en el flujo que el JavaScript pasa a display: none se quita sin maquetar y lo de después sube su alto
+# (tarea 76, c2: lib/maqueta.dash, maqueta_quitar_puede y maqueta_quitar; lib/documento.dash, _documento_sin_maqueta).
+# Como el #loading de html5test: min-height, relativo, un absoluto animado dentro y, después, la columna de resultados
+# (inline-block) que se enseña con visibility. En cada caso, lo que queda (dibujos, cajas del JavaScript y alto de la
+# página) es lo mismo que con la maqueta entera. Si quitarlo junta márgenes (los suyos, o el de antes y el de después,
+# o el del padre con el de después), un flotante de antes lo rodea o cambia algo más que display, no se quita así: el
+# de fuera que se maqueta solo (ver test_maqueta_correr) o la maqueta entera, como antes. "quitado": por este camino.
+# expect-out: sin márgenes: true, quitado true | igual: true
+# expect-out: html5test: true, quitado true | igual: true
+# expect-out: márgenes a los dos lados: true, quitado false | igual: true
+# expect-out: margen solo antes: true, quitado true | igual: true
+# expect-out: suyo con margen: true, quitado false | igual: true
+# expect-out: primero, el padre junta: false, quitado false | igual: true
+# expect-out: primero, el padre con relleno: true, quitado true | igual: true
+# expect-out: último, el padre junta: true, quitado true | igual: true
+# expect-out: absoluto de después: true, quitado true | igual: true
+# expect-out: flotante de antes: true, quitado false | igual: true
+# expect-out: también cambia el color: false, quitado false | igual: true
+# expect-out: el único: false, quitado false | igual: true
+# expect-out: lo de después asoma: true, quitado true | igual: true
+# expect-out: flotante suyo: true, quitado true | igual: true
+# expect-out: en una celda: false, quitado false | igual: true
+
+import "../lib/documento.dash"
+
+func firma(d: Documento) -> String
+    p = d.pagina
+    r = "alto " + p.alto + ";"
+    for b in p.dibujos
+        r = r + b.tipo + ":" + b.x + "," + b.y + " " + b.ancho + "x" + b.alto + " " + b.texto + " c" + b.capa
+        if b.recorte
+            r = r + " r" + b.rx0 + "," + b.ry0 + "-" + b.rx1 + "," + b.ry1
+        end
+        if b.velado
+            r = r + " v"
+        end
+        r = r + ";"
+    end
+    return r + _cajas(d.doc, d.doc)
+end
+
+func _cajas(doc: Nodo, n: Nodo) -> String
+    r = ""
+    if n.tipo == DOM_ELEMENTO and n.caja_pase == doc.caja_pase
+        r = n.nombre + "@" + n.caja_x + "," + n.caja_y + " " + n.caja_w + "x" + n.caja_h + ";"
+    end
+    for h in n.hijos
+        r = r + _cajas(doc, h)
+    end
+    return r
+end
+
+func caso(nombre: String, css: String, cuerpo: String, js: String)
+    h = "<style>body{margin:4px;background:#ddd} .s{border:1px solid #888;background:#eee;padding:2px} p{margin:6px 0} " + css + "</style><body>" + cuerpo
+    h = h + "<script>var t = document.getElementById('t');</script></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 300)
+    js_evaluar(d.js, "document.body.setAttribute('data-x', '1')", "t.js")
+    documento_al_dia(d)
+    p = d.pagina
+    q0 = maqueta_quitados
+    js_evaluar(d.js, js, "t.js")
+    documento_al_dia(d)
+    solo = d.pagina == p
+    f1 = firma(d)
+    documento_maquetar(d, 300)
+    f2 = firma(d)
+    if f1 != f2
+        Print "solo   " + f1
+        Print "entera " + f2
+    end
+    Print nombre + ": " + solo + ", quitado " + (maqueta_quitados > q0) + " | igual: " + (f1 == f2)
+    documento_liberar(d)
+end
+
+Main
+    esconder = "t.style.display = 'none'"
+    caso("sin márgenes", "", "<div class=s><div>antes</div><div id=t>uno<br>dos</div><div>después <b>en negrita</b></div></div><div>pie</div>", esconder)
+    h5 = "@keyframes gira{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} html{overflow-x:hidden} .page{margin:2.5em auto 0;max-width:260px;padding:0 10px} #t{min-height:120px;position:relative} #t div{position:absolute;top:20px;left:50%;width:40px;height:40px;margin-left:-20px;animation:gira 1s steps(8) infinite;background:#bbb} .column{position:relative;display:inline-block;vertical-align:top} .column .left,.column .right{width:50%;display:inline-block;vertical-align:top}"
+    col = "<div id=contents class=column style='visibility:hidden'><div class=left><div><h2>Uno</h2><table><tr><td>a</td><td>b</td></tr></table></div></div><div class=right><div><h2>Dos</h2><p>texto</p></div></div></div>"
+    caso("html5test", h5, "<div class=header><h1>HTML5test</h1></div><div class=page><noscript><h2>No</h2></noscript><div id=t><div>x</div></div><div id=warning></div>" + col + "</div><div class=footer>pie</div>", "document.getElementById('contents').style.visibility = 'visible'; " + esconder)
+    caso("márgenes a los dos lados", "", "<div class=s><p>antes</p><div id=t>uno</div><p>después</p></div>", esconder)
+    caso("margen solo antes", "", "<div class=s><p>antes</p><div id=t>uno</div><div>después</div></div><p>pie</p>", esconder)
+    caso("suyo con margen", "", "<div class=s><div>antes</div><p id=t>uno</p><div>después</div></div>", esconder)
+    caso("primero, el padre junta", "", "<div style='background:#cfc'><div id=t>uno</div><p>después</p></div>", esconder)
+    caso("primero, el padre con relleno", "", "<div class=s><div id=t>uno</div><p>después</p></div><p>pie</p>", esconder)
+    caso("último, el padre junta", "", "<div style='background:#cfc'><div>antes</div><div id=t>uno</div></div><p>pie</p>", esconder)
+    caso("absoluto de después", "", "<div class=s><div>antes</div><div id=t>uno<br>dos</div><div style='position:relative'>rel<span style='position:absolute;top:3px;left:40px'>abs</span></div></div><div style='position:absolute;top:5px;left:150px'>quieto</div>", esconder)
+    caso("flotante de antes", "", "<div class=s><div style='float:left;width:40px;height:60px;background:blue'></div><div>antes</div><div id=t>uno</div><div>después</div></div>", esconder)
+    caso("también cambia el color", "", "<div class=s><div>antes</div><div id=t>uno</div><div>después</div></div>", esconder + "; document.body.style.borderTop = '3px solid red'")
+    caso("el único", "", "<div style='background:#cfc'><div id=t>uno</div></div><p>pie</p>", esconder)
+    caso("lo de después asoma", ".big{display:inline-block;line-height:80px;vertical-align:middle;font-size:30px}", "<div class=s><div>antes</div><div id=t>uno<br>dos</div><h2 style='line-height:20px;margin:0'>x <strong class=big>227</strong> y</h2></div>", esconder)
+    caso("flotante suyo", "", "<div class=s><div>antes</div><div id=t>uno<div style='float:left;width:30px;height:80px;background:blue'></div></div><div>después, al lado del flotante</div></div>", esconder)
+    caso("en una celda", "", "<table><tr><td><div>antes</div><div id=t>uno</div><div>después</div></td><td>otra</td></tr></table>", esconder)
+end

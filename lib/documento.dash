@@ -1388,12 +1388,28 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
     end
     var dxs: [Int] = []
     var dys: [Int] = []
+    var quitar: Nodo = nil
     for c in cambios
         n = c.nodo
         if _documento_en_svg(n)
             dxs.push(0)
             dys.push(0)
             continue
+        end
+        # (un bloque en el flujo que pasa a display: none, solo eso: lo de después sube, sin maquetar; uno por vez. El
+        # #loading de html5test: 4,3 s de maqueta entera; tarea 76, c2)
+        if not c.pseudo and quitar == nil and c.viejo != nil and _val_estilo(n.estilo, "display", "") == "none" and _val_estilo(c.viejo, "display", "inline") != "none"
+            if not _documento_solo_display(c.viejo, n.estilo)
+                maqueta_quitar_no = "cambia algo más que display"
+            elif maqueta_quitar_puede(d.pagina, d.doc, n, c.viejo)
+                quitar = n
+                dxs.push(0)
+                dys.push(0)
+                continue
+            end
+            if traza_activa
+                traza("no se quita sin maqueta: " + maqueta_quitar_no)
+            end
         end
         if not c.pseudo and c.viejo != nil and _val_estilo(n.estilo, "display", "") == "none" and _val_estilo(c.viejo, "display", "none") != "none" and _documento_fuera_del_flujo(c.viejo)
             # (uno absoluto o fijo que se esconde: se quitan sus dibujos)
@@ -1442,6 +1458,22 @@ func _documento_sin_maqueta(d: Documento, toques: [Toque], cambios: [EstiloCambi
         dys.push(b[1] - a[1])
     end
     # y aplicarlo
+    if quitar != nil
+        for dib in maqueta_dibujos_de(d.pagina, quitar)
+            _documento_zona(d, dib)
+        end
+        y0 = quitar.caja_y
+        maqueta_quitar(d.pagina, d.doc, quitar)
+        abajo = d.desde + d.alto_vista - y0
+        if abajo > 0
+            _documento_zona(d, Dibujo(D_RECT, 0, y0, d.ancho, abajo, 0, "", 0, 0, ""))
+        end
+        # (sus animaciones ya no están; las imágenes, en su sitio nuevo)
+        _documento_vistas(d)
+        if traza_activa
+            traza("el JavaScript escondió " + quitar.nombre + "#" + dom_atributo(quitar, "id") + ": lo de después, " + maqueta_corrido_dy + " px, sin maqueta")
+        end
+    end
     for t in toques
         if t.tipo == TOQUE_CONTENIDO
             for dib in d.pagina.dibujos
@@ -1622,6 +1654,21 @@ func _documento_pseudo_pasar(viejo: Nodo, nuevo: Nodo) -> Nodo
         end
     end
     return viejo
+end
+
+# ¿Solo cambia display (y lo que no mueve nada)?
+func _documento_solo_display(viejo: {String: String}, nuevo: {String: String}) -> Bool
+    for k in nuevo.keys()
+        if k != "display" and not _documento_ligera(k) and (not viejo.has(k) or viejo[k] != nuevo[k])
+            return false
+        end
+    end
+    for k in viejo.keys()
+        if k != "display" and not _documento_ligera(k) and not nuevo.has(k)
+            return false
+        end
+    end
+    return true
 end
 
 # ¿Un estilo que no ocupa sitio en el flujo (display: none, position: absolute o fixed)?

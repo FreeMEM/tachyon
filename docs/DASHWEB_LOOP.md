@@ -651,6 +651,8 @@ tarea, con el estilo de Dash.
           queda la maqueta entera que pide offsetHeight: ~220 ms frente a 93 a la velocidad del vídeo.)
           (2026-11-22) offsetHeight en el bucle de tests/pages/zz_bench_k4b.html (2400 <div>): de 4180 ms a 0 (ver la
           bitácora). Queda la maqueta del final, ya fuera del JavaScript: 2,8 s de 2400 inline-block en el RTG.
+          (2026-11-27) Esa maqueta, de 1796 a 1280 ms (2400 inline-block de ancho fijo): colocar cada uno miraba
+          todos los de antes. Lo que queda va repartido (~0,5 ms por caja: _val, _palabras_texto, _caja_leida...).
           (2026-11-17) Banco tests/pages/zz_bench_dom2.html (5000 vueltas, emulador RTG), de eb32e1e a hoy:
           childNodes[i] 2380 -> 100 ms, classList.add/remove 5360 -> 3420, style.x= 3100 -> 2260, setAttribute
           1020 -> 620, insertBefore 2460 -> 1920. Lo que más queda: classList (el Proxy de lt[0]: dos trampas por
@@ -7960,3 +7962,22 @@ Formato:
   volver a la página, el aviso otra vez; "Go back" vuelve a la de antes; una página http con hoja, script e imagen
   del servidor autofirmado sale sin ellos y sin aviso, con una línea por cada uno en la salida.
 - Batería: 207/207.
+
+### 2026-11-27 — Tarea 76a: la maqueta de 2400 inline-block
+- Banco: la maqueta de tests/pages/zz_bench_k4b.html (copiada de .worktrees/s1122; no va al repo) y la misma página sin
+  JavaScript con 600, 1200 y 2400 <div> inline-block de width: 46px (tests/bench/fases.dash con tres maquetas
+  seguidas, en el scratchpad). Emulador RTG. Crece casi lineal (~0,75 ms por caja), pero con --perfil el 18 % era
+  _contenido mismo: un inline-block con width va como flotante de la izquierda y, para colocar cada uno, se miraban
+  todos los de antes de la fila (2400 x 2400 / 2).
+- _contenido guarda aparte los flotantes que aún pueden tocar al siguiente (su fondo pasa de fila_y, que nunca baja en
+  la fila) y quita los demás cuando hay más de 8 muertos; flotantes sigue entero para las líneas, el pintado y clear.
+  tests/test_maqueta_flotantes_filas.dash: 26 inline-block de altos distintos en filas, con lo esperado sacado de la
+  regla de antes (mirando todos).
+- Menudencias del mismo perfil: _con_mascara, mascara_url y _caja_leida ya no montan una lista de nombres en cada
+  llamada; _color_leer recuerda lo ya leído (valor -> color y opacidad; se vacía pasados 1000).
+- Medido (RTG): tres maquetas de 2400, 5389 -> 3858 y 3827 ms (1796 -> ~1280 por maqueta, -29 %); 600, 1390 -> 1249.
+  El visor con zz_bench_k4b: maqueta 2045 -> 1507 y 1517 ms; memoria igual (10388 KB); estilo igual (232).
+- Lo que queda va repartido, ~0,5 ms por caja (_val 11 %, _palabras_texto 14 %, _caja_leida, _borde, _px...): sin un
+  punto caliente claro.
+- Emulador con el cerrojo /run/user/1000/dash-emu-red.lock (sin SendMessage a "dash" en esta vuelta).
+- Batería: 208/208.

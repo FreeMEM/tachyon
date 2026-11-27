@@ -1,0 +1,59 @@
+# Test: lib/maqueta.dash, muchos inline-block de ancho fijo (van como flotantes de la izquierda) con altos distintos,
+# en filas: cada uno en el primer sitio donde cabe junto a los de antes que aún le tocan (tarea 76a: al colocar cada
+# uno solo se miran los que siguen vivos en la fila; antes, todos: 2400 eran cuadráticos). Lo esperado sale de la
+# regla de antes, mirando todos. Lo que no flota va debajo del más bajo.
+# expect-out: T 0,1 [a] c=0 e=0
+# expect-out: T 40,1 [b] c=0 e=0
+# expect-out: T 80,1 [c] c=0 e=0
+# expect-out: T 120,1 [d] c=0 e=0
+# expect-out: T 160,1 [e] c=0 e=0
+# expect-out: T 120,11 [f] c=0 e=0
+# expect-out: T 160,11 [g] c=0 e=0
+# expect-out: T 160,21 [h] c=0 e=0
+# expect-out: T 0,31 [i] c=0 e=0
+# expect-out: T 40,31 [j] c=0 e=0
+# expect-out: T 80,31 [k] c=0 e=0
+# expect-out: T 120,31 [l] c=0 e=0
+# expect-out: T 160,31 [m] c=0 e=0
+# expect-out: T 160,41 [n] c=0 e=0
+# expect-out: T 160,51 [o] c=0 e=0
+# expect-out: T 160,61 [p] c=0 e=0
+# expect-out: T 0,71 [q] c=0 e=0
+# expect-out: T 40,71 [r] c=0 e=0
+# expect-out: T 80,71 [s] c=0 e=0
+# expect-out: T 120,71 [t] c=0 e=0
+# expect-out: T 160,71 [u] c=0 e=0
+# expect-out: T 0,81 [v] c=0 e=0
+# expect-out: T 40,81 [w] c=0 e=0
+# expect-out: T 80,81 [x] c=0 e=0
+# expect-out: T 120,81 [y] c=0 e=0
+# expect-out: T 160,81 [z] c=0 e=0
+# expect-out: T 0,91 [debajo] c=0 e=0
+# expect-out: alto 100
+# expect-out: fin
+
+import "../lib/maqueta.dash"
+
+Window W
+    title "Flotantes"
+    width 300
+    height 100
+end
+
+Main
+    W.open
+    h = "<style>body { margin: 0 } div, p { margin: 0 } #c div { display: inline-block; width: 40px; height: 10px }"
+    h = h + " #c div.h20 { height: 20px } #c div.h30 { height: 30px } #c div.h40 { height: 40px }</style>"
+    h = h + "<div id=c><div class=h10>a</div><div class=h10>b</div><div class=h30>c</div><div class=h10>d</div><div class=h10>e</div><div class=h20>f</div><div class=h10>g</div><div class=h10>h</div><div class=h10>i</div><div class=h10>j</div><div class=h10>k</div><div class=h40>l</div><div class=h10>m</div><div class=h10>n</div><div class=h10>o</div><div class=h10>p</div><div class=h10>q</div><div class=h10>r</div><div class=h10>s</div><div class=h10>t</div><div class=h10>u</div><div class=h10>v</div><div class=h10>w</div><div class=h10>x</div><div class=h10>y</div><div class=h10>z</div></div><p>debajo</p>"
+    doc = dom_desde_html(h)
+    estilo_aplicar(doc, estilo_hojas(doc, "http://x/"))
+    p = maquetar(doc, 200)
+    for d in p.dibujos
+        if d.tipo == D_TEXTO
+            Print "T " + d.x + "," + d.y + " [" + str_trim(d.texto) + "] c=" + str_from_int(d.color, 16) + " e=" + d.estilo
+        end
+    end
+    Print "alto " + p.alto
+    W.close
+    Print "fin"
+end

@@ -33,7 +33,28 @@ func css_color_opaco(valor: String) -> Int
     return _color_leer(valor)
 end
 
+# Lo ya leído (valor -> color y opacidad): la maqueta lee los mismos colores en cada bloque (tarea 76a)
+var _color_memo_c: {String: Int} = nil
+var _color_memo_a: {String: Int} = nil
+
 func _color_leer(valor: String) -> Int
+    if _color_memo_c == nil or _color_memo_c.length > 1000
+        var mc: {String: Int} = {}
+        var ma: {String: Int} = {}
+        _color_memo_c = mc
+        _color_memo_a = ma
+    end
+    if _color_memo_c.has(valor)
+        _color_alfa = _color_memo_a[valor]
+        return _color_memo_c[valor]
+    end
+    c = _color_leer_ya(valor)
+    _color_memo_c[valor] = c
+    _color_memo_a[valor] = _color_alfa
+    return c
+end
+
+func _color_leer_ya(valor: String) -> Int
     v = str_lower(str_trim(valor))
     _color_alfa = 255
     if v == ""
@@ -522,6 +543,10 @@ end
 # pinta la imagen teñida de ese color con su transparencia. La clave con que se pide y se pinta: "mascara:color:" y la
 # dirección (completa, ya puesta por lib/imagenes.dash), con el color en decimal; "" si no tiene máscara con url o su fondo no tiene color.
 func mascara_url(e: {String: String}) -> String
+    # (lo normal, sin ninguna: sin la lista de los cuatro nombres en cada llamada, que va una vez por bloque; tarea 76a)
+    if not e.has("mask-image") and not e.has("-webkit-mask-image") and not e.has("mask") and not e.has("-webkit-mask")
+        return ""
+    end
     for k in ["mask-image", "-webkit-mask-image", "mask", "-webkit-mask"]
         if e.has(k) and str_find(e[k], "url(") >= 0
             return css_url(e[k])

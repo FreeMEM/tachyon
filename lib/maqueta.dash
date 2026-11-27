@@ -1147,18 +1147,17 @@ func _caja_leida(n: Nodo, contenedor: Int) -> [Int]
         return n.cl
     end
     e = n.estilo
-    pct = false
-    for k in ["margin-top", "margin-bottom", "margin-left", "margin-right", "padding-top", "padding-bottom", "padding-left", "padding-right"]
-        if e.has(k) and str_find(e[k], "%") >= 0
-            pct = true
-        end
-    end
-    n.cl_pct = pct
+    # (sin una lista de los ocho nombres en cada llamada: va una vez por bloque; tarea 76a)
+    n.cl_pct = _pct_en(e, "margin-top") or _pct_en(e, "margin-bottom") or _pct_en(e, "margin-left") or _pct_en(e, "margin-right") or _pct_en(e, "padding-top") or _pct_en(e, "padding-bottom") or _pct_en(e, "padding-left") or _pct_en(e, "padding-right")
     var c: [Int] = [_px(e, "margin-top", contenedor), _px(e, "margin-bottom", contenedor), _px(e, "margin-left", contenedor), _px(e, "margin-right", contenedor), _borde(e, "top"), _borde(e, "bottom"), _borde(e, "left"), _borde(e, "right"), _px(e, "padding-top", contenedor), _px(e, "padding-bottom", contenedor), _px(e, "padding-left", contenedor), _px(e, "padding-right", contenedor)]
     n.cl = c
     n.cl_pase = _maqueta_pase
     n.cl_cont = contenedor
     return c
+end
+
+func _pct_en(e: {String: String}, k: String) -> Bool
+    return e.has(k) and str_find(e[k], "%") >= 0
 end
 
 func _bloque_en(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int, contenedor: Int) -> Int
@@ -3462,6 +3461,9 @@ func _contenido(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int) -> Int
     fila_y = 0
     fondo = 0
     var flotantes: [Flotante] = []
+    # los de la fila que aún pueden tocar al siguiente (su fondo pasa de fila_y, que nunca baja dentro de la fila): con
+    # todos, colocar cada uno miraba los de antes y 2400 inline-block de ancho fijo eran cuadráticos (tarea 76a)
+    var activos: [Flotante] = []
     # (las líneas de lo de dentro no rodean los flotantes de aquí: cada _contenido pone los suyos)
     flot_antes = _flot_linea
     _flot_linea = nil
@@ -3539,6 +3541,7 @@ func _contenido(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int) -> Int
                 fila_y = cy
                 fondo = cy
                 flotantes.clear()
+                activos.clear()
             end
             w = _ancho_flotante(m, h, ancho)
             if w > ancho
@@ -3549,11 +3552,15 @@ func _contenido(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int) -> Int
             izq = x
             der = x + ancho
             vueltas = 0
+            muertos = 0
             while vueltas < 100
                 izq = x
                 der = x + ancho
                 siguiente = -1
-                for f in flotantes
+                for f in activos
+                    if vueltas == 0 and f.y + f.alto <= fy
+                        muertos = muertos + 1
+                    end
                     if f.y <= fy and f.y + f.alto > fy
                         if f.izquierda and f.x + f.ancho > izq
                             izq = f.x + f.ancho
@@ -3591,6 +3598,16 @@ func _contenido(m: Maquetador, n: Nodo, x: Int, y: Int, ancho: Int) -> Int
             fl.hasta = m.pagina.dibujos.length
             flotantes.push(fl)
             fila_y = fy
+            if muertos > 8
+                var vivos: [Flotante] = []
+                for f in activos
+                    if f.y + f.alto > fila_y
+                        vivos.push(f)
+                    end
+                end
+                activos = vivos
+            end
+            activos.push(fl)
             if fy + alto > fondo
                 fondo = fy + alto
             end
@@ -4484,12 +4501,12 @@ end
 # Un <button> con elementos dentro o sin texto: lo dibuja su CSS (un icono, unas barras...), no es
 # el botón de siempre
 func _con_mascara(e: {String: String}) -> Bool
-    for k in ["mask-image", "-webkit-mask-image", "mask", "-webkit-mask"]
-        if e.has(k) and str_find(e[k], "url(") >= 0
-            return true
-        end
-    end
-    return false
+    # (sin una lista de los cuatro nombres en cada llamada: va una vez por bloque; tarea 76a)
+    return _url_en(e, "mask-image") or _url_en(e, "-webkit-mask-image") or _url_en(e, "mask") or _url_en(e, "-webkit-mask")
+end
+
+func _url_en(e: {String: String}, k: String) -> Bool
+    return e.has(k) and str_find(e[k], "url(") >= 0
 end
 
 # Un <input> de escribir texto (text, search, email, url, tel, password, number o sin type)

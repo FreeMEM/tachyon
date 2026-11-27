@@ -698,6 +698,13 @@ tarea, con el estilo de Dash.
           dy, correr dy lo que va detrás en esa cadena (dibujos y cajas: _documento_mover_cajas), alargar dy los fondos
           y bordes de los antepasados y el alto de la página. Medir con la copia de html5test (tools/espejo.py) y con
           zz_bench_k4.html (cambiar clases: offsetHeight).
+          (2026-11-27) Primera parte hecha: un bloque en el flujo que cambia de alto ya no sube a los de fuera ni pide
+          la maqueta entera si todos los de fuera son bloques de alto automático, sin overflow ni absolutos, y nada
+          que no sea suyo cruza su caja (lib/maqueta.dash, _correr_puede y _correr). Banco tests/bench/c2.dash (300
+          apartados, 30 cambios del JavaScript): 52,7 s -> 2,4 s. Queda: html y body con height o min-height (100 %,
+          100vh: muy común), overflow en html o body (html5test: overflow-x: hidden), fondos con imagen, degradado o
+          esquinas redondas en los de fuera, flotantes de antes que la rodean, y bloques dentro de celdas de tabla
+          (html5test pone los resultados en tablas).
       (c3, 2026-11-17) Wikipedia en el espejo (tools/espejo.py 40992), comparada con la versión de antes (A/B,
           $S/ab_wiki.sh): las hojas nuevas por partes bajan estilos y maquetas de 24,5-30 s a 21,4 s, pero el total
           sigue en ~41 s porque mandan dos lotes enteros: el JavaScript cambia la clase de <html> (preferencias de
@@ -7981,3 +7988,27 @@ Formato:
   punto caliente claro.
 - Emulador con el cerrojo /run/user/1000/dash-emu-red.lock (sin SendMessage a "dash" en esta vuelta).
 - Batería: 208/208.
+
+### 2026-11-27 — Tarea 76, c2 (primera parte): un bloque que cambia de alto, sin la maqueta entera
+- Antes, un cambio del JavaScript que alargaba o encogía un bloque en el flujo subía hasta tres cajas de fuera y, si
+  todas cambiaban de alto, pedía la maqueta entera. Banco nuevo: tests/bench/c2.dash sobre tests/pages/zz_bench_c2.html
+  (300 apartados; 30 cambios, cada uno añade una línea en un apartado y llama a documento_al_dia). Emulador RTG.
+- Ahora (lib/maqueta.dash, _correr_puede y _correr): el bloque se rehace solo; si su alto cambia dy y lo que ve su
+  padre es lo mismo, lo de después baja dy, los fondos y bordes de los lados de los de fuera se alargan dy, su borde de
+  abajo baja, y también las cajas del JavaScript, el alto de los de fuera en la lista de cajas que se maquetan solas y
+  el de la página (Pagina.alto_flujo). Solo si los de fuera son bloques de alto automático (sin height, min-height ni
+  max-height), sin overflow ni absolutos, y nada que no sea suyo cruza su caja. Lo absoluto: cuelga de arriba de su
+  contenedor (o, con top y bottom en auto, de arriba de su padre: así lo pone Tachyon) y baja solo si eso es de
+  después; si cuelga de abajo de uno de fuera, no se puede. Si no se puede, como antes (el de fuera o la entera).
+- La zona de repintado incluye lo de después (documento: maqueta_corrido_y y _dy).
+- De paso, maqueta_rehacer pone cada dibujo nuevo con los de su paso (fondos, flotantes, líneas): antes iban todos
+  donde su fondo y sus textos se pintaban antes que los de toda la página (con algo encima, otro orden).
+- Medido (RTG, dos pasadas A/B): 30 cambios 52,7 y 52,6 s -> 2,4 y 2,4 s (el peor, 1,8 s -> 0,1 s); la maqueta entera
+  igual (1,1 s); lo que queda es igual que con la maqueta entera (dibujos, orden y alto). Memoria: un Int más por Pagina.
+- tests/test_maqueta_correr.dash (crece, encoge, absolutos de antes, de después y colgados de abajo, overflow y
+  min-height de fuera, flotante de después; igual que la entera) y test_documento_flujo_solo (crece: ahora solo).
+- Queda (en la 76, c2): html y body con height o min-height, overflow en html o body (html5test), fondos con imagen,
+  degradado o esquinas redondas en los de fuera, flotantes de antes que la rodean y bloques dentro de celdas de tabla.
+- Emulador con el cerrojo; la sesión "dash" no estaba viva para avisarle de la batería (solo dashos-x86 y
+  dashos-aarch64).
+- Batería: 209/209.

@@ -1,0 +1,60 @@
+# Banco de la tarea 76 (c2): 30 cambios del JavaScript que alargan un bloque en el flujo, cada uno con su
+# documento_al_dia, sobre tests/pages/zz_bench_c2.html (300 apartados). Uso (en el emulador, sin red):
+#   tools/medir_visor.py --maquina rtg --local --programa tests/bench/c2.dash --pagina zz_bench_c2.html
+# Dice el tiempo de los 30, cuántos se maquetaron solos (la misma Pagina) y si queda igual que con la maqueta entera.
+import "../../lib/documento.dash"
+
+func firma(p: Pagina) -> String
+    r = ""
+    for d in p.dibujos
+        r = r + d.tipo + ":" + d.x + "," + d.y + " " + d.ancho + "x" + d.alto + " " + d.texto + ";"
+    end
+    return r + " alto " + p.alto
+end
+
+Main
+    texto = file_read_text(arg(0))
+    d = documento_html("http://x/", texto + "<script>var n = 0;</script>")
+    t0 = time_ms()
+    documento_maquetar(d, 600)
+    Print "maqueta entera: " + (time_ms() - t0) + " ms, " + d.pagina.dibujos.length + " dibujos"
+    # (el primer cambio tras maquetar rehace el índice de las hojas)
+    js_evaluar(d.js, "document.getElementById('pie').setAttribute('data-x', '1')", "c2.js")
+    documento_al_dia(d)
+    total = 0
+    solos = 0
+    peor = 0
+    for k in (0..29)
+        p = d.pagina
+        js_evaluar(d.js, "var r = document.getElementById('r" + (k * 10 + 5) + "'); var e = document.createElement('div'); e.textContent = 'una línea más ' + (n++); r.appendChild(e);", "c2.js")
+        t1 = time_ms()
+        documento_al_dia(d)
+        ms = time_ms() - t1
+        total = total + ms
+        if ms > peor
+            peor = ms
+        end
+        if d.pagina == p
+            solos = solos + 1
+        end
+    end
+    f1 = firma(d.pagina)
+    documento_maquetar(d, 600)
+    f2 = firma(d.pagina)
+    if f1 != f2
+        a = str_split(f1, ";")
+        b = str_split(f2, ";")
+        k = 0
+        malos = 0
+        while k < a.length and k < b.length and malos < 6
+            if a[k] != b[k]
+                Print "distinto " + k + ": " + a[k] + " | entera: " + b[k]
+                malos = malos + 1
+            end
+            k = k + 1
+        end
+        Print "dibujos " + a.length + " y " + b.length + "; " + a[a.length - 1] + " | " + b[b.length - 1]
+    end
+    Print "c2: 30 cambios en " + total + " ms (el peor " + peor + "), " + solos + " solos, igual que entera: " + (f1 == f2)
+    documento_liberar(d)
+end

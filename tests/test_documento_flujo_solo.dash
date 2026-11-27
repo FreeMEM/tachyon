@@ -1,12 +1,12 @@
 # Test: un cambio del JavaScript dentro de un bloque en el flujo
 # maqueta solo ese bloque si su alto no cambia (tarea 76: la c2 del plan). El bloque va dentro de un marco relative
 # con top y z-index: lo nuevo queda igual que con la maqueta entera (sitio, capa y orden de posicionado), y la página
-# es la misma. Si el texto se alarga y el bloque crece, maqueta entera (y lo de debajo baja); dentro de una fila
-# flex (su ancho sale de lo de dentro), también. Un <p> sin borde ni relleno (sus márgenes se juntan con los de al
+# es la misma. Si el texto se alarga y el bloque crece, también solo, y lo de debajo baja (la c2); dentro de una fila
+# flex (su ancho sale de lo de dentro), maqueta entera. Un <p> sin borde ni relleno (sus márgenes se juntan con los de al
 # lado) también se maqueta solo si lo que ve su padre no cambia.
 # memcheck
 # expect-out: parcial: true | igual que entera: true
-# expect-out: crece: false | lo de debajo baja: true
+# expect-out: crece: true | lo de debajo baja: true | igual que entera: true
 # expect-out: en flex: false
 # expect-out: párrafo: true | igual que entera: true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
@@ -58,7 +58,16 @@ Main
     y0 = texto_de(p, abajo).y
     js_evaluar(d.js, "t.textContent = 'mundo mundo mundo mundo mundo mundo mundo mundo mundo mundo mundo'", "t.js")
     documento_al_dia(d)
-    Print "crece: " + (d.pagina == p) + " | lo de debajo baja: " + (texto_de(d.pagina, abajo).y > y0)
+    crece = d.pagina == p
+    baja = texto_de(d.pagina, abajo).y > y0
+    f1 = firma(d.pagina)
+    documento_maquetar(d, 300)
+    f2 = firma(d.pagina)
+    if f1 != f2
+        Print "parcial " + f1
+        Print "entera  " + f2
+    end
+    Print "crece: " + crece + " | lo de debajo baja: " + baja + " | igual que entera: " + (f1 == f2)
     p = d.pagina
     js_evaluar(d.js, "f.textContent = 'flexible'", "t.js")
     documento_al_dia(d)

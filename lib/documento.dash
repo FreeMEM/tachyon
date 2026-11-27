@@ -1175,6 +1175,17 @@ func _documento_al_dia(d: Documento) -> Bool
             for dib in nuevos
                 _documento_zona(d, dib)
             end
+            # (cambió de alto: lo de después se movió; tarea 76, c2)
+            if maqueta_corrido_dy != 0
+                y0 = maqueta_corrido_y
+                if maqueta_corrido_dy < 0
+                    y0 = y0 + maqueta_corrido_dy
+                end
+                abajo = d.desde + d.alto_vista - y0
+                if abajo > 0
+                    _documento_zona(d, Dibujo(D_RECT, 0, y0, d.ancho, abajo, 0, "", 0, 0, ""))
+                end
+            end
             d.zona = not d.zona_entera
             _documento_vistas(d)
             d.maqueta_fin = time_ms()
@@ -1182,7 +1193,11 @@ func _documento_al_dia(d: Documento) -> Bool
             d.n_maquetas = d.n_maquetas + 1
             d.ms_maquetas = d.ms_maquetas + d.maqueta_ms
             if traza_activa
-                traza("el JavaScript hizo " + toques.length + " cambios dentro de " + limite.nombre + "." + str_replace(str_trim(dom_atributo(limite, "class")), " ", ".") + ": maquetada sola en " + (time_ms() - t0) + " ms (" + maqueta_bloques + " bloques)")
+                corrido = ""
+                if maqueta_corrido_dy != 0
+                    corrido = "; lo de después, " + maqueta_corrido_dy + " px"
+                end
+                traza("el JavaScript hizo " + toques.length + " cambios dentro de " + limite.nombre + "." + str_replace(str_trim(dom_atributo(limite, "class")), " ", ".") + ": maquetada sola en " + (time_ms() - t0) + " ms (" + maqueta_bloques + " bloques" + corrido + ")")
             end
             return true
         end

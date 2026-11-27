@@ -1,0 +1,73 @@
+# Test: un bloque en el flujo que cambia de alto se maqueta solo y lo de después baja (o sube) lo mismo, sin maquetar
+# los de fuera (tarea 76, c2: lib/maqueta.dash, _correr_puede y _correr). En cada caso, lo que queda (dibujos, cajas del
+# JavaScript y alto de la página) es lo mismo que con la maqueta entera (salvo el orden de pintado de lo posicionado,
+# que la maqueta entera numera otra vez con los elementos nuevos). Lo absoluto de después dentro de algo de después
+# baja con él; lo colgado de arriba de algo de antes o de fuera se queda. Con un absoluto colgado de abajo, un overflow de fuera o
+# un min-height de fuera no se puede: el de fuera o la maqueta entera, como antes (y también igual).
+# expect-out: crece: true | igual: true
+# expect-out: encoge: true | igual: true
+# expect-out: absoluto de después: true | igual: true
+# expect-out: absoluto de antes: true | igual: true
+# expect-out: absoluto de abajo: false | igual: true
+# expect-out: overflow fuera: false | igual: true
+# expect-out: min-height fuera: false | igual: true
+# expect-out: flotante después: true | igual: true
+
+import "../lib/documento.dash"
+
+func firma(d: Documento) -> String
+    p = d.pagina
+    r = "alto " + p.alto + ";"
+    for b in p.dibujos
+        r = r + b.tipo + ":" + b.x + "," + b.y + " " + b.ancho + "x" + b.alto + " " + b.texto + " c" + b.capa + ";"
+    end
+    return r + _cajas(d.doc, d.doc)
+end
+
+func _cajas(doc: Nodo, n: Nodo) -> String
+    r = ""
+    if n.tipo == DOM_ELEMENTO and n.caja_pase == doc.caja_pase
+        r = n.nombre + "@" + n.caja_x + "," + n.caja_y + " " + n.caja_w + "x" + n.caja_h + ";"
+    end
+    for h in n.hijos
+        r = r + _cajas(doc, h)
+    end
+    return r
+end
+
+func caso(nombre: String, cuerpo: String, js: String)
+    h = "<style>body{margin:4px} .s{border:1px solid #888;background:#eee;padding:2px} p{margin:6px 0}</style><body>" + cuerpo
+    h = h + "<script>var t = document.getElementById('t');</script></body>"
+    d = documento_html("http://x/", h)
+    documento_maquetar(d, 300)
+    js_evaluar(d.js, "document.body.setAttribute('data-x', '1')", "t.js")
+    documento_al_dia(d)
+    p = d.pagina
+    js_evaluar(d.js, js, "t.js")
+    documento_al_dia(d)
+    solo = d.pagina == p
+    f1 = firma(d)
+    documento_maquetar(d, 300)
+    f2 = firma(d)
+    if f1 != f2
+        Print "solo   " + f1
+        Print "entera " + f2
+    end
+    Print nombre + ": " + solo + " | igual: " + (f1 == f2)
+    documento_liberar(d)
+end
+
+Main
+    antes = "<h1>Arriba</h1><p>Un párrafo de antes con algo de texto</p>"
+    sec = "<div class=s id=art>" + antes + "<div id=t>uno</div><p>después <b>en negrita</b> y más</p><ul><li>uno<li>dos</ul></div><p id=pie>pie</p>"
+    crecer = "t.innerHTML = 'uno<br>dos<br>tres'"
+    caso("crece", sec, crecer)
+    caso("encoge", "<div class=s>" + antes + "<div id=t>uno<br>dos<br>tres</div><p>después</p></div><p>pie</p>", "t.innerHTML = 'uno'")
+    caso("absoluto de después", sec + "<div style='position:relative'>rel<span style='position:absolute;top:3px;left:40px'>abs</span></div><div style='position:absolute'>estático</div>", crecer)
+    caso("absoluto de antes", "<div style='position:absolute;top:30px;left:100px;height:200px;width:50px;background:red'>a</div>" + sec, crecer)
+        # (con dos <div> de por medio: el que llama prueba con el de fuera hasta tres veces)
+    caso("absoluto de abajo", "<div style='position:relative'><div style='position:absolute;bottom:0;right:0'>a</div><div><div>" + sec + "</div></div></div>", crecer)
+    caso("overflow fuera", "<div style='overflow:hidden'><div><div>" + sec + "</div></div></div>", crecer)
+    caso("min-height fuera", "<div style='min-height:40px'><div><div>" + sec + "</div></div></div>", crecer)
+    caso("flotante después", sec + "<div><div style='float:left;width:50px;height:30px;background:blue'></div>al lado</div><p>debajo</p>", crecer)
+end

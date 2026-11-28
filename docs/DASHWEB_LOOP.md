@@ -689,6 +689,12 @@ tarea, con el estilo de Dash.
           parsing.tree no puede pasar en la copia (el espejo reescribe http://www.w3.org/... en engine.js).
           El perfil de JavaScript (-DJS_PERFIL) no sirve: 148 muestras en Wikipedia y un assert de QuickJS (atom <
           rt->atom_size) al volcarlo: por mirar.
+          (2026-11-28) 305 -> 320 en la copia: requestIdleCallback, translate, spellcheck, draggable, <iframe srcdoc>,
+          sandbox y relList.supports con dns-prefetch y preconnect. Lista de lo que falla con sus puntos: medir_visor
+          --js con los tr.missing y los value de scripts/9/data.js (ver la bitácora). Siguiente, para pasar los 334 de
+          Amelinium: Path2D (2), modos de mezcla del canvas (5), ruby (3: rp oculto y el rt encima), WebSocket (15),
+          EventSource (5); details (1) lo para el freno de medidas seguidas de documento_maquetar_por_js (tras 4
+          seguidas da la caja vieja); preload (1) pide traer la hoja y avisar con load (loadCSS).
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
           límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador
@@ -8075,3 +8081,24 @@ Formato:
   bloques en celdas, un bloque que sale del árbol (removeChild) y uno que pasa de display: none a verse.
 - Emulador con el cerrojo.
 - Batería: 210/210.
+
+### 2026-11-28 — Tarea 76b: html5test, lo pequeño de HTML (de 305 a 320)
+- Sesión de trabajo del área dash (jefe-dash), cuenta desarrollo; bucle relanzado (parado desde el 27/11). Puesta al día:
+  dev subida (727d38f..c89fbcc); worktrees seguridad y s1122, fusionados, quitados con sus ramas; traza-david se queda
+  (commits sin subir). Los fallos de seguridad del aviso del 31/10 ya estaban en la 0.11.1.
+- Lo que falla, con sus puntos: medir_visor --js con los id de los tr.missing de la página de resultados (a los 150 s)
+  cruzados con los value de scripts/9/data.js de la copia (tools/espejo.py https://html5test.co 40991 --sin-red; en
+  FS-UAE la dirección es 127.0.0.1, no 10.0.2.2). Lo grande que queda: indexedDB 21, geolocalización, WebGL, WebRTC
+  y ObjectRTC 15 cada uno, WebSocket 10+5, Service Workers 10, subtítulos 8.
+- Hecho (lib/jsdom_preludio.js): requestIdleCallback y cancelIdleCallback (una vuelta de temporizadores después, con
+  50 ms de plazo); translate y spellcheck (su atributo, heredado; spellcheck sí en lo que se escribe) y draggable (sí
+  en img y a con href); <iframe srcdoc> (su HTML manda sobre src, about:srcdoc, load; cambiarlo lo vuelve a cargar);
+  sandbox como DOMTokenList con las palabras de HTML (sin allow-scripts, un marco XHTML no ejecuta sus scripts; los
+  HTML nunca lo hacen); relList.supports con dns-prefetch y preconnect (avisos que se pueden no seguir; preload no).
+- Visto y no hecho: details (la prueba mide offsetHeight antes y después de open; suelto va bien, 21 -> 42, pero en
+  html5test el freno de documento_maquetar_por_js, 4 medidas seguidas, da la caja vieja); accessKeyLabel (Tachyon
+  no tiene accesskey).
+- Medido (RTG, MUI 3.8, copia sin red): 305 -> 320 de 588 (la cuenta con data.js, 302 -> 317 de 576).
+- tests/test_jsdom_html5_varios.dash nuevo; test_jsdom_rellist_supports, al día (dns-prefetch ya es true).
+- Batería: 210/211 (el que falla, rellist_supports, esperaba dns-prefetch false; corregido y pasado suelto).
+

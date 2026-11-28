@@ -29,11 +29,11 @@
 {
 "prueba": "html5test.com",
 "mide": "Qué funciones dice tener",
-"total": 555,
-"pasan": 0,
+"total": 588,
+"pasan": 320,
 "unidad": "puntos",
-"estado": "pendiente",
-"nota": "41c"
+"estado": "en curso",
+"nota": "76b: Amelinium 334"
 },
 {
 "prueba": "Acid3",

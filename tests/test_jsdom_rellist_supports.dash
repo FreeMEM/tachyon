@@ -1,8 +1,8 @@
 # Test: DOMTokenList.supports() (tarea 76b). classList no tiene palabras admitidas: TypeError, como dice DOM. relList sí:
-# en <link>, las que entiende Tachyon (stylesheet); en <a>, <area> y <form>, noopener y noreferrer (se cumplen
+# en <link>, las que entiende Tachyon (stylesheet, y dns-prefetch y preconnect, avisos que se pueden pasar por alto; preload no); en <a>, <area> y <form>, noopener y noreferrer (se cumplen
 # siempre). html5test preguntaba link.relList.supports('dns-prefetch') y el TypeError de antes paraba toda su prueba.
 # memcheck
-# expect-out: class: TypeError | link: true false false | a: true true false | area: true | form: true
+# expect-out: class: TypeError | link: true true false | a: true true false | area: true | form: true
 # expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
 
 import "../lib/jsdom.dash"

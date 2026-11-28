@@ -1,0 +1,56 @@
+# Test: lo pequeño de HTML que html5test mira y Tachyon no tenía (tarea 76b): requestIdleCallback (corre después, con
+# plazo), translate, spellcheck y draggable (sus atributos, heredados los dos primeros), <iframe srcdoc> (su HTML manda
+# sobre src y llega load), sandbox (DOMTokenList con las palabras de HTML) y relList.supports con dns-prefetch y
+# preconnect (preload no: loadCSS confiaría en que Tachyon trae la hoja).
+# memcheck
+# expect-out: idle: antes 0 | despues 1 false true
+# expect-out: translate: true false true false
+# expect-out: spellcheck: true false true false true
+# expect-out: draggable: true true false false true
+# expect-out: srcdoc: cargas 1 | hola | about:srcdoc | otro
+# expect-out: sandbox: allow-forms allow-scripts | true false | true false
+# expect-out: rel: true true false true
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+import "../lib/html5.dash"
+
+func esperar(js: Int)
+    i = 0
+    while i < 20
+        jsdom_temporizadores(js)
+        time_delay(5)
+        i = i + 1
+    end
+end
+
+Main
+    h = "<html><body><div id=a translate=no spellcheck=false><p id=b></p><textarea id=t spellcheck=true></textarea></div>"
+    h = h + "<input id=i><img id=im><a id=en href='/'>x</a><a id=sin>y</a><span id=s draggable=true></span>"
+    h = h + "<iframe id=f src='/no' srcdoc='<p id=q>hola</p>' onload='cargas++'></iframe>"
+    h = h + "<script>var cargas = 0;</script></body></html>"
+    doc = dom_desde_html5(h)
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    jsdom_lugar(js, "http://127.0.0.1:40863/x.html")
+    jsdom_ejecutar_scripts(js, doc, "http://127.0.0.1:40863/x.html")
+    js_evaluar(js, "var hecho = 0, dl; requestIdleCallback(function (d) { hecho = 1; dl = d; }); var antes = hecho;", "t.js")
+    esperar(js)
+    Print js_evaluar(js, "'idle: antes ' + antes + ' | despues ' + hecho + ' ' + dl.didTimeout + ' ' + (dl.timeRemaining() <= 50)", "t.js")
+    c = "var $ = function (x) { return document.getElementById(x); }; var b = $('b'); var r = [document.body.translate, b.translate];"
+    c = c + "b.translate = true; r.push(b.translate, $('a').translate); 'translate: ' + r.join(' ')"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "'spellcheck: ' + [$('i').spellcheck, b.spellcheck, $('t').spellcheck, document.body.spellcheck, (b.spellcheck = true, b.spellcheck)].join(' ')", "t.js")
+    Print js_evaluar(js, "'draggable: ' + [$('im').draggable, $('en').draggable, $('sin').draggable, ($('im').draggable = false, $('im').draggable), $('s').draggable].join(' ')", "t.js")
+    esperar(js)
+    c = "var f = $('f'); var r1 = 'srcdoc: cargas ' + cargas + ' | ' + f.contentDocument.getElementById('q').textContent + ' | ' + f.contentWindow.location.href;"
+    c = c + "f.srcdoc = '<b>otro</b>';"
+    js_evaluar(js, c, "t.js")
+    esperar(js)
+    Print js_evaluar(js, "r1 + ' | ' + f.contentDocument.body.textContent", "t.js")
+    c = "f.sandbox.add('allow-scripts'); f.sandbox.add('allow-forms'); f.sandbox.remove('nada');"
+    c = c + "'sandbox: ' + f.getAttribute('sandbox').split(' ').sort().join(' ') + ' | ' + f.sandbox.supports('allow-popups') + ' ' + f.sandbox.supports('allow-nada') + ' | ' + ('srcdoc' in f) + ' ' + ('srcdoc' in document.createElement('div'))"
+    Print js_evaluar(js, c, "t.js")
+    Print js_evaluar(js, "var l = document.createElement('link'); 'rel: ' + [l.relList.supports('dns-prefetch'), l.relList.supports('preconnect'), l.relList.supports('preload'), l.relList.supports('stylesheet')].join(' ')", "t.js")
+    js_liberar(js)
+end

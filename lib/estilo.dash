@@ -201,6 +201,9 @@ func _estilo_leer_navegador() -> HojaCSS
     c = c + "dd { margin-left: 40px } center, th { text-align: center } "
     c = c + "a:link { color: #0000ee; text-decoration: underline } small { font-size: smaller } big { font-size: larger } "
     c = c + "hr { border: 1px inset; margin: 0.5em 0 } sub, sup { font-size: smaller } "
+    # (ruby: el paréntesis de <rp> es para quien no sabe de ruby; la lectura, <rt>, pequeña y alzada tras su base, no
+    # encima; html5test mira que rp no se vea, tarea 76b)
+    c = c + "rp { display: none } rt { display: inline-block; font-size: 50%; vertical-align: 1.2em } "
     c = c + "img { display: inline }"
     hoja = css_leer(c, -10000)
     return hoja

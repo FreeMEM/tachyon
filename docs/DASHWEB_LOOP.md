@@ -695,6 +695,11 @@ tarea, con el estilo de Dash.
           Amelinium: Path2D (2), modos de mezcla del canvas (5), ruby (3: rp oculto y el rt encima), WebSocket (15),
           EventSource (5); details (1) lo para el freno de medidas seguidas de documento_maquetar_por_js (tras 4
           seguidas da la caja vieja); preload (1) pide traer la hoja y avisar con load (loadCSS).
+          (2026-11-28) 320 -> 331: el lienzo guarda lo opaco de cada píxel (getImageData y putImageData de verdad),
+          globalCompositeOperation (Porter-Duff, lighter, copy y los modos de mezcla separables; hue, saturation,
+          color y luminosity se aceptan y pintan como source-over), Path2D (con el "d" de SVG, sin arcos A),
+          drawFocusIfNeeded, ImageData, y <rp> oculto con <rt> pequeño y alzado tras su base (no encima). Siguiente:
+          WebSocket (15) y EventSource (5).
       (c) Wikipedia (es.wikipedia.org/wiki/Commodore_Amiga): 12,4 s frente a 7,0.
       (c2, 2026-11-17) Lo grande de las páginas con JavaScript: cada cambio fuera de una caja de tamaño fijo (los
           límites de maqueta_rehacer) rehace estilo y maqueta enteros; en html5test, tres veces (~35 s en el emulador
@@ -8101,4 +8106,22 @@ Formato:
 - Medido (RTG, MUI 3.8, copia sin red): 305 -> 320 de 588 (la cuenta con data.js, 302 -> 317 de 576).
 - tests/test_jsdom_html5_varios.dash nuevo; test_jsdom_rellist_supports, al día (dns-prefetch ya es true).
 - Batería: 210/211 (el que falla, rellist_supports, esperaba dns-prefetch false; corregido y pasado suelto).
+
+### 2026-11-28 — Tarea 76b: html5test, el lienzo y ruby (de 320 a 331)
+- Lo opaco de cada píxel del lienzo (src_c/tachyon.c, `opaco`, un byte por píxel junto al rgb, que sigue mezclado con
+  el color de detrás para pintarlo): getImageData saca el color quitando el de detrás (lo no pintado, 0,0,0,0) y
+  putImageData pone los píxeles tal cual, sin matriz. clearRect deja transparente. La mezcla translúcida redondea
+  (rgba(255,0,0,0.5) se lee 255,0,0,127; test_lienzo, 80007e -> 80007f).
+- globalCompositeOperation: source-over por el camino rápido de siempre; los demás, píxel a píxel (_lz_componer:
+  Porter-Duff con Fa y Fb, lighter, copy, y los modos de mezcla separables de Compositing 1). hue, saturation, color
+  y luminosity se aceptan y pintan como source-over. source-in, copy y los que borran fuera de la figura solo
+  cambian dentro de ella.
+- lib/jsdom_preludio.js: ImageData (con sus errores), createImageData, Path2D (sus órdenes, addPath, el "d" de SVG
+  con M L H V C S Q T Z; A como una línea), fill(path) y stroke(path) (rehacen el camino: el de antes se pierde),
+  drawFocusIfNeeded (el anillo si el elemento tiene el foco).
+- lib/estilo.dash: rp { display: none } y rt inline-block, a la mitad y alzado 1.2em tras su base (no encima).
+- Medido (RTG, MUI 3.8, copia sin red): 320 -> 331 de 588 (canvas.blending, path, focusring y ruby); nada roto.
+  Amelinium, 334.
+- tests/test_lienzo_pixeles.dash nuevo.
+- Batería: 212/212.
 

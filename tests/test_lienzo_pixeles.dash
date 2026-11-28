@@ -1,0 +1,43 @@
+# Test: lo que html5test mira del lienzo y Tachyon no tenía (tarea 76b). getImageData lee los píxeles de verdad (lo no
+# pintado, transparente, aunque el búfer guarde el color de detrás), putImageData los pone tal cual,
+# globalCompositeOperation con los modos de mezcla (screen, multiply) y los de Porter-Duff (destination-out), clearRect
+# deja transparente, ImageData, Path2D (sus órdenes y el "d" de SVG) y drawFocusIfNeeded. Y <rp> no se ve.
+# memcheck
+# expect-out: screen: screen 255,255,255,255
+# expect-out: multiply: 128,64,0,255 | ignora: multiply
+# expect-out: vacío: 0,0,0,0 | medio: 255,0,0,127 | borrado: 0,0,0,0 | destination-out: 0,0,0,0
+# expect-out: put: 10,20,30,255 | 201,99,49,77 | fuera: 0,0,0,0
+# expect-out: imagedata: 24 2 3 | IndexSizeError
+# expect-out: path2d: 0,255,0,255 | 0,0,0,0 | 0,0,255,255 | copia 0,0,255,255
+# expect-out: foco: function
+# expect-out: rp: none | rt: inline-block
+# expect-out: memcheck: vivos 0 objetos y 0 strings (escapados 0 y 0), errores 0
+
+import "../lib/jsdom.dash"
+
+Main
+    doc = dom_desde_html("<body style='background:#101010'><canvas id=a width=20 height=20></canvas><ruby>x<rp id=rp>(</rp><rt id=rt>y</rt><rp>)</rp></ruby></body>")
+    estilo_aplicar(doc, estilo_hojas(doc, "prueba.html"))
+    js = js_nuevo()
+    jsdom_preparar(js, doc)
+    js_evaluar(js, "function px(c, x, y) { return [].join.call(c.getImageData(x, y, 1, 1).data, ','); } function lienzo(w, h) { var e = document.createElement('canvas'); e.width = w; e.height = h; document.body.appendChild(e); return e.getContext('2d'); }", "t0")
+    # (la prueba de html5test, tal cual)
+    Print js_evaluar(js, "var c = lienzo(1, 1); c.fillStyle = '#fff'; c.fillRect(0, 0, 1, 1); c.globalCompositeOperation = 'screen'; c.fillStyle = '#000'; c.fillRect(0, 0, 1, 1); 'screen: ' + c.globalCompositeOperation + ' ' + px(c, 0, 0)", "t1")
+    Print js_evaluar(js, "c = lienzo(1, 1); c.fillStyle = '#ff8000'; c.fillRect(0, 0, 1, 1); c.globalCompositeOperation = 'multiply'; c.fillStyle = '#808080'; c.fillRect(0, 0, 1, 1); c.globalCompositeOperation = 'otro'; 'multiply: ' + px(c, 0, 0) + ' | ignora: ' + c.globalCompositeOperation", "t2")
+    c = "c = lienzo(4, 4); var r = ['vacío: ' + px(c, 0, 0)]; c.fillStyle = 'rgba(255, 0, 0, 0.5)'; c.fillRect(0, 0, 4, 4); r.push('medio: ' + px(c, 1, 1));"
+    c = c + "c.clearRect(0, 0, 2, 4); r.push('borrado: ' + px(c, 1, 1)); c.fillStyle = '#00f'; c.fillRect(2, 0, 2, 4); c.globalCompositeOperation = 'destination-out'; c.fillStyle = '#000'; c.fillRect(2, 0, 2, 4);"
+    c = c + "r.push('destination-out: ' + px(c, 3, 3)); r.join(' | ')"
+    Print js_evaluar(js, c, "t3")
+    c = "c = lienzo(4, 4); var im = c.createImageData(2, 1); im.data.set([10, 20, 30, 255, 200, 100, 50, 77]); c.putImageData(im, 1, 1); c.putImageData(im, 3, 3, 0, 0, 1, 1);"
+    c = c + "'put: ' + px(c, 1, 1) + ' | ' + px(c, 2, 1) + ' | fuera: ' + [].join.call(c.getImageData(-2, -2, 1, 1).data, ',')"
+    Print js_evaluar(js, c, "t4")
+    Print js_evaluar(js, "var d = new ImageData(2, 3), e = ''; try { new ImageData(new Uint8ClampedArray(6), 1); } catch (x) { e = x.name; } 'imagedata: ' + d.data.length + ' ' + d.width + ' ' + d.height + ' | ' + e", "t5")
+    c = "c = document.getElementById('a').getContext('2d'); var p = new Path2D(); p.rect(0, 0, 10, 10); c.fillStyle = '#0f0'; c.fill(p);"
+    c = c + "var q = new Path2D('M10 10 h5 v5 H10 z'), q2 = new Path2D(q); c.fillStyle = '#00f'; c.fill(q);"
+    c = c + "c.fillStyle = '#f00'; c.fillRect(16, 16, 4, 4); c.globalCompositeOperation = 'destination-out'; c.fillRect(16, 16, 4, 4); c.globalCompositeOperation = 'source-over'; c.fillStyle = '#00f'; c.translate(6, 6); c.fill(q2);"
+    c = c + "'path2d: ' + px(c, 5, 5) + ' | ' + px(c, 12, 2) + ' | ' + px(c, 12, 12) + ' | copia ' + px(c, 18, 18)"
+    Print js_evaluar(js, c, "t6")
+    Print js_evaluar(js, "'foco: ' + typeof c.drawFocusIfNeeded", "t7")
+    Print js_evaluar(js, "'rp: ' + getComputedStyle(document.getElementById('rp')).display + ' | rt: ' + getComputedStyle(document.getElementById('rt')).display", "t8")
+    js_liberar(js)
+end

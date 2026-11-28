@@ -1005,12 +1005,14 @@ typedef struct {
     ULONG relleno, trazo;
     double grosor;
     LONG alfa;
+    LONG modo;                   /* globalCompositeOperation: su número en _lz_modos (0: source-over) */
 } _LzEstado;
 typedef struct _Lienzo {
     struct _Lienzo *sig;
     APTR nodo;
     LONG w, h, div, bw, bh;
     UBYTE *rgb;
+    UBYTE *opaco;                /* lo que tapa cada píxel (0: transparente, 255: opaco); rgb ya va mezclado con fondo */
     ULONG fondo;
     double m[6];                 /* la del usuario con el 1/div */
     _LzEstado e;
@@ -1038,6 +1040,7 @@ static void _lz_inicial(_Lienzo *l) {
     l->e.trazo = 0xFF000000UL;
     l->e.grosor = 1.0;
     l->e.alfa = 255;
+    l->e.modo = 0;
     l->npila = 0;
     l->n = 0;
     _lz_matriz(l);
@@ -1070,8 +1073,11 @@ static void _lz_tam(_Lienzo *l, LONG w, LONG h) {
     l->bw = (w + l->div - 1) / l->div;
     l->bh = (h + l->div - 1) / l->div;
     if (l->rgb) free(l->rgb);
+    if (l->opaco) free(l->opaco);
     n = l->bw * l->bh;
     l->rgb = (UBYTE *)malloc(n * 3);
+    l->opaco = (UBYTE *)calloc(n, 1);
+    if (!l->opaco && l->rgb) { free(l->rgb); l->rgb = NULL; }
     if (l->rgb) {
         r = (UBYTE)(l->fondo >> 16); g = (UBYTE)(l->fondo >> 8); b = (UBYTE)l->fondo;
         for (i = 0, p = l->rgb; i < n; i++) { *p++ = r; *p++ = g; *p++ = b; }
@@ -1096,6 +1102,7 @@ static void _lz_liberar(_Lienzo *l) {
     if (!l) return;
     for (p = &_lienzos; *p; p = &(*p)->sig) if (*p == l) { *p = l->sig; break; }
     if (l->rgb) free(l->rgb);
+    if (l->opaco) free(l->opaco);
     if (l->px) free(l->px);
     if (l->py) free(l->py);
     if (l->nuevo) free(l->nuevo);
@@ -1202,24 +1209,105 @@ static LONG _lz_alfa(_Lienzo *l, ULONG c) {
     return a >= 255 ? 256 : a;
 }
 
+/* globalCompositeOperation (Compositing and Blending 1): los de Porter-Duff, lighter y copy, y los modos de mezcla;
+   hue, saturation, color y luminosity se aceptan y pintan como source-over */
+static const char *_lz_modos[] = {
+    "source-over", "source-in", "source-out", "source-atop", "destination-over", "destination-in",
+    "destination-out", "destination-atop", "lighter", "copy", "xor", "multiply", "screen", "overlay", "darken",
+    "lighten", "color-dodge", "color-burn", "hard-light", "soft-light", "difference", "exclusion", "hue",
+    "saturation", "color", "luminosity", NULL
+};
+#define LZ_BORRAR (-1)
+
+static LONG _lz_mult(LONG a, LONG b) { return (a * b + 127) / 255; }
+
+/* El modo de mezcla B(debajo, encima), de 0 a 255 */
+static LONG _lz_mezclar(LONG modo, LONG cb, LONG cs) {
+    LONG t;
+    switch (modo) {
+    case 11: return _lz_mult(cb, cs);
+    case 12: return cb + cs - _lz_mult(cb, cs);
+    case 13: return cb <= 127 ? _lz_mult(cs, 2 * cb) : (t = 2 * cb - 255, cs + t - _lz_mult(cs, t));
+    case 14: return cb < cs ? cb : cs;
+    case 15: return cb > cs ? cb : cs;
+    case 16: if (cb == 0) return 0; if (cs >= 255) return 255; t = cb * 255 / (255 - cs); return t > 255 ? 255 : t;
+    case 17: if (cb >= 255) return 255; if (cs <= 0) return 0; t = (255 - cb) * 255 / cs; return t > 255 ? 0 : 255 - t;
+    case 18: return cs <= 127 ? _lz_mult(cb, 2 * cs) : (t = 2 * cs - 255, cb + t - _lz_mult(cb, t));
+    case 19: {
+        double b = cb / 255.0, s = cs / 255.0, d, r;
+        if (s <= 0.5) r = b - (1 - 2 * s) * b * (1 - b);
+        else { d = b <= 0.25 ? ((16 * b - 12) * b + 4) * b : sqrt(b); r = b + (2 * s - 1) * (d - b); }
+        return (LONG)(r * 255 + 0.5);
+    }
+    case 20: return cb > cs ? cb - cs : cs - cb;
+    case 21: return cb + cs - 2 * _lz_mult(cb, cs);
+    }
+    return cs;
+}
+
+/* Un píxel con un modo que no es source-over (o borrado): se saca el color del lienzo quitando el de detrás, se
+   compone y se vuelve a mezclar con el de detrás */
+static void _lz_componer(_Lienzo *l, UBYTE *p, UBYTE *o, LONG r, LONG g, LONG b, LONG a) {
+    LONG modo = l->e.modo, sa = a >= 256 ? 255 : (a * 255) >> 8, da = *o, fa, fb, oa, k, cs, cb, f;
+    LONG src[3], fon[3];
+    src[0] = r; src[1] = g; src[2] = b;
+    fon[0] = (l->fondo >> 16) & 255; fon[1] = (l->fondo >> 8) & 255; fon[2] = l->fondo & 255;
+    if (modo == LZ_BORRAR) { p[0] = (UBYTE)fon[0]; p[1] = (UBYTE)fon[1]; p[2] = (UBYTE)fon[2]; *o = 0; return; }
+    switch (modo) {
+    case 1: fa = da; fb = 0; break;
+    case 2: fa = 255 - da; fb = 0; break;
+    case 3: fa = da; fb = 255 - sa; break;
+    case 4: fa = 255 - da; fb = 255; break;
+    case 5: fa = 0; fb = sa; break;
+    case 6: fa = 0; fb = 255 - sa; break;
+    case 7: fa = 255 - da; fb = sa; break;
+    case 8: fa = 255; fb = 255; break;
+    case 9: fa = 255; fb = 0; break;
+    case 10: fa = 255 - da; fb = 255 - sa; break;
+    default: fa = 255; fb = 255 - sa; break;
+    }
+    oa = _lz_mult(sa, fa) + _lz_mult(da, fb);
+    if (oa > 255) oa = 255;
+    for (k = 0; k < 3; k++) {
+        f = fon[k];
+        cb = da ? (p[k] * 255 - f * (255 - da)) / da : 0;
+        if (cb < 0) cb = 0;
+        if (cb > 255) cb = 255;
+        cs = src[k];
+        if (modo >= 11 && modo <= 21) cs = (cs * (255 - da) + _lz_mezclar(modo, cb, cs) * da + 127) / 255;
+        /* (con alfa previo: lo de encima y lo de debajo, cada uno por su parte) */
+        cs = _lz_mult(_lz_mult(cs, sa), fa) + _lz_mult(_lz_mult(cb, da), fb);
+        if (cs > 255) cs = 255;
+        cs = cs + _lz_mult(f, 255 - oa);
+        p[k] = (UBYTE)(cs > 255 ? 255 : cs);
+    }
+    *o = (UBYTE)oa;
+}
+
 static void _lz_tramo(_Lienzo *l, LONG y, LONG x0, LONG x1, ULONG c, LONG a) {
-    UBYTE *p, r, g, b;
+    UBYTE *p, *o, r, g, b;
     LONG n;
     if (y < 0 || y >= l->bh) return;
     if (x0 < 0) x0 = 0;
     if (x1 >= l->bw) x1 = l->bw - 1;
     if (x0 > x1 || a <= 0) return;
     p = l->rgb + (y * l->bw + x0) * 3;
+    o = l->opaco + y * l->bw + x0;
     n = x1 - x0 + 1;
     r = (UBYTE)(c >> 16); g = (UBYTE)(c >> 8); b = (UBYTE)c;
-    if (a >= 256) {
+    if (l->e.modo != 0) {
+        while (n--) { _lz_componer(l, p, o, r, g, b, a); p += 3; o++; }
+    } else if (a >= 256) {
+        memset(o, 255, n);
         while (n--) { *p++ = r; *p++ = g; *p++ = b; }
     } else {
         /* una tabla de lo que queda de cada valor con esta transparencia (se rehace solo si cambia): sin multiplicar
            por cada píxel (el velo translúcido de las estrellas cubre el lienzo entero en cada fotograma) */
         static UBYTE tabla[256];
         static LONG tabla_a = -1;
-        UBYTE kr = (UBYTE)((r * a) >> 8), kg = (UBYTE)((g * a) >> 8), kb = (UBYTE)((b * a) >> 8);
+        /* (redondeado: rgba(255, 0, 0, 0.5) se lee luego como 255, 0, 0 con getImageData) */
+        UBYTE kr = (UBYTE)((r * a + 128) >> 8), kg = (UBYTE)((g * a + 128) >> 8), kb = (UBYTE)((b * a + 128) >> 8);
+        UBYTE ka = (UBYTE)((255 * a + 128) >> 8);
         if (a != tabla_a) {
             LONG i, ia = 256 - a;
             for (i = 0; i < 256; i++) tabla[i] = (UBYTE)((i * ia) >> 8);
@@ -1229,16 +1317,21 @@ static void _lz_tramo(_Lienzo *l, LONG y, LONG x0, LONG x1, ULONG c, LONG a) {
             p[0] = tabla[p[0]] + kr;
             p[1] = tabla[p[1]] + kg;
             p[2] = tabla[p[2]] + kb;
+            *o = tabla[*o] + ka;
             p += 3;
+            o++;
         }
     }
 }
 
 static void _lz_punto(_Lienzo *l, LONG x, LONG y, LONG r, LONG g, LONG b, LONG a) {
-    UBYTE *p;
+    UBYTE *p, *o;
     if ((ULONG)x >= (ULONG)l->bw || (ULONG)y >= (ULONG)l->bh) return;
     p = l->rgb + (y * l->bw + x) * 3;
-    if (a >= 256) { p[0] = (UBYTE)r; p[1] = (UBYTE)g; p[2] = (UBYTE)b; return; }
+    o = l->opaco + y * l->bw + x;
+    if (l->e.modo != 0) { _lz_componer(l, p, o, r, g, b, a); return; }
+    if (a >= 256) { p[0] = (UBYTE)r; p[1] = (UBYTE)g; p[2] = (UBYTE)b; *o = 255; return; }
+    *o = (UBYTE)(((*o * (256 - a)) >> 8) + ((255 * a + 128) >> 8));
     p[0] = (UBYTE)((p[0] * (256 - a) + r * a) >> 8);
     p[1] = (UBYTE)((p[1] * (256 - a) + g * a) >> 8);
     p[2] = (UBYTE)((p[2] * (256 - a) + b * a) >> 8);
@@ -1348,7 +1441,10 @@ static void _lz_fill_rect(_Lienzo *l, double x, double y, double w, double h) {
 }
 
 static void _lz_clear_rect(_Lienzo *l, double x, double y, double w, double h) {
+    LONG modo = l->e.modo;
+    l->e.modo = LZ_BORRAR;
     _lz_rect(l, x, y, w, h, l->fondo, 256);
+    l->e.modo = modo;
 }
 
 /* Un punto más del camino, ya en coordenadas del búfer */
@@ -3020,6 +3116,88 @@ static JSValue _lz_estilo_set(JSContext *ctx, JSValueConst this_val, JSValueCons
     JS_FreeCString(ctx, t);
     return JS_UNDEFINED;
 }
+/* globalCompositeOperation: uno de _lz_modos (otro texto no lo cambia) */
+static JSValue _lz_modo_get(JSContext *ctx, JSValueConst this_val) {
+    _LZ_ESTE;
+    return JS_NewString(ctx, _lz_modos[l->e.modo]);
+}
+static JSValue _lz_modo_set(JSContext *ctx, JSValueConst this_val, JSValueConst v) {
+    const char *t;
+    LONG i;
+    _LZ_ESTE;
+    if (!JS_IsString(v)) return JS_UNDEFINED;
+    t = JS_ToCString(ctx, v);
+    if (!t) return JS_EXCEPTION;
+    for (i = 0; _lz_modos[i]; i++) if (!strcmp(t, _lz_modos[i])) { l->e.modo = i; break; }
+    JS_FreeCString(ctx, t);
+    return JS_UNDEFINED;
+}
+/* __leer(x, y, w, h): los píxeles de getImageData, RGBA sin alfa previo, en un ArrayBuffer (lo de fuera, transparente;
+   el color se saca del búfer quitando el de detrás) */
+static JSValue _lz_leer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    LONG x = (LONG)floor(_LZ_A(0)), y = (LONG)floor(_LZ_A(1)), w = (LONG)_LZ_A(2), h = (LONG)_LZ_A(3), i, j, k, bx, by, a, c, f;
+    UBYTE *d, *q, *p;
+    JSValue r;
+    _LZ_ESTE;
+    if (w <= 0 || h <= 0 || (double)w * h > 16777216.0) return JS_ThrowRangeError(ctx, "getImageData: bad size");
+    d = (UBYTE *)calloc((size_t)w * h, 4);
+    if (!d) return JS_ThrowOutOfMemory(ctx);
+    if (l->rgb)
+        for (j = 0, q = d; j < h; j++)
+            for (i = 0; i < w; i++, q += 4) {
+                if (x + i < 0 || y + j < 0 || x + i >= l->w || y + j >= l->h) continue;
+                bx = (x + i) / l->div; by = (y + j) / l->div;
+                a = l->opaco[by * l->bw + bx];
+                if (!a) continue;
+                p = l->rgb + (by * l->bw + bx) * 3;
+                for (k = 0; k < 3; k++) {
+                    f = (l->fondo >> (16 - 8 * k)) & 255;
+                    c = (p[k] * 255 - f * (255 - a) + a / 2) / a;
+                    q[k] = (UBYTE)(c < 0 ? 0 : c > 255 ? 255 : c);
+                }
+                q[3] = (UBYTE)a;
+            }
+    r = JS_NewArrayBufferCopy(ctx, d, (size_t)w * h * 4);
+    free(d);
+    return r;
+}
+/* __poner(datos, w, h, dx, dy, x0, y0, x1, y1): putImageData; datos, el Uint8ClampedArray; solo el trozo
+   [x0, x1) x [y0, y1) de la imagen; sin matriz ni mezcla (los píxeles tal cual, como dice HTML) */
+static JSValue _lz_poner(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    LONG w = (LONG)_LZ_A(1), h = (LONG)_LZ_A(2), dx = (LONG)floor(_LZ_A(3)), dy = (LONG)floor(_LZ_A(4));
+    LONG x0 = (LONG)_LZ_A(5), y0 = (LONG)_LZ_A(6), x1 = (LONG)_LZ_A(7), y1 = (LONG)_LZ_A(8), i, j, k, bx, by, a, f;
+    size_t off = 0, len = 0, por = 0, tam = 0;
+    UBYTE *d, *q, *p;
+    JSValue ab;
+    _LZ_ESTE;
+    if (argc < 1 || !l->rgb) return JS_UNDEFINED;
+    ab = JS_GetTypedArrayBuffer(ctx, argv[0], &off, &len, &por);
+    if (JS_IsException(ab)) return ab;
+    d = JS_GetArrayBuffer(ctx, &tam, ab);
+    JS_FreeValue(ctx, ab);
+    if (!d || w <= 0 || h <= 0 || len < (size_t)w * h * 4 || off + len > tam) return JS_UNDEFINED;
+    d += off;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > w) x1 = w;
+    if (y1 > h) y1 = h;
+    for (j = y0; j < y1; j++)
+        for (i = x0; i < x1; i++) {
+            if (dx + i < 0 || dy + j < 0 || dx + i >= l->w || dy + j >= l->h) continue;
+            q = d + (j * w + i) * 4;
+            bx = (dx + i) / l->div; by = (dy + j) / l->div;
+            p = l->rgb + (by * l->bw + bx) * 3;
+            a = q[3];
+            for (k = 0; k < 3; k++) {
+                f = (l->fondo >> (16 - 8 * k)) & 255;
+                p[k] = (UBYTE)((q[k] * a + f * (255 - a) + 127) / 255);
+            }
+            l->opaco[by * l->bw + bx] = (UBYTE)a;
+        }
+    if (x0 < x1 && y0 < y1)
+        _lz_marcar(l, (dx + x0) / l->div, (dy + y0) / l->div, (dx + x1 - 1) / l->div, (dy + y1 - 1) / l->div);
+    return JS_UNDEFINED;
+}
 /* lineWidth (0), globalAlpha (1), y el tamaño del lienzo, __w (2) y __h (3), solo de leer */
 static JSValue _lz_num_get(JSContext *ctx, JSValueConst this_val, int magic) {
     _LZ_ESTE;
@@ -3061,6 +3239,9 @@ static const JSCFunctionListEntry _lz_metodos[] = {
     JS_CFUNC_DEF("save", 0, _lz_save_js),
     JS_CFUNC_DEF("restore", 0, _lz_restore_js),
     JS_CFUNC_DEF("__tam", 2, _lz_tam_js),
+    JS_CFUNC_DEF("__leer", 4, _lz_leer),
+    JS_CFUNC_DEF("__poner", 9, _lz_poner),
+    JS_CGETSET_DEF("globalCompositeOperation", _lz_modo_get, _lz_modo_set),
     JS_CGETSET_MAGIC_DEF("fillStyle", _lz_estilo_get, _lz_estilo_set, 0),
     JS_CGETSET_MAGIC_DEF("strokeStyle", _lz_estilo_get, _lz_estilo_set, 1),
     JS_CGETSET_MAGIC_DEF("lineWidth", _lz_num_get, _lz_num_set, 0),
